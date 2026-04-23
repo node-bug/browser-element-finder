@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "JavaScript Alerts Example",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/demo.js",
+      "args": ["--NoDebug"]
+    }
+  ]
+}

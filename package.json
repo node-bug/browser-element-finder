@@ -1,0 +1,32 @@
+{
+  "name": "myproject",
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "@nodebug/selenium": "5.0.6"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "prepare": "husky && echo 'npx lint-staged' > .husky/pre-commit && chmod +x .husky/pre-commit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{json,yaml,yml,md,sh,groovy}": [
+      "prettier --write"
+    ]
+  }
+}
