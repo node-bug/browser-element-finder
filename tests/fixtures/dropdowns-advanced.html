@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Dropdown Capabilities Test Fixture</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; background-color: #f9f9f9; }
+        section { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: white; }
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .field-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: bold; }
+        
+        /* Searchable Dropdown Styles */
+        .searchable-dropdown { position: relative; width: 250px; }
+        .search-input { width: 100%; padding: 8px; box-sizing: border-box; }
+        .search-results { 
+            position: absolute; top: 100%; left: 0; width: 100%; 
+            max-height: 200px; overflow-y: auto; border: 1px solid #ccc; 
+            background: #fff; display: none; z-index: 1000; 
+            list-style: none; padding: 0; margin: 0;
+        }
+        .search-results li { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-results li:hover { background-color: #f0f0f0; }
+        .search-results.open { display: block; }
+
+        /* Multi-select Tag Styles */
+        .tag-container { 
+            border: 1px solid #ccc; padding: 5px; display: flex; 
+            flex-wrap: wrap; gap: 5px; min-height: 38px; align-items: center;
+        }
+        .tag { 
+            background: #e1e1e1; padding: 2px 8px; border-radius: 4px; 
+            font-size: 12px; display: flex; align-items: center; gap: 5px;
+        }
+        .tag span { cursor: pointer; font-weight: bold; color: red; }
+    </style>
+</head>
+<body>
+    <h1>Advanced Dropdown Capabilities Test Fixture</h1>
+
+    <!-- 3. Searchable/Autocomplete Dropdown -->
+    <section id="searchable-dropdown-section">
+        <h2>3. Searchable / Autocomplete Dropdown</h2>
+        <div class="field-group">
+            <label for="search-dropdown">Search for a Country</label>
+            <div class="searchable-dropdown">
+                <input type="text" id="search-dropdown" class="search-input" placeholder="Type to search..." onkeyup="filterCountries(this.value)">
+                <ul id="country-results" class="search-results">
+                    <li onclick="pickCountry(this)">Argentina</li>
+                    <li onclick="pickCountry(this)">Brazil</li>
+                    <li onclick="pickCountry(this)">Canada</li>
+                    <li onclick="pickCountry(this)">Denmark</li>
+                    <li onclick="pickCountry(this)">Egypt</li>
+                    <li onclick="pickCountry(this)">France</li>
+                    <li onclick="pickCountry(this)">Germany</li>
+                    <li onclick="pickCountry(this)">India</li>
+                    <li onclick="pickCountry(this)">Japan</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Multi-select with Tags (Modern UI) -->
+    <section id="tag-dropdown-section">
+        <h2>4. Multi-select with Tags</h2>
+        <div class="field-group">
+            <label>Select Skills</label>
+            <div class="tag-container" id="skills-container">
+                <input type="text" id="skill-input" placeholder="Add skill..." style="border:none; outline:none; flex:1;">
+            </div>
+            <div id="skills-options" style="margin-top: 10px;">
+                <button onclick="addTag('JavaScript')">JavaScript</button>
+                <button onclick="addTag('TypeScript')">TypeScript</button>
+                <button onclick="addTag('Python')">Python</button>
+                <button onclick="addTag('Java')">Java</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Searchable Dropdown Logic
+        function filterCountries(query) {
+            const results = document.getElementById('country-results');
+            const items = results.getElementsByTagName('li');
+            let hasMatch = false;
+
+            if (query === '') {
+                results.classList.remove('open');
+                return;
+            }
+
+            for (let item of items) {
+                const text = item.textContent || item.innerText;
+                if (text.toLowerCase().includes(query.toLowerCase())) {
+                    item.style.display = '';
+                    hasMatch = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+            results.classList.toggle('open', hasMatch);
+        }
+
+        function pickCountry(el) {
+            const input = document.getElementById('search-dropdown');
+            input.value = el.textContent;
+            document.getElementById('country-results').classList.remove('open');
+        }
+
+        // Tag Logic
+        function addTag(text) {
+            const container = document.getElementById('skills-container');
+            const tag = document.createElement('div');
+            tag.className = 'tag';
+            tag.innerHTML = `${text} <span onclick="this.parentElement.remove()">×</span>`;
+            container.insertBefore(tag, document.getElementById('skill-input'));
+        }
+    </script>
+</body>
+</html>

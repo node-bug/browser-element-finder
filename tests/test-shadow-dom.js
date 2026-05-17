@@ -25,13 +25,13 @@ async function runTests() {
 
   try {
     // Load the shadow DOM test HTML file
-    const htmlPath = join(__dirname, 'shadow-dom.html');
+    const htmlPath = join(__dirname, 'fixtures', 'shadow-dom.html');
     const htmlContent = readFileSync(htmlPath, 'utf8');
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
     // Inject the ElementFinder library
-    const finderPath = join(__dirname, 'browser-element-finder.js');
+    const finderPath = join(__dirname, '..', 'browser-element-finder.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}

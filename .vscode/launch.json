@@ -32,6 +32,14 @@
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/test-google-doodle.js",
       "args": ["--NoDebug"]
+    },
+    {
+      "name": "Parent",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/test-element-finder-parent.js",
+      "args": ["--NoDebug"]
     }
   ]
 }

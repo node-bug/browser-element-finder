@@ -17,6 +17,10 @@
  *   
  *   // Find links with specific text
  *   const results = ElementFinder.findElement('link', 'seleniumbase');
+ *   
+ *   // Find elements within a parent element
+ *   const parent = document.querySelector('.container');
+ *   const results = ElementFinder.findElement('button', null, false, false, parent);
  */
 
 const ElementFinder = (function() {
@@ -320,16 +324,17 @@ const ElementFinder = (function() {
    * @param {string} [text] - Text to search for in content/attributes
    * @param {boolean} [exact=false] - Exact text match
    * @param {boolean} [includeHidden=false] - Include hidden elements
+   * @param {Element} [parent] - Parent element to search within (optional)
    * @returns {Object} Results with elements and their bounding boxes
    */
-  function findElement(type, text, exact = false, includeHidden = false) {
+  function findElement(type, text, exact = false, includeHidden = false, parent = null) {
     // Validate type if provided
     if (type && !ELEMENT_DEFINITIONS[type]) {
       console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
       return { elements: [] };
     }
 
-    const allElements = getAllElements();
+    const allElements = getAllElements(parent || document);
     const matches = [];
 
     for (const item of allElements) {

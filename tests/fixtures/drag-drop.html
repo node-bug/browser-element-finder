@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Capabilities Test Fixture</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; background-color: #f9f9f9; }
+        section { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: white; }
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .container { display: flex; gap: 20px; margin-top: 20px; }
+        .drop-zone { 
+            width: 200px; height: 200px; 
+            border: 2px dashed #aaa; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; 
+            text-align: center; background-color: #fff;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .drop-zone.drag-over { 
+            background-color: #e1f5fe; border-color: #03a9f4; 
+        }
+        .drop-zone.drop-success { 
+            background-color: #e8f5e9; border-color: #4caf50; 
+        }
+
+        .draggable { 
+            width: 100px; height: 100px; 
+            background-color: #2196f3; color: white; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: grab; border-radius: 8px; 
+            user-select: none; font-weight: bold;
+            text-align: center; padding: 10px;
+        }
+        .draggable:active { cursor: grabbing; }
+
+        /* Sortable List Styles */
+        .sortable-list { list-style: none; padding: 0; width: 300px; }
+        .sortable-item { 
+            padding: 10px; margin: 5px 0; background: #fff; 
+            border: 1px solid #ddd; cursor: grab; 
+            display: flex; align-items: center; gap: 10px;
+            border-radius: 4px;
+        }
+        .sortable-item:active { cursor: grabbing; }
+        .sortable-item.dragging { opacity: 0.5; background: #f0f0f0; }
+
+        /* File Upload Styles */
+        .file-drop-zone { 
+            width: 100%; max-width: 500px; height: 150px; 
+            border: 2px dashed #aaa; border-radius: 8px; 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; background-color: #fff;
+            cursor: pointer;
+        }
+        .file-drop-zone.drag-over { background-color: #f5f5f5; border-color: #2196f3; }
+
+        /* jQuery UI Styles */
+        .jquery-draggable { 
+            width: 100px; height: 100px; 
+            background-color: #ff9800; color: white; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: grab; border-radius: 8px; 
+            font-weight: bold; text-align: center; padding: 10px;
+        }
+        .jquery-drop-zone { 
+            width: 200px; height: 200px; 
+            border: 2px dashed #ff9800; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; 
+            text-align: center; background-color: #fff;
+        }
+        .jquery-drop-success { background-color: #fff3e0; border-color: #ff9800; }
+    </style>
+</head>
+<body onload="init()">
+    <h1>Drag and Drop Capabilities Test Fixture</h1>
+
+    <!-- 1. Basic Drag and Drop -->
+    <section id="basic-dnd-section">
+        <h2>1. Basic Drag and Drop</h2>
+        <p>Drag the blue box into the target zone.</p>
+        <div class="container">
+            <div id="drag-source" class="draggable" draggable="true">Drag Me!</div>
+            <div id="drop-target" class="drop-zone">Drop Here</div>
+        </div>
+        <p id="basic-status">Status: Waiting...</p>
+    </section>
+
+    <!-- 2. Reordering / Sortable List -->
+    <section id="sortable-section">
+        <h2>2. Reordering / Sortable List</h2>
+        <p>Drag items to reorder them.</p>
+        <ul id="sortable-list" class="sortable-list">
+            <li class="sortable-item" draggable="true" data-id="1"><span>☰</span> Item 1</li>
+            <li class="sortable-item" draggable="true" data-id="2"><span>☰</span> Item 2</li>
+            <li class="sortable-item" draggable="true" data-id="3"><span>☰</span> Item 3</li>
+            <li class="sortable-item" draggable="true" data-id="4"><span>☰</span> Item 4</li>
+        </ul>
+        <p id="sortable-status">Current Order: 1, 2, 3, 4</p>
+    </section>
+
+    <!-- 3. Drag from List to Zone (Multi-target) -->
+    <section id="multi-target-section">
+        <h2>3. Drag from List to Zone</h2>
+        <div class="container">
+            <ul id="item-list" style="list-style: none; padding: 0;">
+                <li class="draggable-item" draggable="true" data-value="A" style="padding: 8px; margin: 4px; background: #eee; cursor: grab; border: 1px solid #ccc; width: 100px;">Item A</li>
+                <li class="draggable-item" draggable="true" data-value="B" style="padding: 8px; margin: 4px; background: #eee; cursor: grab; border: 1px solid #ccc; width: 100px;">Item B</li>
+                <li class="draggable-item" draggable="true" data-value="C" style="padding: 8px; margin: 4px; background: #eee; cursor: grab; border: 1px solid #ccc; width: 100px;">Item C</li>
+            </ul>
+            <div id="target-zone-1" class="drop-zone">Zone 1</div>
+            <div id="target-zone-2" class="drop-zone">Zone 2</div>
+        </div>
+        <p id="multi-status">Status: No items dropped</p>
+    </section>
+
+    <!-- 4. jQuery UI Drag and Drop -->
+    <section id="jquery-dnd-section">
+        <h2>4. jQuery UI Drag and Drop</h2>
+        <p>Drag the orange box into the orange target zone (uses jQuery UI).</p>
+        <div class="container">
+            <div id="jquery-drag-source" class="jquery-draggable">jQuery Drag!</div>
+            <div id="jquery-drop-target" class="jquery-drop-zone">jQuery Drop Here</div>
+        </div>
+        <p id="jquery-status">Status: Waiting...</p>
+    </section>
+
+    <!-- 5. File Drag and Drop -->
+    <section id="file-dnd-section">
+        <h2>5. File Drag and Drop</h2>
+        <p>Drag a file from your OS into this area.</p>
+        <div id="file-drop-zone" class="file-drop-zone">
+            <span>Drag & Drop files here</span>
+            <small>Files will be listed below</small>
+        </div>
+        <div id="file-list" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script>
+        function init() {
+            setupJQueryUI();
+        }
+
+        function setupJQueryUI() {
+            $(function() {
+                $("#jquery-drag-source").draggable();
+                $("#jquery-drop-target").droppable({
+                    drop: function(event, ui) {
+                        $(this).addClass('jquery-drop-success').text('Dropped!');
+                        $('#jquery-status').text('Status: Success!');
+                    }
+                });
+            });
+        }
+
+        // --- Basic Drag and Drop ---
+        const dragSource = document.getElementById('drag-source');
+        const dropTarget = document.getElementById('drop-target');
+        const basicStatus = document.getElementById('basic-status');
+
+        dragSource.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', 'dragged');
+            e.target.style.opacity = '0.5';
+        });
+
+        dragSource.addEventListener('dragend', (e) => {
+            e.target.style.opacity = '1';
+        });
+
+        dropTarget.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropTarget.classList.add('drag-over');
+        });
+
+        dropTarget.addEventListener('dragleave', (e) => {
+            dropTarget.classList.remove('drag-over');
+        });
+
+        dropTarget.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropTarget.classList.remove('drag-over');
+            dropTarget.classList.add('drop-success');
+            dropTarget.textContent = 'Dropped!';
+            basicStatus.textContent = 'Status: Success!';
+        });
+
+        // --- Sortable List ---
+        const sortableList = document.getElementById('sortable-list');
+        let draggedItem = null;
+
+        sortableList.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('sortable-item')) {
+                draggedItem = e.target;
+                e.target.classList.add('dragging');
+            }
+        });
+
+        sortableList.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('sortable-item')) {
+                e.target.classList.remove('dragging');
+                updateSortableStatus();
+            }
+        });
+
+        sortableList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(sortableList, e.clientY);
+            if (draggedItem) {
+                sortableList.insertBefore(draggedItem, afterElement);
+            }
+        });
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.sortable-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // --- Multi-target Drag and Drop ---
+        const draggableItems = document.querySelectorAll('.draggable-item');
+        const targetZones = document.querySelectorAll('.drop-zone');
+
+        draggableItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', item.dataset.value);
+            });
+        });
+
+        targetZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const value = e.dataTransfer.getData('text/plain');
+                zone.textContent = `Dropped ${value}!`;
+                document.getElementById('multi-status').textContent = `Status: ${value} dropped in ${zone.id}`;
+            });
+        });
+
+        // --- File Drag and Drop ---
+        const fileZone = document.getElementById('file-drop-zone');
+        const fileList = document.getElementById('file-list');
+
+        fileZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileZone.classList.add('drag-over');
+        });
+
+        fileZone.addEventListener('dragleave', (e) => {
+            fileZone.classList.remove('drag-over');
+        });
+
+        fileZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileList.innerHTML = '';
+                for (let i = 0; i < files.length; i++) {
+                    fileList.innerHTML += `<div>File: ${files[i].name} ${files[i].size} bytes</div>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Capabilities Test Fixture</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        section { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        h2 { margin-top: 0; }
+        table { border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .highlight { background-color: yellow; }
+        .hidden { display: none; }
+        .nested-table { margin: 5px; background-color: #fafafa; }
+    </style>
+</head>
+<body>
+    <h1>Table Capabilities Test Fixture</h1>
+
+    <!-- 1. Simple Standard Table -->
+    <section id="simple-table-section">
+        <h2>1. Simple Standard Table</h2>
+        <table id="simple-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>City</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alice</td>
+                    <td>30</td>
+                    <td>New York</td>
+                </tr>
+                <tr>
+                    <td>Bob</td>
+                    <td>25</td>
+                    <td>London</td>
+                </tr>
+                <tr>
+                    <td>Charlie</td>
+                    <td>35</td>
+                    <td>Paris</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 2. Table with Colspan and Rowspan -->
+    <section id="complex-span-section">
+        <h2>2. Table with Colspan and Rowspan</h2>
+        <table id="span-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Item</th>
+                    <th>Details</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td rowspan="2">Electronics</td>
+                    <td>Laptop</td>
+                    <td>16GB RAM</td>
+                    <td>$1200</td>
+                </tr>
+                <tr>
+                    <td>Mouse</td>
+                    <td>Wireless</td>
+                    <td>$25</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">Books</td>
+                    <td>Novel</td>
+                    <td>Hardcover</td>
+                    <td>$20</td>
+                </tr>
+                <tr>
+                    <td>Textbook</td>
+                    <td>Academic</td>
+                    <td>$80</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align:center"><strong>Total</strong></td>
+                    <td><strong>$1325</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 3. Nested Tables -->
+    <section id="nested-table-section">
+        <h2>3. Nested Tables</h2>
+        <table id="outer-table">
+            <tr>
+                <th>Outer Col 1</th>
+                <th>Outer Col 2</th>
+            </tr>
+            <tr>
+                <td>Row 1 Col 1</td>
+                <td>
+                    <table id="inner-table" class="nested-table">
+                        <tr>
+                            <td>Inner 1.1</td>
+                            <td>Inner 1.2</td>
+                        </tr>
+                        <tr>
+                            <td>Inner 2.1</td>
+                            <td>Inner 2.2</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- 4. Table with Hidden Elements and Dynamic Content -->
+    <section id="dynamic-table-section">
+        <h2>4. Table with Hidden Elements & Dynamic Content</h2>
+        <table id="dynamic-table">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Active</td>
+                    <td>System is running</td>
+                    <td><button id="btn-active">View</button></td>
+                </tr>
+                <tr>
+                    <td>Inactive</td>
+                    <td class="hidden">This is a hidden message</td>
+                    <td><button id="btn-inactive">Activate</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button onclick="toggleHidden()">Toggle Hidden Cell</button>
+    </section>
+
+    <!-- 5. Large Table for Pagination/Scrolling Tests -->
+    <section id="large-table-section">
+        <h2>5. Large Table (Scrolling/Pagination)</h2>
+        <div style="height: 200px; overflow: auto;">
+            <table id="large-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody id="large-table-body">
+                    <!-- Generated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 6. Table with Accessibility Attributes (ARIA) -->
+    <section id="aria-table-section">
+        <h2>6. Table with ARIA Roles</h2>
+        <table id="aria-table" role="grid">
+            <thead>
+                <tr role="row">
+                    <th role="columnheader">Feature</th>
+                    <th role="columnheader">Support</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr role="row">
+                    <td role="gridcell">Web-API</td>
+                    <td role="gridcell">Yes</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">Native-API</td>
+                    <td role="gridcell">No</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <script>
+        // Populate large table
+        const body = document.getElementById('large-table-body');
+        for (let i = 1; i <= 100; i++) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${i}</td><td>Sample Data Row ${i}</td>`;
+            body.appendChild(row);
+        }
+
+        function toggleHidden() {
+            const hiddenCell = document.querySelector('#dynamic-table td');
+            if (!hiddenCell) return;
+            
+            // Find the cell that currently has the 'hidden' class or should have it
+            const target = document.querySelector('#dynamic-table .hidden') || 
+                           Array.from(document.querySelectorAll('#dynamic-table td'))
+                                .find(td => td.textContent === 'This is a hidden message');
+            
+            if (target) {
+                target.classList.toggle('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

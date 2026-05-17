@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Elements Capabilities Test Fixture</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; background-color: #f9f9f9; }
+        section { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: white; }
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .field-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+        .inline-group { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .disabled-label { color: #888; font-style: italic; }
+        
+        /* Dialog Styles */
+        #test-dialog { 
+            position: fixed; top: 20%; left: 30%; width: 40%; 
+            border: 1px solid #000; background: white; padding: 20px; 
+            z-index: 1000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); display: none; z-index: 999; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Elements Capabilities Test Fixture</h1>
+
+    <!-- 1. Links -->
+    <section id="links-section">
+        <h2>1. Links</h2>
+        <div class="field-group">
+            <a href="https://google.com" id="link-enabled">Enabled Link</a>
+            <a href="https://google.com" id="link-disabled" style="pointer-events: none; color: gray; cursor: default;">Disabled Link (Simulated)</a>
+        </div>
+    </section>
+
+    <!-- 2. Buttons -->
+    <section id="buttons-section">
+        <h2>2. Buttons</h2>
+        <div class="field-group">
+            <button id="btn-enabled">Enabled Button</button>
+            <button id="btn-disabled" disabled>Disabled Button</button>
+            <div role="button" id="btn-aria-enabled" tabindex="0">ARIA Enabled Button</div>
+            <div role="button" id="btn-aria-disabled" aria-disabled="true" tabindex="0" style="color: gray;">ARIA Disabled Button</div>
+        </div>
+    </section>
+
+    <!-- 3. Sliders -->
+    <section id="sliders-section">
+        <h2>3. Sliders</h2>
+        <div class="field-group">
+            <label for="slider-enabled">Enabled Slider</label>
+            <input type="range" id="slider-enabled" min="0" max="100" value="50">
+            
+            <label for="slider-disabled">Disabled Slider</label>
+            <input type="range" id="slider-disabled" min="0" max="100" value="30" disabled>
+        </div>
+    </section>
+
+    <!-- 4. File Inputs -->
+    <section id="file-section">
+        <h2>4. File Inputs</h2>
+        <div class="field-group">
+            <input type="file" id="file-enabled">
+            <input type="file" id="file-disabled" disabled>
+        </div>
+    </section>
+
+    <!-- 5. Lists & ListItems -->
+    <section id="lists-section">
+        <h2>5. Lists & ListItems</h2>
+        <div class="field-group">
+            <ul id="list-enabled">
+                <li id="item-enabled-1">Item 1 (Enabled)</li>
+                <li id="item-enabled-2">Item 2 (Enabled)</li>
+            </ul>
+            <ul id="list-disabled" style="opacity: 0.5; pointer-events: none;">
+                <li id="item-disabled-1">Item 1 (Disabled)</li>
+                <li id="item-disabled-2">Item 2 (Disabled)</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 6. Menus & MenuItems -->
+    <section id="menus-section">
+        <h2 id="menu-title">6. Menus & MenuItems</h2>
+        <div class="field-group">
+            <div role="menu" id="menu-enabled">
+                <div role="menuitem" id="menuitem-enabled-1" tabindex="0">Menu Item 1 (Enabled)</div>
+                <div role="menuitem" id="menuitem-enabled-2" tabindex="0">Menu Item 2 (Enabled)</div>
+            </div>
+            <div role="menu" id="menu-disabled" aria-disabled="true" style="opacity: 0.5;">
+                <div role="menuitem" id="menuitem-disabled-1" tabindex="-1">Menu Item 1 (Disabled)</div>
+                <div role="menuitem" id="menuitem-disabled-2" tabindex="-1">Menu Item 2 (Disabled)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Toolbars -->
+    <section id="toolbars-section">
+        <h2>7. Toolbars</h2>
+        <div class="field-group">
+            <div role="toolbar" id="toolbar-enabled">
+                <button id="tool-btn-1">Tool 1</button>
+                <button id="tool-btn-2">Tool 2</button>
+            </div>
+            <div role="toolbar" id="toolbar-disabled" aria-disabled="true" style="opacity: 0.5;">
+                <button id="tool-btn-disabled-1" disabled>Tool 1 (Disabled)</button>
+                <button id="tool-btn-disabled-2" disabled>Tool 2 (Disabled)</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Images -->
+    <section id="images-section">
+        <h2>8. Images</h2>
+        <div class="field-group">
+            <img src="https://via.placeholder.com/100" id="img-enabled" alt="Enabled Image">
+            <img src="https://via.placeholder.com/100" id="img-disabled" alt="Disabled Image" style="filter: grayscale(100%); opacity: 0.5; pointer-events: none;">
+        </div>
+    </section>
+
+    <!-- 9. Dialogs -->
+    <section id="dialogs-section">
+        <h2>9. Dialogs</h2>
+        <div class="field-group">
+            <button id="open-dialog">Open Dialog</button>
+            <div id="overlay" class="overlay"></div>
+            <div id="test-dialog" role="dialog" aria-labelledby="dialog-title">
+                <h3 id="dialog-title">Test Dialog</h3>
+                <p>This is a modal dialog.</p>
+                <button id="close-dialog">Close</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const openBtn = document.getElementById('open-dialog');
+        const closeBtn = document.getElementById('close-dialog');
+        const dialog = document.getElementById('test-dialog');
+        const overlay = document.getElementById('overlay');
+
+        openBtn.onclick = () => {
+            dialog.style.display = 'block';
+            overlay.style.display = 'block';
+        };
+
+        closeBtn.onclick = () => {
+            dialog.style.display = 'none';
+            overlay.style.display = 'none';
+        };
+    </script>
+</body>
+</html>

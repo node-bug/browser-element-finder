@@ -1,14 +1,19 @@
 {
-  "name": "myproject",
-  "requires": true,
-  "lockfileVersion": 1,
-  "dependencies": {
-    "@nodebug/selenium": "5.1.9"
-  },
+  "name": "@nodebug/browser-element-finder",
+  "version": "1.0.0",
+  "description": "Browser Element Finder - Find elements by type and text content",
+  "main": "browser-element-finder.js",
   "type": "module",
   "engines": {
     "node": ">=24"
   },
+  "keywords": [
+    "selenium",
+    "webdriver",
+    "element-finder",
+    "browser-automation",
+    "testing"
+  ],
   "scripts": {
     "lint": "eslint .",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/demo-page.*.test.js",
