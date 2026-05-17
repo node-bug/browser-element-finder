@@ -33,7 +33,7 @@ source = source.replace(/import\s+searchableAttributesData[^;]+;\s*/, '');
 source = source.replace(/import\s+elementDefinitionsData[^;]+;\s*/, '');
 
 // Replace the JSON imports with inline data
-source = source.replace(/let SEARCHABLE_ATTRIBUTES = searchableAttributesData;/, 
+source = source.replace(/export let SEARCHABLE_ATTRIBUTES = searchableAttributesData;/, 
   `let SEARCHABLE_ATTRIBUTES = ${searchableAttributes};`);
 source = source.replace(/export const ELEMENT_DEFINITIONS = elementDefinitionsData;/, 
   `const ELEMENT_DEFINITIONS = ${elementDefinitions};`);
@@ -85,7 +85,8 @@ ${code}
     matchesType,
     matchesContent,
     getAllElements,
-    ELEMENT_DEFINITIONS
+    ELEMENT_DEFINITIONS,
+    SEARCHABLE_ATTRIBUTES
   };
 })();
 

@@ -126,7 +126,7 @@ export function parseCondition(expr, el) {
 export const ELEMENT_DEFINITIONS = elementDefinitionsData;
 
 // Searchable attributes (in priority order)
-let SEARCHABLE_ATTRIBUTES = searchableAttributesData;
+export let SEARCHABLE_ATTRIBUTES = searchableAttributesData;
 
 export function setSearchableAttributes(attributes) {
   if (Array.isArray(attributes)) {
