@@ -105,8 +105,7 @@ describe('Shadow DOM Element Finder Tests', () => {
   it('should highlight all textboxes', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('textbox');
-      const elements = result.elements.map(e => e.element);
-      ElementFinder.highlight(elements, 'blue', 2);
+      ElementFinder.highlight(result.elements.map(e => e.element), 'blue', 2);
     `);
   });
 });

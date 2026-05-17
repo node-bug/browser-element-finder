@@ -65,8 +65,7 @@ describe('Dropdowns Element Finder', () => {
   it('should highlight all dropdowns', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('dropdown');
-      const elements = result.elements.map(e => e.element);
-      ElementFinder.highlight(elements, 'blue', 3);
+      ElementFinder.highlight(result.elements.map(e => e.element), 'blue', 3);
     `);
   });
 
@@ -100,30 +99,38 @@ describe('Dropdowns Element Finder', () => {
     
     expect(dropdownResult.elements.length).toBeGreaterThan(0);
     
-    // Get the first dropdown element - this is a Selenium WebElement
-    const firstDropdown = dropdownResult.elements[0].element;
+    // Get the first dropdown element - now the element is wrapped with metadata
+    const firstDropdown = dropdownResult.elements[0];
     
     // Demonstrate Selenium WebElement interaction
-    const tagName = await firstDropdown.getTagName();
+    const tagName = await firstDropdown.element.getTagName();
     expect(tagName).toBe('select');
     
     // Get the element's id attribute using Selenium
-    const elementId = await firstDropdown.getAttribute('id');
+    const elementId = await firstDropdown.element.getAttribute('id');
     expect(elementId).toBeTruthy();
     
     // Get the element's class attribute using Selenium
-    const className = await firstDropdown.getAttribute('class');
+    const className = await firstDropdown.element.getAttribute('class');
     expect(className).toBeTruthy();
 
+    // Access metadata directly from the returned object
+    expect(firstDropdown.boundingBox).toHaveProperty('x');
+    expect(firstDropdown.boundingBox).toHaveProperty('y');
+    expect(firstDropdown.boundingBox).toHaveProperty('width');
+    expect(firstDropdown.boundingBox).toHaveProperty('height');
+    
+    expect(firstDropdown.frameIndex).toBe(0);
+    
     // Find options within the dropdown using Selenium
-    const options = await firstDropdown.findElements({ css: 'option' });
+    const options = await firstDropdown.element.findElements({ css: 'option' });
     expect(options.length).toBeGreaterThan(0);
     
     // Select an option using Selenium
     await options[1].click();
     
     // Verify the selection using Selenium
-    const selectedOption = await firstDropdown.findElement({ css: 'option:checked' });
+    const selectedOption = await firstDropdown.element.findElement({ css: 'option:checked' });
     const selectedText = await selectedOption.getText();
     expect(selectedText.length).toBeGreaterThan(0);
   });

@@ -104,7 +104,7 @@ describe('Forms Element Finder Tests', () => {
   it('should highlight elements', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('textbox');
-      ElementFinder.highlight(result.elements);
+      ElementFinder.highlight(result.elements.map(e => e.element));
     `);
     await driver.sleep(500);
   });
@@ -112,7 +112,7 @@ describe('Forms Element Finder Tests', () => {
   it('should unhighlight elements', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('textbox');
-      ElementFinder.unhighlight(result.elements);
+      ElementFinder.unhighlight(result.elements.map(e => e.element));
     `);
   });
 });

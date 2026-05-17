@@ -60,8 +60,7 @@ describe('Switches Element Finder Tests', () => {
   it('should highlight all switches', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('switch', null, false, true);
-      const elements = result.elements.map(e => e.element);
-      ElementFinder.highlight(elements, 'green', 3);
+      ElementFinder.highlight(result.elements.map(e => e.element), 'green', 3);
     `);
   });
 

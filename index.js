@@ -162,7 +162,8 @@ const ELEMENT_DEFINITIONS = {
   "column": "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",
   "image": "self::img or @role='img' or @alt",
   "element": "true()"
-};
+}
+;
 
 // Searchable attributes (in priority order)
 let SEARCHABLE_ATTRIBUTES = [
@@ -181,7 +182,8 @@ let SEARCHABLE_ATTRIBUTES = [
   "alt",
   "src",
   "aria-labelledby"
-];
+]
+;
 
 function setSearchableAttributes(attributes) {
   if (Array.isArray(attributes)) {
@@ -322,13 +324,14 @@ function findElement(type, text, exact = false, includeHidden = false, parent = 
   });
 
   // Build results with bounding boxes, tag names, and frame index
-  // Tag each element with its frame and rect metadata
+  // Return objects containing both the element and its metadata
+  // This ensures metadata survives the Selenium WebElement serialization
   const qualified = innermostMatches.map(({ element, frameIndex }) => {
     const boundingBox = getBoundingBox(element);
     return {
-      element,
-      frameIndex,
-      boundingBox,
+      element: element,
+      boundingBox: boundingBox,
+      frameIndex: frameIndex,
       tagName: element.tagName.toLowerCase()
     };
   });
@@ -337,10 +340,8 @@ function findElement(type, text, exact = false, includeHidden = false, parent = 
 }
 
 function highlight(elements, color = 'red', width = 3) {
-  // Handle both single element and array
   const items = Array.isArray(elements) ? elements : [elements];
-  items.forEach(item => {
-    const el = item.element || item;
+  items.forEach(el => {
     el.style.outline = `${width}px solid ${color}`;
     el.style.outlineOffset = '2px';
     el.style.boxShadow = `0 0 0 2px rgba(255, 255, 255, 0.8)`;
@@ -349,10 +350,8 @@ function highlight(elements, color = 'red', width = 3) {
 }
 
 function unhighlight(elements) {
-  // Handle both single element and array
   const items = Array.isArray(elements) ? elements : [elements];
-  items.forEach(item => {
-    const el = item.element || item;
+  items.forEach(el => {
     el.style.outline = '';
     el.style.outlineOffset = '';
     el.style.boxShadow = '';

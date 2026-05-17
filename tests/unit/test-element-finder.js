@@ -327,6 +327,13 @@ describe('ElementFinder Node.js Module Tests', () => {
       expect(hasScript).toBe(false);
       expect(hasStyle).toBe(false);
     });
+
+    it('should return elements with metadata attached', () => {
+      const elements = getAllElements(document);
+      // Elements returned from getAllElements still have the wrapper format
+      expect(elements[0]).toHaveProperty('element');
+      expect(elements[0]).toHaveProperty('frameIndex');
+    });
   });
 
   describe('findElement', () => {
@@ -360,9 +367,10 @@ describe('ElementFinder Node.js Module Tests', () => {
     it('should return results with bounding boxes', () => {
       const result = findElement('button', null, false, true, document);
       expect(result.elements.length).toBeGreaterThan(0);
+      // Element is returned as object with element and metadata
       expect(result.elements[0]).toHaveProperty('element');
-      expect(result.elements[0]).toHaveProperty('frameIndex');
       expect(result.elements[0]).toHaveProperty('boundingBox');
+      expect(result.elements[0]).toHaveProperty('frameIndex');
       expect(result.elements[0]).toHaveProperty('tagName');
     });
 
@@ -379,6 +387,11 @@ describe('ElementFinder Node.js Module Tests', () => {
       const result = findElement('button', null, false, true, document);
       // Should only find the inner button, not outer div
       expect(result.elements.length).toBeGreaterThan(0);
+      // Check that elements have the new format
+      result.elements.forEach(e => {
+        expect(e).toHaveProperty('element');
+        expect(e).toHaveProperty('boundingBox');
+      });
       
       document.body.removeChild(outer);
     });
@@ -393,7 +406,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       
       // With includeHidden=false, should not find it
       const result = findElement('button', null, false, false, document);
-      const hasHidden = result.elements.some(e => e.element.id === 'hidden-btn');
+      const hasHidden = result.elements.some(e => e.id === 'hidden-btn');
       expect(hasHidden).toBe(false);
       
       document.body.removeChild(hiddenBtn);
@@ -409,7 +422,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       
       // With includeHidden=false, should not find it
       const result = findElement('button', null, false, false, document);
-      const hasHidden = result.elements.some(e => e.element.id === 'hidden-btn2');
+      const hasHidden = result.elements.some(e => e.id === 'hidden-btn2');
       expect(hasHidden).toBe(false);
       
       document.body.removeChild(hiddenBtn);
@@ -425,7 +438,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       
       // With includeHidden=false, should not find it
       const result = findElement('button', null, false, false, document);
-      const hasHidden = result.elements.some(e => e.element.id === 'hidden-btn3');
+      const hasHidden = result.elements.some(e => e.id === 'hidden-btn3');
       expect(hasHidden).toBe(false);
       
       document.body.removeChild(hiddenBtn);
