@@ -1,8 +1,8 @@
 # Test files
-tests
-reports
-test.js
+tests/
+reports/
 *.test.js
+*.spec.js
 jest.config.js
 
 # Development directories
@@ -22,8 +22,6 @@ jest.config.js
 lint-staged.config.js
 .nyc_output/
 coverage/
-.nyc_output/
-.nyc_output
 node_modules/
 jspm_packages/
 logs/

@@ -31,7 +31,7 @@ async function runTests() {
     await driver.get(fileUrl);
 
     // Inject the ElementFinder library
-    const finderPath = join(__dirname, '..', 'app.js');
+    const finderPath = join(__dirname, '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
