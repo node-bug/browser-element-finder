@@ -18,7 +18,7 @@ describe('Dropdowns Element Finder', () => {
 
   beforeAll(async () => {
     const options = new chrome.Options()
-      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
+      .addArguments('--headless','--no-sandbox', '--disable-dev-shm-usage');
 
     driver = await new Builder()
       .forBrowser('chrome')
