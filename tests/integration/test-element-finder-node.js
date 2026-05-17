@@ -105,8 +105,8 @@ describe('Element Finder Selenium Tests', () => {
     expect(buttonResult.elements.length).toBeGreaterThan(0);
     
     if (buttonResult.elements.length > 0) {
-      const buttonItem = buttonResult.elements[0];
-      const buttonElement = buttonItem.element;
+      // Element is now returned as object with element property
+      const buttonElement = buttonResult.elements[0].element;
       const tagName = await buttonElement.getTagName();
       expect(tagName).toBe('button');
       await buttonElement.click();

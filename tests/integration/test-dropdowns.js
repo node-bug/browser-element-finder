@@ -65,8 +65,7 @@ describe('Dropdowns Element Finder', () => {
   it('should highlight all dropdowns', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('dropdown');
-      const elements = result.elements.map(e => e.element);
-      ElementFinder.highlight(elements, 'blue', 3);
+      ElementFinder.highlight(result.elements.map(e => e.element), 'blue', 3);
     `);
   });
 
@@ -90,5 +89,41 @@ describe('Dropdowns Element Finder', () => {
       expect(item.width).toBeGreaterThan(0);
       expect(item.height).toBeGreaterThan(0);
     });
+  });
+
+  it('should interact with dropdown elements using Selenium WebElement methods', async () => {
+    // Find dropdowns using ElementFinder
+    const dropdownResult = await driver.executeScript(`
+      return ElementFinder.findElement('dropdown');
+    `);
+    
+    expect(dropdownResult.elements.length).toBeGreaterThan(0);
+    
+    // Get the first dropdown element - this is a Selenium WebElement
+    const firstDropdown = dropdownResult.elements[0].element;
+    
+    // Demonstrate Selenium WebElement interaction
+    const tagName = await firstDropdown.getTagName();
+    expect(tagName).toBe('select');
+    
+    // Get the element's id attribute using Selenium
+    const elementId = await firstDropdown.getAttribute('id');
+    expect(elementId).toBeTruthy();
+    
+    // Get the element's class attribute using Selenium
+    const className = await firstDropdown.getAttribute('class');
+    expect(className).toBeTruthy();
+    
+    // Find options within the dropdown using Selenium
+    const options = await firstDropdown.findElements({ css: 'option' });
+    expect(options.length).toBeGreaterThan(0);
+    
+    // Select an option using Selenium
+    await options[1].click();
+    
+    // Verify the selection using Selenium
+    const selectedOption = await firstDropdown.findElement({ css: 'option:checked' });
+    const selectedText = await selectedOption.getText();
+    expect(selectedText.length).toBeGreaterThan(0);
   });
 });

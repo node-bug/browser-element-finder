@@ -59,11 +59,18 @@ const results = ElementFinder.findElement('button', null, false, false, parent)
 // Include hidden elements
 const results = ElementFinder.findElement('button', null, false, true)
 
-// Highlight found elements
-ElementFinder.highlight(results.elements)
+// Access metadata from results
+results.elements.forEach((item) => {
+  console.log('Tag:', item.tagName)
+  console.log('Position:', item.boundingBox.x, item.boundingBox.y)
+  console.log('Frame:', item.frameIndex)
+})
+
+// Highlight found elements (extract DOM elements from wrapper objects)
+ElementFinder.highlight(results.elements.map((e) => e.element))
 
 // Remove highlighting
-ElementFinder.unhighlight(results.elements)
+ElementFinder.unhighlight(results.elements.map((e) => e.element))
 ```
 
 ### With Selenium WebDriver
@@ -81,6 +88,20 @@ await driver.executeScript(`${finderCode}`)
 const results = await driver.executeScript(`
   return ElementFinder.findElement('button', 'Submit');
 `)
+
+// Access metadata directly from the result object
+results.elements.forEach((item) => {
+  console.log('Tag:', item.tagName)
+  console.log('Position:', item.boundingBox.x, item.boundingBox.y)
+  console.log('Frame:', item.frameIndex)
+})
+
+// Use the element with Selenium WebElement methods
+if (results.elements.length > 0) {
+  const element = results.elements[0].element
+  const tagName = await element.getTagName()
+  await element.click()
+}
 ```
 
 ### As an ES Module
@@ -94,6 +115,15 @@ import {
 
 // Find elements (requires DOM environment)
 const results = findElement('button', 'Submit')
+
+// Access metadata from results
+results.elements.forEach((item) => {
+  console.log('Tag:', item.tagName)
+  console.log('Position:', item.boundingBox.x, item.boundingBox.y)
+})
+
+// Highlight elements (extract DOM elements from wrapper objects)
+highlight(results.elements.map((e) => e.element))
 ```
 
 ## API Reference

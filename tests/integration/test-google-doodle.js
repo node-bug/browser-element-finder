@@ -69,8 +69,7 @@ describe('Google Doodle Element Finder Tests', () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement(null, 'Doodle');
       if (result.elements.length > 0) {
-        const elements = result.elements.map(e => e.element);
-        ElementFinder.highlight(elements, 'orange', 3);
+        ElementFinder.highlight(result.elements.map(e => e.element), 'orange', 3);
       }
     `);
   });
