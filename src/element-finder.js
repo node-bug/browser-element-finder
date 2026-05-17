@@ -273,8 +273,8 @@ export function findElement(type, text, exact = false, includeHidden = false, pa
     const boundingBox = getBoundingBox(element);
     return {
       element: element,
-      boundingBox: boundingBox,
       frameIndex: frameIndex,
+      boundingBox: boundingBox,
       tagName: element.tagName.toLowerCase()
     };
   });
