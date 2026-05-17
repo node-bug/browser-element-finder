@@ -1,0 +1,6 @@
+{
+  "browser": "chrome",
+  "headless": false,
+  "timeout": 5,
+  "debug": true
+}

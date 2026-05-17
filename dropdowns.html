@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Capabilities Test Fixture</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; background-color: #f9f9f9; }
+        section { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: white; }
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .field-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: bold; }
+        
+        /* Custom Dropdown Styles */
+        .custom-dropdown { position: relative; width: 200px; cursor: pointer; }
+        .custom-dropdown-trigger { 
+            padding: 8px; border: 1px solid #ccc; background: #fff; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .custom-dropdown-menu { 
+            position: absolute; top: 100%; left: 0; width: 100%; 
+            border: 1px solid #ccc; background: #fff; display: none; 
+            z-index: 1000; list-style: none; padding: 0; margin: 0;
+        }
+        .custom-dropdown-menu li { 
+            padding: 8px; border-bottom: 1px solid #eee; 
+        }
+        .custom-dropdown-menu li:hover { background-color: #f0f0f0; }
+        .custom-dropdown.open .custom-dropdown-menu { display: block; }
+    </style>
+</head>
+<body>
+    <h1>Dropdown Capabilities Test Fixture</h1>
+
+    <!-- 1. Standard HTML Select -->
+    <section id="standard-select-section">
+        <h2>1. Standard HTML Select</h2>
+        
+        <div class="field-group">
+            <label for="single-select">Single Select</label>
+            <select id="single-select">
+                <option value="">Please choose...</option>
+                <option value="apple">Apple</option>
+                <option value="banana">Banana</option>
+                <option value="cherry">Cherry</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="multi-select">Multiple Select (Ctrl/Cmd + Click)</label>
+            <select id="multi-select" multiple size="5">
+                <option value="opt1">Option 1</option>
+                <option value="opt2">Option 2</option>
+                <option value="opt3">Option 3</option>
+                <option value="opt4">Option 4</option>
+                <option value="opt5">Option 5</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- 2. Custom Div-based Dropdown (Common in Modern Frameworks) -->
+    <section id="custom-dropdown-section">
+        <h2>2. Custom Div-based Dropdown</h2>
+        <div class="field-group">
+            <label>Custom UI Dropdown</label>
+            <div class="custom-dropdown" id="custom-dropdown-1" aria-label="Custom UI">
+                <div class="custom-dropdown-trigger" onclick="toggleCustomDropdown('custom-dropdown-1')">
+                    <span class="selected-value">Select an option</span>
+                    <span>▼</span>
+                </div>
+                <ul class="custom-dropdown-menu">
+                    <li onclick="selectCustomOption('custom-dropdown-1', 'Option A')">Option A</li>
+                    <li onclick="selectCustomOption('custom-dropdown-1', 'Option B')">Option B</li>
+                    <li onclick="selectCustomOption('custom-dropdown-1', 'Option C')">Option C</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Hierarchical / Cascading Dropdowns -->
+    <section id="cascading-dropdown-section">
+        <h2>3. Cascading Dropdowns</h2>
+        <div class="field-group">
+            <label for="category-select">Category</label>
+            <select id="category-select" onchange="updateSubcategory(this.value)">
+                <option value="">Select Category</option>
+                <option value="fruits">Fruits</option>
+                <option value="vehicles">Vehicles</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label for="subcategory-select">Subcategory</label>
+            <select id="subcategory-select" disabled>
+                <option value="">First select category</option>
+            </select>
+        </div>
+    </section>
+
+    <script>
+        // Custom Dropdown Logic
+        function toggleCustomDropdown(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('open');
+        }
+
+        function selectCustomOption(id, value) {
+            const el = document.getElementById(id);
+            el.querySelector('.selected-value').textContent = value;
+            el.classList.remove('open');
+        }
+
+        // Cascading Logic
+        const subcategories = {
+            fruits: ['Apple', 'Banana', 'Orange'],
+            vehicles: ['Car', 'Bike', 'Truck']
+        };
+
+        function updateSubcategory(val) {
+            const sub = document.getElementById('subcategory-select');
+            sub.innerHTML = '';
+            if (val && subcategories[val]) {
+                sub.disabled = false;
+                subcategories[val].forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.toLowerCase();
+                    opt.textContent = item;
+                    sub.appendChild(opt);
+                });
+            } else {
+                sub.disabled = true;
+                sub.innerHTML = '<option value="">First select category</option>';
+            }
+        }
+    </script>
+</body>
+</html>

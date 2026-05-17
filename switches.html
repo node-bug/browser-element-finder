@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Switch Testing Lab</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f6f9;
+        }
+        .container {
+            max-width: 750px;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        .section-title {
+            font-size: 1.1em;
+            color: #4a5568;
+            margin-top: 25px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .switch-row:last-child {
+            border-bottom: none;
+        }
+        .label-desc {
+            font-size: 0.85em;
+            color: #718096;
+            margin-top: 4px;
+            max-width: 500px;
+        }
+        iframe {
+            width: 100%;
+            height: 75px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            background: #fafafa;
+            margin-top: 10px;
+        }
+
+        /* ==========================================================================
+           GLOBAL SWITCH STYLES (Used for Standard, Disabled, and Native Checkboxes)
+           ========================================================================== */
+        .switch-cb {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch-cb input { 
+            opacity: 0; 
+            width: 0; 
+            height: 0; 
+        }
+        .slider {
+            position: absolute; 
+            cursor: pointer; 
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e0; 
+            transition: .3s; 
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; 
+            content: ""; 
+            height: 16px; 
+            width: 16px; 
+            left: 4px; 
+            bottom: 4px;
+            background-color: white; 
+            transition: .3s; 
+            border-radius: 50%;
+        }
+        input:checked + .slider { 
+            background-color: #3182ce; 
+        }
+        input:checked + .slider:before { 
+            transform: translateX(26px); 
+        }
+
+        /* Disabled State */
+        input:disabled + .slider {
+            background-color: #e2e8f0;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* ==========================================================================
+           ARIA DIV SWITCH STYLES
+           ========================================================================== */
+        .aria-switch {
+            width: 50px;
+            height: 24px;
+            background-color: #cbd5e0;
+            border-radius: 24px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .aria-switch::before {
+            content: "";
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .aria-switch[aria-checked="true"] {
+            background-color: #48bb78;
+        }
+        .aria-switch[aria-checked="true"]::before {
+            transform: translateX(26px);
+        }
+        .aria-switch[aria-disabled="true"] {
+            background-color: #edf2f7;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* ==========================================================================
+           BUTTON SWITCH STYLES
+           ========================================================================== */
+        .btn-switch {
+            padding: 6px 12px;
+            border: 2px solid #cbd5e0;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-switch.active {
+            background: #ed8936;
+            color: white;
+            border-color: #ed8936;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Ultimate Switch Testing Lab</h2>
+    <p>A single-page HTML suite mimicking different types of web switch implementations. Ideal for scaling custom test automation abstractions like <code>browser.switch('target').on()</code>.</p>
+    
+    <!-- SECTION 1: COMMON STANDARD DESIGNS -->
+    <div class="section-title">Standard Switch Implementations</div>
+
+    <!-- 1. Hidden input + styled markup -->
+    <div class="switch-row">
+        <div>
+            <label for="checkbox-switch">Standard Checkbox Switch</label>
+            <div class="label-desc">The real checkbox is hidden. Testing frameworks often throw "Element is not interceptable" errors unless clicking the sibling <code>.slider</code> label/span layer.</div>
+        </div>
+        <label class="switch-cb">
+            <input type="checkbox" id="checkbox-switch">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- 2. Pure JavaScript + Semantic ARIA Attributes -->
+    <div class="switch-row">
+        <div>
+            <label id="aria-label">ARIA Div Switch</label>
+            <div class="label-desc">No native form controls. Uses JavaScript to handle state transitions. Automation needs to parse <code>aria-checked</code> rather than properties.</div>
+        </div>
+        <div id="aria-switch" class="aria-switch" role="switch" aria-checked="false" aria-labelledby="aria-label" tabindex="0"></div>
+    </div>
+
+    <!-- 3. Dynamic Native Button toggles -->
+    <div class="switch-row">
+        <div>
+            <label for="button-switch">Native Button Switch</label>
+            <div class="label-desc">Standard HTML button control changing classes or attribute flags dynamically via JavaScript execution.</div>
+        </div>
+        <button id="button-switch" class="btn-switch" data-state="off">OFF</button>
+    </div>
+
+    <!-- 4. Pure HTML baseline element -->
+    <div class="switch-row">
+        <div>
+            <label for="native-checkbox">Bare Native Checkbox</label>
+            <div class="label-desc">Unstyled baseline representation. Handled flawlessly out of the box by standard <code>.click()</code> or <code>.check()</code> commands.</div>
+        </div>
+        <input type="checkbox" id="native-checkbox" style="transform: scale(1.5); margin-right: 10px;">
+    </div>
+
+
+    <!-- SECTION 2: COMPLEX & EDGE CASE CONTEXTS -->
+    <div class="section-title">Advanced Contexts & Restrictions</div>
+
+    <!-- 5. Disabled input element state -->
+    <div class="switch-row">
+        <div>
+            <label for="disabled-switch">Disabled Control Switch</label>
+            <div class="label-desc">Validates if the framework cleanly intercepts disabled parameters and throws expected interaction errors safely.</div>
+        </div>
+        <label class="switch-cb">
+            <input type="checkbox" id="disabled-switch" disabled>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- 6. Shadow DOM boundary separation -->
+    <div class="switch-row">
+        <div>
+            <label>Switch inside Shadow DOM (Open)</label>
+            <div class="label-desc">Playwright pierces this natively. Selenium requires extracting the web component host shadow root context first.</div>
+        </div>
+        <!-- Shadow Host Mount Node Target -->
+        <div id="shadow-host"></div>
+    </div>
+
+    <!-- 7. Document Frame encapsulation (IFrame) -->
+    <div class="switch-row" style="display: block;">
+        <div style="margin-bottom: 5px;">
+            <label>Switch inside an iFrame Document</label>
+            <div class="label-desc">Requires driving a context switch step (e.g., <code>driver.switchTo().frame()</code> or Playwright Frame Locators).</div>
+        </div>
+        <iframe id="switch-iframe" title="Iframe Switch Environment"></iframe>
+    </div>
+</div>
+
+<script>
+    /* ==========================================================================
+       JAVASCRIPT LOGIC BLOCK
+       ========================================================================== */
+
+    // --- ARIA Element State Handler ---
+    const ariaSwitch = document.getElementById('aria-switch');
+    ariaSwitch.addEventListener('click', () => {
+        if(ariaSwitch.getAttribute('aria-disabled') === 'true') return;
+        const isChecked = ariaSwitch.getAttribute('aria-checked') === 'true';
+        ariaSwitch.setAttribute('aria-checked', !isChecked);
+    });
+    ariaSwitch.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            ariaSwitch.click();
+        }
+    });
+
+    // --- Standard Button Element Handler ---
+    const btnSwitch = document.getElementById('button-switch');
+    btnSwitch.addEventListener('click', () => {
+        const isOff = btnSwitch.getAttribute('data-state') === 'off';
+        if (isOff) {
+            btnSwitch.setAttribute('data-state', 'on');
+            btnSwitch.textContent = 'ON';
+            btnSwitch.classList.add('active');
+        } else {
+            btnSwitch.setAttribute('data-state', 'off');
+            btnSwitch.textContent = 'OFF';
+            btnSwitch.classList.remove('active');
+        }
+    });
+
+    // --- Dynamic Shadow DOM Insertion ---
+    const shadowHost = document.getElementById('shadow-host');
+    const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+    shadowRoot.innerHTML = `
+        <style>
+            .switch-cb { position: relative; display: inline-block; width: 50px; height: 24px; }
+            .switch-cb input { opacity: 0; width: 0; height: 0; }
+            .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e0; transition: .3s; border-radius: 24px; }
+            .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+            input:checked + .slider { background-color: #805ad5; } /* Distinct Purple State Change */
+            input:checked + .slider:before { transform: translateX(26px); }
+        </style>
+        <label class="switch-cb">
+            <input type="checkbox" id="shadow-switch">
+            <span class="slider"></span>
+        </label>
+    `;
+
+    // --- Dynamic iFrame Document Injection ---
+    const iframe = document.getElementById('switch-iframe');
+    const iframeContent = `
+        <html>
+        <head>
+            <style>
+                body { margin: 15px; font-family: sans-serif; display: flex; align-items: center; justify-content: space-between; background: #fafafa;}
+                .switch-cb { position: relative; display: inline-block; width: 50px; height: 24px; }
+                .switch-cb input { opacity: 0; width: 0; height: 0; }
+                .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e0; transition: .3s; border-radius: 24px; }
+                .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+                input:checked + .slider { background-color: #e53e3e; } /* Distinct Red State Change */
+                input:checked + .slider:before { transform: translateX(26px); }
+                span { font-size: 0.85em; color: #4a5568; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <span>Document Switch Window Node</span>
+            <label class="switch-cb">
+                <input type="checkbox" id="iframe-switch">
+                <span class="slider"></span>
+            </label>
+        </body>
+        </html>
+    `;
+    iframe.srcdoc = iframeContent;
+</script>
+
+</body>
+</html>

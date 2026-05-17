@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow DOM Testing Fixture</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: #f5f7fa;
+            color: #1a202c;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin: 32px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        h3 {
+            font-size: 1rem;
+            color: #718096;
+            margin: 16px 0 8px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 24px;
+        }
+
+        .section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #a0aec0;
+            margin-bottom: 12px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            min-width: 180px;
+            font-weight: 500;
+        }
+
+        .description {
+            font-size: 0.8rem;
+            color: #a0aec0;
+            margin-top: 2px;
+        }
+
+        /* Standard form elements for reference */
+        button, input, select, textarea {
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        button:hover {
+            background: #edf2f7;
+        }
+
+        button.primary {
+            background: #3182ce;
+            color: #fff;
+            border-color: #3182ce;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        a {
+            color: #3182ce;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        iframe {
+            width: 100%;
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-closed {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Shadow DOM Testing Fixture</h1>
+    <p class="subtitle">Comprehensive test surface for Shadow DOM element discovery, spatial filtering, nested contexts, and mixed iframe/shadow scenarios.</p>
+
+    <!-- =====================================================================
+         SECTION 1: BASIC SHADOW DOM - OPEN SHADOW ROOTS
+         =====================================================================
+         Covers:
+         - Simple shadow host with single element
+         - Multiple element types inside shadow root (button, textbox, checkbox, link)
+         - Elements identifiable by text, attribute, type
+         ===================================================================== -->
+    <div class="section" id="section-basic">
+        <div class="section-label">Section 1 &mdash; Basic Shadow DOM (Open Roots)</div>
+        <h2>Single Shadow Host with Various Element Types</h2>
+        <p class="description">Each element type (button, textbox, checkbox, link, select) is represented inside an open shadow root. Used to verify basic discovery.</p>
+
+        <div id="basic-shadow-host"></div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 2: MULTIPLE SHADOW HOSTS
+         =====================================================================
+         Covers:
+         - Multiple independent shadow hosts on same page
+         - Finding elements across different shadow roots
+         - Disambiguation by spatial filters when same text exists in multiple hosts
+         ===================================================================== -->
+    <div class="section" id="section-multiple">
+        <div class="section-label">Section 2 &mdash; Multiple Shadow Hosts</div>
+        <h2>Independent Shadow Hosts with Overlapping Content</h2>
+        <p class="description">Two shadow hosts containing buttons with identical text. Spatial filters (above, below, within) are required to disambiguate.</p>
+
+        <div style="display: flex; gap: 32px;">
+            <div style="flex: 1;">
+                <label id="host-a-label">Host A &mdash; Login Form</label>
+                <div id="multiple-host-a"></div>
+            </div>
+            <div style="flex: 1;">
+                <label id="host-b-label">Host B &mdash; Signup Form</label>
+                <div id="multiple-host-b"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 3: NESTED SHADOW DOM
+         =====================================================================
+         Covers:
+         - Shadow host inside another shadow root (2 levels)
+         - Triple-nested shadow DOM (3 levels)
+         - Custom elements as shadow hosts
+         - Coordinate translation through nested hosts
+         ===================================================================== -->
+    <div class="section" id="section-nested">
+        <div class="section-label">Section 3 &mdash; Nested Shadow DOM</div>
+        <h2>Two-Level Nested Shadow Roots</h2>
+        <p class="description">Outer shadow host contains an inner shadow host. Target element is inside the innermost shadow root.</p>
+
+        <div id="nested-outer-host"></div>
+
+        <h2>Three-Level Deep Nested Shadow Roots</h2>
+        <p class="description">Triple nesting to test recursive scanning depth and coordinate chaining.</p>
+
+        <div id="deep-nested-host"></div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 4: SPATIAL FILTERING WITH SHADOW ELEMENTS
+         =====================================================================
+         Covers:
+         - .below.text() with shadow elements
+         - .within.element() with shadow containers
+         - .near.element() with shadow references
+         - .above.text() with shadow elements
+         - .toLeftOf / .toRightOf with shadow elements
+         - Alignment tests (exactly below, exactly toLeftOf)
+         ===================================================================== -->
+    <div class="section" id="section-spatial">
+        <div class="section-label">Section 4 &mdash; Spatial Filtering</div>
+        <h2>Shadow Elements with Spatial Relationships</h2>
+        <p class="description">Layout designed to test spatial filters (above, below, within, near, toLeftOf, toRightOf) against shadow DOM elements.</p>
+
+        <div id="spatial-shadow-host"></div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 5: SHADOW DOM INSIDE IFRAME
+         =====================================================================
+         Covers:
+         - Shadow host inside an iframe document
+         - Mixed context: frame switching + shadow root querying
+         - Nested shadow inside iframe
+         ===================================================================== -->
+    <div class="section" id="section-iframe">
+        <div class="section-label">Section 5 &mdash; Shadow DOM Inside iFrame</div>
+        <h2>Shadow Host Within an iFrame Document</h2>
+        <p class="description">Tests the combination of frame switching and shadow root penetration. The shadow host lives inside the iframe's document.</p>
+
+        <iframe id="shadow-iframe" title="Shadow DOM in iFrame" style="height: 350px;"></iframe>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 6: CLOSED SHADOW ROOTS
+         =====================================================================
+         Covers:
+         - Closed shadow root (should not be accessible)
+         - Error handling when shadow root is null
+         - Graceful degradation
+         ===================================================================== -->
+    <div class="section" id="section-closed">
+        <div class="section-label">Section 6 &mdash; Closed Shadow Roots</div>
+        <h2>Closed Shadow Root (Inaccessible)</h2>
+        <p class="description">Closed shadow roots should not be queried. Tests verify graceful handling and appropriate error behavior.</p>
+
+        <div id="closed-shadow-host" class="status-badge status-closed">Closed Shadow Root</div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 7: DYNAMIC SHADOW DOM
+         =====================================================================
+         Covers:
+         - Shadow root created after page load
+         - Shadow content updated dynamically
+         - Element staleness in shadow DOM
+         ===================================================================== -->
+    <div class="section" id="section-dynamic">
+        <div class="section-label">Section 7 &mdash; Dynamic Shadow DOM</div>
+        <h2>Dynamically Created Shadow Root</h2>
+        <p class="description">Shadow root is attached after a delay. Tests verify the framework can discover newly-created shadow content.</p>
+
+        <div id="dynamic-shadow-host">
+            <span style="color: #a0aec0; font-size: 0.85rem;">Shadow root will be attached in 500ms...</span>
+        </div>
+
+        <h2>Shadow Content Mutation</h2>
+        <p class="description">Shadow content is replaced after interaction. Tests element staleness handling.</p>
+
+        <div id="mutable-shadow-host"></div>
+        <button id="mutate-shadow-btn" style="margin-top: 12px;">Mutate Shadow Content</button>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 8: WEB COMPONENTS (CUSTOM ELEMENTS)
+         =====================================================================
+         Covers:
+         - Custom elements with shadow DOM
+         - Multiple custom element instances
+         - Custom element attributes affecting shadow content
+         ===================================================================== -->
+    <div class="section" id="section-webcomponents">
+        <div class="section-label">Section 8 &mdash; Web Components</div>
+        <h2>Custom Elements with Shadow DOM</h2>
+        <p class="description">Registered custom elements that encapsulate their content in shadow roots. Tests native web component patterns.</p>
+
+        <custom-button button-text="Component Button"></custom-button>
+        <custom-input input-label="Component Input" placeholder="Type here"></custom-input>
+        <custom-toggle toggle-label="Component Toggle"></custom-toggle>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 9: COMBINED REGULAR + SHADOW ELEMENTS
+         =====================================================================
+         Covers:
+         - Page with both regular DOM and shadow DOM elements
+         - Finding elements that exist in both contexts
+         - Priority / deduplication when same selector matches in both
+         ===================================================================== -->
+    <div class="section" id="section-combined">
+        <div class="section-label">Section 9 &mdash; Combined Regular + Shadow DOM</div>
+        <h2>Mixed Regular and Shadow DOM Elements</h2>
+        <p class="description">Same element types exist in both regular DOM and shadow DOM. Tests deduplication and context awareness.</p>
+
+        <div style="display: flex; gap: 32px;">
+            <div style="flex: 1;">
+                <h3>Regular DOM</h3>
+                <button id="regular-btn" class="primary">Submit</button>
+                <input type="text" id="regular-input" placeholder="Username" style="margin-top: 8px; display: block;">
+                <input type="checkbox" id="regular-checkbox" style="margin-top: 8px;">
+                <label for="regular-checkbox" style="margin-top: 8px; display: block;">Accept terms</label>
+            </div>
+            <div style="flex: 1;">
+                <h3>Shadow DOM</h3>
+                <div id="combined-shadow-host"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 10: EDGE CASES
+         =====================================================================
+         Covers:
+         - Empty shadow root
+         - Shadow host with no matching elements
+         - Very deeply nested (5 levels)
+         - Shadow root with only text nodes
+         ===================================================================== -->
+    <div class="section" id="section-edge">
+        <div class="section-label">Section 10 &mdash; Edge Cases</div>
+        <h2>Empty Shadow Root</h2>
+        <div id="empty-shadow-host"></div>
+
+        <h2>Shadow Root with Only Text Nodes</h2>
+        <div id="textonly-shadow-host"></div>
+
+        <h2>Five-Level Deep Nesting</h2>
+        <p class="description">Extreme nesting depth to test recursion limits.</p>
+        <div id="five-level-host"></div>
+    </div>
+
+    <!-- =====================================================================
+         JAVASCRIPT: SHADOW DOM SETUP
+         ===================================================================== -->
+    <script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        // SECTION 1: BASIC SHADOW DOM
+        // ================================================================
+        (function setupBasicShadow() {
+            const host = document.getElementById('basic-shadow-host');
+            const root = host.attachShadow({ mode: 'open' });
+
+            root.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    .form-group { margin-bottom: 12px; }
+                    label { display: block; font-weight: 500; margin-bottom: 4px; font-size: 0.9rem; }
+                    input[type="text"] { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 200px; }
+                    input[type="checkbox"] { margin-right: 8px; }
+                    button { padding: 8px 16px; border: 1px solid #3182ce; background: #3182ce; color: #fff; border-radius: 4px; cursor: pointer; }
+                    button.secondary { background: #fff; color: #3182ce; }
+                    a { color: #3182ce; }
+                    select { padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; }
+                </style>
+                <div class="form-group">
+                    <label id="shadow-name-label" for="shadow-name-input">Full Name</label>
+                    <input type="text" id="shadow-name-input" placeholder="Enter your name" value="">
+                </div>
+                <div class="form-group">
+                    <label id="shadow-email-label" for="shadow-email-input">Email Address</label>
+                    <input type="email" id="shadow-email-input" placeholder="you@example.com" value="">
+                </div>
+                <div class="form-group">
+                    <label id="shadow-role-label">Role</label>
+                    <select id="shadow-role-select">
+                        <option value="">Select role...</option>
+                        <option value="admin">Administrator</option>
+                        <option value="user">Regular User</option>
+                        <option value="guest">Guest</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="shadow-terms-checkbox">
+                    <label for="shadow-terms-checkbox" id="shadow-terms-label">I accept the terms and conditions</label>
+                </div>
+                <div class="form-group">
+                    <button id="shadow-submit-btn">Submit</button>
+                    <button id="shadow-cancel-btn" class="secondary">Cancel</button>
+                </div>
+                <div class="form-group">
+                    <a href="#" id="shadow-help-link" data-test-id="shadow-help">Need help?</a>
+                </div>
+            `;
+        })();
+
+        // ================================================================
+        // SECTION 2: MULTIPLE SHADOW HOSTS
+        // ================================================================
+        (function setupMultipleHosts() {
+            // Host A - Login
+            const hostA = document.getElementById('multiple-host-a');
+            const rootA = hostA.attachShadow({ mode: 'open' });
+            rootA.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    label { display: block; font-weight: 500; margin-bottom: 4px; font-size: 0.9rem; }
+                    input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
+                    button { padding: 8px 16px; border: none; background: #3182ce; color: #fff; border-radius: 4px; cursor: pointer; width: 100%; }
+                </style>
+                <label id="login-user-label" for="login-user-input">Username</label>
+                <input type="text" id="login-user-input" placeholder="Username">
+                <label id="login-pass-label" for="login-pass-input">Password</label>
+                <input type="password" id="login-pass-input" placeholder="Password">
+                <button id="login-submit-btn">Submit</button>
+                <a href="#" id="login-forgot-link" style="display:block; margin-top:8px; color:#3182ce;">Forgot password?</a>
+            `;
+
+            // Host B - Signup
+            const hostB = document.getElementById('multiple-host-b');
+            const rootB = hostB.attachShadow({ mode: 'open' });
+            rootB.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    label { display: block; font-weight: 500; margin-bottom: 4px; font-size: 0.9rem; }
+                    input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
+                    button { padding: 8px 16px; border: none; background: #38a169; color: #fff; border-radius: 4px; cursor: pointer; width: 100%; }
+                </style>
+                <label id="signup-name-label" for="signup-name-input">Full Name</label>
+                <input type="text" id="signup-name-input" placeholder="Full Name">
+                <label id="signup-email-label" for="signup-email-input">Email</label>
+                <input type="email" id="signup-email-input" placeholder="Email">
+                <button id="signup-submit-btn">Submit</button>
+                <a href="#" id="signup-terms-link" style="display:block; margin-top:8px; color:#38a169;">Terms of Service</a>
+            `;
+        })();
+
+        // ================================================================
+        // SECTION 3: NESTED SHADOW DOM
+        // ================================================================
+        (function setupNestedShadow() {
+            // Two-level nesting
+            const outerHost = document.getElementById('nested-outer-host');
+            const outerRoot = outerHost.attachShadow({ mode: 'open' });
+            outerRoot.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    .wrapper { padding: 16px; border: 1px solid #e2e8f0; border-radius: 6px; }
+                    label { display: block; font-weight: 500; margin-bottom: 4px; }
+                </style>
+                <div class="wrapper">
+                    <label id="outer-label">Outer Shadow Content</label>
+                    <button id="outer-btn">Outer Button</button>
+                    <nested-inner-host></nested-inner-host>
+                </div>
+            `;
+
+            // Register inner custom element
+            class NestedInnerHost extends HTMLElement {
+                connectedCallback() {
+                    const innerRoot = this.attachShadow({ mode: 'open' });
+                    innerRoot.innerHTML = `
+                        <style>
+                            :host { display: block; margin-top: 12px; }
+                            .inner-box { padding: 12px; background: #f7fafc; border-radius: 4px; }
+                            input { padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
+                            button { padding: 6px 12px; background: #805ad5; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                        </style>
+                        <div class="inner-box">
+                            <label id="inner-label">Inner Shadow Content</label>
+                            <input type="text" id="inner-input" placeholder="Inner input">
+                            <button id="inner-btn">Inner Button</button>
+                            <input type="checkbox" id="inner-checkbox">
+                            <label for="inner-checkbox" id="inner-check-label">Inner checkbox</label>
+                        </div>
+                    `;
+                }
+            }
+            customElements.define('nested-inner-host', NestedInnerHost);
+
+            // Three-level deep nesting
+            const deepHost = document.getElementById('deep-nested-host');
+            const deepRoot1 = deepHost.attachShadow({ mode: 'open' });
+            deepRoot1.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    .level { padding: 12px; margin-bottom: 8px; border-radius: 4px; }
+                    .l1 { background: #ebf8ff; border: 1px solid #90cdf4; }
+                </style>
+                <div class="level l1">
+                    <span id="deep-l1-text">Level 1 Shadow</span>
+                    <button id="deep-l1-btn">Level 1 Button</button>
+                    <deep-level-two></deep-level-two>
+                </div>
+            `;
+
+            class DeepLevelTwo extends HTMLElement {
+                connectedCallback() {
+                    const root2 = this.attachShadow({ mode: 'open' });
+                    root2.innerHTML = `
+                        <style>
+                            :host { display: block; }
+                            .level { padding: 12px; margin-bottom: 8px; border-radius: 4px; }
+                            .l2 { background: #faf5ff; border: 1px solid #d6bcfa; }
+                        </style>
+                        <div class="level l2">
+                            <span id="deep-l2-text">Level 2 Shadow</span>
+                            <input type="text" id="deep-l2-input" placeholder="Level 2 input">
+                            <deep-level-three></deep-level-three>
+                        </div>
+                    `;
+                }
+            }
+            customElements.define('deep-level-two', DeepLevelTwo);
+
+            class DeepLevelThree extends HTMLElement {
+                connectedCallback() {
+                    const root3 = this.attachShadow({ mode: 'open' });
+                    root3.innerHTML = `
+                        <style>
+                            :host { display: block; }
+                            .level { padding: 12px; border-radius: 4px; }
+                            .l3 { background: #f0fff4; border: 1px solid #9ae6b4; }
+                            button { padding: 6px 12px; background: #38a169; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                        </style>
+                        <div class="level l3">
+                            <span id="deep-l3-text">Level 3 Shadow</span>
+                            <button id="deep-l3-btn">Level 3 Button</button>
+                            <input type="checkbox" id="deep-l3-checkbox">
+                            <label for="deep-l3-checkbox" id="deep-l3-check-label">Level 3 checkbox</label>
+                        </div>
+                    `;
+                }
+            }
+            customElements.define('deep-level-three', DeepLevelThree);
+        })();
+
+        // ================================================================
+        // SECTION 4: SPATIAL FILTERING
+        // ================================================================
+        (function setupSpatialShadow() {
+            const host = document.getElementById('spatial-shadow-host');
+            const root = host.attachShadow({ mode: 'open' });
+
+            root.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+                    .column { display: flex; flex-direction: column; gap: 8px; }
+                    .container-box { padding: 16px; border: 2px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; }
+                    label { display: block; font-weight: 500; margin-bottom: 4px; font-size: 0.9rem; }
+                    input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; }
+                    button { padding: 8px 16px; border: 1px solid #3182ce; background: #3182ce; color: #fff; border-radius: 4px; cursor: pointer; }
+                    button.outline { background: #fff; color: #3182ce; }
+                    a { color: #3182ce; }
+                    .row-inline { display: flex; align-items: center; gap: 12px; }
+                </style>
+
+                <!-- Container for .within tests -->
+                <div class="container-box" id="spatial-container">
+                    <label id="spatial-container-title">Container Section</label>
+                    <input type="text" id="spatial-container-input" placeholder="Inside container">
+                    <button id="spatial-container-btn">Container Button</button>
+                </div>
+
+                <!-- Below / Above tests -->
+                <label id="spatial-heading" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">Personal Information</label>
+                <input type="text" id="spatial-below-heading-input" placeholder="Below heading">
+                <button id="spatial-below-heading-btn" style="margin-top: 8px;">Below Heading Button</button>
+
+                <!-- Left / Right tests -->
+                <div class="row-inline" style="margin-top: 16px;">
+                    <button id="spatial-left-btn">Left Button</button>
+                    <input type="text" id="spatial-right-input" placeholder="To the right">
+                    <button id="spatial-far-right-btn" class="outline">Far Right</button>
+                </div>
+
+                <!-- Near tests (same row, close vertically) -->
+                <div class="grid" style="margin-top: 16px;">
+                    <div class="column">
+                        <label id="spatial-near-label">Near Reference</label>
+                        <a href="#" id="spatial-near-link">Nearby Link</a>
+                    </div>
+                    <div class="column">
+                        <label id="spatial-near-label-2">Another Label</label>
+                        <button id="spatial-near-btn">Near Button</button>
+                    </div>
+                </div>
+
+                <!-- Alignment tests -->
+                <div class="grid" style="margin-top: 16px;">
+                    <div class="column">
+                        <label id="spatial-align-label-a">Column A Label</label>
+                        <input type="text" id="spatial-align-input-a" placeholder="Column A">
+                    </div>
+                    <div class="column">
+                        <label id="spatial-align-label-b">Column B Label</label>
+                        <input type="text" id="spatial-align-input-b" placeholder="Column B">
+                    </div>
+                </div>
+            `;
+        })();
+
+        // ================================================================
+        // SECTION 5: SHADOW DOM INSIDE IFRAME
+        // ================================================================
+        (function setupIframeShadow() {
+            const iframe = document.getElementById('shadow-iframe');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+            doc.open();
+            doc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: sans-serif; padding: 20px; background: #fafafa; }
+                        h3 { color: #2d3748; }
+                        label { display: block; font-weight: 500; margin-bottom: 4px; }
+                        input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
+                        button { padding: 8px 16px; background: #3182ce; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-right: 8px; }
+                        button.secondary { background: #718096; }
+                        a { color: #3182ce; }
+                    </style>
+                </head>
+                <body>
+                    <h3>iFrame Content with Shadow DOM</h3>
+
+                    <!-- Regular iframe elements -->
+                    <label id="frame-regular-label">Regular iFrame Input</label>
+                    <input type="text" id="frame-regular-input" placeholder="Regular input in frame">
+                    <button id="frame-regular-btn">Regular Frame Button</button>
+
+                    <hr style="margin: 16px 0; border: none; border-top: 1px dashed #cbd5e0;">
+
+                    <!-- Shadow host inside iframe -->
+                    <label>Shadow DOM inside this iFrame</label>
+                    <div id="frame-shadow-host"></div>
+
+                    <hr style="margin: 16px 0; border: none; border-top: 1px dashed #cbd5e0;">
+
+                    <!-- Nested shadow inside iframe -->
+                    <label>Nested Shadow inside iFrame</label>
+                    <div id="frame-nested-shadow-host"></div>
+                </body>
+                </html>
+            `);
+            doc.close();
+
+            // Now set up shadow DOM inside the iframe
+            const frameShadowHost = doc.getElementById('frame-shadow-host');
+            const frameShadowRoot = frameShadowHost.attachShadow({ mode: 'open' });
+            frameShadowRoot.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    label { display: block; font-weight: 500; margin-bottom: 4px; }
+                    input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
+                    button { padding: 8px 16px; background: #805ad5; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                </style>
+                <label id="frame-shadow-label">Shadow Input in Frame</label>
+                <input type="text" id="frame-shadow-input" placeholder="Shadow input in frame">
+                <button id="frame-shadow-btn">Shadow Frame Button</button>
+                <input type="checkbox" id="frame-shadow-checkbox">
+                <label for="frame-shadow-checkbox" id="frame-shadow-check-label">Frame shadow checkbox</label>
+            `;
+
+            // Nested shadow inside iframe
+            const frameNestedHost = doc.getElementById('frame-nested-shadow-host');
+            const frameNestedRoot = frameNestedHost.attachShadow({ mode: 'open' });
+            frameNestedRoot.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    .outer { padding: 12px; background: #ebf8ff; border-radius: 4px; }
+                    button { padding: 6px 12px; background: #3182ce; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                </style>
+                <div class="outer">
+                    <span id="frame-nested-outer-text">Frame Nested Outer</span>
+                    <button id="frame-nested-outer-btn">Frame Outer Button</button>
+                    <frame-nested-inner></frame-nested-inner>
+                </div>
+            `;
+
+            // Register custom element in iframe context
+            const iframeWindow = iframe.contentWindow;
+            class FrameNestedInner extends iframeWindow.HTMLElement {
+                connectedCallback() {
+                    const innerRoot = this.attachShadow({ mode: 'open' });
+                    innerRoot.innerHTML = `
+                        <style>
+                            :host { display: block; margin-top: 8px; }
+                            .inner { padding: 12px; background: #faf5ff; border-radius: 4px; }
+                            input { padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; }
+                            button { padding: 6px 12px; background: #805ad5; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 8px; }
+                        </style>
+                        <div class="inner">
+                            <span id="frame-nested-inner-text">Frame Nested Inner</span>
+                            <input type="text" id="frame-nested-inner-input" placeholder="Frame inner input">
+                            <button id="frame-nested-inner-btn">Frame Inner Button</button>
+                        </div>
+                    `;
+                }
+            }
+            iframeWindow.customElements.define('frame-nested-inner', FrameNestedInner);
+        })();
+
+        // ================================================================
+        // SECTION 6: CLOSED SHADOW ROOT
+        // ================================================================
+        (function setupClosedShadow() {
+            const host = document.getElementById('closed-shadow-host');
+            const root = host.attachShadow({ mode: 'closed' });
+            root.innerHTML = `
+                <button id="closed-btn">Closed Shadow Button</button>
+                <input type="text" id="closed-input" placeholder="Closed input">
+            `;
+            // The host element's shadowRoot property will be null from external scripts
+        })();
+
+        // ================================================================
+        // SECTION 7: DYNAMIC SHADOW DOM
+        // ================================================================
+        (function setupDynamicShadow() {
+            // Delayed shadow root attachment
+            const dynamicHost = document.getElementById('dynamic-shadow-host');
+            setTimeout(() => {
+                dynamicHost.innerHTML = ''; // Clear placeholder text
+                const dynamicRoot = dynamicHost.attachShadow({ mode: 'open' });
+                dynamicRoot.innerHTML = `
+                    <style>
+                        :host { display: block; }
+                        label { display: block; font-weight: 500; margin-bottom: 4px; }
+                        input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
+                        button { padding: 8px 16px; background: #dd6b20; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                    </style>
+                    <label id="dynamic-label">Dynamic Shadow Content</label>
+                    <input type="text" id="dynamic-input" placeholder="Dynamically created">
+                    <button id="dynamic-btn">Dynamic Button</button>
+                `;
+            }, 500);
+
+            // Mutable shadow content
+            const mutableHost = document.getElementById('mutable-shadow-host');
+            const mutableRoot = mutableHost.attachShadow({ mode: 'open' });
+            mutableRoot.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    button { padding: 8px 16px; background: #38a169; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                </style>
+                <button id="mutable-original-btn">Original Button</button>
+            `;
+
+            // Mutation handler
+            document.getElementById('mutate-shadow-btn').addEventListener('click', () => {
+                mutableRoot.innerHTML = `
+                    <button id="mutable-replaced-btn">Replaced Button</button>
+                    <input type="text" id="mutable-new-input" placeholder="New input after mutation">
+                `;
+            });
+        })();
+
+        // ================================================================
+        // SECTION 8: WEB COMPONENTS
+        // ================================================================
+        (function setupWebComponents() {
+            // Custom Button Component
+            class CustomButton extends HTMLElement {
+                static get observedAttributes() { return ['button-text']; }
+
+                connectedCallback() {
+                    const root = this.attachShadow({ mode: 'open' });
+                    const text = this.getAttribute('button-text') || 'Click Me';
+                    root.innerHTML = `
+                        <style>
+                            :host { display: inline-block; margin: 4px; }
+                            button { padding: 10px 20px; background: #3182ce; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+                            button:hover { background: #2b6cb0; }
+                        </style>
+                        <button id="custom-btn-action">${text}</button>
+                    `;
+                    root.querySelector('button').addEventListener('click', () => {
+                        this.dispatchEvent(new CustomEvent('custom-click', { bubbles: true }));
+                    });
+                }
+
+                attributeChangedCallback(name, oldVal, newVal) {
+                    const btn = this.shadowRoot.querySelector('button');
+                    if (btn) btn.textContent = newVal;
+                }
+            }
+            customElements.define('custom-button', CustomButton);
+
+            // Custom Input Component
+            class CustomInput extends HTMLElement {
+                static get observedAttributes() { return ['input-label', 'placeholder']; }
+
+                connectedCallback() {
+                    const root = this.attachShadow({ mode: 'open' });
+                    const label = this.getAttribute('input-label') || 'Input';
+                    const placeholder = this.getAttribute('placeholder') || '';
+                    root.innerHTML = `
+                        <style>
+                            :host { display: block; margin: 8px 0; }
+                            label { display: block; font-weight: 500; margin-bottom: 4px; font-size: 0.9rem; }
+                            input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; }
+                        </style>
+                        <label id="custom-input-label">${label}</label>
+                        <input type="text" id="custom-input-field" placeholder="${placeholder}">
+                    `;
+                }
+            }
+            customElements.define('custom-input', CustomInput);
+
+            // Custom Toggle Component
+            class CustomToggle extends HTMLElement {
+                static get observedAttributes() { return ['toggle-label']; }
+
+                connectedCallback() {
+                    const root = this.attachShadow({ mode: 'open' });
+                    const label = this.getAttribute('toggle-label') || 'Toggle';
+                    root.innerHTML = `
+                        <style>
+                            :host { display: block; margin: 8px 0; }
+                            .toggle-row { display: flex; align-items: center; gap: 8px; }
+                            label { font-weight: 500; font-size: 0.9rem; }
+                            input[type="checkbox"] { width: 18px; height: 18px; }
+                        </style>
+                        <div class="toggle-row">
+                            <input type="checkbox" id="custom-toggle-checkbox">
+                            <label for="custom-toggle-checkbox" id="custom-toggle-label">${label}</label>
+                        </div>
+                    `;
+                }
+            }
+            customElements.define('custom-toggle', CustomToggle);
+        })();
+
+        // ================================================================
+        // SECTION 9: COMBINED REGULAR + SHADOW
+        // ================================================================
+        (function setupCombinedShadow() {
+            const host = document.getElementById('combined-shadow-host');
+            const root = host.attachShadow({ mode: 'open' });
+            root.innerHTML = `
+                <style>
+                    :host { display: block; }
+                    label { display: block; font-weight: 500; margin-bottom: 4px; }
+                    input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
+                    button { padding: 8px 16px; background: #3182ce; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 8px; }
+                </style>
+                <button id="combined-shadow-btn">Submit</button>
+                <label id="combined-shadow-input-label">Username</label>
+                <input type="text" id="combined-shadow-input" placeholder="Username">
+                <input type="checkbox" id="combined-shadow-checkbox">
+                <label for="combined-shadow-checkbox" id="combined-shadow-check-label">Accept terms</label>
+            `;
+        })();
+
+        // ================================================================
+        // SECTION 10: EDGE CASES
+        // ================================================================
+        (function setupEdgeCases() {
+            // Empty shadow root
+            const emptyHost = document.getElementById('empty-shadow-host');
+            emptyHost.attachShadow({ mode: 'open' });
+            // Nothing added to the shadow root
+
+            // Text-only shadow root
+            const textOnlyHost = document.getElementById('textonly-shadow-host');
+            const textOnlyRoot = textOnlyHost.attachShadow({ mode: 'open' });
+            textOnlyRoot.textContent = 'This shadow root contains only text nodes, no elements to find.';
+
+            // Five-level deep nesting
+            const fiveLevelHost = document.getElementById('five-level-host');
+            const root1 = fiveLevelHost.attachShadow({ mode: 'open' });
+            root1.innerHTML = `<span id="five-l1">L1</span><five-l2-host></five-l2-host>`;
+
+            class FiveL2 extends HTMLElement {
+                connectedCallback() {
+                    const r = this.attachShadow({ mode: 'open' });
+                    r.innerHTML = `<span id="five-l2">L2</span><five-l3-host></five-l3-host>`;
+                }
+            }
+            customElements.define('five-l2-host', FiveL2);
+
+            class FiveL3 extends HTMLElement {
+                connectedCallback() {
+                    const r = this.attachShadow({ mode: 'open' });
+                    r.innerHTML = `<span id="five-l3">L3</span><five-l4-host></five-l4-host>`;
+                }
+            }
+            customElements.define('five-l3-host', FiveL3);
+
+            class FiveL4 extends HTMLElement {
+                connectedCallback() {
+                    const r = this.attachShadow({ mode: 'open' });
+                    r.innerHTML = `<span id="five-l4">L4</span><five-l5-host></five-l5-host>`;
+                }
+            }
+            customElements.define('five-l4-host', FiveL4);
+
+            class FiveL5 extends HTMLElement {
+                connectedCallback() {
+                    const r = this.attachShadow({ mode: 'open' });
+                    r.innerHTML = `
+                        <style>
+                            button { padding: 6px 12px; background: #e53e3e; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                        </style>
+                        <span id="five-l5">L5</span>
+                        <button id="five-deepest-btn">Deepest Button</button>
+                    `;
+                }
+            }
+            customElements.define('five-l5-host', FiveL5);
+        })();
+
+    })();
+    </script>
+</body>
+</html>

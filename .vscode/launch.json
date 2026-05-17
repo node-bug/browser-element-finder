@@ -2,11 +2,35 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "JavaScript Alerts Example",
+      "name": "Elements",
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/demo.js",
+      "args": ["--NoDebug"]
+    },
+    {
+      "name": "Shadow Dom",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/test-shadow-dom.js",
+      "args": ["--NoDebug"]
+    },
+    {
+      "name": "Switches",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/test-switches.js",
+      "args": ["--NoDebug"]
+    },
+    {
+      "name": "Dropdowns",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/test-google-doodle.js",
       "args": ["--NoDebug"]
     }
   ]
