@@ -2,44 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Elements",
+      "name": "vitest",
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
-      "program": "${workspaceFolder}/demo.js",
-      "args": ["--NoDebug"]
-    },
-    {
-      "name": "Shadow Dom",
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/test-shadow-dom.js",
-      "args": ["--NoDebug"]
-    },
-    {
-      "name": "Switches",
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/test-switches.js",
-      "args": ["--NoDebug"]
-    },
-    {
-      "name": "Dropdowns",
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/test-google-doodle.js",
-      "args": ["--NoDebug"]
-    },
-    {
-      "name": "Parent",
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/test-element-finder-parent.js",
-      "args": ["--NoDebug"]
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${workspaceFolder}/tests/integration/test-dropdowns.js"],
+      "autoAttachChildProcesses": true
     }
   ]
 }
