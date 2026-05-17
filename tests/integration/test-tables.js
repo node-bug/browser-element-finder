@@ -3,6 +3,7 @@
  * Tests that table elements in tables.html can be identified
  */
 
+import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import { Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 import { readFileSync } from 'fs';
@@ -12,25 +13,23 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function runTests() {
-  console.log('=== Tables Element Finder Test ===\n');
+describe('Tables Element Finder Tests', () => {
+  let driver;
 
-  const options = new chrome.Options()
-    .addArguments('--no-sandbox', '--disable-dev-shm-usage');
+  beforeAll(async () => {
+    const options = new chrome.Options()
+      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
 
-  const driver = await new Builder()
-    .forBrowser('chrome')
-    .setChromeOptions(options)
-    .build();
+    driver = await new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(options)
+      .build();
 
-  try {
-    // Load the tables HTML file
     const htmlPath = join(__dirname, 'fixtures', 'tables.html');
     const htmlContent = readFileSync(htmlPath, 'utf8');
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    // Inject the ElementFinder library
     const finderPath = join(__dirname, '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
@@ -38,11 +37,14 @@ async function runTests() {
       window.ElementFinder = ElementFinder;
     `);
 
-    // Wait for page to load
     await driver.sleep(500);
+  });
 
-    // Test 1: Find all tables
-    console.log('--- Test 1: Find all tables ---');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  it('should find all tables', async () => {
     const tableDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('table');
       return {
@@ -53,17 +55,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${tableDetails.count} tables`);
-    tableDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (tableDetails.count < 2) {
-      throw new Error(`Expected at least 2 tables, found ${tableDetails.count}`);
-    }
+    expect(tableDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 2: Find all rows
-    console.log('\n--- Test 2: Find all rows ---');
+  it('should find all rows', async () => {
     const rowDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('row');
       return {
@@ -73,14 +68,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${rowDetails.count} rows`);
-    
-    if (rowDetails.count < 10) {
-      throw new Error(`Expected at least 10 rows, found ${rowDetails.count}`);
-    }
+    expect(rowDetails.count).toBeGreaterThanOrEqual(10);
+  });
 
-    // Test 3: Find all columns (cells)
-    console.log('\n--- Test 3: Find all columns (cells) ---');
+  it('should find all columns (cells)', async () => {
     const columnDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('column');
       return {
@@ -90,14 +81,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${columnDetails.count} columns (cells)`);
-    
-    if (columnDetails.count < 15) {
-      throw new Error(`Expected at least 15 columns, found ${columnDetails.count}`);
-    }
+    expect(columnDetails.count).toBeGreaterThanOrEqual(15);
+  });
 
-    // Test 4: Find table by text content
-    console.log('\n--- Test 4: Find table by text content ---');
+  it('should find table by text content', async () => {
     const textResult = await driver.executeScript(`
       const result = ElementFinder.findElement('table', 'Alice');
       return {
@@ -107,14 +94,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${textResult.count} table containing "Alice"`);
-    
-    if (textResult.count !== 1) {
-      throw new Error(`Expected 1 table with "Alice", found ${textResult.count}`);
-    }
+    expect(textResult.count).toBe(1);
+  });
 
-    // Test 5: Find cell by text content
-    console.log('\n--- Test 5: Find cell by text content ---');
+  it('should find cell by text content', async () => {
     const cellResult = await driver.executeScript(`
       const result = ElementFinder.findElement('column', 'Paris');
       return {
@@ -125,20 +108,6 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${cellResult.count} cell containing "Paris"`);
-    
-    if (cellResult.count !== 1) {
-      throw new Error(`Expected 1 cell with "Paris", found ${cellResult.count}`);
-    }
-
-    console.log('\n=== All Tests Passed ===');
-
-  } catch (error) {
-    console.error('Test error:', error);
-    process.exit(1);
-  } finally {
-    await driver.quit();
-  }
-}
-
-runTests().catch(console.error);
+    expect(cellResult.count).toBe(1);
+  });
+});

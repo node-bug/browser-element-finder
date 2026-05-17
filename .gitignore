@@ -29,6 +29,9 @@ build
 coverage
 reports
 
+# Vitest cache
+.vitest
+
 # IDE
 .idea/
 *.swp
@@ -53,4 +56,7 @@ Thumbs.db
 
 # Demo files
 demo.js
+
+# Vitest
+.vitest/
 

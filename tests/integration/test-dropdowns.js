@@ -3,6 +3,7 @@
  * Tests that dropdowns in dropdowns.html can be identified and highlighted
  */
 
+import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import { Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 import { readFileSync } from 'fs';
@@ -12,18 +13,18 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function runTests() {
-  console.log('=== Dropdowns Element Finder Test ===\n');
+describe('Dropdowns Element Finder', () => {
+  let driver;
 
-  const options = new chrome.Options()
-    .addArguments('--no-sandbox', '--disable-dev-shm-usage');
+  beforeAll(async () => {
+    const options = new chrome.Options()
+      .addArguments('--headless','--no-sandbox', '--disable-dev-shm-usage');
 
-  const driver = await new Builder()
-    .forBrowser('chrome')
-    .setChromeOptions(options)
-    .build();
+    driver = await new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(options)
+      .build();
 
-  try {
     // Load the dropdowns HTML file
     const htmlPath = join(__dirname, 'fixtures', 'dropdowns.html');
     const htmlContent = readFileSync(htmlPath, 'utf8');
@@ -40,9 +41,13 @@ async function runTests() {
 
     // Wait for page to load
     await driver.sleep(500);
+  });
 
-    // Test 1: Find all dropdowns
-    console.log('--- Test 1: Find all dropdowns ---');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  it('should find all dropdowns', async () => {
     const dropdownDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('dropdown');
       return result.elements.map(e => ({
@@ -52,28 +57,20 @@ async function runTests() {
         role: e.element.getAttribute('role')
       }));
     `);
-    console.log(`Found ${dropdownDetails.length} dropdowns:`);
-    dropdownDetails.forEach((item, i) => {
-      console.log(`  [${i+1}] tagName=${item.tagName}, id=${item.id}, class=${item.className}, role=${item.role}`);
-    });
     
-    // Assertion: Should find exactly 5 dropdowns
-    if (dropdownDetails.length !== 5) {
-      throw new Error(`Expected 5 dropdowns, found ${dropdownDetails.length}`);
-    }
+    expect(dropdownDetails.length).toBe(5);
+    console.log(`Found ${dropdownDetails.length} dropdowns`);
+  });
 
-    // Test 2: Highlight all dropdowns
-    console.log('\n--- Test 2: Highlight all dropdowns ---');
+  it('should highlight all dropdowns', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('dropdown');
       const elements = result.elements.map(e => e.element);
       ElementFinder.highlight(elements, 'blue', 3);
-      console.log('Highlighted ' + elements.length + ' dropdowns');
     `);
-    console.log('All dropdowns highlighted in blue');
+  });
 
-    // Test 3: Get bounding box info
-    console.log('\n--- Test 3: Dropdown bounding boxes ---');
+  it('should return bounding box info for dropdowns', async () => {
     const dropdownInfo = await driver.executeScript(`
       const result = ElementFinder.findElement('dropdown');
       return result.elements.map(e => ({
@@ -85,18 +82,13 @@ async function runTests() {
         height: Math.round(e.boundingBox.height)
       }));
     `);
-    console.log(`Bounding boxes for ${dropdownInfo.length} dropdowns:`);
-    dropdownInfo.forEach((item, i) => {
-      console.log(`  [${i+1}] ${item.tagName} (${item.id}): (${item.x}, ${item.y}) ${item.width}x${item.height}`);
+    
+    expect(dropdownInfo.length).toBe(5);
+    dropdownInfo.forEach((item) => {
+      expect(item.x).toBeGreaterThanOrEqual(0);
+      expect(item.y).toBeGreaterThanOrEqual(0);
+      expect(item.width).toBeGreaterThan(0);
+      expect(item.height).toBeGreaterThan(0);
     });
-
-    console.log('\n=== All Dropdown Tests Complete ===');
-
-  } catch (error) {
-    console.error('Test error:', error);
-  } finally {
-    await driver.quit();
-  }
-}
-
-runTests().catch(console.error);
+  });
+});

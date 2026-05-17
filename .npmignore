@@ -3,7 +3,7 @@ tests/
 reports/
 *.test.js
 *.spec.js
-jest.config.js
+vitest.config.js
 
 # Development directories
 .github/
@@ -25,6 +25,11 @@ coverage/
 node_modules/
 jspm_packages/
 logs/
+.vitest/
+
+# Build artifacts
+src
+build.js
 
 # Documentation
 CONTRIBUTING.md

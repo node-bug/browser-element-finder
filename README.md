@@ -1,6 +1,6 @@
 # @nodebug/browser-element-finder
 
-A standalone JavaScript library for identifying DOM elements by type and/or text content, with support for shadow DOM and iframes.
+A standalone JavaScript library for identifying DOM elements by type and/or text content, with support for shadow DOM and iframes. Designed for browser automation, testing, and debugging workflows.
 
 ## Features
 
@@ -11,11 +11,28 @@ A standalone JavaScript library for identifying DOM elements by type and/or text
 - **Parent scoping**: Limit searches to a specific parent element
 - **Visibility filtering**: Optionally include or exclude hidden elements
 - **Bounding box data**: Returns position and dimensions for each found element
+- **XPath-like type definitions**: Extensible element type matching using XPath-like expressions
 
 ## Installation
 
 ```bash
 npm install @nodebug/browser-element-finder
+```
+
+## Project Structure
+
+```
+browser-element-finder/
+├── index.js                      # Browser-injected library (generated)
+├── build.js                      # Build script to generate index.js
+├── src/
+│   ├── element-finder.js         # Canonical source (ES module)
+│   ├── element-definitions.json  # XPath-like type definitions
+│   └── searchable-attributes.json  # Attributes searched for text matching
+├── tests/
+│   ├── unit/                     # Unit tests
+│   └── integration/              # Integration tests with HTML fixtures
+└── coverage/                       # Test coverage reports
 ```
 
 ## Usage
@@ -66,6 +83,19 @@ const results = await driver.executeScript(`
 `)
 ```
 
+### As an ES Module
+
+```javascript
+import {
+  findElement,
+  highlight,
+  getValidTypes,
+} from '@nodebug/browser-element-finder/src/element-finder.js'
+
+// Find elements (requires DOM environment)
+const results = findElement('button', 'Submit')
+```
+
 ## API Reference
 
 ### `findElement(type, text, exact, includeHidden, parent)`
@@ -112,31 +142,52 @@ Sets custom searchable attributes.
 
 Returns the current searchable attributes array.
 
+### `matchesType(el, type)`
+
+Checks if an element matches the specified type definition.
+
+### `matchesContent(el, value, exact)`
+
+Checks if an element matches the specified text content.
+
+### `getAllElements(root, frameIndex)`
+
+Gets all elements including shadow DOM and iframe contents.
+
+### `parseXPath(expr, el)`
+
+Parses XPath-like expressions for element type matching.
+
+### `splitByOperator(expr, op)`
+
+Splits XPath expressions by operator (and/or).
+
 ## Supported Element Types
 
-| Type       | Description                                         |
-| ---------- | --------------------------------------------------- |
-| `button`   | `<button>`, `[role="button"]`, `[type="button"]`    |
-| `checkbox` | `<input type="checkbox">`, `[role="checkbox"]`      |
-| `switch`   | Toggle switches, checkboxes with switch role        |
-| `slider`   | `<input type="range">`, `[role="slider"]`           |
-| `radio`    | `<input type="radio">`, `[role="radio"]`            |
-| `dropdown` | `<select>`, `[role="combobox"]`, `[role="listbox"]` |
-| `textbox`  | `<input>`, `<textarea>`, `[role="textbox"]`         |
-| `link`     | `<a>`, `[role="link"]`, `[href]`                    |
-| `heading`  | `<h1>-<h6>`, `[role="heading"]`                     |
-| `list`     | `<ul>`, `<ol>`, `[role="list"]`                     |
-| `listitem` | `<li>`, `[role="listitem"]`                         |
-| `menu`     | `<menu>`, `[role="menu"]`                           |
-| `menuitem` | `[role="menuitem"]`                                 |
-| `toolbar`  | `[role="toolbar"]`                                  |
-| `dialog`   | `[role="dialog"]`                                   |
-| `table`    | `<table>`, `[role="table"]`                         |
-| `row`      | `<tr>`, `[role="row"]`                              |
-| `column`   | `<td>`, `<th>`, `[role="cell"]`                     |
-| `image`    | `<img>`, `[role="img"]`                             |
-| `file`     | `<input type="file">`                               |
-| `element`  | Matches all elements                                |
+| Type         | Description                                         |
+| ------------ | --------------------------------------------------- |
+| `button`     | `<button>`, `[role="button"]`, `[type="button"]`    |
+| `checkbox`   | `<input type="checkbox">`, `[role="checkbox"]`      |
+| `switch`     | Toggle switches, checkboxes with switch role        |
+| `slider`     | `<input type="range">`, `[role="slider"]`           |
+| `radio`      | `<input type="radio">`, `[role="radio"]`            |
+| `dropdown`   | `<select>`, `[role="combobox"]`, `[role="listbox"]` |
+| `textbox`    | `<input>`, `<textarea>`, `[role="textbox"]`         |
+| `link`       | `<a>`, `[role="link"]`, `[href]`                    |
+| `heading`    | `<h1>-<h6>`, `[role="heading"]`                     |
+| `navigation` | `<nav>`, `[role="navigation"]`                      |
+| `list`       | `<ul>`, `<ol>`, `[role="list"]`                     |
+| `listitem`   | `<li>`, `[role="listitem"]`                         |
+| `menu`       | `<menu>`, `[role="menu"]`                           |
+| `menuitem`   | `[role="menuitem"]`                                 |
+| `toolbar`    | `[role="toolbar"]`                                  |
+| `dialog`     | `[role="dialog"]`                                   |
+| `table`      | `<table>`, `[role="table"]`                         |
+| `row`        | `<tr>`, `[role="row"]`                              |
+| `column`     | `<td>`, `<th>`, `[role="cell"]`                     |
+| `image`      | `<img>`, `[role="img"]`                             |
+| `file`       | `<input type="file"]`                               |
+| `element`    | Matches all elements                                |
 
 ## Searchable Attributes
 
@@ -151,17 +202,14 @@ By default, the library searches these attributes (in priority order):
 ### Running Tests
 
 ```bash
-# Run Jest tests
+# Run all tests
 npm test
 
-# Run individual test files
-node tests/test-dropdowns.js
-node tests/test-switches.js
-node tests/test-shadow-dom.js
-node tests/test-element-finder-parent.js
-node tests/test-forms.js
-node tests/test-interactive-elements.js
-node tests/test-tables.js
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
 ```
 
 ### Linting
@@ -169,6 +217,12 @@ node tests/test-tables.js
 ```bash
 npm run lint
 ```
+
+### Code Coverage
+
+The library includes a Node.js-compatible module (`src/element-finder.js`) that provides the same functionality as the browser-injected `index.js` for coverage testing. This module is fully covered by unit tests.
+
+The original `index.js` is browser-injected code executed via Selenium's `executeScript`. Coverage for browser-injected code requires browser-based tools like Istanbul or running tests in a browser environment.
 
 ## License
 
