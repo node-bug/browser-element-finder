@@ -15,10 +15,16 @@ export default [
     files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
       ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
         ...globals.node,
-        ...globals.jest,
         ...globals.browser,
+      },
+      parserOptions: {
+        // Enforces support for the 'with' and 'assert' stage structures
+        ecmaFeatures: {
+          impliedStrict: true,
+        },
       },
     },
   },

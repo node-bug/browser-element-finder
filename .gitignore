@@ -29,8 +29,10 @@ build
 coverage
 reports
 
+# Vitest cache
+.vitest
+
 # IDE
-# .vscode/
 .idea/
 *.swp
 *.swo
@@ -47,4 +49,14 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Test files
+*.test.js
+*.spec.js
+
+# Demo files
+demo.js
+
+# Vitest
+.vitest/
 

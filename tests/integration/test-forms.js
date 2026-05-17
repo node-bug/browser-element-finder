@@ -3,6 +3,7 @@
  * Tests that form elements in forms.html can be identified and highlighted
  */
 
+import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import { Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 import { readFileSync } from 'fs';
@@ -12,37 +13,38 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function runTests() {
-  console.log('=== Forms Element Finder Test ===\n');
+describe('Forms Element Finder Tests', () => {
+  let driver;
 
-  const options = new chrome.Options()
-    .addArguments('--no-sandbox', '--disable-dev-shm-usage');
+  beforeAll(async () => {
+    const options = new chrome.Options()
+      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
 
-  const driver = await new Builder()
-    .forBrowser('chrome')
-    .setChromeOptions(options)
-    .build();
+    driver = await new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(options)
+      .build();
 
-  try {
-    // Load the forms HTML file
     const htmlPath = join(__dirname, 'fixtures', 'forms.html');
     const htmlContent = readFileSync(htmlPath, 'utf8');
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    // Inject the ElementFinder library
-    const finderPath = join(__dirname, '..', 'app.js');
+    const finderPath = join(__dirname, '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
       window.ElementFinder = ElementFinder;
     `);
 
-    // Wait for page to load
     await driver.sleep(500);
+  });
 
-    // Test 1: Find all textboxes
-    console.log('--- Test 1: Find all textboxes ---');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  it('should find all textboxes', async () => {
     const textboxDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('textbox');
       return {
@@ -54,17 +56,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${textboxDetails.count} textboxes`);
-    textboxDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id} (placeholder: ${e.placeholder})`);
-    });
-    
-    if (textboxDetails.count < 8) {
-      throw new Error(`Expected at least 8 textboxes, found ${textboxDetails.count}`);
-    }
+    expect(textboxDetails.count).toBeGreaterThanOrEqual(8);
+  });
 
-    // Test 2: Find all checkboxes
-    console.log('\n--- Test 2: Find all checkboxes ---');
+  it('should find all checkboxes', async () => {
     const checkboxDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('checkbox');
       return {
@@ -75,18 +70,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${checkboxDetails.count} checkboxes`);
-    checkboxDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    // Note: Hidden checkbox (check-hidden) is correctly excluded by visibility filter
-    if (checkboxDetails.count < 3) {
-      throw new Error(`Expected at least 3 checkboxes, found ${checkboxDetails.count}`);
-    }
+    expect(checkboxDetails.count).toBeGreaterThanOrEqual(3);
+  });
 
-    // Test 3: Find all radio buttons
-    console.log('\n--- Test 3: Find all radio buttons ---');
+  it('should find all radio buttons', async () => {
     const radioDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('radio');
       return {
@@ -97,17 +84,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${radioDetails.count} radio buttons`);
-    radioDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (radioDetails.count < 3) {
-      throw new Error(`Expected at least 3 radio buttons, found ${radioDetails.count}`);
-    }
+    expect(radioDetails.count).toBeGreaterThanOrEqual(3);
+  });
 
-    // Test 4: Find textboxes by placeholder text
-    console.log('\n--- Test 4: Find textbox by placeholder text ---');
+  it('should find textbox by placeholder text', async () => {
     const placeholderResult = await driver.executeScript(`
       const result = ElementFinder.findElement('textbox', 'Enter text here');
       return {
@@ -118,37 +98,21 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${placeholderResult.count} textbox with placeholder "Enter text here"`);
-    
-    if (placeholderResult.count !== 1) {
-      throw new Error(`Expected 1 textbox with placeholder, found ${placeholderResult.count}`);
-    }
+    expect(placeholderResult.count).toBe(1);
+  });
 
-    // Test 5: Highlight found elements
-    console.log('\n--- Test 5: Highlight elements ---');
+  it('should highlight elements', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('textbox');
       ElementFinder.highlight(result.elements);
     `);
-    console.log('Highlighted all textboxes');
     await driver.sleep(500);
+  });
 
-    // Test 6: Unhighlight elements
-    console.log('\n--- Test 6: Unhighlight elements ---');
+  it('should unhighlight elements', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('textbox');
       ElementFinder.unhighlight(result.elements);
     `);
-    console.log('Unhighlighted all textboxes');
-
-    console.log('\n=== All Tests Passed ===');
-
-  } catch (error) {
-    console.error('Test error:', error);
-    process.exit(1);
-  } finally {
-    await driver.quit();
-  }
-}
-
-runTests().catch(console.error);
+  });
+});

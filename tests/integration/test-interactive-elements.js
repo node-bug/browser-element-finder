@@ -3,6 +3,7 @@
  * Tests that interactive elements in interactive-elements.html can be identified
  */
 
+import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import { Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 import { readFileSync } from 'fs';
@@ -12,37 +13,38 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function runTests() {
-  console.log('=== Interactive Elements Finder Test ===\n');
+describe('Interactive Elements Finder Tests', () => {
+  let driver;
 
-  const options = new chrome.Options()
-    .addArguments('--no-sandbox', '--disable-dev-shm-usage');
+  beforeAll(async () => {
+    const options = new chrome.Options()
+      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
 
-  const driver = await new Builder()
-    .forBrowser('chrome')
-    .setChromeOptions(options)
-    .build();
+    driver = await new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(options)
+      .build();
 
-  try {
-    // Load the interactive elements HTML file
     const htmlPath = join(__dirname, 'fixtures', 'interactive-elements.html');
     const htmlContent = readFileSync(htmlPath, 'utf8');
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    // Inject the ElementFinder library
-    const finderPath = join(__dirname, '..', 'app.js');
+    const finderPath = join(__dirname, '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
       window.ElementFinder = ElementFinder;
     `);
 
-    // Wait for page to load
     await driver.sleep(500);
+  });
 
-    // Test 1: Find all links
-    console.log('--- Test 1: Find all links ---');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  it('should find all links', async () => {
     const linkDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('link');
       return {
@@ -53,17 +55,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${linkDetails.count} links`);
-    linkDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (linkDetails.count < 2) {
-      throw new Error(`Expected at least 2 links, found ${linkDetails.count}`);
-    }
+    expect(linkDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 2: Find all buttons
-    console.log('\n--- Test 2: Find all buttons ---');
+  it('should find all buttons', async () => {
     const buttonDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('button');
       return {
@@ -74,17 +69,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${buttonDetails.count} buttons`);
-    buttonDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (buttonDetails.count < 4) {
-      throw new Error(`Expected at least 4 buttons, found ${buttonDetails.count}`);
-    }
+    expect(buttonDetails.count).toBeGreaterThanOrEqual(4);
+  });
 
-    // Test 3: Find all sliders
-    console.log('\n--- Test 3: Find all sliders ---');
+  it('should find all sliders', async () => {
     const sliderDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('slider');
       return {
@@ -95,17 +83,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${sliderDetails.count} sliders`);
-    sliderDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (sliderDetails.count < 2) {
-      throw new Error(`Expected at least 2 sliders, found ${sliderDetails.count}`);
-    }
+    expect(sliderDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 4: Find all file inputs
-    console.log('\n--- Test 4: Find all file inputs ---');
+  it('should find all file inputs', async () => {
     const fileDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('file');
       return {
@@ -116,17 +97,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${fileDetails.count} file inputs`);
-    fileDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (fileDetails.count < 2) {
-      throw new Error(`Expected at least 2 file inputs, found ${fileDetails.count}`);
-    }
+    expect(fileDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 5: Find all lists
-    console.log('\n--- Test 5: Find all lists ---');
+  it('should find all lists', async () => {
     const listDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('list');
       return {
@@ -137,17 +111,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${listDetails.count} lists`);
-    listDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (listDetails.count < 2) {
-      throw new Error(`Expected at least 2 lists, found ${listDetails.count}`);
-    }
+    expect(listDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 6: Find all listitems
-    console.log('\n--- Test 6: Find all listitems ---');
+  it('should find all listitems', async () => {
     const listitemDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('listitem');
       return {
@@ -158,17 +125,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${listitemDetails.count} listitems`);
-    listitemDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (listitemDetails.count < 4) {
-      throw new Error(`Expected at least 4 listitems, found ${listitemDetails.count}`);
-    }
+    expect(listitemDetails.count).toBeGreaterThanOrEqual(4);
+  });
 
-    // Test 7: Find all menus
-    console.log('\n--- Test 7: Find all menus ---');
+  it('should find all menus', async () => {
     const menuDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('menu');
       return {
@@ -179,17 +139,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${menuDetails.count} menus`);
-    menuDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (menuDetails.count < 2) {
-      throw new Error(`Expected at least 2 menus, found ${menuDetails.count}`);
-    }
+    expect(menuDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 8: Find all menuitems
-    console.log('\n--- Test 8: Find all menuitems ---');
+  it('should find all menuitems', async () => {
     const menuitemDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('menuitem');
       return {
@@ -200,17 +153,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${menuitemDetails.count} menuitems`);
-    menuitemDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (menuitemDetails.count < 4) {
-      throw new Error(`Expected at least 4 menuitems, found ${menuitemDetails.count}`);
-    }
+    expect(menuitemDetails.count).toBeGreaterThanOrEqual(4);
+  });
 
-    // Test 9: Find all toolbars
-    console.log('\n--- Test 9: Find all toolbars ---');
+  it('should find all toolbars', async () => {
     const toolbarDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('toolbar');
       return {
@@ -221,17 +167,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${toolbarDetails.count} toolbars`);
-    toolbarDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (toolbarDetails.count < 2) {
-      throw new Error(`Expected at least 2 toolbars, found ${toolbarDetails.count}`);
-    }
+    expect(toolbarDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 10: Find all images
-    console.log('\n--- Test 10: Find all images ---');
+  it('should find all images', async () => {
     const imageDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('image');
       return {
@@ -242,17 +181,10 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${imageDetails.count} images`);
-    imageDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (imageDetails.count < 2) {
-      throw new Error(`Expected at least 2 images, found ${imageDetails.count}`);
-    }
+    expect(imageDetails.count).toBeGreaterThanOrEqual(2);
+  });
 
-    // Test 11: Find all dialogs (include hidden since dialog starts hidden)
-    console.log('\n--- Test 11: Find all dialogs ---');
+  it('should find all dialogs (including hidden)', async () => {
     const dialogDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('dialog', null, false, true);
       return {
@@ -263,23 +195,6 @@ async function runTests() {
         }))
       };
     `);
-    console.log(`Found ${dialogDetails.count} dialogs`);
-    dialogDetails.elements.forEach(e => {
-      console.log(`  - ${e.tagName}#${e.id}`);
-    });
-    
-    if (dialogDetails.count < 1) {
-      throw new Error(`Expected at least 1 dialog, found ${dialogDetails.count}`);
-    }
-
-    console.log('\n=== All Tests Passed ===');
-
-  } catch (error) {
-    console.error('Test error:', error);
-    process.exit(1);
-  } finally {
-    await driver.quit();
-  }
-}
-
-runTests().catch(console.error);
+    expect(dialogDetails.count).toBeGreaterThanOrEqual(1);
+  });
+});

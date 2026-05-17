@@ -1,9 +1,9 @@
 # Test files
-tests
-reports
-test.js
+tests/
+reports/
 *.test.js
-jest.config.js
+*.spec.js
+vitest.config.js
 
 # Development directories
 .github/
@@ -22,11 +22,14 @@ jest.config.js
 lint-staged.config.js
 .nyc_output/
 coverage/
-.nyc_output/
-.nyc_output
 node_modules/
 jspm_packages/
 logs/
+.vitest/
+
+# Build artifacts
+src
+build.js
 
 # Documentation
 CONTRIBUTING.md

@@ -1,31 +1,15 @@
 /**
- * Browser Element Finder
+ * Browser Element Finder - Node.js Module Version
  * 
- * A standalone JavaScript library that can be run in the browser to identify
- * elements by type and/or text content, returning matching elements with their
- * bounding boxes.
- * 
- * Usage in browser console:
- *   // Find all buttons
- *   const results = ElementFinder.findElement('button');
- *   
- *   // Find buttons with specific text
- *   const results = ElementFinder.findElement('button', 'Submit');
- *   
- *   // Find elements by text only
- *   const results = ElementFinder.findElement(null, 'seleniumbase');
- *   
- *   // Find links with specific text
- *   const results = ElementFinder.findElement('link', 'seleniumbase');
- *   
- *   // Find elements within a parent element
- *   const parent = document.querySelector('.container');
- *   const results = ElementFinder.findElement('button', null, false, false, parent);
+ * This is the canonical source for the element finder library.
+ * The build script generates index.js for browser injection.
  */
 
-const ElementFinder = (function() {
+import searchableAttributesData from './searchable-attributes.json' with { type: 'json' };
+import elementDefinitionsData from './element-definitions.json' with { type: 'json' };
+
 // XPath-like expression parser for element type definitions
-function parseXPath(expr, el) {
+export function parseXPath(expr, el) {
   // Handle true() - matches everything
   if (expr === 'true()') return true;
   
@@ -60,7 +44,7 @@ function parseXPath(expr, el) {
   return parseCondition(expr.trim(), el);
 }
 
-function splitByOperator(expr, op) {
+export function splitByOperator(expr, op) {
   const parts = [];
   let depth = 0;
   let current = '';
@@ -85,7 +69,7 @@ function splitByOperator(expr, op) {
   return parts;
 }
 
-function parseCondition(expr, el) {
+export function parseCondition(expr, el) {
   // Handle self::tag[@attr='value']
   const selfWithTagMatch = expr.match(/^self::([a-z]+)(\[[^\]]+\])?$/);
   if (selfWithTagMatch) {
@@ -139,66 +123,27 @@ function parseCondition(expr, el) {
 }
 
 // Element type definitions as XPath-like strings
-const ELEMENT_DEFINITIONS = {
-  "link": "self::a or @role='link' or @href",
-  "navigation": "@role='navigation' or self::nav",
-  "heading": "@role='heading' or self::h1 or self::h2 or self::h3 or self::h4 or self::h5 or self::h6",
-  "button": "self::button or @role='button' or @type='button' or @type='submit'",
-  "checkbox": "(self::input and @type='checkbox') or @role='checkbox'",
-  "switch": "self::button[@role='switch'] or (self::input and @type='checkbox') or @role='switch' or (self::button and @data-state)",
-  "slider": "self::input[@type='range'] or @role='slider'",
-  "radio": "(self::input and @type='radio') or @role='radio'",
-  "dropdown": "(self::select[descendant::option] or @role='combobox' or @role='listbox' or contains(@class, 'dropdown') or contains(@class, 'trigger') or ancestor::*[contains(@class, 'dropdown') or @role='combobox'])",
-  "textbox": "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email')) or @role='textbox'",
-  "file": "self::input and @type='file'",
-  "list": "self::ul or self::ol or @role='list'",
-  "listitem": "self::li or @role='listitem'",
-  "menu": "self::menu or @role='menu'",
-  "menuitem": "@role='menuitem'",
-  "toolbar": "@role='toolbar'",
-  "dialog": "@role='dialog'",
-  "table": "self::table or @role='table'",
-  "row": "self::tr or @role='row'",
-  "column": "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",
-  "image": "self::img or @role='img' or @alt",
-  "element": "true()"
-};
+export const ELEMENT_DEFINITIONS = elementDefinitionsData;
 
 // Searchable attributes (in priority order)
-let SEARCHABLE_ATTRIBUTES = [
-  "placeholder",
-  "value",
-  "data-test-id",
-  "data-testid",
-  "id",
-  "resource-id",
-  "name",
-  "aria-label",
-  "class",
-  "hint",
-  "title",
-  "tooltip",
-  "alt",
-  "src",
-  "aria-labelledby"
-];
+let SEARCHABLE_ATTRIBUTES = searchableAttributesData;
 
-function setSearchableAttributes(attributes) {
+export function setSearchableAttributes(attributes) {
   if (Array.isArray(attributes)) {
     SEARCHABLE_ATTRIBUTES = attributes;
   }
 }
 
-function getSearchableAttributes() {
+export function getSearchableAttributes() {
   return [...SEARCHABLE_ATTRIBUTES];
 }
 
-function matchesType(el, type) {
+export function matchesType(el, type) {
   const expr = ELEMENT_DEFINITIONS[type];
   return expr ? parseXPath(expr, el) : false;
 }
 
-function matchesContent(el, value, exact = false) {
+export function matchesContent(el, value, exact = false) {
   if (!value) return true;
 
   const normalizedValue = value.toLowerCase().trim();
@@ -223,7 +168,7 @@ function matchesContent(el, value, exact = false) {
   return false;
 }
 
-function getBoundingBox(el) {
+export function getBoundingBox(el) {
   const rect = el.getBoundingClientRect();
   return {
     x: rect.x,
@@ -240,7 +185,7 @@ function getBoundingBox(el) {
   };
 }
 
-function getAllElements(root = document, frameIndex = 0) {
+export function getAllElements(root = document, frameIndex = 0) {
   const elements = [];
   const walker = document.createTreeWalker(
     root,
@@ -281,7 +226,7 @@ function getAllElements(root = document, frameIndex = 0) {
   return elements;
 }
 
-function findElement(type, text, exact = false, includeHidden = false, parent = null) {
+export function findElement(type, text, exact = false, includeHidden = false, parent = null) {
   // Validate type if provided
   if (type && !ELEMENT_DEFINITIONS[type]) {
     console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
@@ -336,7 +281,7 @@ function findElement(type, text, exact = false, includeHidden = false, parent = 
   return { elements: qualified };
 }
 
-function highlight(elements, color = 'red', width = 3) {
+export function highlight(elements, color = 'red', width = 3) {
   // Handle both single element and array
   const items = Array.isArray(elements) ? elements : [elements];
   items.forEach(item => {
@@ -348,7 +293,7 @@ function highlight(elements, color = 'red', width = 3) {
   });
 }
 
-function unhighlight(elements) {
+export function unhighlight(elements) {
   // Handle both single element and array
   const items = Array.isArray(elements) ? elements : [elements];
   items.forEach(item => {
@@ -360,30 +305,6 @@ function unhighlight(elements) {
   });
 }
 
-function getValidTypes() {
+export function getValidTypes() {
   return Object.keys(ELEMENT_DEFINITIONS);
-}
-
-  // Public API
-  return {
-    findElement,
-    highlight,
-    unhighlight,
-    getValidTypes,
-    getBoundingBox,
-    setSearchableAttributes,
-    getSearchableAttributes,
-    parseXPath,
-    splitByOperator,
-    parseCondition,
-    matchesType,
-    matchesContent,
-    getAllElements,
-    ELEMENT_DEFINITIONS
-  };
-})();
-
-// Export for module usage
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ElementFinder;
 }
