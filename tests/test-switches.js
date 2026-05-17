@@ -31,7 +31,7 @@ async function runTests() {
     await driver.get(fileUrl);
 
     // Inject the ElementFinder library
-    const finderPath = join(__dirname, '..', 'browser-element-finder.js');
+    const finderPath = join(__dirname, '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
@@ -56,6 +56,11 @@ async function runTests() {
     switchDetails.forEach((item, i) => {
       console.log(`  [${i+1}] tagName=${item.tagName}, role=${item.role}, type=${item.type}, id=${item.id}`);
     });
+    
+    // Assertion: Should find exactly 7 switches (including shadow DOM and iframe)
+    if (switchDetails.length !== 7) {
+      throw new Error(`Expected 7 switches, found ${switchDetails.length}`);
+    }
 
     // Test 2: Highlight all switches (including hidden)
     console.log('\n--- Test 2: Highlight all switches ---');

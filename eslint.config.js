@@ -1,37 +1,27 @@
-import js from "@eslint/js";
-import globals from "globals";
+import js from '@eslint/js'
+import prettierConfig from 'eslint-config-prettier'
+import globals from 'globals'
 
 export default [
-  js.configs.recommended,
   {
-    files: ["**/*.js"],
-    ignores: ["tests/**"],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: "module",
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        ElementFinder: "readonly",
-      },
-    },
-    rules: {
-      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-    },
+    ignores: ['dist/', 'node_modules/', 'coverage/'],
   },
+
+  // 1. Standard JS rules
+  js.configs.recommended,
+
+  // 2. General environment settings
   {
-    files: ["tests/**"],
+    files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: "module",
+      ecmaVersion: 'latest',
       globals: {
-        ...globals.browser,
         ...globals.node,
         ...globals.jest,
+        ...globals.browser,
       },
     },
-    rules: {
-      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-    },
   },
-];
+
+  prettierConfig,
+]

@@ -1,0 +1,49 @@
+# Logs
+downloads/
+logs/
+*.log
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules
+jspm_packages
+package-lock.json
+
+
+# Optional npm cache directory
+.npm
+.husky
+
+# Output directory
+dist
+build
+reports
+
+# Coverage directory
+coverage
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp

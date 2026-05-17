@@ -30,7 +30,7 @@ async function runTests() {
     await driver.get(`file://${join(__dirname, 'fixtures', 'dropdowns.html')}`);
 
     // Inject the ElementFinder library
-    const finderPath = join(__dirname, '..', 'browser-element-finder.js');
+    const finderPath = join(__dirname, '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
@@ -97,8 +97,19 @@ async function runTests() {
     `);
     console.log(`  Found ${allDropdowns.count} dropdown elements on entire page`);
     
+    // Assertion: Parent scoping should find fewer elements than full page
     if (allDropdowns.count <= childResult.count) {
-      throw new Error('Parent scoping not working correctly - should find more elements on full page');
+      throw new Error(`Parent scoping not working correctly - expected ${allDropdowns.count} > ${childResult.count}`);
+    }
+    
+    // Assertion: Should find exactly 5 dropdowns on full page
+    if (allDropdowns.count !== 5) {
+      throw new Error(`Expected 5 dropdowns on full page, found ${allDropdowns.count}`);
+    }
+    
+    // Assertion: Should find exactly 2 dropdowns within parent section
+    if (childResult.count !== 2) {
+      throw new Error(`Expected 2 dropdowns within parent, found ${childResult.count}`);
     }
 
     console.log('\n=== All Tests Passed ===');

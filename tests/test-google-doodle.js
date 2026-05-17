@@ -28,7 +28,7 @@ async function runTests() {
     await driver.get('https://doodles.google/doodle/122nd-birthday-of-charlie-chaplin/');
 
     // Inject the ElementFinder library
-    const finderPath = join(__dirname, 'browser-element-finder.js');
+    const finderPath = join(__dirname, '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
@@ -66,6 +66,11 @@ async function runTests() {
       });
     } else {
       console.log('No elements found with that text');
+    }
+    
+    // Assertion: Should find at least 1 element with "Doodle" text
+    if (!elementDetails.found || elementDetails.count === 0) {
+      throw new Error('Expected to find at least 1 element with "Doodle" text');
     }
 
     // Test 2: Highlight the element

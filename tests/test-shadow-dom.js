@@ -31,7 +31,7 @@ async function runTests() {
     await driver.get(fileUrl);
 
     // Inject the ElementFinder library
-    const finderPath = join(__dirname, '..', 'browser-element-finder.js');
+    const finderPath = join(__dirname, '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
@@ -48,6 +48,9 @@ async function runTests() {
       return result.elements.length;
     `);
     console.log(`Found ${buttonCount} buttons`);
+    if (buttonCount < 20) {
+      throw new Error(`Expected at least 20 buttons, found ${buttonCount}`);
+    }
 
     // Test 2: Find textboxes in shadow DOM
     console.log('\n--- Test 2: Find textboxes in shadow DOM ---');
@@ -56,6 +59,9 @@ async function runTests() {
       return result.elements.length;
     `);
     console.log(`Found ${textboxCount} textboxes`);
+    if (textboxCount < 15) {
+      throw new Error(`Expected at least 15 textboxes, found ${textboxCount}`);
+    }
 
     // Test 3: Find checkboxes in shadow DOM
     console.log('\n--- Test 3: Find checkboxes in shadow DOM ---');
@@ -64,6 +70,9 @@ async function runTests() {
       return result.elements.length;
     `);
     console.log(`Found ${checkboxCount} checkboxes`);
+    if (checkboxCount < 5) {
+      throw new Error(`Expected at least 5 checkboxes, found ${checkboxCount}`);
+    }
 
     // Test 4: Find links in shadow DOM
     console.log('\n--- Test 4: Find links in shadow DOM ---');
@@ -72,6 +81,9 @@ async function runTests() {
       return result.elements.length;
     `);
     console.log(`Found ${linkCount} links`);
+    if (linkCount < 3) {
+      throw new Error(`Expected at least 3 links, found ${linkCount}`);
+    }
 
     // Test 5: Find elements by text in shadow DOM
     console.log('\n--- Test 5: Find elements by text in shadow DOM ---');
@@ -80,6 +92,9 @@ async function runTests() {
       return result.elements.length;
     `);
     console.log(`Found ${textCount} elements with "Component Button" text`);
+    if (textCount !== 1) {
+      throw new Error(`Expected 1 element with "Component Button", found ${textCount}`);
+    }
 
     // Test 6: Check bounding boxes are correct
     console.log('\n--- Test 6: Verify bounding boxes ---');

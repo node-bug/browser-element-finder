@@ -31,7 +31,7 @@ async function runTests() {
     await driver.get(fileUrl);
 
     // Inject the ElementFinder library
-    const finderPath = join(__dirname, '..', 'browser-element-finder.js');
+    const finderPath = join(__dirname, '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
@@ -56,6 +56,11 @@ async function runTests() {
     dropdownDetails.forEach((item, i) => {
       console.log(`  [${i+1}] tagName=${item.tagName}, id=${item.id}, class=${item.className}, role=${item.role}`);
     });
+    
+    // Assertion: Should find exactly 5 dropdowns
+    if (dropdownDetails.length !== 5) {
+      throw new Error(`Expected 5 dropdowns, found ${dropdownDetails.length}`);
+    }
 
     // Test 2: Highlight all dropdowns
     console.log('\n--- Test 2: Highlight all dropdowns ---');

@@ -2,7 +2,7 @@
   "name": "@nodebug/browser-element-finder",
   "version": "1.0.0",
   "description": "Browser Element Finder - Find elements by type and text content",
-  "main": "browser-element-finder.js",
+  "main": "index.js",
   "type": "module",
   "engines": {
     "node": ">=24"
