@@ -7,7 +7,7 @@
       "request": "launch",
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
-      "args": ["run", "${workspaceFolder}/tests/integration/test-dropdowns.js"],
+      "args": ["run", "${workspaceFolder}/tests/integration/demo.js"],
       "autoAttachChildProcesses": true
     }
   ]

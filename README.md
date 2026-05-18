@@ -1,13 +1,12 @@
 # @nodebug/browser-element-finder
 
-A standalone JavaScript library for identifying DOM elements by type and/or text content, with support for shadow DOM and iframes. Designed for browser automation, testing, and debugging workflows.
+A standalone JavaScript library for identifying DOM elements by type and/or text content, with support for shadow DOM. Designed for browser automation, testing, and debugging workflows.
 
 ## Features
 
 - **Type-based element finding**: Find elements by semantic type (button, textbox, link, dropdown, etc.)
 - **Text content search**: Search within element text, attributes, and placeholders
 - **Shadow DOM support**: Automatically traverses shadow roots to find nested elements
-- **Iframe support**: Searches within iframes (same-origin)
 - **Parent scoping**: Limit searches to a specific parent element
 - **Visibility filtering**: Optionally include or exclude hidden elements
 - **Bounding box data**: Returns position and dimensions for each found element
@@ -63,7 +62,6 @@ const results = ElementFinder.findElement('button', null, false, true)
 results.elements.forEach((item) => {
   console.log('Tag:', item.tagName)
   console.log('Position:', item.boundingBox.x, item.boundingBox.y)
-  console.log('Frame:', item.frameIndex)
 })
 
 // Highlight found elements (extract DOM elements from wrapper objects)
@@ -93,7 +91,6 @@ const results = await driver.executeScript(`
 results.elements.forEach((item) => {
   console.log('Tag:', item.tagName)
   console.log('Position:', item.boundingBox.x, item.boundingBox.y)
-  console.log('Frame:', item.frameIndex)
 })
 
 // Use the element with Selenium WebElement methods
@@ -140,7 +137,7 @@ Finds elements matching the specified criteria.
 | `includeHidden` | `boolean` | `false` | Include hidden elements                  |
 | `parent`        | `Element` | `null`  | Parent element to search within          |
 
-**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
+**Returns**: `{ elements: [{ element, boundingBox, tagName }] }`
 
 ### `highlight(elements, color, width)`
 
@@ -180,9 +177,9 @@ Checks if an element matches the specified type definition.
 
 Checks if an element matches the specified text content.
 
-### `getAllElements(root, frameIndex)`
+### `getAllElements(root)`
 
-Gets all elements including shadow DOM and iframe contents.
+Gets all elements including shadow DOM contents.
 
 ### `parseXPath(expr, el)`
 
@@ -241,6 +238,8 @@ npm run test:watch
 # Run tests with coverage
 npm run test:coverage
 ```
+
+**Note:** The `tests/integration/helpers/` folder is excluded from vitest runs as it contains helper utilities rather than test files.
 
 ### Linting
 

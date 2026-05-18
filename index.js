@@ -26,22 +26,32 @@
 const ElementFinder = (function() {
 // XPath-like expression parser for element type definitions
 function parseXPath(expr, el) {
-  // Handle true() - matches everything
+  expr = expr.trim();
   if (expr === 'true()') return true;
   
-  // Handle parentheses by evaluating inner expression
-  let innerMatch = expr.match(/^\((.*)\)$/);
-  if (innerMatch) {
-    return parseXPath(innerMatch[1], el);
+  // Handle outermost matching parentheses
+  if (expr.startsWith('(') && expr.endsWith(')')) {
+    // Ensure the parentheses are actually matching pairs balancing the expression
+    let depth = 0;
+    let matchedAll = true;
+    for (let i = 0; i < expr.length; i++) {
+      if (expr[i] === '(') depth++;
+      else if (expr[i] === ')') depth--;
+      if (depth === 0 && i < expr.length - 1) {
+        matchedAll = false;
+        break;
+      }
+    }
+    if (matchedAll) {
+      return parseXPath(expr.slice(1, -1), el);
+    }
   }
   
   // Split by ' or ' for OR conditions (outermost first)
   const orParts = splitByOperator(expr, 'or');
   if (orParts.length > 1) {
     for (const part of orParts) {
-      if (parseXPath(part.trim(), el)) {
-        return true;
-      }
+      if (parseXPath(part, el)) return true;
     }
     return false;
   }
@@ -50,34 +60,47 @@ function parseXPath(expr, el) {
   const andParts = splitByOperator(expr, 'and');
   if (andParts.length > 1) {
     for (const part of andParts) {
-      if (!parseXPath(part.trim(), el)) {
-        return false;
-      }
+      if (!parseXPath(part, el)) return false;
     }
     return true;
   }
   
-  return parseCondition(expr.trim(), el);
+  return parseCondition(expr, el);
 }
 
 function splitByOperator(expr, op) {
   const parts = [];
   let depth = 0;
   let current = '';
+  let inQuotes = false;
+  let quoteChar = '';
   
   for (let i = 0; i < expr.length; i++) {
     const char = expr[i];
-    if (char === '(') depth++;
-    else if (char === ')') depth--;
     
-    // Check for operator at word boundary
-    const remaining = expr.slice(i);
-    const opPattern = new RegExp(`^\\s*\\b${op}\\b\\s*`);
-    if (depth === 0 && opPattern.test(remaining)) {
-      parts.push(current.trim());
-      i += remaining.match(opPattern)[0].length - 1;
-      current = '';
-      continue;
+    // Manage skipping structural operators inside string literals
+    if ((char === "'" || char === '"') && (i === 0 || expr[i-1] !== '\\')) {
+      if (!inQuotes) {
+        inQuotes = true;
+        quoteChar = char;
+      } else if (char === quoteChar) {
+        inQuotes = false;
+      }
+    }
+
+    if (!inQuotes) {
+      if (char === '(') depth++;
+      else if (char === ')') depth--;
+      
+      // Check for operator at boundary
+      const remaining = expr.slice(i);
+      const opPattern = new RegExp(`^\\s*\\b${op}\\b\\s*`, 'i');
+      if (depth === 0 && opPattern.test(remaining)) {
+        parts.push(current.trim());
+        i += remaining.match(opPattern)[0].length - 1;
+        current = '';
+        continue;
+      }
     }
     current += char;
   }
@@ -86,46 +109,46 @@ function splitByOperator(expr, op) {
 }
 
 function parseCondition(expr, el) {
-  // Handle self::tag[@attr='value']
-  const selfWithTagMatch = expr.match(/^self::([a-z]+)(\[[^\]]+\])?$/);
+  expr = expr.trim();
+
+  // Handle self::tag[@attr='value'] or self::tag
+  const selfWithTagMatch = expr.match(/^self::([a-zA-Z0-9-]+)(?:\[([^\]]+)\])?$/);
   if (selfWithTagMatch) {
     const tagName = selfWithTagMatch[1].toUpperCase();
     if (el.tagName !== tagName) return false;
-    // Check for attribute condition in brackets
     if (selfWithTagMatch[2]) {
-      const attrExpr = selfWithTagMatch[2].slice(1, -1); // Remove brackets
-      return parseXPath(attrExpr, el);
+      return parseXPath(selfWithTagMatch[2], el);
     }
     return true;
   }
   
-  // Handle contains(@attr, 'value')
-  const containsMatch = expr.match(/contains\(@([a-z-]+),\s*'([^']+)'\)/);
+  // Handle contains(@attr, 'value') - Now accepts dynamic spaces inside quotes safely
+  const containsMatch = expr.match(/contains\(@([a-zA-Z0-9-]+),\s*['"]([^'"]+)['"]\)/i);
   if (containsMatch) {
     const attr = el.getAttribute(containsMatch[1]) || '';
-    return attr.includes(containsMatch[2]);
+    return attr.toLowerCase().includes(containsMatch[2].toLowerCase());
   }
   
   // Handle @attr='value'
-  const attrMatch = expr.match(/@([a-z-]+)='([^']+)'/);
+  const attrMatch = expr.match(/@([a-zA-Z0-9-]+)\s*=\s*['"]([^'"]+)['"]/);
   if (attrMatch) {
     return el.getAttribute(attrMatch[1]) === attrMatch[2];
   }
   
-  // Handle @attr (attribute exists)
-  const attrExists = expr.match(/^@([a-z-]+)$/);
+  // Handle @attr (attribute exists check)
+  const attrExists = expr.match(/^@([a-zA-Z0-9-]+)$/);
   if (attrExists) {
     return el.hasAttribute(attrExists[1]);
   }
   
   // Handle descendant::tag
-  const descendantMatch = expr.match(/descendant::([a-z]+)/);
+  const descendantMatch = expr.match(/descendant::([a-zA-Z0-9-]+)/i);
   if (descendantMatch) {
     return el.querySelector(descendantMatch[1]) !== null;
   }
   
   // Handle ancestor::*[condition]
-  const ancestorMatch = expr.match(/ancestor::\*\[([^\]]+)\]/);
+  const ancestorMatch = expr.match(/ancestor::\*\[([^\]]+)\]/i);
   if (ancestorMatch) {
     let parent = el.parentElement;
     while (parent) {
@@ -201,11 +224,10 @@ function matchesType(el, type) {
 }
 
 function matchesContent(el, value, exact = false) {
-  if (!value) return true;
-
+  if (value === undefined || value === null || value === '') return true;
   const normalizedValue = value.toLowerCase().trim();
 
-  // Check all searchable attributes
+  // Check prioritized attributes
   for (const attr of SEARCHABLE_ATTRIBUTES) {
     const attrValue = el.getAttribute(attr);
     if (attrValue) {
@@ -216,9 +238,15 @@ function matchesContent(el, value, exact = false) {
     }
   }
 
-  // Check text content
-  const textContent = (el.textContent || '').toLowerCase().trim();
-  if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
+  // FIXED: Collect only direct explicit text nodes belonging to this element
+  const directText = Array.from(el.childNodes)
+    .filter(node => node.nodeType === Node.TEXT_NODE)
+    .map(node => node.textContent)
+    .join('')
+    .toLowerCase()
+    .trim();
+
+  if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
     return true;
   }
 
@@ -242,10 +270,14 @@ function getBoundingBox(el) {
   };
 }
 
-function getAllElements(root = document, frameIndex = -1) {
+// FIXED: Handles Shadow DOM and cross-origin boundaries without double-loop repetition
+function getAllElements(root = document) {
   const elements = [];
-  const walker = document.createTreeWalker(
-    root,
+  const rootNode = root.nodeType === Node.DOCUMENT_NODE ? root.documentElement : root;
+  if (!rootNode) return elements;
+
+  const walker = (rootNode.ownerDocument || rootNode).createTreeWalker(
+    rootNode,
     NodeFilter.SHOW_ELEMENT,
     {
       acceptNode: (node) => {
@@ -260,26 +292,13 @@ function getAllElements(root = document, frameIndex = -1) {
 
   let node;
   while ((node = walker.nextNode())) {
-    elements.push({ element: node, frameIndex });
+    elements.push(node);
 
-    // Include shadow DOM elements (same frame index)
+    // Traverse Shadow DOM securely
     if (node.shadowRoot) {
-      elements.push(...getAllElements(node.shadowRoot, frameIndex));
-    }
-
-    // Include iframe elements and their contents
-    if (node.tagName === 'IFRAME') {
-      try {
-        const iframeDoc = node.contentDocument || node.contentWindow?.document;
-        if (iframeDoc) {
-          elements.push(...getAllElements(iframeDoc, frameIndex + 1));
-        }
-      } catch {
-        // Cross-origin iframe - skip
-      }
+      elements.push(...getAllElements(node.shadowRoot));
     }
   }
-
   return elements;
 }
 
@@ -293,9 +312,7 @@ function findElement(type, text, exact = false, includeHidden = false, parent = 
   const allElements = getAllElements(parent || document);
   const matches = [];
 
-  for (const item of allElements) {
-    const el = item.element;
-    const elFrameIndex = item.frameIndex;
+  for (const el of allElements) {
     
     // Check type match if specified
     if (type && !matchesType(el, type)) continue;
@@ -305,57 +322,73 @@ function findElement(type, text, exact = false, includeHidden = false, parent = 
 
     // Check visibility
     if (!includeHidden) {
-      const style = window.getComputedStyle(el);
+      const elWindow = el.ownerDocument?.defaultView || window;
+      const style = elWindow.getComputedStyle(el);
       if (style.display === 'none' || style.visibility === 'hidden' ||
           style.opacity === '0' || el.offsetWidth === 0 || el.offsetHeight === 0) {
         continue;
       }
     }
 
-    matches.push({ element: el, frameIndex: elFrameIndex });
+    matches.push(el);
   }
 
   // Filter to keep only innermost elements (remove ancestors that have matching descendants)
-  const innermostMatches = matches.filter(item => {
+  const innermostMatches = matches.filter(el => {
     return !matches.some(other => {
       // If other is a descendant of el and both match, keep the innermost (other)
-      return other !== item && item.element.contains(other.element);
+      return other !== el && el.contains(other);
     });
   });
 
-  // Build results with bounding boxes, tag names, and frame index
-  // Return objects containing both the element and its metadata
-  // This ensures metadata survives the Selenium WebElement serialization
-  const qualified = innermostMatches.map(({ element, frameIndex }) => {
-    const boundingBox = getBoundingBox(element);
+  // Build results with bounding boxes and tag names
+  const qualified = innermostMatches.map(el => {
     return {
-      element: element,
-      frameIndex: frameIndex,
-      boundingBox: boundingBox,
-      tagName: element.tagName.toLowerCase()
+      element: el,
+      boundingBox: getBoundingBox(el),
+      tagName: el.tagName.toLowerCase()
     };
   });
 
   return { elements: qualified };
 }
 
+// FIXED: Gracefully accepts raw objects, raw nodes, or API results wrapper payloads
 function highlight(elements, color = 'red', width = 3) {
-  const items = Array.isArray(elements) ? elements : [elements];
-  items.forEach(el => {
-    el.style.outline = `${width}px solid ${color}`;
-    el.style.outlineOffset = '2px';
-    el.style.boxShadow = `0 0 0 2px rgba(255, 255, 255, 0.8)`;
-    el.classList.add('elementfinder-highlighted');
+  let items;
+  if (elements && elements.elements && Array.isArray(elements.elements)) {
+    items = elements.elements;
+  } else {
+    items = Array.isArray(elements) ? elements : [elements];
+  }
+
+  items.forEach(item => {
+    const el = item.element ? item.element : item;
+    if (el && el.style) {
+      el.style.outline = `${width}px solid ${color}`;
+      el.style.outlineOffset = '2px';
+      el.style.boxShadow = `0 0 0 2px rgba(255, 255, 255, 0.8)`;
+      el.classList.add('elementfinder-highlighted');
+    }
   });
 }
 
 function unhighlight(elements) {
-  const items = Array.isArray(elements) ? elements : [elements];
-  items.forEach(el => {
-    el.style.outline = '';
-    el.style.outlineOffset = '';
-    el.style.boxShadow = '';
-    el.classList.remove('elementfinder-highlighted');
+  let items;
+  if (elements && elements.elements && Array.isArray(elements.elements)) {
+    items = elements.elements;
+  } else {
+    items = Array.isArray(elements) ? elements : [elements];
+  }
+
+  items.forEach(item => {
+    const el = item.element ? item.element : item;
+    if (el && el.style) {
+      el.style.outline = '';
+      el.style.outlineOffset = '';
+      el.style.boxShadow = '';
+      el.classList.remove('elementfinder-highlighted');
+    }
   });
 }
 

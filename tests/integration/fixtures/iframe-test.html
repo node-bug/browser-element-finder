@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Iframe Test Fixture</title>
+</head>
+<body>
+    <h1>Iframe Test Page</h1>
+    
+    <!-- Main document checkbox -->
+    <input type="checkbox" id="main-checkbox" name="mainCheckbox">
+    
+    <!-- Same-origin iframe with checkbox using srcdoc -->
+    <iframe id="test-iframe" srcdoc='<!DOCTYPE html>
+<html>
+<body>
+    <input type="checkbox" id="iframe-checkbox" name="iframeCheckbox">
+    <label for="iframe-checkbox">Iframe Checkbox</label>
+    <input type="checkbox" id="iframe-checkbox2" name="iframeCheckbox2">
+    <label for="iframe-checkbox2">Iframe Checkbox 2</label>
+</body>
+</html>'></iframe>
+</body>
+</html>

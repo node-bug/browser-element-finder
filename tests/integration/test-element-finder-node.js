@@ -37,7 +37,11 @@ describe('Element Finder Selenium Tests', () => {
   });
 
   afterAll(async () => {
-    await driver.quit();
+    try {
+      await driver.quit();
+    } catch (err) {
+      console.warn('Warning: Error quitting driver:', err.message);
+    }
   });
 
   it('should find all buttons', async () => {
@@ -141,5 +145,16 @@ describe('Element Finder Selenium Tests', () => {
       return ElementFinder.findElement('link', 'seleniumbase');
     `);
     expect(linkTextResults.elements.length).toBeGreaterThan(0);
+  });
+
+  it('should handle cross-origin iframes gracefully', async () => {
+    // Note: data: URL iframes are treated as cross-origin in Chrome
+    // and cannot be accessed due to browser security restrictions.
+    // The script should not throw errors when encountering them.
+    const checkboxResults = await driver.executeScript(`
+      return ElementFinder.findElement('checkbox');
+    `);
+    // Should find the 5 checkboxes in the main document
+    expect(checkboxResults.elements.length).toBe(5);
   });
 });

@@ -61,6 +61,7 @@ describe('ElementFinder Node.js Module Tests', () => {
     // Set up global document and NodeFilter for getAllElements
     global.document = document;
     global.NodeFilter = window.NodeFilter;
+    global.Node = window.Node;
     global.window = window;
   });
 
@@ -184,7 +185,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.removeChild(outer);
     });
 
-    it.skip('should find matching ancestor in while loop', () => {
+    it('should find matching ancestor in while loop', () => {
       // Create nested elements to test the while loop finding a match
       const outer = document.createElement('div');
       outer.setAttribute('id', 'outer');
@@ -316,23 +317,21 @@ describe('ElementFinder Node.js Module Tests', () => {
     it('should get all elements from document', () => {
       const elements = getAllElements(document);
       expect(elements.length).toBeGreaterThan(0);
-      expect(elements[0]).toHaveProperty('element');
-      expect(elements[0]).toHaveProperty('frameIndex');
+      expect(elements[0]).not.toHaveProperty('frameIndex');
     });
 
     it('should skip SCRIPT and STYLE tags', () => {
       const elements = getAllElements(document);
-      const hasScript = elements.some(e => e.element.tagName === 'SCRIPT');
-      const hasStyle = elements.some(e => e.element.tagName === 'STYLE');
+      const hasScript = elements.some(e => e.tagName === 'SCRIPT');
+      const hasStyle = elements.some(e => e.tagName === 'STYLE');
       expect(hasScript).toBe(false);
       expect(hasStyle).toBe(false);
     });
 
-    it('should return elements with metadata attached', () => {
+    it('should return elements without frameIndex', () => {
       const elements = getAllElements(document);
-      // Elements returned from getAllElements still have the wrapper format
-      expect(elements[0]).toHaveProperty('element');
-      expect(elements[0]).toHaveProperty('frameIndex');
+      // Elements returned from getAllElements are raw elements now
+      expect(elements[0]).not.toHaveProperty('frameIndex');
     });
   });
 
@@ -370,7 +369,6 @@ describe('ElementFinder Node.js Module Tests', () => {
       // Element is returned as object with element and metadata
       expect(result.elements[0]).toHaveProperty('element');
       expect(result.elements[0]).toHaveProperty('boundingBox');
-      expect(result.elements[0]).toHaveProperty('frameIndex');
       expect(result.elements[0]).toHaveProperty('tagName');
     });
 

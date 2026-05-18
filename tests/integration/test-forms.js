@@ -41,7 +41,11 @@ describe('Forms Element Finder Tests', () => {
   });
 
   afterAll(async () => {
-    await driver.quit();
+    try {
+      await driver.quit();
+    } catch (err) {
+      console.warn('Warning: Error quitting driver:', err.message);
+    }
   });
 
   it('should find all textboxes', async () => {

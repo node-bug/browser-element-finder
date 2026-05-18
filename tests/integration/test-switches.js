@@ -41,7 +41,11 @@ describe('Switches Element Finder Tests', () => {
   });
 
   afterAll(async () => {
-    await driver.quit();
+    try {
+      await driver.quit();
+    } catch (err) {
+      console.warn('Warning: Error quitting driver:', err.message);
+    }
   });
 
   it('should find all switches including hidden', async () => {
@@ -54,7 +58,8 @@ describe('Switches Element Finder Tests', () => {
         id: e.element.getAttribute('id')
       }));
     `);
-    expect(switchDetails.length).toBe(7);
+    // 6 switches (1 is inside an iframe which is no longer traversed)
+    expect(switchDetails.length).toBe(6);
   });
 
   it('should highlight all switches', async () => {
@@ -76,7 +81,8 @@ describe('Switches Element Finder Tests', () => {
         height: Math.round(e.boundingBox.height)
       }));
     `);
-    expect(switchInfo.length).toBe(7);
+    // 6 switches (1 is inside an iframe which is no longer traversed)
+    expect(switchInfo.length).toBe(6);
     switchInfo.forEach((item) => {
       expect(item.x).toBeGreaterThanOrEqual(0);
       expect(item.y).toBeGreaterThanOrEqual(0);
