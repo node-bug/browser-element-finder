@@ -109,7 +109,8 @@ describe('Shadow DOM Element Finder Tests', () => {
   it('should highlight all textboxes', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('textbox');
-      ElementFinder.highlight(result.elements.map(e => e.element), 'blue', 2);
+      // Only highlight main frame elements (iframe elements don't have raw element reference)
+      ElementFinder.highlight(result.elements.filter(e => e.element).map(e => e.element), 'blue', 2);
     `);
   });
 });

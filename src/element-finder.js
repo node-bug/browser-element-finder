@@ -146,10 +146,10 @@ export function parseCondition(expr, el) {
 }
 
 // Element type definitions as XPath-like strings
-export const ELEMENT_DEFINITIONS = elementDefinitionsData;
+export const ELEMENT_DEFINITIONS = Object.freeze(elementDefinitionsData);
 
-// Searchable attributes (in priority order)
-export let SEARCHABLE_ATTRIBUTES = searchableAttributesData;
+// Searchable attributes (in priority order) - internal state
+let SEARCHABLE_ATTRIBUTES = searchableAttributesData;
 
 export function setSearchableAttributes(attributes) {
   if (Array.isArray(attributes)) {
@@ -193,6 +193,17 @@ export function matchesContent(el, value, exact = false) {
     return true;
   }
 
+  // Check option text for select elements (dropdown matching)
+  if (el.tagName === 'SELECT') {
+    const options = el.querySelectorAll('option');
+    for (const option of options) {
+      const optionText = option.textContent.toLowerCase().trim();
+      if (exact ? optionText === normalizedValue : optionText.includes(normalizedValue)) {
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -213,7 +224,7 @@ export function getBoundingBox(el) {
   };
 }
 
-// FIXED: Handles Shadow DOM and cross-origin boundaries without double-loop repetition
+// Handles Shadow DOM traversal
 export function getAllElements(root = document) {
   const elements = [];
   const rootNode = root.nodeType === Node.DOCUMENT_NODE ? root.documentElement : root;
@@ -245,51 +256,104 @@ export function getAllElements(root = document) {
   return elements;
 }
 
-export function findElement(type, text, exact = false, includeHidden = false, parent = null) {
+// Get all frames/iframes in the window (same-origin only)
+export function getAllFrames(root = window) {
+  const frames = [];
+  try {
+    // Add the main window/document as the first "frame" with index -1
+    frames.push({ window: root, document: root.document, isMainFrame: true, frameIndex: -1 });
+    
+    // Get all iframes with 0-based index
+    const iframes = root.document.querySelectorAll('iframe');
+    for (let i = 0; i < iframes.length; i++) {
+      const iframe = iframes[i];
+      try {
+        // Only access same-origin frames
+        if (iframe.contentWindow && iframe.contentDocument) {
+          frames.push({
+            window: iframe.contentWindow,
+            document: iframe.contentDocument,
+            isMainFrame: false,
+            frameElement: iframe,
+            frameIndex: i
+          });
+        }
+      } catch (e) {
+        // Cross-origin iframe - skip
+        console.warn('Skipping cross-origin iframe:', e.message);
+      }
+    }
+  } catch (e) {
+    console.warn('Error getting frames:', e.message);
+  }
+  return frames;
+}
+
+export function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null) {
   // Validate type if provided
   if (type && !ELEMENT_DEFINITIONS[type]) {
     console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
     return { elements: [] };
   }
 
-  const allElements = getAllElements(parent || document);
   const matches = [];
+  const frames = getAllFrames(window);
 
-  for (const el of allElements) {
-    
-    // Check type match if specified
-    if (type && !matchesType(el, type)) continue;
+  for (const frame of frames) {
+    const allElements = getAllElements(parent || frame.document);
 
-    // Check text/attribute match if specified
-    if (text !== undefined && !matchesContent(el, text, exact)) continue;
+    for (const el of allElements) {
+      // Check type match if specified
+      if (type && !matchesType(el, type)) continue;
 
-    // Check visibility
-    if (!includeHidden) {
-      const elWindow = el.ownerDocument?.defaultView || window;
-      const style = elWindow.getComputedStyle(el);
-      if (style.display === 'none' || style.visibility === 'hidden' ||
-          style.opacity === '0' || el.offsetWidth === 0 || el.offsetHeight === 0) {
-        continue;
+      // Check text/attribute match if specified
+      if (text !== undefined && !matchesContent(el, text, exact)) continue;
+
+      // Check visibility
+      if (!includeHidden) {
+        const elWindow = el.ownerDocument?.defaultView || frame.window;
+        const style = elWindow.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden' ||
+            style.opacity === '0' || el.offsetWidth === 0 || el.offsetHeight === 0) {
+          continue;
+        }
       }
-    }
 
-    matches.push(el);
+      matches.push({ element: el, frame: frame });
+    }
   }
 
   // Filter to keep only innermost elements (remove ancestors that have matching descendants)
-  const innermostMatches = matches.filter(el => {
+  const innermostMatches = matches.filter(item => {
     return !matches.some(other => {
       // If other is a descendant of el and both match, keep the innermost (other)
-      return other !== el && el.contains(other);
+      return other !== item && item.element.contains(other.element);
     });
   });
 
   // Build results with bounding boxes and tag names
-  const qualified = innermostMatches.map(el => {
+  // For iframe elements, we need to serialize the element data since DOM elements
+  // from different frames cannot be passed across frame boundaries
+  const qualified = innermostMatches.map(item => {
+    const boundingBox = getBoundingBox(item.element);
+    const tagName = item.element.tagName.toLowerCase();
+    
+    // For iframe elements, only return serializable data (no raw element reference)
+    // This is because DOM elements from different frames cannot be serialized
+    if (!item.frame.isMainFrame) {
+      return {
+        boundingBox: boundingBox,
+        tagName: tagName,
+        frameIndex: item.frame.frameIndex
+      };
+    }
+    
+    // For main frame elements, include the raw element reference
     return {
-      element: el,
-      boundingBox: getBoundingBox(el),
-      tagName: el.tagName.toLowerCase()
+      element: item.element,
+      boundingBox: boundingBox,
+      tagName: tagName,
+      frameIndex: item.frame.frameIndex
     };
   });
 

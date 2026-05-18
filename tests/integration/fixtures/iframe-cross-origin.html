@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Iframe Cross-Origin Test Fixture</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        iframe { border: 2px solid #333; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Iframe Cross-Origin Test Page</h1>
+    
+    <!-- Main document elements -->
+    <div class="section">
+        <h2>Main Document</h2>
+        <button id="main-button">Main Button</button>
+        <input type="text" id="main-input" placeholder="Main input">
+        <input type="checkbox" id="main-checkbox">
+        <label for="main-checkbox">Main Checkbox</label>
+    </div>
+
+    <!-- Same-origin iframe using srcdoc -->
+    <div class="section">
+        <h2>Same-Origin Iframe (srcdoc)</h2>
+        <iframe id="same-origin-iframe" srcdoc='<!DOCTYPE html>
+<html>
+<head><title>Same-Origin Frame</title></head>
+<body>
+    <h3>Same-Origin Frame Content</h3>
+    <button id="same-origin-button">Same-Origin Button</button>
+    <input type="text" id="same-origin-input" placeholder="Same-origin input">
+    <input type="checkbox" id="same-origin-checkbox">
+    <label for="same-origin-checkbox">Same-Origin Checkbox</label>
+    <select id="same-origin-select">
+        <option value="opt1">Option 1</option>
+        <option value="opt2">Option 2</option>
+    </select>
+</body>
+</html>'></iframe>
+    </div>
+
+    <!-- Cross-origin iframe pointing to external domain -->
+    <div class="section">
+        <h2>Cross-Origin Iframe</h2>
+        <p>This iframe points to an external domain. JavaScript cannot access its content due to same-origin policy.</p>
+        <iframe id="cross-origin-iframe" 
+                src="https://example.com" 
+                width="400" 
+                height="200">
+            <p>Your browser does not support iframes.</p>
+        </iframe>
+    </div>
+
+    <!-- Another same-origin iframe using data URL for variety -->
+    <div class="section">
+        <h2>Same-Origin Iframe (data URL)</h2>
+        <iframe id="same-origin-data-iframe" 
+                src="data:text/html;charset=utf-8,<!DOCTYPE html><html><body><button id=data-button>Data URL Button</button></body></html>">
+        </iframe>
+    </div>
+</body>
+</html>

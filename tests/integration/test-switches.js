@@ -18,7 +18,7 @@ describe('Switches Element Finder Tests', () => {
 
   beforeAll(async () => {
     const options = new chrome.Options()
-      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
+      .addArguments('--no-sandbox', '--disable-dev-shm-usage');
 
     driver = await new Builder()
       .forBrowser('chrome')
@@ -51,41 +51,64 @@ describe('Switches Element Finder Tests', () => {
   it('should find all switches including hidden', async () => {
     const switchDetails = await driver.executeScript(`
       const result = ElementFinder.findElement('switch', null, false, true);
-      return result.elements.map(e => ({
-        tagName: e.tagName,
-        role: e.element.getAttribute('role'),
-        type: e.element.getAttribute('type'),
-        id: e.element.getAttribute('id')
-      }));
+      return result
     `);
-    // 6 switches (1 is inside an iframe which is no longer traversed)
-    expect(switchDetails.length).toBe(6);
+    // Should find exactly 7 switches in the main document (including shadow DOM switch, excluding iframe)
+    expect(switchDetails.elements.length).toBe(7);
+    expect(switchDetails.elements[0]).toHaveProperty('boundingBox');
+    expect(switchDetails.elements[0]).toHaveProperty('frameIndex');
+    expect(switchDetails.elements[0]).toHaveProperty('element');
+    expect(switchDetails.elements[0]).toHaveProperty('tagName');
   });
 
   it('should highlight all switches', async () => {
     await driver.executeScript(`
       const result = ElementFinder.findElement('switch', null, false, true);
-      ElementFinder.highlight(result.elements.map(e => e.element), 'green', 3);
+      // Only highlight elements that have the element property (main frame elements)
+      const mainFrameElements = result.elements.filter(e => e.element);
+      ElementFinder.highlight(mainFrameElements.map(e => e.element), 'green', 3);
     `);
   });
 
   it('should return bounding box info for switches', async () => {
     const switchInfo = await driver.executeScript(`
       const result = ElementFinder.findElement('switch', null, false, true);
-      return result.elements.map(e => ({
-        tagName: e.tagName,
-        id: e.element.getAttribute('id'),
-        x: Math.round(e.boundingBox.x),
-        y: Math.round(e.boundingBox.y),
-        width: Math.round(e.boundingBox.width),
-        height: Math.round(e.boundingBox.height)
-      }));
+      return result
     `);
-    // 6 switches (1 is inside an iframe which is no longer traversed)
-    expect(switchInfo.length).toBe(6);
-    switchInfo.forEach((item) => {
-      expect(item.x).toBeGreaterThanOrEqual(0);
-      expect(item.y).toBeGreaterThanOrEqual(0);
+    // Should find exactly 7 switches with bounding boxes
+    expect(switchInfo.elements.length).toBe(7);
+    switchInfo.elements.forEach((item) => {
+      expect(item.boundingBox.x).toBeGreaterThanOrEqual(0);
+      expect(item.boundingBox.y).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  it('should highlight switch in shadow DOM', async () => {
+    const shadowswitch = await driver.executeScript(`
+      const result = ElementFinder.findElement('switch', 'shadow-switch', false, true);
+      return result
+    `);
+    expect(shadowswitch.elements.length).toBe(1);
+    expect(shadowswitch.elements[0]).toHaveProperty('boundingBox');
+    expect(shadowswitch.elements[0]).toHaveProperty('frameIndex');
+    expect(shadowswitch.elements[0]).toHaveProperty('element');
+    expect(shadowswitch.elements[0]).toHaveProperty('tagName');
+  });
+
+  it('should find switches in iframe but cannot highlight directly', async () => {
+    const iframeSwitchInfo = await driver.executeScript(`
+      const result = ElementFinder.findElement('switch', "iframe-switch", false, true);
+      return result
+    `);
+    // Should find at least one switch in iframe
+    expect(iframeSwitchInfo.elements.length).toBe(1);
+    expect(iframeSwitchInfo.elements[0]).toHaveProperty('boundingBox');
+    expect(iframeSwitchInfo.elements[0]).toHaveProperty('frameIndex');
+    expect(iframeSwitchInfo.elements[0]).toHaveProperty('tagName');
+    // Iframe elements should NOT have the element property (can't cross frame boundaries)
+    iframeSwitchInfo.elements.forEach(switchInfo => {
+      expect(switchInfo.element).toBeFalsy();
+      expect(switchInfo.frameIndex).toBeGreaterThanOrEqual(0);
     });
   });
 });

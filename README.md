@@ -7,7 +7,7 @@ A standalone JavaScript library for identifying DOM elements by type and/or text
 - **Type-based element finding**: Find elements by semantic type (button, textbox, link, dropdown, etc.)
 - **Text content search**: Search within element text, attributes, and placeholders
 - **Shadow DOM support**: Automatically traverses shadow roots to find nested elements
-- **Parent scoping**: Limit searches to a specific parent element
+- **Iframe support**: Automatically searches all frames (main document + iframes) by default
 - **Visibility filtering**: Optionally include or exclude hidden elements
 - **Bounding box data**: Returns position and dimensions for each found element
 - **XPath-like type definitions**: Extensible element type matching using XPath-like expressions
@@ -48,15 +48,26 @@ const results = ElementFinder.findElement('button', 'Submit')
 // Find elements by text only
 const results = ElementFinder.findElement(null, 'seleniumbase')
 
+// Find elements in iframes (searches all frames by default)
+const results = ElementFinder.findElement('button')
+results.elements.forEach((item) => {
+  console.log('Frame index:', item.frameIndex) // -1 for main, 0+ for iframes
+  if (item.element) {
+    console.log('Can interact with element directly')
+  } else {
+    console.log('Iframe element - use elementData for metadata')
+  }
+})
+
 // Find links with specific text
 const results = ElementFinder.findElement('link', 'seleniumbase')
 
-// Find elements within a parent element
-const parent = document.querySelector('.container')
-const results = ElementFinder.findElement('button', null, false, false, parent)
-
 // Include hidden elements
 const results = ElementFinder.findElement('button', null, false, true)
+
+// Find elements within a parent element
+const parent = document.querySelector('#container')
+const results = ElementFinder.findElement('button', null, false, false, parent)
 
 // Access metadata from results
 results.elements.forEach((item) => {
@@ -127,17 +138,22 @@ highlight(results.elements.map((e) => e.element))
 
 ### `findElement(type, text, exact, includeHidden, parent)`
 
-Finds elements matching the specified criteria.
+Finds elements matching the specified criteria. Searches all frames (main document + iframes) by default.
 
-| Parameter       | Type      | Default | Description                              |
-| --------------- | --------- | ------- | ---------------------------------------- |
-| `type`          | `string`  | `null`  | Element type (see supported types below) |
-| `text`          | `string`  | `null`  | Text to search for in content/attributes |
-| `exact`         | `boolean` | `false` | Exact text match vs substring            |
-| `includeHidden` | `boolean` | `false` | Include hidden elements                  |
-| `parent`        | `Element` | `null`  | Parent element to search within          |
+| Parameter       | Type      | Default     | Description                              |
+| --------------- | --------- | ----------- | ---------------------------------------- |
+| `type`          | `string`  | `"element"` | Element type (see supported types below) |
+| `text`          | `string`  | `null`      | Text to search for in content/attributes |
+| `exact`         | `boolean` | `false`     | Exact text match vs substring            |
+| `includeHidden` | `boolean` | `false`     | Include hidden elements                  |
+| `parent`        | `Element` | `null`      | Parent element to search within          |
 
-**Returns**: `{ elements: [{ element, boundingBox, tagName }] }`
+**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
+
+- `element`: Raw DOM element (only available for main frame elements; iframe elements return `undefined`)
+- `frameIndex`: `-1` for main frame, `0, 1, 2...` for iframes
+
+**Important**: Iframe elements are found and their bounding boxes are returned, but the raw DOM element is NOT included because DOM elements cannot be serialized across frame boundaries. To interact with iframe elements, you must switch the Selenium driver context to the iframe first using `driver.switchTo().frame()`.
 
 ### `highlight(elements, color, width)`
 
@@ -181,6 +197,14 @@ Checks if an element matches the specified text content.
 
 Gets all elements including shadow DOM contents.
 
+### `getAllFrames(root)`
+
+Gets all frames (main document + iframes) in the window. Returns array with `frameIndex` (-1 for main, 0+ for iframes).
+
+### `getConfig()`
+
+Returns the current configuration object.
+
 ### `parseXPath(expr, el)`
 
 Parses XPath-like expressions for element type matching.
@@ -188,6 +212,53 @@ Parses XPath-like expressions for element type matching.
 ### `splitByOperator(expr, op)`
 
 Splits XPath expressions by operator (and/or).
+
+## Working with Iframes
+
+The library automatically searches all frames (main document + iframes) by default. However, there are important limitations when working with iframe elements:
+
+### Iframe Element Limitations
+
+```javascript
+const results = ElementFinder.findElement('button')
+
+results.elements.forEach((item) => {
+  if (item.frameIndex === -1) {
+    // Main frame element - can interact directly
+    console.log('Main frame element:', item.element)
+    item.element.click() // Works
+  } else {
+    // Iframe element - element property is undefined
+    console.log('Iframe element at frameIndex:', item.frameIndex)
+    console.log('Bounding box:', item.boundingBox)
+    // item.element is undefined - cannot interact directly
+  }
+})
+```
+
+### Interacting with Iframe Elements
+
+To interact with elements inside an iframe, you must switch the Selenium driver context:
+
+```javascript
+// Find iframe elements
+const results = await driver.executeScript(`
+  return ElementFinder.findElement('button');
+`)
+
+// Switch to iframe and interact
+const iframeElements = results.elements.filter((e) => e.frameIndex >= 0)
+if (iframeElements.length > 0) {
+  // Switch to the iframe (frameIndex 0 = first iframe)
+  await driver.switchTo().frame(iframeElements[0].frameIndex)
+
+  // Now find and interact with elements in the iframe
+  const iframeResults = await driver.executeScript(`
+    return ElementFinder.findElement('button');
+  `)
+  // These elements will have the element property since we're in the iframe context
+}
+```
 
 ## Supported Element Types
 
@@ -239,7 +310,7 @@ npm run test:watch
 npm run test:coverage
 ```
 
-**Note:** The `tests/integration/helpers/` folder is excluded from vitest runs as it contains helper utilities rather than test files.
+**Note:** The `tests/integration/helpers/` folder is excluded from vitest runs as it contains helper utilities r
 
 ### Linting
 

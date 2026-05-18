@@ -33,10 +33,10 @@ source = source.replace(/import\s+searchableAttributesData[^;]+;\s*/, '');
 source = source.replace(/import\s+elementDefinitionsData[^;]+;\s*/, '');
 
 // Replace the JSON imports with inline data
-source = source.replace(/export let SEARCHABLE_ATTRIBUTES = searchableAttributesData;/, 
+source = source.replace(/let SEARCHABLE_ATTRIBUTES = searchableAttributesData;/, 
   `let SEARCHABLE_ATTRIBUTES = ${searchableAttributes};`);
-source = source.replace(/export const ELEMENT_DEFINITIONS = elementDefinitionsData;/, 
-  `const ELEMENT_DEFINITIONS = ${elementDefinitions};`);
+source = source.replace(/export const ELEMENT_DEFINITIONS = Object\.freeze\(elementDefinitionsData\);/, 
+  `const ELEMENT_DEFINITIONS = Object.freeze(${elementDefinitions});`);
 
 // Remove the export keywords
 let code = source.replace(/^export\s+/gm, '');
@@ -62,9 +62,8 @@ const output = `/**
  *   // Find links with specific text
  *   const results = ElementFinder.findElement('link', 'seleniumbase');
  *   
- *   // Find elements within a parent element
- *   const parent = document.querySelector('.container');
- *   const results = ElementFinder.findElement('button', null, false, false, parent);
+ *   // Find hidden elements
+ *   const results = ElementFinder.findElement('button', null, false, true);
  */
 
 const ElementFinder = (function() {
@@ -85,8 +84,8 @@ ${code}
     matchesType,
     matchesContent,
     getAllElements,
-    ELEMENT_DEFINITIONS,
-    SEARCHABLE_ATTRIBUTES
+    getAllFrames,
+    ELEMENT_DEFINITIONS
   };
 })();
 

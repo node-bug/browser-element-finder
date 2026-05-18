@@ -130,4 +130,28 @@ describe('Dropdowns Element Finder', () => {
     const selectedText = await selectedOption.getText();
     expect(selectedText.length).toBeGreaterThan(0);
   });
+
+  it('should find dropdown by option text', async () => {
+    // Find dropdown by option text "Apple"
+    const dropdownByOptionText = await driver.executeScript(`
+      return ElementFinder.findElement('dropdown', 'Apple');
+    `);
+    
+    expect(dropdownByOptionText.elements.length).toBe(1);
+    expect(dropdownByOptionText.elements[0].tagName).toBe('select');
+    const elementId = await dropdownByOptionText.elements[0].element.getAttribute('id');
+    expect(elementId).toBe('single-select');
+  });
+
+  it('should find dropdown by partial option text', async () => {
+    // Find dropdown by partial option text "Fruits"
+    const dropdownByPartialText = await driver.executeScript(`
+      return ElementFinder.findElement('dropdown', 'Fruits');
+    `);
+    
+    expect(dropdownByPartialText.elements.length).toBe(1);
+    expect(dropdownByPartialText.elements[0].tagName).toBe('select');
+    const elementId = await dropdownByPartialText.elements[0].element.getAttribute('id');
+    expect(elementId).toBe('category-select');
+  });
 });

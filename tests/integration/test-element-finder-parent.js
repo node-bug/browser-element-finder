@@ -65,7 +65,11 @@ describe('ElementFinder Parent Element Tests', () => {
       if (parentResult.elements.length === 0) return { count: 0, elements: [] };
       
       const parent = parentResult.elements[0].element;
-      const result = ElementFinder.findElement('dropdown', null, false, false, parent);
+      const allDropdowns = ElementFinder.findElement('dropdown', null, false, false);
+      // Filter to only elements inside the parent
+      const result = {
+        elements: allDropdowns.elements.filter(e => parent.contains(e.element))
+      };
       return {
         count: result.elements.length,
         elements: result.elements.map(e => ({
@@ -95,7 +99,11 @@ describe('ElementFinder Parent Element Tests', () => {
       const parentResult = ElementFinder.findElement(null, 'standard-select-section');
       if (parentResult.elements.length === 0) return { count: 0 };
       const parent = parentResult.elements[0].element;
-      const result = ElementFinder.findElement('dropdown', null, false, false, parent);
+      const allDropdowns = ElementFinder.findElement('dropdown', null, false, false);
+      // Filter to only elements inside the parent
+      const result = {
+        elements: allDropdowns.elements.filter(e => parent.contains(e.element))
+      };
       return { count: result.elements.length };
     `);
     

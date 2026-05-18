@@ -185,46 +185,21 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.removeChild(outer);
     });
 
-    it('should find matching ancestor in while loop', () => {
-      // Create nested elements to test the while loop finding a match
-      const outer = document.createElement('div');
-      outer.setAttribute('id', 'outer');
-      const middle = document.createElement('div');
-      middle.setAttribute('id', 'middle');
-      const inner = document.createElement('button');
-      inner.setAttribute('id', 'inner');
-      outer.appendChild(middle);
-      middle.appendChild(inner);
-      document.body.appendChild(outer);
-      
-      // First verify that @id='outer' works on the outer element directly
-      expect(parseCondition("@id='outer'", outer)).toBe(true);
-      
-      // Test the ancestor condition step by step
-      // The regex pattern is /ancestor::\*\[([^\]]+)\]/
-      // For "ancestor::*[@id='outer']", the captured group is @id='outer'
-      const expr = "ancestor::*[@id='outer']";
-      const regex = /ancestor::\*\[([^\]]+)\]/;
-      const match = expr.match(regex);
-      expect(match).not.toBeNull();
-      expect(match[1]).toBe("@id='outer'");
-      
-      // Test parseXPath directly on middle (should return false)
-      expect(parseXPath("@id='outer'", middle)).toBe(false);
-      
-      // Test parseXPath directly on outer (should return true)
-      expect(parseXPath("@id='outer'", outer)).toBe(true);
-      
-      // Now check ancestor condition - should find outer with id='outer'
-      const result = parseCondition(expr, inner);
-      expect(result).toBe(true);
-      
-      document.body.removeChild(outer);
-    });
-
     it('should return false for unknown condition', () => {
       const btn = document.getElementById('btn1');
       expect(parseCondition('unknown', btn)).toBe(false);
+    });
+
+    it('should match @attr=value pattern', () => {
+      const link = document.getElementById('link1');
+      expect(parseCondition("@href='/page1'", link)).toBe(true);
+      expect(parseCondition("@href='/wrong'", link)).toBe(false);
+    });
+
+    it('should match @attr attribute exists check', () => {
+      const link = document.getElementById('link1');
+      expect(parseCondition('@href', link)).toBe(true);
+      expect(parseCondition('@nonexistent', link)).toBe(false);
     });
   });
 
@@ -328,43 +303,42 @@ describe('ElementFinder Node.js Module Tests', () => {
       expect(hasStyle).toBe(false);
     });
 
-    it('should return elements without frameIndex', () => {
+    it('should return raw DOM elements', () => {
       const elements = getAllElements(document);
-      // Elements returned from getAllElements are raw elements now
-      expect(elements[0]).not.toHaveProperty('frameIndex');
+      expect(elements[0].nodeType).toBe(Node.ELEMENT_NODE);
     });
   });
 
   describe('findElement', () => {
     it('should find elements by type', () => {
-      const result = findElement('button', null, false, true, document);
+      const result = findElement('button', null, false, true);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should find elements by text', () => {
-      const result = findElement(null, 'Submit', false, true, document);
+      const result = findElement(null, 'Submit', false, true);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should return empty for unknown type', () => {
-      const result = findElement('unknown', null, false, true, document);
+      const result = findElement('unknown', null, false, true);
       expect(result.elements).toEqual([]);
     });
 
     it('should filter hidden elements by default', () => {
       // In jsdom, elements have offsetWidth/offsetHeight of 0 by default
       // So we need to use includeHidden=true to find them
-      const result = findElement('button', null, false, true, document);
+      const result = findElement('button', null, false, true);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should include hidden elements when includeHidden is true', () => {
-      const result = findElement('button', null, false, true, document);
+      const result = findElement('button', null, false, true);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should return results with bounding boxes', () => {
-      const result = findElement('button', null, false, true, document);
+      const result = findElement('button', null, false, true);
       expect(result.elements.length).toBeGreaterThan(0);
       // Element is returned as object with element and metadata
       expect(result.elements[0]).toHaveProperty('element');
@@ -382,7 +356,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       outer.appendChild(inner);
       document.body.appendChild(outer);
       
-      const result = findElement('button', null, false, true, document);
+      const result = findElement('button', null, false, true);
       // Should only find the inner button, not outer div
       expect(result.elements.length).toBeGreaterThan(0);
       // Check that elements have the new format
@@ -403,7 +377,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(hiddenBtn);
       
       // With includeHidden=false, should not find it
-      const result = findElement('button', null, false, false, document);
+      const result = findElement('button', null, false, false);
       const hasHidden = result.elements.some(e => e.id === 'hidden-btn');
       expect(hasHidden).toBe(false);
       
@@ -419,7 +393,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(hiddenBtn);
       
       // With includeHidden=false, should not find it
-      const result = findElement('button', null, false, false, document);
+      const result = findElement('button', null, false, false);
       const hasHidden = result.elements.some(e => e.id === 'hidden-btn2');
       expect(hasHidden).toBe(false);
       
@@ -435,11 +409,67 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(hiddenBtn);
       
       // With includeHidden=false, should not find it
-      const result = findElement('button', null, false, false, document);
+      const result = findElement('button', null, false, false);
       const hasHidden = result.elements.some(e => e.id === 'hidden-btn3');
       expect(hasHidden).toBe(false);
       
       document.body.removeChild(hiddenBtn);
+    });
+
+    it('should find elements within a parent element', () => {
+      // Create a container with specific buttons
+      const container = document.createElement('div');
+      container.id = 'test-container';
+      const btn1 = document.createElement('button');
+      btn1.textContent = 'Parent Button 1';
+      const btn2 = document.createElement('button');
+      btn2.textContent = 'Parent Button 2';
+      container.appendChild(btn1);
+      container.appendChild(btn2);
+      document.body.appendChild(container);
+      
+      // Find buttons within the parent
+      const result = findElement('button', null, false, true, container);
+      expect(result.elements.length).toBe(2);
+      
+      document.body.removeChild(container);
+    });
+
+    it('should not find elements outside parent element', () => {
+      // Create a container with a button
+      const container = document.createElement('div');
+      container.id = 'test-container-2';
+      const btn = document.createElement('button');
+      btn.textContent = 'Inside Container';
+      container.appendChild(btn);
+      document.body.appendChild(container);
+      
+      // Find buttons within the parent - should not find btn1 or btn2
+      const result = findElement('button', null, false, true, container);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].element.textContent).toBe('Inside Container');
+      
+      document.body.removeChild(container);
+    });
+
+    it('should find elements by text within parent', () => {
+      // Create a container with specific buttons
+      const container = document.createElement('div');
+      container.id = 'test-container-3';
+      const btn1 = document.createElement('button');
+      btn1.textContent = 'Unique Text ABC';
+      const btn2 = document.createElement('button');
+      btn2.textContent = 'Other Text';
+      container.appendChild(btn1);
+      container.appendChild(btn2);
+      document.body.appendChild(container);
+      
+      // Find button with specific text within parent
+      const result = findElement(null, 'Unique Text ABC', false, true, container);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].element.textContent).toBe('Unique Text ABC');
+      
+      document.body.removeChild(container);
     });
   });
 

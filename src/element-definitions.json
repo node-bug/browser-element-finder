@@ -4,7 +4,7 @@
   "heading": "@role='heading' or self::h1 or self::h2 or self::h3 or self::h4 or self::h5 or self::h6",
   "button": "self::button or @role='button' or @type='button' or @type='submit'",
   "checkbox": "(self::input and @type='checkbox') or @role='checkbox'",
-  "switch": "self::button[@role='switch'] or (self::input and @type='checkbox') or @role='switch' or (self::button and @data-state)",
+  "switch": "(self::input and @type='checkbox') or @role='switch' or (self::button and (contains(@class, 'switch') or @data-state))",
   "slider": "self::input[@type='range'] or @role='slider'",
   "radio": "(self::input and @type='radio') or @role='radio'",
   "dropdown": "(self::select[descendant::option] or @role='combobox' or @role='listbox' or contains(@class, 'dropdown') or contains(@class, 'trigger') or ancestor::*[contains(@class, 'dropdown') or @role='combobox'])",
