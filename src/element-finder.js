@@ -185,7 +185,7 @@ export function getBoundingBox(el) {
   };
 }
 
-export function getAllElements(root = document, frameIndex = 0) {
+export function getAllElements(root = document, frameIndex = -1) {
   const elements = [];
   const walker = document.createTreeWalker(
     root,
@@ -204,12 +204,12 @@ export function getAllElements(root = document, frameIndex = 0) {
   let node;
   while ((node = walker.nextNode())) {
     elements.push({ element: node, frameIndex });
-    
+
     // Include shadow DOM elements (same frame index)
     if (node.shadowRoot) {
       elements.push(...getAllElements(node.shadowRoot, frameIndex));
     }
-    
+
     // Include iframe elements and their contents
     if (node.tagName === 'IFRAME') {
       try {
