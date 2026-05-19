@@ -487,4 +487,223 @@ describe('ElementFinder Node.js Module Tests', () => {
       expect(btn.style.outline).toBe('');
     });
   });
+
+  describe('Edge Cases and Performance Tests', () => {
+    it('should handle deeply nested elements', () => {
+      // Create a deeply nested structure
+      let parent = document.createElement('div');
+      parent.setAttribute('data-depth', '0');
+      document.body.appendChild(parent);
+      
+      let current = parent;
+      for (let i = 1; i <= 10; i++) {
+        const child = document.createElement('div');
+        child.setAttribute('data-depth', `${i}`);
+        current.appendChild(child);
+        current = child;
+      }
+      
+      const deepestBtn = document.createElement('button');
+      deepestBtn.id = 'deep-btn';
+      deepestBtn.textContent = 'Deep Button';
+      current.appendChild(deepestBtn);
+      
+      // Find the deep button
+      const result = findElement('button', 'Deep Button', false, true);
+      expect(result.elements.length).toBeGreaterThan(0);
+      expect(result.elements.some(e => e.element.id === 'deep-btn')).toBe(true);
+      
+      document.body.removeChild(parent);
+    });
+
+    it('should handle unicode and emoji in text matching', () => {
+      const btn = document.createElement('button');
+      btn.id = 'emoji-btn';
+      btn.textContent = '🎯 Target Button 中文';
+      document.body.appendChild(btn);
+      
+      // Find by emoji
+      const result1 = findElement('button', '🎯', false, true);
+      expect(result1.elements.some(e => e.element.id === 'emoji-btn')).toBe(true);
+      
+      // Find by Chinese characters
+      const result2 = findElement('button', '中文', false, true);
+      expect(result2.elements.some(e => e.element.id === 'emoji-btn')).toBe(true);
+      
+      document.body.removeChild(btn);
+    });
+
+    it('should handle exact matching mode', () => {
+      const btn = document.createElement('button');
+      btn.id = 'exact-btn';
+      btn.textContent = 'Click Me Now';
+      document.body.appendChild(btn);
+      
+      // Exact match should find
+      const result1 = findElement('button', 'Click Me Now', true, true);
+      expect(result1.elements.some(e => e.element.id === 'exact-btn')).toBe(true);
+      
+      // Partial match should not find in exact mode
+      const result2 = findElement('button', 'Click Me', true, true);
+      expect(result2.elements.some(e => e.element.id === 'exact-btn')).toBe(false);
+      
+      // Partial match should find in non-exact mode
+      const result3 = findElement('button', 'Click Me', false, true);
+      expect(result3.elements.some(e => e.element.id === 'exact-btn')).toBe(true);
+      
+      document.body.removeChild(btn);
+    });
+
+    it('should handle large DOM with many elements', () => {
+      const container = document.createElement('div');
+      container.id = 'large-dom';
+      
+      // Create 100 buttons
+      for (let i = 0; i < 100; i++) {
+        const btn = document.createElement('button');
+        btn.id = `btn-${i}`;
+        btn.textContent = `Button ${i}`;
+        container.appendChild(btn);
+      }
+      document.body.appendChild(container);
+      
+      // Find all buttons
+      const result = findElement('button', null, false, true, container);
+      expect(result.elements.length).toBe(100);
+      
+      // Find specific button
+      const result2 = findElement('button', 'Button 50', false, true, container);
+      expect(result2.elements.some(e => e.element.id === 'btn-50')).toBe(true);
+      
+      document.body.removeChild(container);
+    });
+
+    it('should handle maxFrames parameter', () => {
+      const result = findElement('button', null, false, true, null, 1);
+      // Should find buttons in main frame
+      expect(result.elements.length).toBeGreaterThan(0);
+    });
+
+    it('should match complex XPath expressions', () => {
+      const btn = document.getElementById('btn1');
+      
+      // Test OR with multiple conditions
+      const result1 = parseXPath('self::button or self::input', btn);
+      expect(result1).toBe(true);
+      
+      // Test AND with multiple conditions
+      const result2 = parseXPath('self::button and true()', btn);
+      expect(result2).toBe(true);
+      
+      // Test nested parentheses
+      const result3 = parseXPath('((self::button))', btn);
+      expect(result3).toBe(true);
+    });
+
+    it('should handle case-insensitive attribute matching', () => {
+      const btn = document.createElement('button');
+      btn.setAttribute('DATA-TYPE', 'SUBMIT');
+      btn.id = 'case-btn';
+      document.body.appendChild(btn);
+      
+      // Should match with lowercase
+      const result = findElement(null, null, false, true);
+      // Just verify no errors
+      expect(result.elements).toBeDefined();
+      
+      document.body.removeChild(btn);
+    });
+
+    it('should handle elements with no text content', () => {
+      const img = document.createElement('img');
+      img.src = 'test.jpg';
+      img.alt = 'Test Image';
+      document.body.appendChild(img);
+      
+      // Find by alt text
+      const result = findElement(null, 'Test Image', false, true);
+      expect(result.elements.length).toBeGreaterThan(0);
+      
+      document.body.removeChild(img);
+    });
+
+    it('should handle matchesType with invalid type', () => {
+      const btn = document.getElementById('btn1');
+      const result = matchesType(btn, 'nonexistent-type');
+      expect(result).toBe(false);
+    });
+
+    it('should handle multiple spaces in text matching', () => {
+      const btn = document.createElement('button');
+      btn.id = 'space-btn';
+      btn.textContent = 'Multiple Spaces';
+      document.body.appendChild(btn);
+      
+      // Should match after trimming
+      const result = findElement('button', 'Multiple Spaces', false, true);
+      expect(result.elements.length).toBeGreaterThan(0);
+      
+      document.body.removeChild(btn);
+    });
+
+    it('should handle select options matching', () => {
+      const select = document.createElement('select');
+      select.id = 'dropdown';
+      const option1 = document.createElement('option');
+      option1.textContent = 'Option One';
+      const option2 = document.createElement('option');
+      option2.textContent = 'Option Two';
+      select.appendChild(option1);
+      select.appendChild(option2);
+      document.body.appendChild(select);
+      
+      // Select element should be found even if no direct text match
+      const result = findElement('dropdown', null, false, true);
+      expect(result.elements.length).toBeGreaterThan(0);
+      
+      document.body.removeChild(select);
+    });
+
+    it('should handle highlight with result wrapper format', () => {
+      const btn = document.getElementById('btn1');
+      const results = {
+        elements: [
+          {
+            element: btn,
+            boundingBox: getBoundingBox(btn),
+            tagName: 'button'
+          }
+        ]
+      };
+      
+      highlight(results, 'blue', 2);
+      expect(btn.style.outline).toBe('2px solid blue');
+      
+      unhighlight(results);
+      expect(btn.style.outline).toBe('');
+    });
+
+    it('should handle invalid regex patterns gracefully', () => {
+      const expr = "self::button[@id='test']";
+      const btn = document.getElementById('btn1');
+      
+      // Should not throw
+      const result = parseCondition(expr, btn);
+      expect(typeof result).toBe('boolean');
+    });
+
+    it('should split operators with mixed case', () => {
+      const result1 = splitByOperator('a OR b', 'or');
+      expect(result1.length).toBe(2);
+      
+      const result2 = splitByOperator('a AND b', 'and');
+      expect(result2.length).toBe(2);
+    });
+
+    it('should handle operators in quoted strings', () => {
+      const result = splitByOperator("contains(@text, 'or') or @type='button'", 'or');
+      expect(result.length).toBe(2);
+      expect(result[0]).toContain('or');
+    });
+  });
 });

@@ -3,12 +3,13 @@
 /**
  * Build script: Generates index.js from src/element-finder.js
  * 
- * Converts ES module exports to browser-compatible IIFE format.
+ * Converts ES module exports to browser-compatible IIFE format and minifies.
  */
 
 import { readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import * as terserModule from 'terser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -98,4 +99,33 @@ if (typeof module !== 'undefined' && module.exports) {
 // Write the output file
 writeFileSync(outputFile, output, 'utf8');
 
+// Minify the output
+const minified = await terserModule.minify(output, {
+  compress: {
+    passes: 3,
+    drop_console: false
+  },
+  mangle: true,
+  output: {
+    comments: /^\*!|@preserve|@license/
+  }
+});
+
+if (minified.error) {
+  console.error('✗ Minification failed:', minified.error);
+  process.exit(1);
+}
+
+// Write minified version
+const minifiedOutputFile = join(__dirname, 'index.min.js');
+writeFileSync(minifiedOutputFile, minified.code, 'utf8');
+
+const stats = {
+  original: Buffer.byteLength(output, 'utf8'),
+  minified: Buffer.byteLength(minified.code, 'utf8')
+};
+
+const reduction = ((1 - stats.minified / stats.original) * 100).toFixed(1);
+
 console.log('✓ Built index.js from src/element-finder.js');
+console.log(`✓ Minified version: ${stats.original} → ${stats.minified} bytes (${reduction}% reduction)`);

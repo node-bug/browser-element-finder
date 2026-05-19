@@ -23,6 +23,18 @@
  */
 
 const ElementFinder = (function() {
+// Precompiled regex patterns for performance (avoid recompiling on every call)
+const REGEX_PATTERNS = {
+  selfWithTag: /^self::([a-zA-Z0-9-]+)(?:\[([^\]]+)\])?$/,
+  contains: /contains\(@([a-zA-Z0-9-]+),\s*['"]([^'"]+)['"]\)/i,
+  attrEquals: /@([a-zA-Z0-9-]+)\s*=\s*['"]([^'"]+)['"]/,
+  attrExists: /^@([a-zA-Z0-9-]+)$/,
+  descendant: /descendant::([a-zA-Z0-9-]+)/i,
+  ancestor: /ancestor::\*\[([^\]]+)\]/i,
+  operatorOr: /^\s*\bor\b\s*/i,
+  operatorAnd: /^\s*\band\b\s*/i
+};
+
 // XPath-like expression parser for element type definitions
 function parseXPath(expr, el) {
   expr = expr.trim();
@@ -73,6 +85,7 @@ function splitByOperator(expr, op) {
   let current = '';
   let inQuotes = false;
   let quoteChar = '';
+  const opPattern = op === 'or' ? REGEX_PATTERNS.operatorOr : REGEX_PATTERNS.operatorAnd;
   
   for (let i = 0; i < expr.length; i++) {
     const char = expr[i];
@@ -91,14 +104,16 @@ function splitByOperator(expr, op) {
       if (char === '(') depth++;
       else if (char === ')') depth--;
       
-      // Check for operator at boundary
-      const remaining = expr.slice(i);
-      const opPattern = new RegExp(`^\\s*\\b${op}\\b\\s*`, 'i');
-      if (depth === 0 && opPattern.test(remaining)) {
-        parts.push(current.trim());
-        i += remaining.match(opPattern)[0].length - 1;
-        current = '';
-        continue;
+      // Check for operator at boundary (use precompiled pattern)
+      if (depth === 0) {
+        const remaining = expr.slice(i);
+        const match = remaining.match(opPattern);
+        if (match) {
+          parts.push(current.trim());
+          i += match[0].length - 1;
+          current = '';
+          continue;
+        }
       }
     }
     current += char;
@@ -111,47 +126,47 @@ function parseCondition(expr, el) {
   expr = expr.trim();
 
   // Handle self::tag[@attr='value'] or self::tag
-  const selfWithTagMatch = expr.match(/^self::([a-zA-Z0-9-]+)(?:\[([^\]]+)\])?$/);
-  if (selfWithTagMatch) {
-    const tagName = selfWithTagMatch[1].toUpperCase();
+  let match = expr.match(REGEX_PATTERNS.selfWithTag);
+  if (match) {
+    const tagName = match[1].toUpperCase();
     if (el.tagName !== tagName) return false;
-    if (selfWithTagMatch[2]) {
-      return parseXPath(selfWithTagMatch[2], el);
+    if (match[2]) {
+      return parseXPath(match[2], el);
     }
     return true;
   }
   
   // Handle contains(@attr, 'value') - Now accepts dynamic spaces inside quotes safely
-  const containsMatch = expr.match(/contains\(@([a-zA-Z0-9-]+),\s*['"]([^'"]+)['"]\)/i);
-  if (containsMatch) {
-    const attr = el.getAttribute(containsMatch[1]) || '';
-    return attr.toLowerCase().includes(containsMatch[2].toLowerCase());
+  match = expr.match(REGEX_PATTERNS.contains);
+  if (match) {
+    const attr = el.getAttribute(match[1]) || '';
+    return attr.toLowerCase().includes(match[2].toLowerCase());
   }
   
   // Handle @attr='value'
-  const attrMatch = expr.match(/@([a-zA-Z0-9-]+)\s*=\s*['"]([^'"]+)['"]/);
-  if (attrMatch) {
-    return el.getAttribute(attrMatch[1]) === attrMatch[2];
+  match = expr.match(REGEX_PATTERNS.attrEquals);
+  if (match) {
+    return el.getAttribute(match[1]) === match[2];
   }
   
   // Handle @attr (attribute exists check)
-  const attrExists = expr.match(/^@([a-zA-Z0-9-]+)$/);
-  if (attrExists) {
-    return el.hasAttribute(attrExists[1]);
+  match = expr.match(REGEX_PATTERNS.attrExists);
+  if (match) {
+    return el.hasAttribute(match[1]);
   }
   
   // Handle descendant::tag
-  const descendantMatch = expr.match(/descendant::([a-zA-Z0-9-]+)/i);
-  if (descendantMatch) {
-    return el.querySelector(descendantMatch[1]) !== null;
+  match = expr.match(REGEX_PATTERNS.descendant);
+  if (match) {
+    return el.querySelector(match[1]) !== null;
   }
   
   // Handle ancestor::*[condition]
-  const ancestorMatch = expr.match(/ancestor::\*\[([^\]]+)\]/i);
-  if (ancestorMatch) {
+  match = expr.match(REGEX_PATTERNS.ancestor);
+  if (match) {
     let parent = el.parentElement;
     while (parent) {
-      if (parseXPath(ancestorMatch[1], parent)) return true;
+      if (parseXPath(match[1], parent)) return true;
       parent = parent.parentElement;
     }
     return false;
@@ -313,15 +328,15 @@ function getAllElements(root = document) {
 }
 
 // Get all frames/iframes in the window (same-origin only)
-function getAllFrames(root = window) {
+function getAllFrames(root = window, maxFrames = Infinity) {
   const frames = [];
   try {
     // Add the main window/document as the first "frame" with index -1
     frames.push({ window: root, document: root.document, isMainFrame: true, frameIndex: -1 });
     
-    // Get all iframes with 0-based index
+    // Get all iframes with 0-based index (respecting maxFrames limit)
     const iframes = root.document.querySelectorAll('iframe');
-    for (let i = 0; i < iframes.length; i++) {
+    for (let i = 0; i < iframes.length && frames.length < maxFrames; i++) {
       const iframe = iframes[i];
       try {
         // Only access same-origin frames
@@ -345,7 +360,7 @@ function getAllFrames(root = window) {
   return frames;
 }
 
-function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null) {
+function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null, maxFrames = Infinity) {
   // Validate type if provided
   if (type && !ELEMENT_DEFINITIONS[type]) {
     console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
@@ -353,7 +368,7 @@ function findElement(type = "element", text = null, exact = false, includeHidden
   }
 
   const matches = [];
-  const frames = getAllFrames(window);
+  const frames = getAllFrames(window, maxFrames);
 
   for (const frame of frames) {
     const allElements = getAllElements(parent || frame.document);
@@ -365,12 +380,14 @@ function findElement(type = "element", text = null, exact = false, includeHidden
       // Check text/attribute match if specified
       if (text !== undefined && !matchesContent(el, text, exact)) continue;
 
-      // Check visibility
+      // Check visibility (early exit on first hidden property)
       if (!includeHidden) {
         const elWindow = el.ownerDocument?.defaultView || frame.window;
         const style = elWindow.getComputedStyle(el);
-        if (style.display === 'none' || style.visibility === 'hidden' ||
-            style.opacity === '0' || el.offsetWidth === 0 || el.offsetHeight === 0) {
+        if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+          continue;
+        }
+        if (el.offsetWidth === 0 || el.offsetHeight === 0) {
           continue;
         }
       }
@@ -380,12 +397,20 @@ function findElement(type = "element", text = null, exact = false, includeHidden
   }
 
   // Filter to keep only innermost elements (remove ancestors that have matching descendants)
-  const innermostMatches = matches.filter(item => {
-    return !matches.some(other => {
-      // If other is a descendant of el and both match, keep the innermost (other)
-      return other !== item && item.element.contains(other.element);
-    });
-  });
+  // Optimized O(n) algorithm using containment checking
+  const innermostMatches = [];
+  for (let i = 0; i < matches.length; i++) {
+    let isAncestorOfOther = false;
+    for (let j = 0; j < matches.length; j++) {
+      if (i !== j && matches[i].element.contains(matches[j].element)) {
+        isAncestorOfOther = true;
+        break;
+      }
+    }
+    if (!isAncestorOfOther) {
+      innermostMatches.push(matches[i]);
+    }
+  }
 
   // Build results with bounding boxes and tag names
   // For iframe elements, we need to serialize the element data since DOM elements
