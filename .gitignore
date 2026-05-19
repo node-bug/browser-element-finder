@@ -1,3 +1,8 @@
+.husky
+coverage
+node_modules
+package-lock.json
+
 # Logs
 downloads
 logs
@@ -15,11 +20,9 @@ pids
 # Dependency directories
 node_modules/
 jspm_packages/
-package-lock.json
 
 # Optional npm cache directory
 .npm
-.husky
 
 # Output directory
 dist
@@ -49,14 +52,3 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
-
-# Test files
-*.test.js
-*.spec.js
-
-# Demo files
-demo.js
-
-# Vitest
-.vitest/
-
