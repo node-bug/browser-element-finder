@@ -1,11 +1,20 @@
 {
   "name": "@nodebug/browser-element-finder",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Browser Element Finder - Find elements by type and text content",
   "main": "index.js",
   "browser": "index.js",
+  "exports": {
+    ".": {
+      "browser": "./index.js",
+      "require": "./index.js",
+      "import": "./index.js"
+    }
+  },
   "files": [
-    "index.js"
+    "index.js",
+    "src/element-definitions.json",
+    "src/searchable-attributes.json"
   ],
   "type": "module",
   "engines": {
@@ -29,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@vitest/coverage-v8": "^3.2.4",
+    "esbuild": "^0.28.0",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.5.0",
