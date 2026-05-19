@@ -18,7 +18,7 @@ describe('Switches Element Finder Tests', () => {
 
   beforeAll(async () => {
     const options = new chrome.Options()
-      .addArguments('--no-sandbox', '--disable-dev-shm-usage');
+      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
 
     driver = await new Builder()
       .forBrowser('chrome')
