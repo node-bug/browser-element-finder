@@ -1,6 +1,6 @@
 {
   "name": "@nodebug/browser-element-finder",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Browser Element Finder - Find elements by type and text content",
   "main": "index.js",
   "browser": "index.js",
@@ -9,6 +9,18 @@
       "browser": "./index.js",
       "require": "./index.js",
       "import": "./index.js"
+    },
+    "./element-definitions.json": {
+      "browser": "./src/element-definitions.json",
+      "require": "./src/element-definitions.json",
+      "import": "./src/element-definitions.json",
+      "default": "./src/element-definitions.json"
+    },
+    "./searchable-attributes.json": {
+      "browser": "./src/searchable-attributes.json",
+      "require": "./src/searchable-attributes.json",
+      "import": "./src/searchable-attributes.json",
+      "default": "./src/searchable-attributes.json"
     }
   },
   "files": [
