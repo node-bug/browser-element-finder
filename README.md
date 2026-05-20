@@ -134,6 +134,28 @@ results.elements.forEach((item) => {
 highlight(results.elements.map((e) => e.element))
 ```
 
+### Accessing Element Definitions and Searchable Attributes
+
+The package exports JSON files containing element type definitions and searchable attributes:
+
+```javascript
+// ESM - Import JSON directly
+import ELEMENT_DEFINITIONS from '@nodebug/browser-element-finder/element-definitions.json' assert { type: 'json' }
+import SEARCHABLE_ATTRIBUTES from '@nodebug/browser-element-finder/searchable-attributes.json' assert { type: 'json' }
+
+// Get all valid element types
+console.log(Object.keys(ELEMENT_DEFINITIONS)) // ['button', 'checkbox', 'dropdown', ...]
+
+// Get searchable attributes
+console.log(SEARCHABLE_ATTRIBUTES) // ['placeholder', 'value', 'data-test-id', ...]
+```
+
+```javascript
+// CommonJS - Use require
+const ELEMENT_DEFINITIONS = require('@nodebug/browser-element-finder/element-definitions.json')
+const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchable-attributes.json')
+```
+
 ## API Reference
 
 ### `findElement(type, text, exact, includeHidden, parent)`
