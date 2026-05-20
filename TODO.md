@@ -2,14 +2,6 @@
 
 <!-- Generated from feature review - see docs/FEATURE_PLAN.md for details -->
 
-## Completed Optimizations
-
-- [x] **Innermost element filtering**: O(n²) → O(n) algorithm using Set-based lookups
-- [x] **Column expansion**: O(n²) → O(n) algorithm using Map-based column position lookups with colspan support
-- [x] **Code deduplication**: Extracted common element extraction logic for `highlight`/`unhighlight`
-- [x] **Null input handling**: `extractElements` now guards against null/undefined input
-- [x] **Shadow DOM safety**: `getAllElements` wraps shadowRoot access in try-catch for restricted elements
-
 ## Phase 1: High-Impact, Low-Effort Features
 
 - [ ] `countElements(type, text, exact, includeHidden, parent)` - Return count without full element data
