@@ -93,7 +93,7 @@ describe('ElementFinder Parent Element Tests', () => {
       };
     `);
     
-    expect(allDropdowns.count).toBe(5);
+    expect(allDropdowns.count).toBe(6);
     
     const childResult = await driver.executeScript(`
       const parentResult = ElementFinder.findElement(null, 'standard-select-section');

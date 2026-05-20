@@ -62,7 +62,7 @@ describe('Dropdowns Element Finder', () => {
       }));
     `);
     
-    expect(dropdownDetails.length).toBe(5);
+    expect(dropdownDetails.length).toBe(6);
     console.log(`Found ${dropdownDetails.length} dropdowns`);
   });
 
@@ -86,7 +86,7 @@ describe('Dropdowns Element Finder', () => {
       }));
     `);
     
-    expect(dropdownInfo.length).toBe(5);
+    expect(dropdownInfo.length).toBe(6);
     dropdownInfo.forEach((item) => {
       expect(item.x).toBeGreaterThanOrEqual(0);
       expect(item.y).toBeGreaterThanOrEqual(0);
