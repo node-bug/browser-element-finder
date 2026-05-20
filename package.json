@@ -1,6 +1,6 @@
 {
   "name": "@nodebug/browser-element-finder",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Browser Element Finder - Find elements by type and text content",
   "main": "index.js",
   "browser": "index.js",
@@ -39,6 +39,14 @@
     "browser-automation",
     "testing"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/node-bug/browser-element-finder.git"
+  },
+  "homepage": "https://github.com/node-bug/browser-element-finder#readme",
+  "bugs": {
+    "url": "https://github.com/node-bug/browser-element-finder/issues"
+  },
   "scripts": {
     "build": "node build.js",
     "lint": "eslint .",
@@ -57,10 +65,8 @@
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lint-staged": "^16.4.0",
-    "nyc": "^18.0.0",
     "prettier": "^3.8.2",
     "selenium-webdriver": "^4.43.0",
-    "terser": "^5.47.1",
     "vitest": "^3.0.0"
   },
   "lint-staged": {
@@ -70,5 +76,6 @@
     "*.{json,yaml,yml,md,sh,groovy}": [
       "prettier --write"
     ]
-  }
+  },
+  "license": "MIT"
 }
