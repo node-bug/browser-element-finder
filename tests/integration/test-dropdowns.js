@@ -48,20 +48,21 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
     }
   });
 
-  it('should find all dropdowns', async () => {
-    const dropdownDetails = await driver.executeScript(`
-      const result = ElementFinder.findElement('dropdown');
-      return result.elements.map(e => ({
-        tagName: e.tagName,
-        id: e.element.getAttribute('id'),
-        className: e.element.getAttribute('class'),
-        role: e.element.getAttribute('role')
-      }));
-    `);
-    
-    expect(dropdownDetails.length).toBe(6);
-    console.log(`Found ${dropdownDetails.length} dropdowns`);
-  });
+  describe('Dropdown Finding', () => {
+    it('should find all dropdowns', async () => {
+      const dropdownDetails = await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        return result.elements.map(e => ({
+          tagName: e.tagName,
+          id: e.element.getAttribute('id'),
+          className: e.element.getAttribute('class'),
+          role: e.element.getAttribute('role')
+        }));
+      `);
+      
+      expect(dropdownDetails.length).toBe(6);
+      console.log(`Found ${dropdownDetails.length} dropdowns`);
+    });
 
     it('should highlight all dropdowns', async () => {
       await driver.executeScript(`
@@ -70,25 +71,75 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
       `);
     });
 
-  it('should return bounding box info for dropdowns', async () => {
-    const dropdownInfo = await driver.executeScript(`
-      const result = ElementFinder.findElement('dropdown');
-      return result.elements.map(e => ({
-        tagName: e.tagName,
-        id: e.element.getAttribute('id'),
-        x: Math.round(e.boundingBox.x),
-        y: Math.round(e.boundingBox.y),
-        width: Math.round(e.boundingBox.width),
-        height: Math.round(e.boundingBox.height)
-      }));
-    `);
-    
-    expect(dropdownInfo.length).toBe(6);
-    dropdownInfo.forEach((item) => {
-      expect(item.x).toBeGreaterThanOrEqual(0);
-      expect(item.y).toBeGreaterThanOrEqual(0);
-      expect(item.width).toBeGreaterThan(0);
-      expect(item.height).toBeGreaterThan(0);
+    it('should return bounding box info for dropdowns', async () => {
+      const dropdownInfo = await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        return result.elements.map(e => ({
+          tagName: e.tagName,
+          id: e.element.getAttribute('id'),
+          x: Math.round(e.boundingBox.x),
+          y: Math.round(e.boundingBox.y),
+          width: Math.round(e.boundingBox.width),
+          height: Math.round(e.boundingBox.height)
+        }));
+      `);
+      
+      expect(dropdownInfo.length).toBe(6);
+      dropdownInfo.forEach((item) => {
+        expect(item.x).toBeGreaterThanOrEqual(0);
+        expect(item.y).toBeGreaterThanOrEqual(0);
+        expect(item.width).toBeGreaterThan(0);
+        expect(item.height).toBeGreaterThan(0);
+      });
+    });
+
+    it('should interact with dropdown elements using Selenium WebElement methods', async () => {
+      const dropdownResult = await driver.executeScript(`
+        return ElementFinder.findElement('dropdown');
+      `);
+      
+      expect(dropdownResult.elements.length).toBeGreaterThan(0);
+      
+      const firstDropdown = dropdownResult.elements[0].element;
+      const tagName = await firstDropdown.getTagName();
+      expect(tagName).toBe('select');
+      
+      const elementId = await firstDropdown.getAttribute('id');
+      expect(elementId).toBeTruthy();
+      
+      const className = await firstDropdown.getAttribute('class');
+      expect(className).toBeTruthy();
+      
+      const options = await firstDropdown.findElements({ css: 'option' });
+      expect(options.length).toBeGreaterThan(0);
+      
+      await options[1].click();
+      
+      const selectedOption = await firstDropdown.findElement({ css: 'option:checked' });
+      const selectedText = await selectedOption.getText();
+      expect(selectedText.length).toBeGreaterThan(0);
+    });
+
+    it('should find dropdown by option text', async () => {
+      const dropdownByOptionText = await driver.executeScript(`
+        return ElementFinder.findElement('dropdown', 'Apple');
+      `);
+      
+      expect(dropdownByOptionText.elements.length).toBe(1);
+      expect(dropdownByOptionText.elements[0].tagName).toBe('select');
+      const elementId = await dropdownByOptionText.elements[0].element.getAttribute('id');
+      expect(elementId).toBe('single-select');
+    });
+
+    it('should find dropdown by partial option text', async () => {
+      const dropdownByPartialText = await driver.executeScript(`
+        return ElementFinder.findElement('dropdown', 'Fruits');
+      `);
+      
+      expect(dropdownByPartialText.elements.length).toBe(1);
+      expect(dropdownByPartialText.elements[0].tagName).toBe('select');
+      const elementId = await dropdownByPartialText.elements[0].element.getAttribute('id');
+      expect(elementId).toBe('category-select');
     });
   });
 
