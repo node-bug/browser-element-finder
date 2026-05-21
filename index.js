@@ -86,46 +86,53 @@ var ElementFinder = (() => {
   var REGEX_PATTERNS = {
     selfWithTag: /^self::([a-zA-Z0-9-]+)(?:\[([^\]]+)\])?$/,
     contains: /contains\(@([a-zA-Z0-9-]+),\s*['"]([^'"]+)['"]\)/i,
-    attrEquals: /@([a-zA-Z0-9-]+)\s*=\s*['"]([^'"]+)['"]/,
+    attrEquals: /@([a-zA-Z0-9-]+)\s*=\s*['"]([^'"]*)['"]/,
     attrExists: /^@([a-zA-Z0-9-]+)$/,
     descendant: /descendant::([a-zA-Z0-9-]+)/i,
     ancestor: /ancestor::\*\[([^\]]+)\]/i,
     operatorOr: /^\s*\bor\b\s*/i,
     operatorAnd: /^\s*\band\b\s*/i
   };
-  function parseXPath(expr, el) {
+  var MAX_RECURSION_DEPTH = 100;
+  function parseXPath(expr, el, depth = 0) {
+    if (expr == null || el == null) {
+      return false;
+    }
+    if (depth > MAX_RECURSION_DEPTH) {
+      throw new Error("XPath expression exceeds maximum recursion depth");
+    }
     expr = expr.trim();
     if (expr === "true()") return true;
     if (expr.startsWith("(") && expr.endsWith(")")) {
-      let depth = 0;
+      let parenDepth = 0;
       let matchedAll = true;
       for (let i = 0; i < expr.length; i++) {
-        if (expr[i] === "(") depth++;
-        else if (expr[i] === ")") depth--;
-        if (depth === 0 && i < expr.length - 1) {
+        if (expr[i] === "(") parenDepth++;
+        else if (expr[i] === ")") parenDepth--;
+        if (parenDepth === 0 && i < expr.length - 1) {
           matchedAll = false;
           break;
         }
       }
       if (matchedAll) {
-        return parseXPath(expr.slice(1, -1), el);
+        return parseXPath(expr.slice(1, -1), el, depth + 1);
       }
     }
     const orParts = splitByOperator(expr, "or");
     if (orParts.length > 1) {
       for (const part of orParts) {
-        if (parseXPath(part, el)) return true;
+        if (parseXPath(part, el, depth + 1)) return true;
       }
       return false;
     }
     const andParts = splitByOperator(expr, "and");
     if (andParts.length > 1) {
       for (const part of andParts) {
-        if (!parseXPath(part, el)) return false;
+        if (!parseXPath(part, el, depth + 1)) return false;
       }
       return true;
     }
-    return parseCondition(expr, el);
+    return parseCondition(expr, el, depth);
   }
   function splitByOperator(expr, op) {
     const parts = [];
@@ -163,14 +170,17 @@ var ElementFinder = (() => {
     if (current.trim()) parts.push(current.trim());
     return parts;
   }
-  function parseCondition(expr, el) {
+  function parseCondition(expr, el, depth = 0) {
+    if (expr == null || el == null) {
+      return false;
+    }
     expr = expr.trim();
     let match = expr.match(REGEX_PATTERNS.selfWithTag);
     if (match) {
       const tagName = match[1].toUpperCase();
       if (el.tagName !== tagName) return false;
       if (match[2]) {
-        return parseXPath(match[2], el);
+        return parseXPath(match[2], el, depth + 1);
       }
       return true;
     }
@@ -195,7 +205,7 @@ var ElementFinder = (() => {
     if (match) {
       let parent = el.parentElement;
       while (parent) {
-        if (parseXPath(match[1], parent)) return true;
+        if (parseXPath(match[1], parent, depth + 1)) return true;
         parent = parent.parentElement;
       }
       return false;
@@ -205,22 +215,30 @@ var ElementFinder = (() => {
   var ELEMENT_DEFINITIONS = Object.freeze(element_definitions_default);
   var SEARCHABLE_ATTRIBUTES = searchable_attributes_default;
   function setSearchableAttributes(attributes) {
-    if (Array.isArray(attributes)) {
-      SEARCHABLE_ATTRIBUTES = attributes;
+    if (!Array.isArray(attributes)) {
+      throw new TypeError("attributes must be an array");
     }
+    SEARCHABLE_ATTRIBUTES = attributes;
   }
   function getSearchableAttributes() {
     return [...SEARCHABLE_ATTRIBUTES];
   }
   function matchesType(el, type) {
+    if (el == null) return false;
     const expr = ELEMENT_DEFINITIONS[type];
     return expr ? parseXPath(expr, el) : false;
   }
   function matchesContent(el, value, exact = false) {
+    if (el == null) return false;
     if (value === void 0 || value === null || value === "") return true;
     const normalizedValue = value.toLowerCase().trim();
     for (const attr of SEARCHABLE_ATTRIBUTES) {
-      const attrValue = el.getAttribute(attr);
+      let attrValue;
+      try {
+        attrValue = el.getAttribute(attr);
+      } catch (e) {
+        continue;
+      }
       if (attrValue) {
         const normalized = attrValue.toLowerCase().trim();
         if (exact ? normalized === normalizedValue : normalized.includes(normalizedValue)) {
@@ -230,6 +248,10 @@ var ElementFinder = (() => {
     }
     const directText = Array.from(el.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.textContent).join("").toLowerCase().trim();
     if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
+      return true;
+    }
+    const textContent = el.textContent.toLowerCase().trim();
+    if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
       return true;
     }
     if (el.tagName === "SELECT") {
@@ -278,8 +300,11 @@ var ElementFinder = (() => {
     let node;
     while (node = walker.nextNode()) {
       elements.push(node);
-      if (node.shadowRoot) {
-        elements.push(...getAllElements(node.shadowRoot));
+      try {
+        if (node.shadowRoot) {
+          elements.push(...getAllElements(node.shadowRoot));
+        }
+      } catch (e) {
       }
     }
     return elements;
@@ -302,7 +327,11 @@ var ElementFinder = (() => {
             });
           }
         } catch (e) {
-          console.warn("Skipping cross-origin iframe:", e.message);
+          if (e.name === "SecurityError") {
+            console.warn("Skipping cross-origin iframe:", e.message);
+          } else {
+            console.warn("Error accessing iframe:", e.message);
+          }
         }
       }
     } catch (e) {
@@ -310,8 +339,75 @@ var ElementFinder = (() => {
     }
     return frames;
   }
+  function expandColumnMatches(matches, text, exact, includeHidden) {
+    var _a;
+    if (!text) return matches;
+    const expandedMatches = [];
+    const seenElements = /* @__PURE__ */ new Set();
+    for (const match of matches) {
+      const el = match.element;
+      const frame = match.frame;
+      if (!seenElements.has(el)) {
+        expandedMatches.push(match);
+        seenElements.add(el);
+      }
+      if (el.tagName.toLowerCase() === "th") {
+        const table = el.closest("table");
+        if (!table) continue;
+        const headerRow = el.closest("tr");
+        if (!headerRow) continue;
+        const headerCells = Array.from(headerRow.children);
+        const colPositions = [];
+        let currentCol = 0;
+        for (const cell of headerCells) {
+          const colspan = parseInt(cell.getAttribute("colspan")) || 1;
+          colPositions.push({ cell, colStart: currentCol, colEnd: currentCol + colspan - 1 });
+          currentCol += colspan;
+        }
+        const headerInfo = colPositions.find((info) => info.cell === el);
+        if (!headerInfo) continue;
+        const allRows = table.querySelectorAll("tr");
+        for (const row of allRows) {
+          const cells = Array.from(row.children);
+          const rowColMap = /* @__PURE__ */ new Map();
+          let rowCol = 0;
+          for (const cell of cells) {
+            const colspan = parseInt(cell.getAttribute("colspan")) || 1;
+            for (let i = 0; i < colspan; i++) {
+              rowColMap.set(rowCol + i, cell);
+            }
+            rowCol += colspan;
+          }
+          for (let col = headerInfo.colStart; col <= headerInfo.colEnd; col++) {
+            const cell = rowColMap.get(col);
+            if (!cell) continue;
+            if (seenElements.has(cell)) continue;
+            if (!includeHidden) {
+              const cellWindow = ((_a = cell.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
+              const style = cellWindow.getComputedStyle(cell);
+              if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
+                continue;
+              }
+              if (cell.offsetWidth === 0 || cell.offsetHeight === 0) {
+                continue;
+              }
+            }
+            expandedMatches.push({ element: cell, frame });
+            seenElements.add(cell);
+          }
+        }
+      }
+    }
+    return expandedMatches;
+  }
   function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null, maxFrames = Infinity) {
     var _a;
+    if (type === null || type === void 0) {
+      type = "element";
+    }
+    if (typeof type !== "string") {
+      throw new TypeError(`type must be a string, got ${typeof type}`);
+    }
     if (type && !ELEMENT_DEFINITIONS[type]) {
       console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
       return { elements: [] };
@@ -337,19 +433,26 @@ var ElementFinder = (() => {
       }
     }
     const innermostMatches = [];
-    for (let i = 0; i < matches.length; i++) {
-      let isAncestorOfOther = false;
-      for (let j = 0; j < matches.length; j++) {
-        if (i !== j && matches[i].element.contains(matches[j].element)) {
-          isAncestorOfOther = true;
-          break;
+    if (matches.length > 0) {
+      const matchedElements = new Set(matches.map((m) => m.element));
+      const excludedElements = /* @__PURE__ */ new Set();
+      for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
+        const el = match.element;
+        if (!excludedElements.has(el)) {
+          innermostMatches.unshift(match);
+          let parent2 = el.parentElement;
+          while (parent2) {
+            if (matchedElements.has(parent2)) {
+              excludedElements.add(parent2);
+            }
+            parent2 = parent2.parentElement;
+          }
         }
       }
-      if (!isAncestorOfOther) {
-        innermostMatches.push(matches[i]);
-      }
     }
-    const qualified = innermostMatches.map((item) => {
+    const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden);
+    const qualified = expandedMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       if (!item.frame.isMainFrame) {
@@ -368,13 +471,15 @@ var ElementFinder = (() => {
     });
     return { elements: qualified };
   }
-  function highlight(elements, color = "red", width = 3) {
-    let items;
+  function extractElements(elements) {
+    if (!elements) return [];
     if (elements && elements.elements && Array.isArray(elements.elements)) {
-      items = elements.elements;
-    } else {
-      items = Array.isArray(elements) ? elements : [elements];
+      return elements.elements;
     }
+    return Array.isArray(elements) ? elements : [elements];
+  }
+  function highlight(elements, color = "red", width = 3) {
+    const items = extractElements(elements);
     items.forEach((item) => {
       const el = item.element ? item.element : item;
       if (el && el.style) {
@@ -386,12 +491,7 @@ var ElementFinder = (() => {
     });
   }
   function unhighlight(elements) {
-    let items;
-    if (elements && elements.elements && Array.isArray(elements.elements)) {
-      items = elements.elements;
-    } else {
-      items = Array.isArray(elements) ? elements : [elements];
-    }
+    const items = extractElements(elements);
     items.forEach((item) => {
       const el = item.element ? item.element : item;
       if (el && el.style) {

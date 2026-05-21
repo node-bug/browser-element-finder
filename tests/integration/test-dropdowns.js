@@ -1,6 +1,6 @@
 /**
- * Test Dropdowns Element Finder
- * Tests that dropdowns in dropdowns.html can be identified and highlighted
+ * Consolidated Dropdowns and Forms Tests
+ * Combines tests from: test-dropdowns.js, test-forms.js, test-element-finder-parent.js
  */
 
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
@@ -13,25 +13,23 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-describe('Dropdowns Element Finder', () => {
+describe('Dropdowns and Forms Consolidated Tests', () => {
   let driver;
 
   beforeAll(async () => {
     const options = new chrome.Options()
-      .addArguments('--headless','--no-sandbox', '--disable-dev-shm-usage');
+      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
 
     driver = await new Builder()
       .forBrowser('chrome')
       .setChromeOptions(options)
       .build();
 
-    // Load the dropdowns HTML file
     const htmlPath = join(__dirname, 'fixtures', 'dropdowns.html');
     const htmlContent = readFileSync(htmlPath, 'utf8');
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    // Inject the ElementFinder library
     const finderPath = join(__dirname, '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
@@ -39,7 +37,6 @@ describe('Dropdowns Element Finder', () => {
       window.ElementFinder = ElementFinder;
     `);
 
-    // Wait for page to load
     await driver.sleep(500);
   });
 
@@ -51,107 +48,180 @@ describe('Dropdowns Element Finder', () => {
     }
   });
 
-  it('should find all dropdowns', async () => {
-    const dropdownDetails = await driver.executeScript(`
-      const result = ElementFinder.findElement('dropdown');
-      return result.elements.map(e => ({
-        tagName: e.tagName,
-        id: e.element.getAttribute('id'),
-        className: e.element.getAttribute('class'),
-        role: e.element.getAttribute('role')
-      }));
-    `);
-    
-    expect(dropdownDetails.length).toBe(6);
-    console.log(`Found ${dropdownDetails.length} dropdowns`);
-  });
+  describe('Dropdown Finding', () => {
+    it('should find all dropdowns', async () => {
+      const dropdownDetails = await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        return result.elements.map(e => ({
+          tagName: e.tagName,
+          id: e.element.getAttribute('id'),
+          className: e.element.getAttribute('class'),
+          role: e.element.getAttribute('role')
+        }));
+      `);
+      
+      expect(dropdownDetails.length).toBe(6);
+      console.log(`Found ${dropdownDetails.length} dropdowns`);
+    });
 
-  it('should highlight all dropdowns', async () => {
-    await driver.executeScript(`
-      const result = ElementFinder.findElement('dropdown');
-      ElementFinder.highlight(result.elements.map(e => e.element), 'blue', 3);
-    `);
-  });
+    it('should highlight all dropdowns', async () => {
+      await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        ElementFinder.highlight(result.elements.map(e => e.element), 'blue', 3);
+      `);
+    });
 
-  it('should return bounding box info for dropdowns', async () => {
-    const dropdownInfo = await driver.executeScript(`
-      const result = ElementFinder.findElement('dropdown');
-      return result.elements.map(e => ({
-        tagName: e.tagName,
-        id: e.element.getAttribute('id'),
-        x: Math.round(e.boundingBox.x),
-        y: Math.round(e.boundingBox.y),
-        width: Math.round(e.boundingBox.width),
-        height: Math.round(e.boundingBox.height)
-      }));
-    `);
-    
-    expect(dropdownInfo.length).toBe(6);
-    dropdownInfo.forEach((item) => {
-      expect(item.x).toBeGreaterThanOrEqual(0);
-      expect(item.y).toBeGreaterThanOrEqual(0);
-      expect(item.width).toBeGreaterThan(0);
-      expect(item.height).toBeGreaterThan(0);
+    it('should return bounding box info for dropdowns', async () => {
+      const dropdownInfo = await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        return result.elements.map(e => ({
+          tagName: e.tagName,
+          id: e.element.getAttribute('id'),
+          x: Math.round(e.boundingBox.x),
+          y: Math.round(e.boundingBox.y),
+          width: Math.round(e.boundingBox.width),
+          height: Math.round(e.boundingBox.height)
+        }));
+      `);
+      
+      expect(dropdownInfo.length).toBe(6);
+      dropdownInfo.forEach((item) => {
+        expect(item.x).toBeGreaterThanOrEqual(0);
+        expect(item.y).toBeGreaterThanOrEqual(0);
+        expect(item.width).toBeGreaterThan(0);
+        expect(item.height).toBeGreaterThan(0);
+      });
+    });
+
+    it('should interact with dropdown elements using Selenium WebElement methods', async () => {
+      const dropdownResult = await driver.executeScript(`
+        return ElementFinder.findElement('dropdown');
+      `);
+      
+      expect(dropdownResult.elements.length).toBeGreaterThan(0);
+      
+      const firstDropdown = dropdownResult.elements[0].element;
+      const tagName = await firstDropdown.getTagName();
+      expect(tagName).toBe('select');
+      
+      const elementId = await firstDropdown.getAttribute('id');
+      expect(elementId).toBeTruthy();
+      
+      const className = await firstDropdown.getAttribute('class');
+      expect(className).toBeTruthy();
+      
+      const options = await firstDropdown.findElements({ css: 'option' });
+      expect(options.length).toBeGreaterThan(0);
+      
+      await options[1].click();
+      
+      const selectedOption = await firstDropdown.findElement({ css: 'option:checked' });
+      const selectedText = await selectedOption.getText();
+      expect(selectedText.length).toBeGreaterThan(0);
+    });
+
+    it('should find dropdown by option text', async () => {
+      const dropdownByOptionText = await driver.executeScript(`
+        return ElementFinder.findElement('dropdown', 'Apple');
+      `);
+      
+      expect(dropdownByOptionText.elements.length).toBe(1);
+      expect(dropdownByOptionText.elements[0].tagName).toBe('select');
+      const elementId = await dropdownByOptionText.elements[0].element.getAttribute('id');
+      expect(elementId).toBe('single-select');
+    });
+
+    it('should find dropdown by partial option text', async () => {
+      const dropdownByPartialText = await driver.executeScript(`
+        return ElementFinder.findElement('dropdown', 'Fruits');
+      `);
+      
+      expect(dropdownByPartialText.elements.length).toBe(1);
+      expect(dropdownByPartialText.elements[0].tagName).toBe('select');
+      const elementId = await dropdownByPartialText.elements[0].element.getAttribute('id');
+      expect(elementId).toBe('category-select');
     });
   });
 
-  it('should interact with dropdown elements using Selenium WebElement methods', async () => {
-    // Find dropdowns using ElementFinder
-    const dropdownResult = await driver.executeScript(`
-      return ElementFinder.findElement('dropdown');
-    `);
-    
-    expect(dropdownResult.elements.length).toBeGreaterThan(0);
-    
-    // Get the first dropdown element - this is a Selenium WebElement
-    const firstDropdown = dropdownResult.elements[0].element;
-    
-    // Demonstrate Selenium WebElement interaction
-    const tagName = await firstDropdown.getTagName();
-    expect(tagName).toBe('select');
-    
-    // Get the element's id attribute using Selenium
-    const elementId = await firstDropdown.getAttribute('id');
-    expect(elementId).toBeTruthy();
-    
-    // Get the element's class attribute using Selenium
-    const className = await firstDropdown.getAttribute('class');
-    expect(className).toBeTruthy();
-    
-    // Find options within the dropdown using Selenium
-    const options = await firstDropdown.findElements({ css: 'option' });
-    expect(options.length).toBeGreaterThan(0);
-    
-    // Select an option using Selenium
-    await options[1].click();
-    
-    // Verify the selection using Selenium
-    const selectedOption = await firstDropdown.findElement({ css: 'option:checked' });
-    const selectedText = await selectedOption.getText();
-    expect(selectedText.length).toBeGreaterThan(0);
+  describe('Parent Element Scoping', () => {
+    it('should find section element', async () => {
+      const sectionResult = await driver.executeScript(`
+        const result = ElementFinder.findElement(null, 'standard-select-section');
+        return {
+          count: result.elements.length,
+          elements: result.elements.map(e => ({
+            tagName: e.tagName,
+            id: e.element.id
+          }))
+        };
+      `);
+      expect(sectionResult.count).toBeGreaterThan(0);
+    });
+
+    it('should find child elements within parent', async () => {
+      const childResult = await driver.executeScript(`
+        const parentResult = ElementFinder.findElement(null, 'standard-select-section');
+        if (parentResult.elements.length === 0) return { count: 0, elements: [] };
+        
+        const parent = parentResult.elements[0].element;
+        const allDropdowns = ElementFinder.findElement('dropdown', null, false, false);
+        const result = {
+          elements: allDropdowns.elements.filter(e => parent.contains(e.element))
+        };
+        return {
+          count: result.elements.length,
+          elements: result.elements.map(e => ({
+            tagName: e.tagName,
+            id: e.element.id
+          }))
+        };
+      `);
+      expect(childResult.count).toBe(2);
+    });
+
+    it('should verify parent scoping works', async () => {
+      const allDropdowns = await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        return {
+          count: result.elements.length,
+          elements: result.elements.map(e => ({
+            tagName: e.tagName,
+            id: e.element.id
+          }))
+        };
+      `);
+      
+      expect(allDropdowns.count).toBe(6);
+      
+      const childResult = await driver.executeScript(`
+        const parentResult = ElementFinder.findElement(null, 'standard-select-section');
+        if (parentResult.elements.length === 0) return { count: 0 };
+        const parent = parentResult.elements[0].element;
+        const allDropdowns = ElementFinder.findElement('dropdown', null, false, false);
+        const result = {
+          elements: allDropdowns.elements.filter(e => parent.contains(e.element))
+        };
+        return { count: result.elements.length };
+      `);
+      
+      expect(allDropdowns.count).toBeGreaterThan(childResult.count);
+    });
   });
 
-  it('should find dropdown by option text', async () => {
-    // Find dropdown by option text "Apple"
-    const dropdownByOptionText = await driver.executeScript(`
-      return ElementFinder.findElement('dropdown', 'Apple');
-    `);
-    
-    expect(dropdownByOptionText.elements.length).toBe(1);
-    expect(dropdownByOptionText.elements[0].tagName).toBe('select');
-    const elementId = await dropdownByOptionText.elements[0].element.getAttribute('id');
-    expect(elementId).toBe('single-select');
-  });
+  describe('Highlight and Unhighlight', () => {
+    it('should highlight elements', async () => {
+      await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        ElementFinder.highlight(result.elements.map(e => e.element));
+      `);
+      await driver.sleep(500);
+    });
 
-  it('should find dropdown by partial option text', async () => {
-    // Find dropdown by partial option text "Fruits"
-    const dropdownByPartialText = await driver.executeScript(`
-      return ElementFinder.findElement('dropdown', 'Fruits');
-    `);
-    
-    expect(dropdownByPartialText.elements.length).toBe(1);
-    expect(dropdownByPartialText.elements[0].tagName).toBe('select');
-    const elementId = await dropdownByPartialText.elements[0].element.getAttribute('id');
-    expect(elementId).toBe('category-select');
+    it('should unhighlight elements', async () => {
+      await driver.executeScript(`
+        const result = ElementFinder.findElement('dropdown');
+        ElementFinder.unhighlight(result.elements.map(e => e.element));
+      `);
+    });
   });
 });

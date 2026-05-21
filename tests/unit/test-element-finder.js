@@ -44,6 +44,54 @@ describe('ElementFinder Node.js Module Tests', () => {
           </div>
           <script>console.log('test')</script>
           <style>.test { color: red; }</style>
+          <!-- Table for column tests -->
+          <table id="test-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>City</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alice</td>
+                <td>30</td>
+                <td>New York</td>
+              </tr>
+              <tr>
+                <td>Bob</td>
+                <td>25</td>
+                <td>London</td>
+              </tr>
+              <tr>
+                <td>Charlie</td>
+                <td>35</td>
+                <td>Paris</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Table with colspan for testing -->
+          <table id="colspan-table">
+            <thead>
+              <tr>
+                <th colspan="2">Full Name</th>
+                <th>Age</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John</td>
+                <td>Doe</td>
+                <td>40</td>
+              </tr>
+              <tr>
+                <td>Jane</td>
+                <td>Smith</td>
+                <td>35</td>
+              </tr>
+            </tbody>
+          </table>
         </body>
       </html>
     `;
@@ -473,6 +521,91 @@ describe('ElementFinder Node.js Module Tests', () => {
     });
   });
 
+  describe('Column Element Type - Find All Cells in Column', () => {
+    it('should find all cells in a column when searching by header text', () => {
+      // Search for "City" header should return all City column cells
+      const result = findElement('column', 'City', false, true);
+      expect(result.elements.length).toBeGreaterThanOrEqual(4); // 1 header + 3 data cells
+      
+      const texts = result.elements.map(e => e.element.textContent.trim());
+      expect(texts).toContain('City');
+      expect(texts).toContain('New York');
+      expect(texts).toContain('London');
+      expect(texts).toContain('Paris');
+    });
+
+    it('should find all cells in Name column when searching by header text', () => {
+      const result = findElement('column', 'Name', false, true);
+      expect(result.elements.length).toBeGreaterThanOrEqual(4); // 1 header + 3 data cells
+      
+      const texts = result.elements.map(e => e.element.textContent.trim());
+      expect(texts).toContain('Name');
+      expect(texts).toContain('Alice');
+      expect(texts).toContain('Bob');
+      expect(texts).toContain('Charlie');
+    });
+
+    it('should find all cells in Age column when searching by header text', () => {
+      const result = findElement('column', 'Age', false, true);
+      expect(result.elements.length).toBeGreaterThanOrEqual(4); // 1 header + 3 data cells
+      
+      const texts = result.elements.map(e => e.element.textContent.trim());
+      expect(texts).toContain('Age');
+      expect(texts).toContain('30');
+      expect(texts).toContain('25');
+      expect(texts).toContain('35');
+    });
+
+    it('should handle colspan headers - treated as single column', () => {
+      // "Full Name" header has colspan="2", but we treat it as a single column
+      // So it should find cells in just the first column position
+      const result = findElement('column', 'Full Name', false, true);
+      expect(result.elements.length).toBeGreaterThanOrEqual(3); // 1 header + 2 data cells
+      
+      const texts = result.elements.map(e => e.element.textContent.trim());
+      expect(texts).toContain('Full Name');
+      expect(texts).toContain('John');
+      expect(texts).toContain('Jane');
+    });
+
+    it('should still find individual cell by text content', () => {
+      // Searching for a data cell text should still work
+      const result = findElement('column', 'Paris', false, true);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].element.textContent.trim()).toBe('Paris');
+    });
+
+    it('should only expand within the same table as the matched header', () => {
+      // Create a second table with same column header
+      const table2 = document.createElement('table');
+      table2.id = 'second-table';
+      table2.innerHTML = `
+        <thead>
+          <tr>
+            <th>City</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tokyo</td>
+          </tr>
+        </tbody>
+      `;
+      document.body.appendChild(table2);
+
+      // Search for "City" should find cells from both tables
+      const result = findElement('column', 'City', false, true);
+      const texts = result.elements.map(e => e.element.textContent.trim());
+      
+      // Should include cells from both tables
+      expect(texts).toContain('City');
+      expect(texts).toContain('New York');
+      expect(texts).toContain('Tokyo');
+
+      document.body.removeChild(table2);
+    });
+  });
+
   describe('highlight/unhighlight', () => {
     it('should highlight elements', () => {
       const btn = document.getElementById('btn1');
@@ -704,6 +837,523 @@ describe('ElementFinder Node.js Module Tests', () => {
       const result = splitByOperator("contains(@text, 'or') or @type='button'", 'or');
       expect(result.length).toBe(2);
       expect(result[0]).toContain('or');
+    });
+  });
+
+  describe('XPath Edge Cases', () => {
+    it('should handle deeply nested parentheses', () => {
+      const btn = document.getElementById('btn1');
+      expect(parseXPath('((self::button))', btn)).toBe(true);
+      expect(parseXPath('(((self::button)))', btn)).toBe(true);
+      expect(parseXPath('(((self::button and true())))', btn)).toBe(true);
+    });
+
+    it('should handle mixed operators with parentheses', () => {
+      const btn = document.getElementById('btn1');
+      expect(parseXPath('(self::button and true()) or self::input', btn)).toBe(true);
+      expect(parseXPath('self::button and (true() or false())', btn)).toBe(true);
+    });
+
+    it('should handle empty expression', () => {
+      const btn = document.getElementById('btn1');
+      expect(parseXPath('', btn)).toBe(false);
+    });
+
+    it('should handle complex OR with multiple conditions', () => {
+      const btn = document.getElementById('btn1');
+      expect(parseXPath('self::button or self::input or self::select', btn)).toBe(true);
+    });
+
+    it('should handle complex AND with multiple conditions', () => {
+      const btn = document.getElementById('btn1');
+      expect(parseXPath('self::button and true() and true()', btn)).toBe(true);
+    });
+
+    it('should handle OR with false conditions', () => {
+      const btn = document.getElementById('btn1');
+      expect(parseXPath('self::input or self::select', btn)).toBe(false);
+    });
+
+    it('should handle AND with false condition', () => {
+      const btn = document.getElementById('btn1');
+      expect(parseXPath('self::button and false()', btn)).toBe(false);
+    });
+  });
+
+  describe('All Element Types', () => {
+    it('should match navigation type', () => {
+      const nav = document.createElement('nav');
+      nav.id = 'test-nav';
+      document.body.appendChild(nav);
+      expect(matchesType(nav, 'navigation')).toBe(true);
+      document.body.removeChild(nav);
+    });
+
+    it('should match heading types (h1-h6)', () => {
+      for (let i = 1; i <= 6; i++) {
+        const heading = document.createElement(`h${i}`);
+        heading.id = `h${i}-test`;
+        document.body.appendChild(heading);
+        expect(matchesType(heading, 'heading')).toBe(true);
+        document.body.removeChild(heading);
+      }
+    });
+
+    it('should match heading with role=heading', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'heading');
+      document.body.appendChild(div);
+      expect(matchesType(div, 'heading')).toBe(true);
+      document.body.removeChild(div);
+    });
+
+    it('should match switch type', () => {
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.id = 'switch-test';
+      document.body.appendChild(input);
+      expect(matchesType(input, 'switch')).toBe(true);
+      document.body.removeChild(input);
+    });
+
+    it('should match slider type', () => {
+      const input = document.createElement('input');
+      input.type = 'range';
+      input.id = 'slider-test';
+      document.body.appendChild(input);
+      expect(matchesType(input, 'slider')).toBe(true);
+      document.body.removeChild(input);
+    });
+
+    it('should match radio type', () => {
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.id = 'radio-test';
+      document.body.appendChild(input);
+      expect(matchesType(input, 'radio')).toBe(true);
+      document.body.removeChild(input);
+    });
+
+    it('should match file type', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.id = 'file-test';
+      document.body.appendChild(input);
+      expect(matchesType(input, 'file')).toBe(true);
+      document.body.removeChild(input);
+    });
+
+    it('should match list type (ul, ol)', () => {
+      const ul = document.createElement('ul');
+      ul.id = 'ul-test';
+      document.body.appendChild(ul);
+      expect(matchesType(ul, 'list')).toBe(true);
+      document.body.removeChild(ul);
+
+      const ol = document.createElement('ol');
+      ol.id = 'ol-test';
+      document.body.appendChild(ol);
+      expect(matchesType(ol, 'list')).toBe(true);
+      document.body.removeChild(ol);
+    });
+
+    it('should match listitem type', () => {
+      const li = document.createElement('li');
+      li.id = 'li-test';
+      document.body.appendChild(li);
+      expect(matchesType(li, 'listitem')).toBe(true);
+      document.body.removeChild(li);
+    });
+
+    it('should match menu type', () => {
+      const menu = document.createElement('menu');
+      menu.id = 'menu-test';
+      document.body.appendChild(menu);
+      expect(matchesType(menu, 'menu')).toBe(true);
+      document.body.removeChild(menu);
+    });
+
+    it('should match menuitem type', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'menuitem');
+      document.body.appendChild(div);
+      expect(matchesType(div, 'menuitem')).toBe(true);
+      document.body.removeChild(div);
+    });
+
+    it('should match toolbar type', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'toolbar');
+      document.body.appendChild(div);
+      expect(matchesType(div, 'toolbar')).toBe(true);
+      document.body.removeChild(div);
+    });
+
+    it('should match dialog type', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'dialog');
+      document.body.appendChild(div);
+      expect(matchesType(div, 'dialog')).toBe(true);
+      document.body.removeChild(div);
+    });
+
+    it('should match image type (img)', () => {
+      const img = document.createElement('img');
+      img.id = 'img-test';
+      document.body.appendChild(img);
+      expect(matchesType(img, 'image')).toBe(true);
+      document.body.removeChild(img);
+    });
+
+    it('should match image type with role=img', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'img');
+      document.body.appendChild(div);
+      expect(matchesType(div, 'image')).toBe(true);
+      document.body.removeChild(div);
+    });
+
+    it('should match image type with alt attribute', () => {
+      const div = document.createElement('div');
+      div.setAttribute('alt', 'test image');
+      document.body.appendChild(div);
+      expect(matchesType(div, 'image')).toBe(true);
+      document.body.removeChild(div);
+    });
+
+    it('should match table type', () => {
+      const table = document.createElement('table');
+      table.id = 'table-test';
+      document.body.appendChild(table);
+      expect(matchesType(table, 'table')).toBe(true);
+      document.body.removeChild(table);
+    });
+
+    it('should match row type', () => {
+      const tr = document.createElement('tr');
+      tr.id = 'tr-test';
+      document.body.appendChild(tr);
+      expect(matchesType(tr, 'row')).toBe(true);
+      document.body.removeChild(tr);
+    });
+
+    it('should match column type (td, th)', () => {
+      const td = document.createElement('td');
+      td.id = 'td-test';
+      document.body.appendChild(td);
+      expect(matchesType(td, 'column')).toBe(true);
+      document.body.removeChild(td);
+
+      const th = document.createElement('th');
+      th.id = 'th-test';
+      document.body.appendChild(th);
+      expect(matchesType(th, 'column')).toBe(true);
+      document.body.removeChild(th);
+    });
+
+    it('should match element type (true() for all)', () => {
+      const btn = document.getElementById('btn1');
+      expect(matchesType(btn, 'element')).toBe(true);
+    });
+  });
+
+  describe('Attribute Matching Edge Cases', () => {
+    it('should handle special characters in attribute values', () => {
+      const btn = document.createElement('button');
+      btn.setAttribute('title', 'test@example.com');
+      document.body.appendChild(btn);
+      expect(matchesContent(btn, 'test@example.com')).toBe(true);
+      document.body.removeChild(btn);
+    });
+
+    it('should handle multiple class names', () => {
+      const btn = document.createElement('button');
+      btn.className = 'btn primary large';
+      document.body.appendChild(btn);
+      expect(matchesContent(btn, 'btn')).toBe(true);
+      expect(matchesContent(btn, 'primary')).toBe(true);
+      expect(matchesContent(btn, 'large')).toBe(true);
+      document.body.removeChild(btn);
+    });
+
+    it('should handle aria-label attribute', () => {
+      const btn = document.createElement('button');
+      btn.setAttribute('aria-label', 'Close dialog');
+      document.body.appendChild(btn);
+      expect(matchesContent(btn, 'Close dialog')).toBe(true);
+      document.body.removeChild(btn);
+    });
+
+    it('should handle title attribute', () => {
+      const btn = document.createElement('button');
+      btn.setAttribute('title', 'Submit form');
+      document.body.appendChild(btn);
+      expect(matchesContent(btn, 'Submit form')).toBe(true);
+      document.body.removeChild(btn);
+    });
+
+    it('should handle case-insensitive text matching', () => {
+      const btn = document.createElement('button');
+      btn.textContent = 'Submit Button';
+      document.body.appendChild(btn);
+      expect(matchesContent(btn, 'SUBMIT')).toBe(true);
+      expect(matchesContent(btn, 'submit')).toBe(true);
+      expect(matchesContent(btn, 'SuBmIt')).toBe(true);
+      document.body.removeChild(btn);
+    });
+  });
+
+  describe('getAllElements Edge Cases', () => {
+    it('should include SVG elements', () => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.id = 'svg-test';
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      svg.appendChild(rect);
+      document.body.appendChild(svg);
+
+      const elements = getAllElements(document);
+      expect(elements.some(e => e.id === 'svg-test')).toBe(true);
+      expect(elements.some(e => e.tagName === 'svg')).toBe(true);
+
+      document.body.removeChild(svg);
+    });
+
+    it('should handle elements with no parent', () => {
+      const orphan = document.createElement('button');
+      // Don't append to document
+      expect(orphan.parentElement).toBeNull();
+      // Should still be able to process
+      expect(orphan.nodeType).toBe(Node.ELEMENT_NODE);
+    });
+  });
+
+  describe('findElement Error Handling', () => {
+    it('should handle null parent parameter', () => {
+      const result = findElement('button', null, false, true, null);
+      expect(result.elements.length).toBeGreaterThan(0);
+    });
+
+    it('should handle empty document', () => {
+      // Create a fresh JSDOM with empty body
+      const emptyDoc = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+        url: 'http://localhost',
+        pretendToBeVisual: true,
+        resources: 'usable'
+      });
+      const emptyWindow = emptyDoc.window;
+      const emptyDocument = emptyWindow.document;
+      
+      // Set up globals for this test
+      const originalDocument = global.document;
+      const originalWindow = global.window;
+      const originalNodeFilter = global.NodeFilter;
+      const originalNode = global.Node;
+      
+      global.document = emptyDocument;
+      global.window = emptyWindow;
+      global.NodeFilter = emptyWindow.NodeFilter;
+      global.Node = emptyWindow.Node;
+
+      const result = findElement('button', null, false, true);
+      expect(result.elements).toEqual([]);
+
+      // Restore originals
+      global.document = originalDocument;
+      global.window = originalWindow;
+      global.NodeFilter = originalNodeFilter;
+      global.Node = originalNode;
+      
+      emptyDoc.window.close();
+    });
+
+    it('should handle matchesType with invalid type', () => {
+      const btn = document.getElementById('btn1');
+      expect(matchesType(btn, 'nonexistent-type')).toBe(false);
+    });
+  });
+
+  describe('extractElements null handling', () => {
+    it('should handle null input gracefully', () => {
+      // Test that null input doesn't crash highlight/unhighlight
+      expect(() => highlight(null)).not.toThrow();
+      expect(() => unhighlight(null)).not.toThrow();
+    });
+
+    it('should handle undefined input gracefully', () => {
+      expect(() => highlight(undefined)).not.toThrow();
+      expect(() => unhighlight(undefined)).not.toThrow();
+    });
+
+    it('should handle empty array input', () => {
+      expect(() => highlight([])).not.toThrow();
+      expect(() => unhighlight([])).not.toThrow();
+    });
+
+    it('should handle empty object input', () => {
+      expect(() => highlight({})).not.toThrow();
+      expect(() => unhighlight({})).not.toThrow();
+    });
+  });
+
+  describe('parseXPath null/undefined input handling', () => {
+    it('should handle null expression gracefully', () => {
+      expect(parseXPath(null, document.body)).toBe(false);
+    });
+
+    it('should handle undefined expression gracefully', () => {
+      expect(parseXPath(undefined, document.body)).toBe(false);
+    });
+
+    it('should handle null element gracefully', () => {
+      expect(parseXPath('true()', null)).toBe(false);
+    });
+
+    it('should handle undefined element gracefully', () => {
+      expect(parseXPath('true()', undefined)).toBe(false);
+    });
+  });
+
+  describe('parseCondition null/undefined input handling', () => {
+    it('should handle null expression gracefully', () => {
+      expect(parseCondition(null, document.body)).toBe(false);
+    });
+
+    it('should handle undefined expression gracefully', () => {
+      expect(parseCondition(undefined, document.body)).toBe(false);
+    });
+
+    it('should handle null element gracefully', () => {
+      expect(parseCondition('self::button', null)).toBe(false);
+    });
+
+    it('should handle undefined element gracefully', () => {
+      expect(parseCondition('self::button', undefined)).toBe(false);
+    });
+  });
+
+  describe('matchesType null/undefined input handling', () => {
+    it('should handle null element gracefully', () => {
+      expect(matchesType(null, 'button')).toBe(false);
+    });
+
+    it('should handle undefined element gracefully', () => {
+      expect(matchesType(undefined, 'button')).toBe(false);
+    });
+  });
+
+  describe('matchesContent null/undefined input handling', () => {
+    it('should handle null element gracefully', () => {
+      expect(matchesContent(null, 'test')).toBe(false);
+    });
+
+    it('should handle undefined element gracefully', () => {
+      expect(matchesContent(undefined, 'test')).toBe(false);
+    });
+  });
+
+  describe('deep recursion handling', () => {
+    it('should throw error for deeply nested parentheses exceeding max depth', () => {
+      // Create a deeply nested expression (100 levels) - exceeds MAX_RECURSION_DEPTH
+      const deepExpr = '((((' + '('.repeat(100) + 'true()' + ')'.repeat(100) + '))))';
+      expect(() => parseXPath(deepExpr, document.body)).toThrow('XPath expression exceeds maximum recursion depth');
+    });
+
+    it('should handle complex nested OR/AND conditions', () => {
+      const complexExpr = '(self::button or self::input) and (self::button or true())';
+      const btn = document.getElementById('btn1');
+      expect(parseXPath(complexExpr, btn)).toBe(true);
+    });
+  });
+
+  describe('getAttribute edge cases', () => {
+    it('should handle elements with special characters in attribute values', () => {
+      const div = document.createElement('div');
+      div.setAttribute('data-value', 'test-with-quotes');
+      expect(parseCondition("@data-value='test-with-quotes'", div)).toBe(true);
+    });
+
+    it('should handle elements with empty attribute values', () => {
+      const div = document.createElement('div');
+      div.setAttribute('data-empty', '');
+      // Empty string matches empty attribute
+      expect(parseCondition("@data-empty=''", div)).toBe(true);
+    });
+
+    it('should handle elements with numeric attribute values', () => {
+      const div = document.createElement('div');
+      div.setAttribute('data-num', '123');
+      expect(parseCondition("@data-num='123'", div)).toBe(true);
+    });
+  });
+
+  describe('setSearchableAttributes validation', () => {
+    it('should throw TypeError for non-array input', () => {
+      expect(() => setSearchableAttributes('not-an-array')).toThrow(TypeError);
+      expect(() => setSearchableAttributes('not-an-array')).toThrow('attributes must be an array');
+    });
+
+    it('should throw TypeError for null input', () => {
+      expect(() => setSearchableAttributes(null)).toThrow(TypeError);
+    });
+
+    it('should throw TypeError for undefined input', () => {
+      expect(() => setSearchableAttributes(undefined)).toThrow(TypeError);
+    });
+
+    it('should handle valid array input', () => {
+      const original = getSearchableAttributes();
+      setSearchableAttributes(['data-test', 'data-custom']);
+      expect(getSearchableAttributes()).toEqual(['data-test', 'data-custom']);
+      // Reset to original
+      setSearchableAttributes(original);
+    });
+  });
+
+  describe('findElement error paths', () => {
+    it('should throw TypeError for non-string type parameter', () => {
+      expect(() => findElement(123, null, false, true)).toThrow(TypeError);
+      expect(() => findElement(123, null, false, true)).toThrow('type must be a string');
+    });
+
+    it('should handle null type parameter (defaults to element)', () => {
+      expect(() => findElement(null, null, false, true)).not.toThrow();
+    });
+
+    it('should handle undefined type parameter (defaults to element)', () => {
+      expect(() => findElement(undefined, null, false, true)).not.toThrow();
+    });
+
+    it('should handle negative maxFrames parameter', () => {
+      // maxFrames limits additional frames, but main frame is always included
+      const result = findElement('button', null, false, true, null, -1);
+      expect(result.elements.length).toBeGreaterThan(0);
+    });
+
+    it('should handle zero maxFrames parameter', () => {
+      // maxFrames limits additional frames, but main frame is always included
+      const result = findElement('button', null, false, true, null, 0);
+      expect(result.elements.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('getAllElements error paths', () => {
+    it('should throw for null root parameter', () => {
+      expect(() => getAllElements(null)).toThrow();
+    });
+
+    it('should handle undefined root parameter', () => {
+      expect(() => getAllElements(undefined)).not.toThrow();
+    });
+  });
+
+  describe('getBoundingBox edge cases', () => {
+    it('should handle element with getBoundingClientRect', () => {
+      const mockEl = {
+        getBoundingClientRect: () => ({ x: 0, y: 0, width: 100, height: 50, top: 0, bottom: 50, left: 0, right: 100 }),
+        tagName: 'DIV'
+      };
+      const result = getBoundingBox(mockEl);
+      expect(result.tagName).toBe('div');
     });
   });
 });
