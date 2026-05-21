@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Iframe Test Fixture</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        iframe { border: 2px solid #333; margin: 10px 0; }
+    </style>
 </head>
 <body>
     <h1>Iframe Test Page</h1>
@@ -20,5 +25,25 @@
     <label for="iframe-checkbox2">Iframe Checkbox 2</label>
 </body>
 </html>'></iframe>
+
+    <!-- Cross-origin iframe pointing to external domain -->
+    <div class="section">
+        <h2>Cross-Origin Iframe</h2>
+        <p>This iframe points to an external domain. JavaScript cannot access its content due to same-origin policy.</p>
+        <iframe id="cross-origin-iframe" 
+                src="https://example.com" 
+                width="400" 
+                height="200">
+            <p>Your browser does not support iframes.</p>
+        </iframe>
+    </div>
+
+    <!-- Same-origin iframe using data URL for variety -->
+    <div class="section">
+        <h2>Same-Origin Iframe (data URL)</h2>
+        <iframe id="same-origin-data-iframe" 
+                src="data:text/html;charset=utf-8,<!DOCTYPE html><html><body><button id=data-button>Data URL Button</button></body></html>">
+        </iframe>
+    </div>
 </body>
 </html>

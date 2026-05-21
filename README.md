@@ -1,6 +1,41 @@
 # @nodebug/browser-element-finder
 
-A standalone JavaScript library for identifying DOM elements by type and/or text content, with support for shadow DOM. Designed for browser automation, testing, and debugging workflows.
+**A robust, agent-friendly JavaScript library for identifying DOM elements by type and/or text content, with full support for shadow DOM, iframes, and automation workflows.**
+
+---
+
+## Quickstart for Agents & Automation
+
+Inject the library and find elements in any browser context (Selenium, Playwright, Puppeteer, or browser console):
+
+```js
+// Find all visible buttons
+const results = ElementFinder.findElement('button')
+
+// Find a button by text (substring match)
+const results = ElementFinder.findElement('button', 'Submit')
+
+// Find by text only (any type)
+const results = ElementFinder.findElement(null, 'seleniumbase')
+
+// Find in all frames (default)
+const results = ElementFinder.findElement('button')
+
+// Highlight found elements
+ElementFinder.highlight(results.elements.map((e) => e.element))
+
+// Remove highlight
+ElementFinder.unhighlight(results.elements.map((e) => e.element))
+```
+
+**Agent/Automation Best Practices:**
+
+- Always check `frameIndex`: `-1` = main frame, `0+` = iframe (see below for iframe handling)
+- For iframe results, switch context before interacting (see Selenium/Playwright docs)
+- Use `getValidTypes()` to enumerate all supported semantic types
+- Use `getSearchableAttributes()` to see which attributes are searched for text
+
+---
 
 ## Features
 
@@ -11,6 +46,7 @@ A standalone JavaScript library for identifying DOM elements by type and/or text
 - **Visibility filtering**: Optionally include or exclude hidden elements
 - **Bounding box data**: Returns position and dimensions for each found element
 - **XPath-like type definitions**: Extensible element type matching using XPath-like expressions
+- **Optimized performance**: O(n) innermost element filtering and efficient Set-based lookups
 
 ## Installation
 
@@ -34,90 +70,50 @@ browser-element-finder/
 └── coverage/                       # Test coverage reports
 ```
 
-## Usage
+## Usage Examples
 
-### In Browser Console
+### In Browser Console or Automation Script
 
-```javascript
-// Find all buttons
+```js
+// Find all visible buttons
 const results = ElementFinder.findElement('button')
-
-// Find buttons with specific text
+// Find by text
 const results = ElementFinder.findElement('button', 'Submit')
-
-// Find elements by text only
+// Find by text only
 const results = ElementFinder.findElement(null, 'seleniumbase')
-
-// Find elements in iframes (searches all frames by default)
-const results = ElementFinder.findElement('button')
-results.elements.forEach((item) => {
-  console.log('Frame index:', item.frameIndex) // -1 for main, 0+ for iframes
-  if (item.element) {
-    console.log('Can interact with element directly')
-  } else {
-    console.log('Iframe element - use elementData for metadata')
-  }
-})
-
-// Find links with specific text
-const results = ElementFinder.findElement('link', 'seleniumbase')
-
 // Include hidden elements
 const results = ElementFinder.findElement('button', null, false, true)
-
-// Find elements within a parent element
-const parent = document.querySelector('#container')
-const results = ElementFinder.findElement('button', null, false, false, parent)
-
-// Access metadata from results
-results.elements.forEach((item) => {
-  console.log('Tag:', item.tagName)
-  console.log('Position:', item.boundingBox.x, item.boundingBox.y)
-})
-
-// Highlight found elements (extract DOM elements from wrapper objects)
-ElementFinder.highlight(results.elements.map((e) => e.element))
-
-// Remove highlighting
-ElementFinder.unhighlight(results.elements.map((e) => e.element))
 ```
 
-### With Selenium WebDriver
+## Working with Iframes (Agent Pattern)
 
-```javascript
-import { Builder } from 'selenium-webdriver'
-import chrome from 'selenium-webdriver/chrome.js'
-import { readFileSync } from 'fs'
+The library automatically searches all frames (main + iframes). For agent/automation use:
 
-// Inject the library into the browser
-const finderCode = readFileSync('./index.js', 'utf8')
-await driver.executeScript(`${finderCode}`)
+- **Main frame**: `item.frameIndex === -1` and `item.element` is available for direct interaction.
+- **Iframe**: `item.frameIndex >= 0` and `item.element` is `undefined`. Use `frameIndex` to switch context, then re-run `findElement` inside the iframe to get interactable elements.
 
-// Find elements
-const results = await driver.executeScript(`
-  return ElementFinder.findElement('button', 'Submit');
-`)
+**Example:**
 
-// Access metadata directly from the result object
-results.elements.forEach((item) => {
-  console.log('Tag:', item.tagName)
-  console.log('Position:', item.boundingBox.x, item.boundingBox.y)
-})
-
-// Use the element with Selenium WebElement methods
-if (results.elements.length > 0) {
-  const element = results.elements[0].element
-  const tagName = await element.getTagName()
-  await element.click()
+```js
+const results = ElementFinder.findElement('button')
+for (const item of results.elements) {
+  if (item.frameIndex === -1 && item.element) {
+    // Interact directly
+    item.element.click()
+  } else if (item.frameIndex >= 0) {
+    // Switch to iframe, then re-query
+    // (agent/driver-specific code here)
+  }
 }
 ```
 
-### As an ES Module
+### ESM Import
 
-```javascript
+```js
 import {
   findElement,
   highlight,
+  unhighlight,
   getValidTypes,
 } from '@nodebug/browser-element-finder/src/element-finder.js'
 
@@ -132,6 +128,17 @@ results.elements.forEach((item) => {
 
 // Highlight elements (extract DOM elements from wrapper objects)
 highlight(results.elements.map((e) => e.element))
+```
+
+### CommonJS Import
+
+```js
+const {
+  findElement,
+  highlight,
+  unhighlight,
+  getValidTypes,
+} = require('@nodebug/browser-element-finder/src/element-finder.js')
 ```
 
 ### Accessing Element Definitions and Searchable Attributes
@@ -156,26 +163,46 @@ const ELEMENT_DEFINITIONS = require('@nodebug/browser-element-finder/element-def
 const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchable-attributes.json')
 ```
 
-## API Reference
+---
+
+## API Summary
+
+| Function                                                | Description                                               |
+| ------------------------------------------------------- | --------------------------------------------------------- |
+| `findElement(type, text, exact, includeHidden, parent)` | Find elements by type/text, returns `{ elements: [...] }` |
+| `highlight(elements, color, width)`                     | Highlight elements with outline                           |
+| `unhighlight(elements)`                                 | Remove highlight                                          |
+| `getValidTypes()`                                       | List all supported element types                          |
+| `getBoundingBox(element)`                               | Get bounding box for an element                           |
+| `setSearchableAttributes(attributes)`                   | Set custom attributes for text search                     |
+| `getSearchableAttributes()`                             | Get current searchable attributes                         |
+| `matchesType(el, type)`                                 | Check if element matches a type                           |
+| `matchesContent(el, value, exact)`                      | Check if element matches text                             |
+| `getAllElements(root)`                                  | Get all elements (with shadow DOM)                        |
+| `getAllFrames(root, maxFrames)`                         | Get all frames (main + iframes)                           |
+| `parseXPath(expr, el, depth)`                           | Parse XPath-like type expressions                         |
+| `splitByOperator(expr, op)`                             | Split XPath by operator                                   |
+
+---
 
 ### `findElement(type, text, exact, includeHidden, parent)`
 
 Finds elements matching the specified criteria. Searches all frames (main document + iframes) by default.
 
-| Parameter       | Type      | Default     | Description                              |
-| --------------- | --------- | ----------- | ---------------------------------------- |
-| `type`          | `string`  | `"element"` | Element type (see supported types below) |
-| `text`          | `string`  | `null`      | Text to search for in content/attributes |
-| `exact`         | `boolean` | `false`     | Exact text match vs substring            |
-| `includeHidden` | `boolean` | `false`     | Include hidden elements                  |
-| `parent`        | `Element` | `null`      | Parent element to search within          |
+| Parameter       | Type      | Default     | Description                                                                                           |
+| --------------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------- |
+| `type`          | `string`  | `"element"` | Element type (see supported types below). Must be a string; throws `TypeError` for non-string values. |
+| `text`          | `string`  | `null`      | Text to search for in content/attributes                                                              |
+| `exact`         | `boolean` | `false`     | Exact text match vs substring                                                                         |
+| `includeHidden` | `boolean` | `false`     | Include hidden elements                                                                               |
+| `parent`        | `Element` | `null`      | Parent element to search within                                                                       |
 
 **Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
 
-- `element`: Raw DOM element (only available for main frame elements; iframe elements return `undefined`)
+- `element`: Raw DOM element (main frame only; for iframes, use `frameIndex` and re-query after switching context)
 - `frameIndex`: `-1` for main frame, `0, 1, 2...` for iframes
 
-**Important**: Iframe elements are found and their bounding boxes are returned, but the raw DOM element is NOT included because DOM elements cannot be serialized across frame boundaries. To interact with iframe elements, you must switch the Selenium driver context to the iframe first using `driver.switchTo().frame()`.
+**Agent/Automation Note:** Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElement` inside the iframe.
 
 ### `highlight(elements, color, width)`
 
@@ -213,23 +240,23 @@ Checks if an element matches the specified type definition.
 
 ### `matchesContent(el, value, exact)`
 
-Checks if an element matches the specified text content.
+Checks if an element matches the specified text content. Safely handles edge case elements that may throw errors on attribute access.
 
 ### `getAllElements(root)`
 
 Gets all elements including shadow DOM contents.
 
-### `getAllFrames(root)`
+### `getAllFrames(root, maxFrames)`
 
-Gets all frames (main document + iframes) in the window. Returns array with `frameIndex` (-1 for main, 0+ for iframes).
+Gets all frames (main document + iframes) in the window. Returns array with `frameIndex` (-1 for main, 0+ for iframes). Cross-origin iframes (SecurityError) are automatically skipped with a specific warning message, while other errors are logged separately.
 
 ### `getConfig()`
 
 Returns the current configuration object.
 
-### `parseXPath(expr, el)`
+### `parseXPath(expr, el, depth)`
 
-Parses XPath-like expressions for element type matching.
+Parses XPath-like expressions for element type matching. The `depth` parameter is used internally for recursion tracking and has a maximum limit of 100 to prevent stack overflow from deeply nested expressions.
 
 ### `splitByOperator(expr, op)`
 
@@ -316,6 +343,16 @@ By default, the library searches these attributes (in priority order):
 - `placeholder`, `value`, `data-test-id`, `data-testid`, `id`
 - `resource-id`, `name`, `aria-label`, `class`, `hint`
 - `title`, `tooltip`, `alt`, `src`, `aria-labelledby`
+
+## Performance
+
+The library is optimized for large DOM trees with efficient algorithms:
+
+- **Innermost element filtering**: O(n) algorithm using Set-based lookups instead of O(n²) nested loops
+- **Column expansion**: O(n) algorithm using Map-based column position lookups instead of O(n²) cell iteration
+- **Memory efficient**: Minimal object creation during traversal
+
+For pages with many matching elements, these optimizations significantly reduce search time.
 
 ## Development
 

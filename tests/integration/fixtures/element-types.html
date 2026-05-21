@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Element Types Test Fixture</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        section { margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; border-radius: 8px; }
+        h2 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>Element Types Test Fixture</h1>
+
+    <!-- Navigation -->
+    <section id="navigation-section">
+        <h2>Navigation</h2>
+        <nav id="main-nav">
+            <a href="/home">Home</a>
+            <a href="/about">About</a>
+        </nav>
+        <div role="navigation" id="role-nav">
+            <a href="/page1">Page 1</a>
+        </div>
+    </section>
+
+    <!-- Headings -->
+    <section id="headings-section">
+        <h2>Headings</h2>
+        <h1 id="h1-test">Heading 1</h1>
+        <h2 id="h2-test">Heading 2</h2>
+        <h3 id="h3-test">Heading 3</h3>
+        <h4 id="h4-test">Heading 4</h4>
+        <h5 id="h5-test">Heading 5</h5>
+        <h6 id="h6-test">Heading 6</h6>
+        <div role="heading" id="role-heading">Role Heading</div>
+    </section>
+
+    <!-- Buttons -->
+    <section id="buttons-section">
+        <h2>Buttons</h2>
+        <button id="btn-standard">Standard Button</button>
+        <button type="submit" id="btn-submit">Submit Button</button>
+        <div role="button" id="btn-role">Role Button</div>
+        <input type="button" value="Input Button" id="btn-input">
+    </section>
+
+    <!-- Checkboxes -->
+    <section id="checkboxes-section">
+        <h2>Checkboxes</h2>
+        <input type="checkbox" id="checkbox-standard">
+        <div role="checkbox" id="checkbox-role">Role Checkbox</div>
+    </section>
+
+    <!-- Switches -->
+    <section id="switches-section">
+        <h2>Switches</h2>
+        <input type="checkbox" id="switch-standard">
+        <div role="switch" id="switch-role">Role Switch</div>
+        <button class="switch" id="switch-class">Switch Class</button>
+    </section>
+
+    <!-- Sliders -->
+    <section id="sliders-section">
+        <h2>Sliders</h2>
+        <input type="range" id="slider-standard">
+        <div role="slider" id="slider-role">Role Slider</div>
+    </section>
+
+    <!-- Radio Buttons -->
+    <section id="radios-section">
+        <h2>Radio Buttons</h2>
+        <input type="radio" name="radio-group" id="radio-standard">
+        <div role="radio" id="radio-role">Role Radio</div>
+    </section>
+
+    <!-- Dropdowns -->
+    <section id="dropdowns-section">
+        <h2>Dropdowns</h2>
+        <select id="dropdown-standard">
+            <option>Option 1</option>
+            <option>Option 2</option>
+        </select>
+        <div role="combobox" id="dropdown-combobox">Combobox</div>
+        <div role="listbox" id="dropdown-listbox">Listbox</div>
+        <div class="dropdown" id="dropdown-class">Dropdown Class</div>
+    </section>
+
+    <!-- Textboxes -->
+    <section id="textboxes-section">
+        <h2>Textboxes</h2>
+        <textarea id="textbox-textarea">Textarea content</textarea>
+        <input type="text" id="textbox-text">
+        <input type="password" id="textbox-password">
+        <input type="email" id="textbox-email">
+        <input type="search" id="textbox-search">
+        <div role="textbox" id="textbox-role">Role Textbox</div>
+    </section>
+
+    <!-- File Inputs -->
+    <section id="files-section">
+        <h2>File Inputs</h2>
+        <input type="file" id="file-standard">
+    </section>
+
+    <!-- Lists -->
+    <section id="lists-section">
+        <h2>Lists</h2>
+        <ul id="list-ul">
+            <li>Item 1</li>
+            <li>Item 2</li>
+        </ul>
+        <ol id="list-ol">
+            <li>Item A</li>
+            <li>Item B</li>
+        </ol>
+        <div role="list" id="list-role">
+            <div role="listitem">Role List Item</div>
+        </div>
+    </section>
+
+    <!-- Menu -->
+    <section id="menu-section">
+        <h2>Menu</h2>
+        <menu id="menu-standard">
+            <button>Menu Item 1</button>
+        </menu>
+        <div role="menu" id="menu-role">
+            <div role="menuitem">Role Menu Item</div>
+        </div>
+    </section>
+
+    <!-- Toolbar -->
+    <section id="toolbar-section">
+        <h2>Toolbar</h2>
+        <div role="toolbar" id="toolbar-role">
+            <button>Toolbar Button</button>
+        </div>
+    </section>
+
+    <!-- Dialog -->
+    <section id="dialog-section">
+        <h2>Dialog</h2>
+        <div role="dialog" id="dialog-role">
+            <p>Dialog content</p>
+        </div>
+    </section>
+
+    <!-- Images -->
+    <section id="images-section">
+        <h2>Images</h2>
+        <img src="test.jpg" alt="Test Image" id="img-standard">
+        <div role="img" id="img-role" aria-label="Role Image"></div>
+        <div alt="Alt Image" id="img-alt">Alt Image</div>
+    </section>
+
+    <!-- Tables -->
+    <section id="tables-section">
+        <h2>Tables</h2>
+        <table id="table-standard">
+            <tr>
+                <th id="th-test">Header</th>
+                <td id="td-test">Data</td>
+            </tr>
+        </table>
+        <div role="table" id="table-role">
+            <div role="row">
+                <div role="cell">Role Cell</div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
