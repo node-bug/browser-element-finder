@@ -242,6 +242,10 @@ var ElementFinder = (() => {
     if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
       return true;
     }
+    const textContent = el.textContent.toLowerCase().trim();
+    if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
+      return true;
+    }
     if (el.tagName === "SELECT") {
       const options = el.querySelectorAll("option");
       for (const option of options) {
