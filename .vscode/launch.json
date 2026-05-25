@@ -9,6 +9,20 @@
       "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
       "args": ["run", "${workspaceFolder}/tests/integration/test-tables.js"],
       "autoAttachChildProcesses": true
+    },
+    {
+      "name": "vitest - textbox test",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": [
+        "run",
+        "${workspaceFolder}/tests/integration/test-switches.js",
+        "-t",
+        "Switch by Text"
+      ],
+      "autoAttachChildProcesses": true
     }
   ]
 }

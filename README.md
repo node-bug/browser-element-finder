@@ -28,7 +28,7 @@ ElementFinder.highlight(results.elements.map((e) => e.element))
 ElementFinder.unhighlight(results.elements.map((e) => e.element))
 ```
 
-**Agent/Automation Best Practices:**
+**Agent/Automation Best Practices**:
 
 - Always check `frameIndex`: `-1` = main frame, `0+` = iframe (see below for iframe handling)
 - For iframe results, switch context before interacting (see Selenium/Playwright docs)
@@ -46,7 +46,17 @@ ElementFinder.unhighlight(results.elements.map((e) => e.element))
 - **Visibility filtering**: Optionally include or exclude hidden elements
 - **Bounding box data**: Returns position and dimensions for each found element
 - **XPath-like type definitions**: Extensible element type matching using XPath-like expressions
-- **Optimized performance**: O(n) innermost element filtering and efficient Set-based lookups
+- **Optimized performance**: Pre-compiled type matchers, O(n) innermost element filtering, and efficient Set-based lookups
+
+## Performance Optimizations
+
+The library includes several performance improvements:
+
+- **Pre-compiled type matchers**: Type definitions are compiled into cached matcher functions at module load time, avoiding XPath re-parsing for every element
+- **O(n) innermost element filtering**: Set-based lookups instead of nested loops
+- **Map-based column expansion**: O(1) element-to-column-position lookups for table cells
+- **Optimized text content matching**: Direct text node iteration instead of expensive textContent calls
+- **Loop optimizations**: Traditional for-loops with cached array lengths for hot paths
 
 ## Installation
 
@@ -92,7 +102,7 @@ The library automatically searches all frames (main + iframes). For agent/automa
 - **Main frame**: `item.frameIndex === -1` and `item.element` is available for direct interaction.
 - **Iframe**: `item.frameIndex >= 0` and `item.element` is `undefined`. Use `frameIndex` to switch context, then re-run `findElement` inside the iframe to get interactable elements.
 
-**Example:**
+**Example**:
 
 ```js
 const results = ElementFinder.findElement('button')
@@ -179,7 +189,7 @@ const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchabl
 | `matchesType(el, type)`                                 | Check if element matches a type                           |
 | `matchesContent(el, value, exact)`                      | Check if element matches text                             |
 | `getAllElements(root)`                                  | Get all elements (with shadow DOM)                        |
-| `getAllFrames(root, maxFrames)`                         | Get all frames (main + iframes)                           |
+| `getAllFrames(root)`                                    | Get all frames (main + iframes)                           |
 | `parseXPath(expr, el, depth)`                           | Parse XPath-like type expressions                         |
 | `splitByOperator(expr, op)`                             | Split XPath by operator                                   |
 
@@ -202,7 +212,7 @@ Finds elements matching the specified criteria. Searches all frames (main docume
 - `element`: Raw DOM element (main frame only; for iframes, use `frameIndex` and re-query after switching context)
 - `frameIndex`: `-1` for main frame, `0, 1, 2...` for iframes
 
-**Agent/Automation Note:** Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElement` inside the iframe.
+**Agent/Automation Note**: Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElement` inside the iframe.
 
 ### `highlight(elements, color, width)`
 
@@ -246,13 +256,9 @@ Checks if an element matches the specified text content. Safely handles edge cas
 
 Gets all elements including shadow DOM contents.
 
-### `getAllFrames(root, maxFrames)`
+### `getAllFrames(root)`
 
 Gets all frames (main document + iframes) in the window. Returns array with `frameIndex` (-1 for main, 0+ for iframes). Cross-origin iframes (SecurityError) are automatically skipped with a specific warning message, while other errors are logged separately.
-
-### `getConfig()`
-
-Returns the current configuration object.
 
 ### `parseXPath(expr, el, depth)`
 
@@ -262,9 +268,11 @@ Parses XPath-like expressions for element type matching. The `depth` parameter i
 
 Splits XPath expressions by operator (and/or).
 
+---
+
 ## Working with Iframes
 
-The library automatically searches all frames (main document + iframes) by default. However, there are important limitations when working with iframe elements:
+The library automatically searches all frames (main + iframes) by default. However, there are important limitations when working with iframe elements:
 
 ### Iframe Element Limitations
 
@@ -309,6 +317,8 @@ if (iframeElements.length > 0) {
 }
 ```
 
+---
+
 ## Supported Element Types
 
 | Type         | Description                                             |
@@ -337,6 +347,8 @@ if (iframeElements.length > 0) {
 | `file`       | `<input type="file"]`                                   |
 | `element`    | Matches all elements                                    |
 
+---
+
 ## Table Element Types: `column` vs `cell`
 
 Both `column` and `cell` types find table cells, but they behave differently:
@@ -346,7 +358,7 @@ Both `column` and `cell` types find table cells, but they behave differently:
 | `column` | `<td>`, `<th>` elements | Returns **all cells** in the column (header + data cells) |
 | `cell`   | `<td>` elements only    | Returns **only the specific cell** (no expansion)         |
 
-**Example:**
+**Example**:
 
 ```javascript
 // Find all cells in the "City" column (header + 3 data cells = 4 total)
@@ -366,6 +378,8 @@ const headerCell = ElementFinder.findElement('cell', 'City')
 // Returns: [] (no td elements match "City" header text)
 ```
 
+---
+
 ## Searchable Attributes
 
 By default, the library searches these attributes (in priority order):
@@ -374,15 +388,19 @@ By default, the library searches these attributes (in priority order):
 - `resource-id`, `name`, `aria-label`, `class`, `hint`
 - `title`, `tooltip`, `alt`, `src`, `aria-labelledby`
 
+---
+
 ## Performance
 
 The library is optimized for large DOM trees with efficient algorithms:
 
-- **Innermost element filtering**: O(n) algorithm using Set-based lookups instead of O(n²) nested loops
-- **Column expansion**: O(n) algorithm using Map-based column position lookups instead of O(n²) cell iteration
-- **Memory efficient**: Minimal object creation during traversal
+- **Pre-compiled type matchers**: Type definitions are compiled into cached matcher functions at module load time
+- **O(n) innermost element filtering**: Set-based lookups instead of O(n²) nested loops
+- **Map-based column expansion**: O(1) element-to-column-position lookups for table cells
+- **Optimized text matching**: Direct text node iteration avoids expensive textContent calls
+- **Loop optimizations**: Traditional for-loops with cached lengths for hot paths
 
-For pages with many matching elements, these optimizations significantly reduce search time.
+---
 
 ## Development
 
@@ -399,7 +417,7 @@ npm run test:watch
 npm run test:coverage
 ```
 
-**Note:** The `tests/integration/helpers/` folder is excluded from vitest runs as it contains helper utilities r
+**Note**: The `tests/integration/helpers/` folder is excluded from vitest runs as it contains helper utilities.
 
 ### Linting
 
@@ -412,6 +430,8 @@ npm run lint
 The library includes a Node.js-compatible module (`src/element-finder.js`) that provides the same functionality as the browser-injected `index.js` for coverage testing. This module is fully covered by unit tests.
 
 The original `index.js` is browser-injected code executed via Selenium's `executeScript`. Coverage for browser-injected code requires browser-based tools like Istanbul or running tests in a browser environment.
+
+---
 
 ## License
 

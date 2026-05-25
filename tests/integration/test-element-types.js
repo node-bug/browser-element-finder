@@ -54,7 +54,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('navigation');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(2);
+      expect(result.elements.length).toBe(2);
     });
   });
 
@@ -63,7 +63,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('heading');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(7);
+      expect(result.elements.length).toBe(24);
     });
   });
 
@@ -72,7 +72,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('button');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(4);
+      expect(result.elements.length).toBe(7);
     });
   });
 
@@ -81,7 +81,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('checkbox');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(2);
+      expect(result.elements.length).toBe(3);
     });
   });
 
@@ -90,7 +90,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('switch');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(3);
+      expect(result.elements.length).toBe(4);
     });
   });
 
@@ -99,7 +99,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('slider');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(2);
+      expect(result.elements.length).toBe(2);
     });
   });
 
@@ -108,7 +108,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('radio');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(2);
+      expect(result.elements.length).toBe(2);
     });
   });
 
@@ -117,7 +117,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('dropdown');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(4);
+      expect(result.elements.length).toBe(4);
     });
   });
 
@@ -126,7 +126,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('textbox');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(6);
+      expect(result.elements.length).toBe(6);
     });
   });
 
@@ -144,14 +144,14 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('list');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(3);
+      expect(result.elements.length).toBe(3);
     });
 
     it('should find listitem elements', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('listitem');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(3);
+      expect(result.elements.length).toBe(5);
     });
   });
 
@@ -160,14 +160,14 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('menu');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(2);
+      expect(result.elements.length).toBe(2);
     });
 
     it('should find menuitem elements', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('menuitem');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(1);
+      expect(result.elements.length).toBe(1);
     });
   });
 
@@ -194,7 +194,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('image');
       `);
-      expect(result.elements.length).toBeGreaterThanOrEqual(2);
+      expect(result.elements.length).toBe(2);
     });
   });
 });

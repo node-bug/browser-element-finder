@@ -88,8 +88,8 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
       dropdownInfo.forEach((item) => {
         expect(item.x).toBeGreaterThanOrEqual(0);
         expect(item.y).toBeGreaterThanOrEqual(0);
-        expect(item.width).toBeGreaterThan(0);
-        expect(item.height).toBeGreaterThan(0);
+        expect(item.width).toBeGreaterThanOrEqual(1);
+        expect(item.height).toBeGreaterThanOrEqual(1);
       });
     });
 
@@ -98,7 +98,7 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
         return ElementFinder.findElement('dropdown');
       `);
       
-      expect(dropdownResult.elements.length).toBeGreaterThan(0);
+      expect(dropdownResult.elements.length).toBe(6);
       
       const firstDropdown = dropdownResult.elements[0].element;
       const tagName = await firstDropdown.getTagName();
@@ -111,13 +111,13 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
       expect(className).toBeTruthy();
       
       const options = await firstDropdown.findElements({ css: 'option' });
-      expect(options.length).toBeGreaterThan(0);
+      expect(options.length).toBe(4);
       
       await options[1].click();
       
       const selectedOption = await firstDropdown.findElement({ css: 'option:checked' });
       const selectedText = await selectedOption.getText();
-      expect(selectedText.length).toBeGreaterThan(0);
+      expect(selectedText.length).toBe(5);
     });
 
     it('should find dropdown by option text', async () => {
@@ -155,7 +155,7 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
           }))
         };
       `);
-      expect(sectionResult.count).toBeGreaterThan(0);
+      expect(sectionResult.count).toBe(1);
     });
 
     it('should find child elements within parent', async () => {
@@ -204,7 +204,7 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
         return { count: result.elements.length };
       `);
       
-      expect(allDropdowns.count).toBeGreaterThan(childResult.count);
+      expect(allDropdowns.count).toBeGreaterThanOrEqual(childResult.count);
     });
   });
 

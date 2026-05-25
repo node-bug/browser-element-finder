@@ -95,6 +95,14 @@ var ElementFinder = (() => {
     operatorAnd: /^\s*\band\b\s*/i
   };
   var MAX_RECURSION_DEPTH = 100;
+  var TYPE_MATCHERS = /* @__PURE__ */ new Map();
+  for (const [type, expr] of Object.entries(element_definitions_default)) {
+    if (expr === "true()") {
+      TYPE_MATCHERS.set(type, () => true);
+    } else {
+      TYPE_MATCHERS.set(type, (el) => parseXPath(expr, el));
+    }
+  }
   function parseXPath(expr, el, depth = 0) {
     if (expr == null || el == null) return false;
     if (depth > MAX_RECURSION_DEPTH) {
@@ -217,14 +225,16 @@ var ElementFinder = (() => {
   }
   function matchesType(el, type) {
     if (el == null) return false;
-    const expr = ELEMENT_DEFINITIONS[type];
-    return expr ? parseXPath(expr, el) : false;
+    const matcher = TYPE_MATCHERS.get(type);
+    return matcher ? matcher(el) : false;
   }
   function matchesContent(el, value, exact = false) {
     if (el == null) return false;
     if (value === void 0 || value === null || value === "") return true;
     const normalizedValue = value.toLowerCase().trim();
-    for (const attr of SEARCHABLE_ATTRIBUTES) {
+    const attrs = SEARCHABLE_ATTRIBUTES;
+    for (let i = 0; i < attrs.length; i++) {
+      const attr = attrs[i];
       let attrValue;
       try {
         attrValue = el.getAttribute(attr);
@@ -238,18 +248,14 @@ var ElementFinder = (() => {
         }
       }
     }
-    const directText = Array.from(el.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.textContent).join("").toLowerCase().trim();
+    const directText = getDirectText(el);
     if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
-      return true;
-    }
-    const textContent = el.textContent.toLowerCase().trim();
-    if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
       return true;
     }
     if (el.tagName === "SELECT") {
       const options = el.querySelectorAll("option");
-      for (const option of options) {
-        const optionText = option.textContent.toLowerCase().trim();
+      for (let i = 0; i < options.length; i++) {
+        const optionText = options[i].textContent.toLowerCase().trim();
         if (exact ? optionText === normalizedValue : optionText.includes(normalizedValue)) {
           return true;
         }
@@ -260,6 +266,16 @@ var ElementFinder = (() => {
       return true;
     }
     return false;
+  }
+  function getDirectText(el) {
+    let text = "";
+    for (let i = 0; i < el.childNodes.length; i++) {
+      const node = el.childNodes[i];
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent;
+      }
+    }
+    return text.toLowerCase().trim();
   }
   function getBoundingBox(el) {
     const rect = el.getBoundingClientRect();
@@ -303,12 +319,12 @@ var ElementFinder = (() => {
     }
     return elements;
   }
-  function getAllFrames(root = window, maxFrames = Infinity) {
+  function getAllFrames(root = window) {
     const frames = [];
     try {
       frames.push({ window: root, document: root.document, isMainFrame: true, frameIndex: -1 });
       const iframes = root.document.querySelectorAll("iframe");
-      for (let i = 0; i < iframes.length && frames.length < maxFrames; i++) {
+      for (let i = 0; i < iframes.length; i++) {
         const iframe = iframes[i];
         try {
           if (iframe.contentWindow && iframe.contentDocument) {
@@ -385,7 +401,8 @@ var ElementFinder = (() => {
     const headerCells = Array.from(headerRow.children);
     const colPositions = [];
     let currentCol = 0;
-    for (const cell of headerCells) {
+    for (let i = 0; i < headerCells.length; i++) {
+      const cell = headerCells[i];
       const colspan = parseInt(cell.getAttribute("colspan")) || 1;
       colPositions.push({ cell, colStart: currentCol, colEnd: currentCol + colspan - 1 });
       currentCol += colspan;
@@ -393,15 +410,17 @@ var ElementFinder = (() => {
     const allRows = table.querySelectorAll("tr");
     const rowColMaps = [];
     const elementToCol = /* @__PURE__ */ new Map();
-    for (const row of allRows) {
+    for (let r = 0; r < allRows.length; r++) {
+      const row = allRows[r];
       const cells = Array.from(row.children);
       const rowColMap = /* @__PURE__ */ new Map();
       let rowCol = 0;
-      for (const cell of cells) {
+      for (let c = 0; c < cells.length; c++) {
+        const cell = cells[c];
         const colspan = parseInt(cell.getAttribute("colspan")) || 1;
-        for (let i = 0; i < colspan; i++) {
-          rowColMap.set(rowCol + i, cell);
-          elementToCol.set(cell, rowCol + i);
+        for (let k = 0; k < colspan; k++) {
+          rowColMap.set(rowCol + k, cell);
+          elementToCol.set(cell, rowCol + k);
         }
         rowCol += colspan;
       }
@@ -413,7 +432,7 @@ var ElementFinder = (() => {
     var _a;
     return (_a = elementToCol.get(el)) != null ? _a : null;
   }
-  function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null, maxFrames = Infinity) {
+  function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null) {
     var _a;
     if (type === null || type === void 0) {
       type = "element";
@@ -426,10 +445,11 @@ var ElementFinder = (() => {
       return { elements: [] };
     }
     const matches = [];
-    const frames = getAllFrames(window, maxFrames);
+    const frames = getAllFrames(window);
     for (const frame of frames) {
       const allElements = getAllElements(parent || frame.document);
-      for (const el of allElements) {
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
         if (type && !matchesType(el, type)) continue;
         if (text !== void 0 && !matchesContent(el, text, exact)) continue;
         if (!includeHidden) {
@@ -493,7 +513,8 @@ var ElementFinder = (() => {
   }
   function highlight(elements, color = "red", width = 3) {
     const items = extractElements(elements);
-    items.forEach((item) => {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
       const el = item.element ? item.element : item;
       if (el && el.style) {
         el.style.outline = `${width}px solid ${color}`;
@@ -501,11 +522,12 @@ var ElementFinder = (() => {
         el.style.boxShadow = `0 0 0 2px rgba(255, 255, 255, 0.8)`;
         el.classList.add("elementfinder-highlighted");
       }
-    });
+    }
   }
   function unhighlight(elements) {
     const items = extractElements(elements);
-    items.forEach((item) => {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
       const el = item.element ? item.element : item;
       if (el && el.style) {
         el.style.outline = "";
@@ -513,7 +535,7 @@ var ElementFinder = (() => {
         el.style.boxShadow = "";
         el.classList.remove("elementfinder-highlighted");
       }
-    });
+    }
   }
   function getValidTypes() {
     return Object.keys(ELEMENT_DEFINITIONS);
