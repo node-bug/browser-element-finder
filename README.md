@@ -311,30 +311,60 @@ if (iframeElements.length > 0) {
 
 ## Supported Element Types
 
-| Type         | Description                                         |
-| ------------ | --------------------------------------------------- |
-| `button`     | `<button>`, `[role="button"]`, `[type="button"]`    |
-| `checkbox`   | `<input type="checkbox">`, `[role="checkbox"]`      |
-| `switch`     | Toggle switches, checkboxes with switch role        |
-| `slider`     | `<input type="range">`, `[role="slider"]`           |
-| `radio`      | `<input type="radio">`, `[role="radio"]`            |
-| `dropdown`   | `<select>`, `[role="combobox"]`, `[role="listbox"]` |
-| `textbox`    | `<input>`, `<textarea>`, `[role="textbox"]`         |
-| `link`       | `<a>`, `[role="link"]`, `[href]`                    |
-| `heading`    | `<h1>-<h6>`, `[role="heading"]`                     |
-| `navigation` | `<nav>`, `[role="navigation"]`                      |
-| `list`       | `<ul>`, `<ol>`, `[role="list"]`                     |
-| `listitem`   | `<li>`, `[role="listitem"]`                         |
-| `menu`       | `<menu>`, `[role="menu"]`                           |
-| `menuitem`   | `[role="menuitem"]`                                 |
-| `toolbar`    | `[role="toolbar"]`                                  |
-| `dialog`     | `[role="dialog"]`                                   |
-| `table`      | `<table>`, `[role="table"]`                         |
-| `row`        | `<tr>`, `[role="row"]`                              |
-| `column`     | `<td>`, `<th>`, `[role="cell"]`                     |
-| `image`      | `<img>`, `[role="img"]`                             |
-| `file`       | `<input type="file"]`                               |
-| `element`    | Matches all elements                                |
+| Type         | Description                                             |
+| ------------ | ------------------------------------------------------- |
+| `button`     | `<button>`, `[role="button"]`, `[type="button"]`        |
+| `checkbox`   | `<input type="checkbox">`, `[role="checkbox"]`          |
+| `switch`     | Toggle switches, checkboxes with switch role            |
+| `slider`     | `<input type="range">`, `[role="slider"]`               |
+| `radio`      | `<input type="radio">`, `[role="radio"]`                |
+| `dropdown`   | `<select>`, `[role="combobox"]`, `[role="listbox"]`     |
+| `textbox`    | `<input>`, `<textarea>`, `[role="textbox"]`             |
+| `link`       | `<a>`, `[role="link"]`, `[href]`                        |
+| `heading`    | `<h1>-<h6>`, `[role="heading"]`                         |
+| `navigation` | `<nav>`, `[role="navigation"]`                          |
+| `list`       | `<ul>`, `<ol>`, `[role="list"]`                         |
+| `listitem`   | `<li>`, `[role="listitem"]`                             |
+| `menu`       | `<menu>`, `[role="menu"]`                               |
+| `menuitem`   | `[role="menuitem"]`                                     |
+| `toolbar`    | `[role="toolbar"]`                                      |
+| `dialog`     | `[role="dialog"]`                                       |
+| `table`      | `<table>`, `[role="table"]`                             |
+| `row`        | `<tr>`, `[role="row"]`                                  |
+| `column`     | `<td>`, `<th>`, `[role="cell"]`                         |
+| `cell`       | `<td>`, `[role="cell"]` (data cells only, no expansion) |
+| `image`      | `<img>`, `[role="img"]`                                 |
+| `file`       | `<input type="file"]`                                   |
+| `element`    | Matches all elements                                    |
+
+## Table Element Types: `column` vs `cell`
+
+Both `column` and `cell` types find table cells, but they behave differently:
+
+| Type     | Matches                 | With Text Search                                          |
+| -------- | ----------------------- | --------------------------------------------------------- |
+| `column` | `<td>`, `<th>` elements | Returns **all cells** in the column (header + data cells) |
+| `cell`   | `<td>` elements only    | Returns **only the specific cell** (no expansion)         |
+
+**Example:**
+
+```javascript
+// Find all cells in the "City" column (header + 3 data cells = 4 total)
+const columnResult = ElementFinder.findElement('column', 'City')
+// Returns: [th:City, td:New York, td:London, td:Paris]
+
+// Find all cells when searching for a data cell value
+const columnResult2 = ElementFinder.findElement('column', 'Paris')
+// Returns: [th:City, td:New York, td:London, td:Paris]
+
+// Find only the specific cell containing "Paris"
+const cellResult = ElementFinder.findElement('cell', 'Paris')
+// Returns: [td:Paris]
+
+// Find by header text with cell type - returns only the header cell
+const headerCell = ElementFinder.findElement('cell', 'City')
+// Returns: [] (no td elements match "City" header text)
+```
 
 ## Searchable Attributes
 
