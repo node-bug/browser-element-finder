@@ -568,11 +568,13 @@ describe('ElementFinder Node.js Module Tests', () => {
       expect(texts).toContain('Jane');
     });
 
-    it('should still find individual cell by text content', () => {
-      // Searching for a data cell text should still work
+    it('should expand column when searching for data cell text', () => {
+      // Searching for a data cell text with column type should expand to entire column
       const result = findElement('column', 'Paris', false, true);
-      expect(result.elements.length).toBe(1);
-      expect(result.elements[0].element.textContent.trim()).toBe('Paris');
+      expect(result.elements.length).toBeGreaterThanOrEqual(4); // header + 3 data cells
+      const texts = result.elements.map(e => e.element.textContent.trim());
+      expect(texts).toContain('City');
+      expect(texts).toContain('Paris');
     });
 
     it('should only expand within the same table as the matched header', () => {
