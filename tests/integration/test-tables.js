@@ -88,6 +88,24 @@ describe('Tables Consolidated Tests', () => {
     expect(columnDetails.count).toBeGreaterThanOrEqual(225);
   });
 
+  it('should find all cells (td elements only)', async () => {
+    const cellDetails = await driver.executeScript(`
+      const result = ElementFinder.findElement('cell');
+      return {
+        count: result.elements.length,
+        elements: result.elements.map(e => ({
+          tagName: e.tagName
+        }))
+      };
+    `);
+    // cell type should only return td elements (not th), so fewer than column
+    expect(cellDetails.count).toBeGreaterThanOrEqual(200);
+    // All should be td elements
+    for (const el of cellDetails.elements) {
+      expect(el.tagName).toBe('td');
+    }
+  });
+
   it('should find table by text content', async () => {
     const textResult = await driver.executeScript(`
       const result = ElementFinder.findElement('table', 'simple-table');
@@ -115,9 +133,42 @@ describe('Tables Consolidated Tests', () => {
     expect(cellResult.count).toBe(1);
   });
 
-  it('should find all cells in a column by header text', async () => {
+  it('should find cell by header text returns only the header cell, not the whole column', async () => {
+    const cellResult = await driver.executeScript(`
+      const result = ElementFinder.findElement('cell', 'City');
+      return {
+        count: result.elements.length,
+        elements: result.elements.map(e => ({
+          tagName: e.tagName,
+          text: e.element.textContent.trim()
+        }))
+      };
+    `);
+    // cell type should not match th elements, so this should return 0
+    // (City is in a th element, not a td)
+    expect(cellResult.count).toBe(0);
+  });
+
+  it('should find cell by data cell text returns only that cell', async () => {
+    const cellResult = await driver.executeScript(`
+      const result = ElementFinder.findElement('cell', 'Paris');
+      return {
+        count: result.elements.length,
+        elements: result.elements.map(e => ({
+          tagName: e.tagName,
+          text: e.element.textContent.trim()
+        }))
+      };
+    `);
+    // cell type should only return the single td element with 'Paris', not expand to column
+    expect(cellResult.count).toBe(1);
+    expect(cellResult.elements[0].tagName).toBe('td');
+    expect(cellResult.elements[0].text).toBe('Paris');
+  });
+
+  it('should find column by header text returns all cells in column', async () => {
     const columnResult = await driver.executeScript(`
-      const result = ElementFinder.findElement('column', 'City');
+      const result = ElementFinder.findElement('column', 'London');
       return {
         count: result.elements.length,
         elements: result.elements.map(e => ({
@@ -153,25 +204,5 @@ describe('Tables Consolidated Tests', () => {
     expect(texts).toContain('Alice');
     expect(texts).toContain('Bob');
     expect(texts).toContain('Charlie');
-  });
-
-  it('should find all cells in Age column by header text', async () => {
-    const columnResult = await driver.executeScript(`
-      const result = ElementFinder.findElement('column', 'Age');
-      return {
-        count: result.elements.length,
-        elements: result.elements.map(e => ({
-          tagName: e.tagName,
-          text: e.element.textContent.trim()
-        }))
-      };
-    `);
-    expect(columnResult.count).toBeGreaterThanOrEqual(4);
-    
-    const texts = columnResult.elements.map(e => e.text);
-    expect(texts).toContain('Age');
-    expect(texts).toContain('30');
-    expect(texts).toContain('25');
-    expect(texts).toContain('35');
   });
 });

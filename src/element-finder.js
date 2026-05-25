@@ -32,12 +32,8 @@ const MAX_RECURSION_DEPTH = 100;
  * @returns {boolean} True if the element matches the expression
  */
 export function parseXPath(expr, el, depth = 0) {
-  // Handle null/undefined inputs gracefully
-  if (expr == null || el == null) {
-    return false;
-  }
+  if (expr == null || el == null) return false;
   
-  // Prevent stack overflow from deeply nested expressions
   if (depth > MAX_RECURSION_DEPTH) {
     throw new Error('XPath expression exceeds maximum recursion depth');
   }
@@ -46,20 +42,13 @@ export function parseXPath(expr, el, depth = 0) {
   if (expr === 'true()') return true;
   
   // Handle outermost matching parentheses
-  if (expr.startsWith('(') && expr.endsWith(')')) {
-    // Ensure the parentheses are actually matching pairs balancing the expression
-    let parenDepth = 0;
+  if (expr[0] === '(' && expr[expr.length - 1] === ')') {
+    let parenDepth = 1;
     let matchedAll = true;
-    for (let i = 0; i < expr.length; i++) {
+    for (let i = 1; i < expr.length - 1; i++) {
       if (expr[i] === '(') parenDepth++;
       else if (expr[i] === ')') parenDepth--;
-      if (parenDepth === 0 && i < expr.length - 1) {
-        matchedAll = false;
-        break;
-      }
-    }
-    if (matchedAll) {
-      return parseXPath(expr.slice(1, -1), el, depth + 1);
+      if (parenDepth === 0) { matchedAll = false; break; }
     }
     if (matchedAll) return parseXPath(expr.slice(1, -1), el, depth + 1);
   }
@@ -144,10 +133,7 @@ export function splitByOperator(expr, op) {
  * @returns {boolean} True if the element matches the condition
  */
 export function parseCondition(expr, el, depth = 0) {
-  // Handle null/undefined inputs gracefully
-  if (expr == null || el == null) {
-    return false;
-  }
+  if (expr == null || el == null) return false;
   
   expr = expr.trim();
 
@@ -156,10 +142,7 @@ export function parseCondition(expr, el, depth = 0) {
   if (selfMatch) {
     const tagName = selfMatch[1].toUpperCase();
     if (el.tagName !== tagName) return false;
-    if (match[2]) {
-      return parseXPath(match[2], el, depth + 1);
-    }
-    return true;
+    return selfMatch[2] ? parseXPath(selfMatch[2], el, depth + 1) : true;
   }
   
   // Combined attribute patterns - check contains, equals, exists in one pass
@@ -188,7 +171,7 @@ export function parseCondition(expr, el, depth = 0) {
   if (ancestorMatch) {
     let parent = el.parentElement;
     while (parent) {
-      if (parseXPath(match[1], parent, depth + 1)) return true;
+      if (parseXPath(ancestorMatch[1], parent, depth + 1)) return true;
       parent = parent.parentElement;
     }
     return false;
@@ -258,7 +241,6 @@ export function matchesContent(el, value, exact = false) {
     try {
       attrValue = el.getAttribute(attr);
     } catch {
-      // Element may be in an invalid state, skip this attribute
       continue;
     }
     if (attrValue) {
@@ -281,13 +263,7 @@ export function matchesContent(el, value, exact = false) {
     return true;
   }
 
-  // Also check full text content (includes nested elements)
-  const textContent = el.textContent.toLowerCase().trim();
-  if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
-    return true;
-  }
-
-  // Check option text for select elements (dropdown matching)
+  // Check option text for select elements (dropdown matching) - before expensive textContent
   if (el.tagName === 'SELECT') {
     const options = el.querySelectorAll('option');
     for (const option of options) {
@@ -357,7 +333,11 @@ export function getAllElements(root = document) {
     // Traverse Shadow DOM securely
     try {
       if (node.shadowRoot) {
-        elements.push(...getAllElements(node.shadowRoot));
+        // Push shadow root children onto stack
+        const shadowChildren = node.shadowRoot.children;
+        for (let i = shadowChildren.length - 1; i >= 0; i--) {
+          stack.push(shadowChildren[i]);
+        }
       }
     } catch {
       // Restricted shadow root - skip
@@ -409,84 +389,58 @@ export function getAllFrames(root = window, maxFrames = Infinity) {
 }
 
 /**
- * Expand column matches when a header cell (th) is matched by text.
+ * Expand column matches when a header cell (th) or data cell (td) is matched by text.
  * Finds all cells in the same column position within the same table.
  * Handles colspan by including all spanned column positions.
- * Optimized from O(n²) to O(n) by building column position maps.
+ * Optimized by caching table structures per table element.
  */
-function expandColumnMatches(matches, text, exact, includeHidden) {
-  if (!text) return matches;
+function expandColumnMatches(matches, text, exact, includeHidden, type) {
+  // Only expand for 'column' type, not 'cell' type
+  if (!text || type !== 'column') return matches;
   
   const expandedMatches = [];
-  const seenElements = new Set(); // O(1) lookup instead of Array.some()
+  const seenElements = new Set();
+  
+  // Cache for table structures to avoid rebuilding for each match
+  const tableCache = new Map();
   
   for (const match of matches) {
     const el = match.element;
     const frame = match.frame;
     
-    // Always include the original match
     if (!seenElements.has(el)) {
       expandedMatches.push(match);
       seenElements.add(el);
     }
 
-    // Only expand if it's a header cell (th)
-    if (el.tagName.toLowerCase() === 'th') {
+    if (type === 'column') {
       const table = el.closest('table');
       if (!table) continue;
       
-      const headerRow = el.closest('tr');
-      if (!headerRow) continue;
-      
-      // Build column position map for header row (O(n) instead of O(n²))
-      // Each cell maps to its starting column and colspan span
-      const headerCells = Array.from(headerRow.children);
-      const colPositions = [];
-      let currentCol = 0;
-      for (const cell of headerCells) {
-        const colspan = parseInt(cell.getAttribute('colspan')) || 1;
-        colPositions.push({ cell, colStart: currentCol, colEnd: currentCol + colspan - 1 });
-        currentCol += colspan;
+      let tableData = tableCache.get(table);
+      if (!tableData) {
+        tableData = buildTableColumnData(table);
+        if (!tableData) continue;
+        tableCache.set(table, tableData);
       }
       
-      // Find the matched header's column range (handles colspan)
-      const headerInfo = colPositions.find(info => info.cell === el);
+      const colPosition = findElementColumnPosition(el, tableData.elementToCol);
+      if (colPosition === null) continue;
+      
+      // Use for...of with find instead of find + loop
+      const headerInfo = tableData.colPositions.find(info => colPosition >= info.colStart && colPosition <= info.colEnd);
       if (!headerInfo) continue;
       
-      // Find all rows in the table and collect cells at the spanned column positions
-      const allRows = table.querySelectorAll('tr');
-      for (const row of allRows) {
-        const cells = Array.from(row.children);
-        
-        // Build column position map for this row (O(n))
-        const rowColMap = new Map();
-        let rowCol = 0;
-        for (const cell of cells) {
-          const colspan = parseInt(cell.getAttribute('colspan')) || 1;
-          for (let i = 0; i < colspan; i++) {
-            rowColMap.set(rowCol + i, cell);
-          }
-          rowCol += colspan;
-        }
-        
-        // Add cells at each column position spanned by the header
+      for (const rowData of tableData.rowColMaps) {
         for (let col = headerInfo.colStart; col <= headerInfo.colEnd; col++) {
-          const cell = rowColMap.get(col);
-          if (!cell) continue;
+          const cell = rowData.map.get(col);
+          if (!cell || seenElements.has(cell)) continue;
           
-          // Skip if already added
-          if (seenElements.has(cell)) continue;
-          
-          // Check visibility if needed
           if (!includeHidden) {
             const cellWindow = cell.ownerDocument?.defaultView || frame.window;
             const style = cellWindow.getComputedStyle(cell);
-            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
-              continue;
-            }
-            if (cell.offsetWidth === 0 || cell.offsetHeight === 0) {
-              continue;
-            }
+            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
+            if (cell.offsetWidth === 0 || cell.offsetHeight === 0) continue;
           }
           
           expandedMatches.push({ element: cell, frame: frame });
@@ -497,6 +451,60 @@ function expandColumnMatches(matches, text, exact, includeHidden) {
   }
   
   return expandedMatches;
+}
+
+/**
+ * Build column data for a table, including header positions and row maps.
+ * Returns null if the table has no valid header row.
+ * Builds a reverse lookup map for O(1) element-to-column-position queries.
+ */
+function buildTableColumnData(table) {
+  const thead = table.querySelector('thead');
+  if (!thead) return null;
+  
+  const headerRow = thead.querySelector('tr');
+  if (!headerRow) return null;
+  
+  // Build column position map for header row
+  const headerCells = Array.from(headerRow.children);
+  const colPositions = [];
+  let currentCol = 0;
+  for (const cell of headerCells) {
+    const colspan = parseInt(cell.getAttribute('colspan')) || 1;
+    colPositions.push({ cell, colStart: currentCol, colEnd: currentCol + colspan - 1 });
+    currentCol += colspan;
+  }
+  
+  // Build column maps for all rows with reverse lookup for O(1) element-to-column queries
+  const allRows = table.querySelectorAll('tr');
+  const rowColMaps = [];
+  const elementToCol = new Map(); // Reverse lookup: element -> column position
+  
+  for (const row of allRows) {
+    const cells = Array.from(row.children);
+    const rowColMap = new Map();
+    let rowCol = 0;
+    for (const cell of cells) {
+      const colspan = parseInt(cell.getAttribute('colspan')) || 1;
+      for (let i = 0; i < colspan; i++) {
+        rowColMap.set(rowCol + i, cell);
+        elementToCol.set(cell, rowCol + i); // Build reverse lookup
+      }
+      rowCol += colspan;
+    }
+    rowColMaps.push({ row, map: rowColMap, cells });
+  }
+  
+  return { colPositions, rowColMaps, elementToCol };
+}
+
+/**
+ * Find the column position of an element within its table using cached reverse lookup.
+ * Returns the column index (0-based) or null if not found.
+ * O(1) lookup using the pre-built elementToCol map.
+ */
+function findElementColumnPosition(el, elementToCol) {
+  return elementToCol.get(el) ?? null;
 }
 
 /**
@@ -587,7 +595,7 @@ export function findElement(type = "element", text = null, exact = false, includ
 
   // Expand column matches when a header cell is matched by text
   // This finds all cells in the same column within the same table
-  const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden);
+  const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden, type);
 
   // Build results with bounding boxes and tag names
   // For iframe elements, we need to serialize the element data since DOM elements

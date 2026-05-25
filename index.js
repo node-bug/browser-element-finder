@@ -96,28 +96,24 @@ var ElementFinder = (() => {
   };
   var MAX_RECURSION_DEPTH = 100;
   function parseXPath(expr, el, depth = 0) {
-    if (expr == null || el == null) {
-      return false;
-    }
+    if (expr == null || el == null) return false;
     if (depth > MAX_RECURSION_DEPTH) {
       throw new Error("XPath expression exceeds maximum recursion depth");
     }
     expr = expr.trim();
     if (expr === "true()") return true;
-    if (expr.startsWith("(") && expr.endsWith(")")) {
-      let parenDepth = 0;
+    if (expr[0] === "(" && expr[expr.length - 1] === ")") {
+      let parenDepth = 1;
       let matchedAll = true;
-      for (let i = 0; i < expr.length; i++) {
+      for (let i = 1; i < expr.length - 1; i++) {
         if (expr[i] === "(") parenDepth++;
         else if (expr[i] === ")") parenDepth--;
-        if (parenDepth === 0 && i < expr.length - 1) {
+        if (parenDepth === 0) {
           matchedAll = false;
           break;
         }
       }
-      if (matchedAll) {
-        return parseXPath(expr.slice(1, -1), el, depth + 1);
-      }
+      if (matchedAll) return parseXPath(expr.slice(1, -1), el, depth + 1);
     }
     const orParts = splitByOperator(expr, "or");
     if (orParts.length > 1) {
@@ -172,18 +168,13 @@ var ElementFinder = (() => {
     return parts;
   }
   function parseCondition(expr, el, depth = 0) {
-    if (expr == null || el == null) {
-      return false;
-    }
+    if (expr == null || el == null) return false;
     expr = expr.trim();
     const selfMatch = expr.match(REGEX_PATTERNS.selfWithTag);
     if (selfMatch) {
       const tagName = selfMatch[1].toUpperCase();
       if (el.tagName !== tagName) return false;
-      if (match[2]) {
-        return parseXPath(match[2], el, depth + 1);
-      }
-      return true;
+      return selfMatch[2] ? parseXPath(selfMatch[2], el, depth + 1) : true;
     }
     const containsMatch = expr.match(REGEX_PATTERNS.contains);
     if (containsMatch) {
@@ -206,7 +197,7 @@ var ElementFinder = (() => {
     if (ancestorMatch) {
       let parent = el.parentElement;
       while (parent) {
-        if (parseXPath(match[1], parent, depth + 1)) return true;
+        if (parseXPath(ancestorMatch[1], parent, depth + 1)) return true;
         parent = parent.parentElement;
       }
       return false;
@@ -251,10 +242,6 @@ var ElementFinder = (() => {
     if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
       return true;
     }
-    const textContent = el.textContent.toLowerCase().trim();
-    if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
-      return true;
-    }
     if (el.tagName === "SELECT") {
       const options = el.querySelectorAll("option");
       for (const option of options) {
@@ -296,9 +283,16 @@ var ElementFinder = (() => {
       if (node.nodeType !== Node.ELEMENT_NODE) continue;
       if (node.tagName === "SCRIPT" || node.tagName === "STYLE") continue;
       elements.push(node);
+      const children = node.children;
+      for (let i = children.length - 1; i >= 0; i--) {
+        stack.push(children[i]);
+      }
       try {
         if (node.shadowRoot) {
-          elements.push(...getAllElements(node.shadowRoot));
+          const shadowChildren = node.shadowRoot.children;
+          for (let i = shadowChildren.length - 1; i >= 0; i--) {
+            stack.push(shadowChildren[i]);
+          }
         }
       } catch (e) {
       }
@@ -335,11 +329,12 @@ var ElementFinder = (() => {
     }
     return frames;
   }
-  function expandColumnMatches(matches, text, exact, includeHidden) {
+  function expandColumnMatches(matches, text, exact, includeHidden, type) {
     var _a;
-    if (!text) return matches;
+    if (!text || type !== "column") return matches;
     const expandedMatches = [];
     const seenElements = /* @__PURE__ */ new Set();
+    const tableCache = /* @__PURE__ */ new Map();
     for (const match of matches) {
       const el = match.element;
       const frame = match.frame;
@@ -347,46 +342,28 @@ var ElementFinder = (() => {
         expandedMatches.push(match);
         seenElements.add(el);
       }
-      if (el.tagName.toLowerCase() === "th") {
+      if (type === "column") {
         const table = el.closest("table");
         if (!table) continue;
-        const headerRow = el.closest("tr");
-        if (!headerRow) continue;
-        const headerCells = Array.from(headerRow.children);
-        const colPositions = [];
-        let currentCol = 0;
-        for (const cell of headerCells) {
-          const colspan = parseInt(cell.getAttribute("colspan")) || 1;
-          colPositions.push({ cell, colStart: currentCol, colEnd: currentCol + colspan - 1 });
-          currentCol += colspan;
+        let tableData = tableCache.get(table);
+        if (!tableData) {
+          tableData = buildTableColumnData(table);
+          if (!tableData) continue;
+          tableCache.set(table, tableData);
         }
-        const headerInfo = colPositions.find((info) => info.cell === el);
+        const colPosition = findElementColumnPosition(el, tableData.elementToCol);
+        if (colPosition === null) continue;
+        const headerInfo = tableData.colPositions.find((info) => colPosition >= info.colStart && colPosition <= info.colEnd);
         if (!headerInfo) continue;
-        const allRows = table.querySelectorAll("tr");
-        for (const row of allRows) {
-          const cells = Array.from(row.children);
-          const rowColMap = /* @__PURE__ */ new Map();
-          let rowCol = 0;
-          for (const cell of cells) {
-            const colspan = parseInt(cell.getAttribute("colspan")) || 1;
-            for (let i = 0; i < colspan; i++) {
-              rowColMap.set(rowCol + i, cell);
-            }
-            rowCol += colspan;
-          }
+        for (const rowData of tableData.rowColMaps) {
           for (let col = headerInfo.colStart; col <= headerInfo.colEnd; col++) {
-            const cell = rowColMap.get(col);
-            if (!cell) continue;
-            if (seenElements.has(cell)) continue;
+            const cell = rowData.map.get(col);
+            if (!cell || seenElements.has(cell)) continue;
             if (!includeHidden) {
               const cellWindow = ((_a = cell.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
               const style = cellWindow.getComputedStyle(cell);
-              if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
-                continue;
-              }
-              if (cell.offsetWidth === 0 || cell.offsetHeight === 0) {
-                continue;
-              }
+              if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") continue;
+              if (cell.offsetWidth === 0 || cell.offsetHeight === 0) continue;
             }
             expandedMatches.push({ element: cell, frame });
             seenElements.add(cell);
@@ -395,6 +372,42 @@ var ElementFinder = (() => {
       }
     }
     return expandedMatches;
+  }
+  function buildTableColumnData(table) {
+    const thead = table.querySelector("thead");
+    if (!thead) return null;
+    const headerRow = thead.querySelector("tr");
+    if (!headerRow) return null;
+    const headerCells = Array.from(headerRow.children);
+    const colPositions = [];
+    let currentCol = 0;
+    for (const cell of headerCells) {
+      const colspan = parseInt(cell.getAttribute("colspan")) || 1;
+      colPositions.push({ cell, colStart: currentCol, colEnd: currentCol + colspan - 1 });
+      currentCol += colspan;
+    }
+    const allRows = table.querySelectorAll("tr");
+    const rowColMaps = [];
+    const elementToCol = /* @__PURE__ */ new Map();
+    for (const row of allRows) {
+      const cells = Array.from(row.children);
+      const rowColMap = /* @__PURE__ */ new Map();
+      let rowCol = 0;
+      for (const cell of cells) {
+        const colspan = parseInt(cell.getAttribute("colspan")) || 1;
+        for (let i = 0; i < colspan; i++) {
+          rowColMap.set(rowCol + i, cell);
+          elementToCol.set(cell, rowCol + i);
+        }
+        rowCol += colspan;
+      }
+      rowColMaps.push({ row, map: rowColMap, cells });
+    }
+    return { colPositions, rowColMaps, elementToCol };
+  }
+  function findElementColumnPosition(el, elementToCol) {
+    var _a;
+    return (_a = elementToCol.get(el)) != null ? _a : null;
   }
   function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null, maxFrames = Infinity) {
     var _a;
@@ -447,7 +460,7 @@ var ElementFinder = (() => {
         }
       }
     }
-    const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden);
+    const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden, type);
     const qualified = expandedMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
