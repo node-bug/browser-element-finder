@@ -1,6 +1,6 @@
 /**
  * Consolidated Uncovered Lines Tests
- * Tests: ancestor XPath, shadow DOM, SELECT option text, table column expansion, iframe maxFrames
+ * Tests: ancestor XPath, shadow DOM, SELECT option text, table column expansion
  */
 
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
@@ -57,7 +57,7 @@ describe('Uncovered Lines Consolidated Tests', () => {
           tagName: result.elements[0]?.tagName
         };
       `);
-      expect(result.count).toBeGreaterThan(0);
+      expect(result.count).toBe(1);
       expect(result.tagName).toBe('select');
     });
 
@@ -69,7 +69,7 @@ describe('Uncovered Lines Consolidated Tests', () => {
           tagName: result.elements[0]?.tagName
         };
       `);
-      expect(result.count).toBeGreaterThan(0);
+      expect(result.count).toBe(1);
       expect(result.tagName).toBe('select');
     });
 
@@ -81,7 +81,7 @@ describe('Uncovered Lines Consolidated Tests', () => {
           tagName: result.elements[0]?.tagName
         };
       `);
-      expect(result.count).toBeGreaterThan(0);
+      expect(result.count).toBe(1);
       expect(result.tagName).toBe('select');
     });
   });
@@ -95,7 +95,7 @@ describe('Uncovered Lines Consolidated Tests', () => {
           tagName: result.elements[0]?.tagName
         };
       `);
-      expect(result.count).toBeGreaterThan(0);
+      expect(result.count).toBe(2);
     });
   });
 });

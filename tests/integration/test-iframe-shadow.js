@@ -88,7 +88,7 @@ describe('Iframe and Shadow DOM Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement(null, 'Iframe Checkbox');
       `);
-      expect(result.elements.length).toBeGreaterThan(0);
+      expect(result.elements.length).toBe(2);
     });
   });
 });
@@ -133,7 +133,7 @@ describe('Shadow DOM Tests', () => {
       const result = ElementFinder.findElement('button');
       return result.elements.length;
     `);
-    expect(buttonCount).toBeGreaterThanOrEqual(20);
+    expect(buttonCount).toBe(24);
   });
 
   it('should find textboxes in shadow DOM', async () => {
@@ -141,7 +141,7 @@ describe('Shadow DOM Tests', () => {
       const result = ElementFinder.findElement('textbox');
       return result.elements.length;
     `);
-    expect(textboxCount).toBeGreaterThanOrEqual(15);
+    expect(textboxCount).toBe(20);
   });
 
   it('should find checkboxes in shadow DOM', async () => {
@@ -149,7 +149,7 @@ describe('Shadow DOM Tests', () => {
       const result = ElementFinder.findElement('checkbox');
       return result.elements.length;
     `);
-    expect(checkboxCount).toBeGreaterThanOrEqual(5);
+    expect(checkboxCount).toBe(7);
   });
 
   it('should find links in shadow DOM', async () => {
@@ -157,7 +157,7 @@ describe('Shadow DOM Tests', () => {
       const result = ElementFinder.findElement('link');
       return result.elements.length;
     `);
-    expect(linkCount).toBeGreaterThanOrEqual(3);
+    expect(linkCount).toBe(4);
   });
 
   it('should find elements by text in shadow DOM', async () => {
@@ -182,8 +182,8 @@ describe('Shadow DOM Tests', () => {
     bboxInfo.forEach(item => {
       expect(item.x).toBeGreaterThanOrEqual(0);
       expect(item.y).toBeGreaterThanOrEqual(0);
-      expect(item.width).toBeGreaterThan(0);
-      expect(item.height).toBeGreaterThan(0);
+      expect(item.width).toBeGreaterThanOrEqual(1);
+      expect(item.height).toBeGreaterThanOrEqual(1);
     });
   });
 });
@@ -279,6 +279,80 @@ describe('Switches Tests', () => {
     iframeSwitchInfo.elements.forEach(switchInfo => {
       expect(switchInfo.element).toBeFalsy();
       expect(switchInfo.frameIndex).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('Individual Switch Types', () => {
+    it('should find standard checkbox switch by id', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement('switch', 'checkbox-switch', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].tagName.toLowerCase()).toBe('input');
+    });
+
+    it('should find ARIA div switch by id', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement('switch', 'aria-switch', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].tagName.toLowerCase()).toBe('div');
+    });
+
+    it('should find button switch by id', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement('switch', 'button-switch', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].tagName.toLowerCase()).toBe('button');
+    });
+
+    it('should find native checkbox switch by id', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement('switch', 'native-checkbox', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].tagName.toLowerCase()).toBe('input');
+    });
+
+    it('should find disabled switch by id', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement('switch', 'disabled-switch', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].tagName.toLowerCase()).toBe('input');
+    });
+
+    it('should find shadow DOM switch by id', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement('switch', 'shadow-switch', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].tagName.toLowerCase()).toBe('input');
+    });
+
+    it('should find iframe switch by id', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement('switch', 'iframe-switch', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].tagName.toLowerCase()).toBe('input');
+    });
+  });
+
+  describe('Switch Text Search', () => {
+    it('should find switches by label text', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement(null, 'Standard Checkbox Switch', false, true);
+      `);
+      expect(result.elements.length).toBe(1);
+    });
+
+    it('should find ARIA switch by label text', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElement(null, 'ARIA Div Switch', false, true);
+      `);
+      expect(result.elements.length).toBe(2);
     });
   });
 });

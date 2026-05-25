@@ -59,7 +59,7 @@ describe('Tables Consolidated Tests', () => {
         }))
       };
     `);
-    expect(tableDetails.count).toBeGreaterThanOrEqual(6);
+    expect(tableDetails.count).toBe(6);
   });
 
   it('should find all rows', async () => {
@@ -72,7 +72,7 @@ describe('Tables Consolidated Tests', () => {
         }))
       };
     `);
-    expect(rowDetails.count).toBeGreaterThanOrEqual(120);
+    expect(rowDetails.count).toBe(120);
   });
 
   it('should find all columns (cells)', async () => {
@@ -85,7 +85,7 @@ describe('Tables Consolidated Tests', () => {
         }))
       };
     `);
-    expect(columnDetails.count).toBeGreaterThanOrEqual(225);
+    expect(columnDetails.count).toBe(255);
   });
 
   it('should find all cells (td elements only)', async () => {
@@ -99,7 +99,7 @@ describe('Tables Consolidated Tests', () => {
       };
     `);
     // cell type should only return td elements (not th), so fewer than column
-    expect(cellDetails.count).toBeGreaterThanOrEqual(200);
+    expect(cellDetails.count).toBe(239);
     // All should be td elements
     for (const el of cellDetails.elements) {
       expect(el.tagName).toBe('td');
@@ -116,7 +116,7 @@ describe('Tables Consolidated Tests', () => {
         }))
       };
     `);
-    expect(textResult.count).toBeGreaterThanOrEqual(1);
+    expect(textResult.count).toBe(1);
   });
 
   it('should find cell by text content', async () => {
@@ -177,7 +177,7 @@ describe('Tables Consolidated Tests', () => {
         }))
       };
     `);
-    expect(columnResult.count).toBeGreaterThanOrEqual(4);
+    expect(columnResult.count).toBe(4);
     
     const texts = columnResult.elements.map(e => e.text);
     expect(texts).toContain('City');
@@ -197,7 +197,7 @@ describe('Tables Consolidated Tests', () => {
         }))
       };
     `);
-    expect(columnResult.count).toBeGreaterThanOrEqual(4);
+    expect(columnResult.count).toBe(4);
     
     const texts = columnResult.elements.map(e => e.text);
     expect(texts).toContain('Name');
