@@ -51,7 +51,7 @@ describe('Iframe and Shadow DOM Consolidated Tests', () => {
   describe('Iframe Tests', () => {
     it('should find all checkboxes including those in iframes by default', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('checkbox', null, false, true);
+        return ElementFinder.findElement('checkbox');
       `);
       expect(result.elements.length).toBe(3);
       
@@ -225,19 +225,21 @@ describe('Switches Tests', () => {
 
   it('should find all switches including hidden', async () => {
     const switchDetails = await driver.executeScript(`
-      const result = ElementFinder.findElement('switch', null, false, true);
+      const result = ElementFinder.findElement('switch');
       return result
     `);
+    // All 7 switches are found (including hidden ones)
     expect(switchDetails.elements.length).toBe(7);
     expect(switchDetails.elements[0]).toHaveProperty('boundingBox');
     expect(switchDetails.elements[0]).toHaveProperty('frameIndex');
     expect(switchDetails.elements[0]).toHaveProperty('element');
     expect(switchDetails.elements[0]).toHaveProperty('tagName');
+    expect(switchDetails.elements[0]).toHaveProperty('isVisible');
   });
 
   it('should highlight all switches', async () => {
     await driver.executeScript(`
-      const result = ElementFinder.findElement('switch', null, false, true);
+      const result = ElementFinder.findElement('switch');
       const mainFrameElements = result.elements.filter(e => e.element);
       ElementFinder.highlight(mainFrameElements.map(e => e.element), 'green', 3);
     `);
@@ -245,7 +247,7 @@ describe('Switches Tests', () => {
 
   it('should return bounding box info for switches', async () => {
     const switchInfo = await driver.executeScript(`
-      const result = ElementFinder.findElement('switch', null, false, true);
+      const result = ElementFinder.findElement('switch');
       return result
     `);
     expect(switchInfo.elements.length).toBe(7);
@@ -257,7 +259,7 @@ describe('Switches Tests', () => {
 
   it('should highlight switch in shadow DOM', async () => {
     const shadowswitch = await driver.executeScript(`
-      const result = ElementFinder.findElement('switch', 'shadow-switch', false, true);
+      const result = ElementFinder.findElement('switch', 'shadow-switch');
       return result
     `);
     expect(shadowswitch.elements.length).toBe(1);
@@ -269,7 +271,7 @@ describe('Switches Tests', () => {
 
   it('should find switches in iframe but cannot highlight directly', async () => {
     const iframeSwitchInfo = await driver.executeScript(`
-      const result = ElementFinder.findElement('switch', "iframe-switch", false, true);
+      const result = ElementFinder.findElement('switch', "iframe-switch");
       return result
     `);
     expect(iframeSwitchInfo.elements.length).toBe(1);
@@ -285,7 +287,7 @@ describe('Switches Tests', () => {
   describe('Individual Switch Types', () => {
     it('should find standard checkbox switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('switch', 'checkbox-switch', false, true);
+        return ElementFinder.findElement('switch', 'checkbox-switch');
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName.toLowerCase()).toBe('input');
@@ -293,7 +295,7 @@ describe('Switches Tests', () => {
 
     it('should find ARIA div switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('switch', 'aria-switch', false, true);
+        return ElementFinder.findElement('switch', 'aria-switch');
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName.toLowerCase()).toBe('div');
@@ -301,7 +303,7 @@ describe('Switches Tests', () => {
 
     it('should find button switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('switch', 'button-switch', false, true);
+        return ElementFinder.findElement('switch', 'button-switch');
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName.toLowerCase()).toBe('button');
@@ -309,7 +311,7 @@ describe('Switches Tests', () => {
 
     it('should find native checkbox switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('switch', 'native-checkbox', false, true);
+        return ElementFinder.findElement('switch', 'native-checkbox');
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName.toLowerCase()).toBe('input');
@@ -317,7 +319,7 @@ describe('Switches Tests', () => {
 
     it('should find disabled switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('switch', 'disabled-switch', false, true);
+        return ElementFinder.findElement('switch', 'disabled-switch');
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName.toLowerCase()).toBe('input');
@@ -325,7 +327,7 @@ describe('Switches Tests', () => {
 
     it('should find shadow DOM switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('switch', 'shadow-switch', false, true);
+        return ElementFinder.findElement('switch', 'shadow-switch');
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName.toLowerCase()).toBe('input');
@@ -333,7 +335,7 @@ describe('Switches Tests', () => {
 
     it('should find iframe switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement('switch', 'iframe-switch', false, true);
+        return ElementFinder.findElement('switch', 'iframe-switch');
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName.toLowerCase()).toBe('input');
@@ -343,14 +345,14 @@ describe('Switches Tests', () => {
   describe('Switch Text Search', () => {
     it('should find switches by label text', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement(null, 'Standard Checkbox Switch', false, true);
+        return ElementFinder.findElement(null, 'Standard Checkbox Switch');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find ARIA switch by label text', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElement(null, 'ARIA Div Switch', false, true);
+        return ElementFinder.findElement(null, 'ARIA Div Switch');
       `);
       expect(result.elements.length).toBe(2);
     });

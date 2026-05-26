@@ -359,39 +359,29 @@ describe('ElementFinder Node.js Module Tests', () => {
 
   describe('findElement', () => {
     it('should find elements by type', () => {
-      const result = findElement('button', null, false, true);
+      const result = findElement('button');
       expect(result.elements.length).toBe(3);
     });
 
     it('should find elements by text', () => {
-      const result = findElement(null, 'Submit', false, true);
+      const result = findElement(null, 'Submit');
       expect(result.elements.length).toBe(1);
     });
 
     it('should return empty for unknown type', () => {
-      const result = findElement('unknown', null, false, true);
+      const result = findElement('unknown');
       expect(result.elements).toEqual([]);
     });
 
-    it('should filter hidden elements by default', () => {
-      // In jsdom, elements have offsetWidth/offsetHeight of 0 by default
-      // So we need to use includeHidden=true to find them
-      const result = findElement('button', null, false, true);
-      expect(result.elements.length).toBe(3);
-    });
-
-    it('should include hidden elements when includeHidden is true', () => {
-      const result = findElement('button', null, false, true);
-      expect(result.elements.length).toBe(3);
-    });
-
-    it('should return results with bounding boxes', () => {
-      const result = findElement('button', null, false, true);
+    it('should return results with bounding boxes and isVisible property', () => {
+      const result = findElement('button');
       expect(result.elements.length).toBe(3);
       // Element is returned as object with element and metadata
       expect(result.elements[0]).toHaveProperty('element');
       expect(result.elements[0]).toHaveProperty('boundingBox');
       expect(result.elements[0]).toHaveProperty('tagName');
+      expect(result.elements[0]).toHaveProperty('isVisible');
+      expect(typeof result.elements[0].isVisible).toBe('boolean');
     });
 
     it('should filter out ancestors when innermost is requested', () => {
@@ -404,19 +394,20 @@ describe('ElementFinder Node.js Module Tests', () => {
       outer.appendChild(inner);
       document.body.appendChild(outer);
       
-      const result = findElement('button', null, false, true);
+      const result = findElement('button');
       // Should find all buttons including the new one (3 original + 1 new = 4)
       expect(result.elements.length).toBe(4);
       // Check that elements have the new format
       result.elements.forEach(e => {
         expect(e).toHaveProperty('element');
         expect(e).toHaveProperty('boundingBox');
+        expect(e).toHaveProperty('isVisible');
       });
       
       document.body.removeChild(outer);
     });
 
-    it('should filter elements with display none', () => {
+    it('should return isVisible false for elements with display none', () => {
       // Add hidden element
       const hiddenBtn = document.createElement('button');
       hiddenBtn.id = 'hidden-btn';
@@ -424,15 +415,16 @@ describe('ElementFinder Node.js Module Tests', () => {
       hiddenBtn.style.display = 'none';
       document.body.appendChild(hiddenBtn);
       
-      // With includeHidden=false, should not find it
-      const result = findElement('button', null, false, false);
-      const hasHidden = result.elements.some(e => e.id === 'hidden-btn');
-      expect(hasHidden).toBe(false);
+      // Should find it but isVisible should be false
+      const result = findElement('button');
+      const hiddenElement = result.elements.find(e => e.element.id === 'hidden-btn');
+      expect(hiddenElement).toBeDefined();
+      expect(hiddenElement.isVisible).toBe(false);
       
       document.body.removeChild(hiddenBtn);
     });
 
-    it('should filter elements with visibility hidden', () => {
+    it('should return isVisible false for elements with visibility hidden', () => {
       // Add hidden element
       const hiddenBtn = document.createElement('button');
       hiddenBtn.id = 'hidden-btn2';
@@ -440,15 +432,16 @@ describe('ElementFinder Node.js Module Tests', () => {
       hiddenBtn.style.visibility = 'hidden';
       document.body.appendChild(hiddenBtn);
       
-      // With includeHidden=false, should not find it
-      const result = findElement('button', null, false, false);
-      const hasHidden = result.elements.some(e => e.id === 'hidden-btn2');
-      expect(hasHidden).toBe(false);
+      // Should find it but isVisible should be false
+      const result = findElement('button');
+      const hiddenElement = result.elements.find(e => e.element.id === 'hidden-btn2');
+      expect(hiddenElement).toBeDefined();
+      expect(hiddenElement.isVisible).toBe(false);
       
       document.body.removeChild(hiddenBtn);
     });
 
-    it('should filter elements with opacity zero', () => {
+    it('should return isVisible false for elements with opacity zero', () => {
       // Add hidden element
       const hiddenBtn = document.createElement('button');
       hiddenBtn.id = 'hidden-btn3';
@@ -456,10 +449,11 @@ describe('ElementFinder Node.js Module Tests', () => {
       hiddenBtn.style.opacity = '0';
       document.body.appendChild(hiddenBtn);
       
-      // With includeHidden=false, should not find it
-      const result = findElement('button', null, false, false);
-      const hasHidden = result.elements.some(e => e.id === 'hidden-btn3');
-      expect(hasHidden).toBe(false);
+      // Should find it but isVisible should be false
+      const result = findElement('button');
+      const hiddenElement = result.elements.find(e => e.element.id === 'hidden-btn3');
+      expect(hiddenElement).toBeDefined();
+      expect(hiddenElement.isVisible).toBe(false);
       
       document.body.removeChild(hiddenBtn);
     });
@@ -477,7 +471,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(container);
       
       // Find buttons within the parent
-      const result = findElement('button', null, false, true, container);
+      const result = findElement('button', null, false, container);
       expect(result.elements.length).toBe(2);
       
       document.body.removeChild(container);
@@ -493,7 +487,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(container);
       
       // Find buttons within the parent - should not find btn1 or btn2
-      const result = findElement('button', null, false, true, container);
+      const result = findElement('button', null, false, container);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element.textContent).toBe('Inside Container');
       
@@ -513,7 +507,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(container);
       
       // Find button with specific text within parent
-      const result = findElement(null, 'Unique Text ABC', false, true, container);
+      const result = findElement(null, 'Unique Text ABC', false, container);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element.textContent).toBe('Unique Text ABC');
       
@@ -524,7 +518,7 @@ describe('ElementFinder Node.js Module Tests', () => {
   describe('Column Element Type - Find All Cells in Column', () => {
     it('should find all cells in a column when searching by header text', () => {
       // Search for "City" header should return all City column cells
-      const result = findElement('column', 'City', false, true);
+      const result = findElement('column', 'City');
       expect(result.elements.length).toBe(4); // 1 header + 3 data cells
       
       const texts = result.elements.map(e => e.element.textContent.trim());
@@ -535,7 +529,7 @@ describe('ElementFinder Node.js Module Tests', () => {
     });
 
     it('should find all cells in Name column when searching by header text', () => {
-      const result = findElement('column', 'Name', false, true);
+      const result = findElement('column', 'Name');
       expect(result.elements.length).toBe(9); // 3 header + 6 data cells (both tables)
       
       const texts = result.elements.map(e => e.element.textContent.trim());
@@ -546,7 +540,7 @@ describe('ElementFinder Node.js Module Tests', () => {
     });
 
     it('should find all cells in Age column when searching by header text', () => {
-      const result = findElement('column', 'Age', false, true);
+      const result = findElement('column', 'Age');
       expect(result.elements.length).toBe(7); // 2 header + 5 data cells (both tables)
       
       const texts = result.elements.map(e => e.element.textContent.trim());
@@ -559,7 +553,7 @@ describe('ElementFinder Node.js Module Tests', () => {
     it('should handle colspan headers - treated as single column', () => {
       // "Full Name" header has colspan="2", but we treat it as a single column
       // So it should find cells in just the first column position
-      const result = findElement('column', 'Full Name', false, true);
+      const result = findElement('column', 'Full Name');
       expect(result.elements.length).toBe(5); // 1 header + 4 data cells (both columns in colspan table)
       
       const texts = result.elements.map(e => e.element.textContent.trim());
@@ -570,7 +564,7 @@ describe('ElementFinder Node.js Module Tests', () => {
 
     it('should expand column when searching for data cell text', () => {
       // Searching for a data cell text with column type should expand to entire column
-      const result = findElement('column', 'Paris', false, true);
+      const result = findElement('column', 'Paris');
       expect(result.elements.length).toBe(4); // header + 3 data cells
       const texts = result.elements.map(e => e.element.textContent.trim());
       expect(texts).toContain('City');
@@ -596,7 +590,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(table2);
 
       // Search for "City" should find cells from both tables
-      const result = findElement('column', 'City', false, true);
+      const result = findElement('column', 'City');
       const texts = result.elements.map(e => e.element.textContent.trim());
       
       // Should include cells from both tables
@@ -644,7 +638,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       current.appendChild(deepestBtn);
       
       // Find the deep button
-      const result = findElement('button', 'Deep Button', false, true);
+      const result = findElement('button', 'Deep Button', false);
       expect(result.elements.length).toBe(1);
       expect(result.elements.some(e => e.element.id === 'deep-btn')).toBe(true);
       
@@ -658,11 +652,11 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(btn);
       
       // Find by emoji
-      const result1 = findElement('button', '🎯', false, true);
+      const result1 = findElement('button', '🎯', false);
       expect(result1.elements.length).toBe(1);
       
       // Find by Chinese characters
-      const result2 = findElement('button', '中文', false, true);
+      const result2 = findElement('button', '中文', false);
       expect(result2.elements.length).toBe(1);
       
       document.body.removeChild(btn);
@@ -675,15 +669,15 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(btn);
       
       // Exact match should find
-      const result1 = findElement('button', 'Click Me Now', true, true);
+      const result1 = findElement('button', 'Click Me Now', true);
       expect(result1.elements.some(e => e.element.id === 'exact-btn')).toBe(true);
       
       // Partial match should not find in exact mode
-      const result2 = findElement('button', 'Click Me', true, true);
+      const result2 = findElement('button', 'Click Me', true);
       expect(result2.elements.some(e => e.element.id === 'exact-btn')).toBe(false);
       
       // Partial match should find in non-exact mode
-      const result3 = findElement('button', 'Click Me', false, true);
+      const result3 = findElement('button', 'Click Me', false);
       expect(result3.elements.some(e => e.element.id === 'exact-btn')).toBe(true);
       
       document.body.removeChild(btn);
@@ -703,11 +697,11 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(container);
       
       // Find all buttons
-      const result = findElement('button', null, false, true, container);
+      const result = findElement('button', null, false, container);
       expect(result.elements.length).toBe(100);
       
       // Find specific button
-      const result2 = findElement('button', 'Button 50', false, true, container);
+      const result2 = findElement('button', 'Button 50', false, container);
       expect(result2.elements.some(e => e.element.id === 'btn-50')).toBe(true);
       
       document.body.removeChild(container);
@@ -736,7 +730,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(btn);
       
       // Should match with lowercase
-      const result = findElement(null, null, false, true);
+      const result = findElement(null, null, false);
       // Just verify no errors
       expect(result.elements).toBeDefined();
       
@@ -750,7 +744,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(img);
       
       // Find by alt text
-      const result = findElement(null, 'Test Image', false, true);
+      const result = findElement(null, 'Test Image', false);
       expect(result.elements.length).toBe(1);
       
       document.body.removeChild(img);
@@ -769,7 +763,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(btn);
       
       // Should match after trimming
-      const result = findElement('button', 'Multiple Spaces', false, true);
+      const result = findElement('button', 'Multiple Spaces', false);
       expect(result.elements.length).toBe(1);
       
       document.body.removeChild(btn);
@@ -787,7 +781,7 @@ describe('ElementFinder Node.js Module Tests', () => {
       document.body.appendChild(select);
       
       // Select element should be found even if no direct text match
-      const result = findElement('dropdown', null, false, true);
+      const result = findElement('dropdown', null, false);
       expect(result.elements.length).toBe(1);
       
       document.body.removeChild(select);
@@ -1125,7 +1119,7 @@ describe('ElementFinder Node.js Module Tests', () => {
 
   describe('findElement Error Handling', () => {
     it('should handle null parent parameter', () => {
-      const result = findElement('button', null, false, true, null);
+      const result = findElement('button', null, false, null);
       expect(result.elements.length).toBe(3);
     });
 

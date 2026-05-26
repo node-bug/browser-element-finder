@@ -51,7 +51,7 @@ describe('Uncovered Lines Consolidated Tests', () => {
   describe('SELECT option text matching', () => {
     it('should find SELECT element by option text using exact match', async () => {
       const result = await driver.executeScript(`
-        const result = ElementFinder.findElement(null, 'Opt-Fruit-Apple', true);
+        const result = ElementFinder.findElement('dropdown', 'Opt-Fruit-Apple', true);
         return {
           count: result.elements.length,
           tagName: result.elements[0]?.tagName
@@ -63,7 +63,7 @@ describe('Uncovered Lines Consolidated Tests', () => {
 
     it('should find SELECT element by option text "Banana" using exact match', async () => {
       const result = await driver.executeScript(`
-        const result = ElementFinder.findElement(null, 'Opt-Fruit-Banana', true);
+        const result = ElementFinder.findElement('dropdown', 'Opt-Fruit-Banana', true);
         return {
           count: result.elements.length,
           tagName: result.elements[0]?.tagName
@@ -75,7 +75,7 @@ describe('Uncovered Lines Consolidated Tests', () => {
 
     it('should find SELECT element by option text "Cherry" using exact match', async () => {
       const result = await driver.executeScript(`
-        const result = ElementFinder.findElement(null, 'Opt-Fruit-Cherry', true);
+        const result = ElementFinder.findElement('dropdown', 'Opt-Fruit-Cherry', true);
         return {
           count: result.elements.length,
           tagName: result.elements[0]?.tagName

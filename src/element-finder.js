@@ -407,7 +407,7 @@ export function getAllFrames(root = window) {
  * Handles colspan by including all spanned column positions.
  * Optimized by caching table structures per table element.
  */
-function expandColumnMatches(matches, text, exact, includeHidden, type) {
+function expandColumnMatches(matches, text, type) {
   if (!text || type !== 'column') return matches;
 
   const expandedMatches = [];
@@ -445,13 +445,6 @@ function expandColumnMatches(matches, text, exact, includeHidden, type) {
         for (let col = headerInfo.colStart; col <= headerInfo.colEnd; col++) {
           const cell = rowData.map.get(col);
           if (!cell || seenElements.has(cell)) continue;
-
-          if (!includeHidden) {
-            const cellWindow = cell.ownerDocument?.defaultView || frame.window;
-            const style = cellWindow.getComputedStyle(cell);
-            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
-            if (cell.offsetWidth === 0 || cell.offsetHeight === 0) continue;
-          }
 
           expandedMatches.push({ element: cell, frame: frame });
           seenElements.add(cell);
@@ -516,16 +509,104 @@ function findElementColumnPosition(el, elementToCol) {
 }
 
 /**
+ * Comprehensive visibility check for an element.
+ * Checks multiple ways an element can be hidden/invisible:
+ * - CSS display, visibility, opacity
+ * - Dimensions (offsetWidth, offsetHeight)
+ * - Parent visibility (recursive)
+ * - Off-screen positioning (left: -9999px, text-indent, etc.)
+ * - aria-hidden attribute
+ * - visibility: collapse (for table elements)
+ * 
+ * @param {Element} el - The element to check
+ * @param {Window} elWindow - The window object for the element
+ * @returns {boolean} True if element is hidden, false if visible
+ */
+function isElementHidden(el, elWindow) {
+  const style = elWindow.getComputedStyle(el);
+  
+  // Check CSS display, visibility, opacity
+  if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+    return true;
+  }
+  
+  // Check visibility: collapse (for table elements)
+  if (style.visibility === 'collapse') {
+    return true;
+  }
+  
+  // Check dimensions
+  if (el.offsetWidth === 0 || el.offsetHeight === 0) {
+    return true;
+  }
+  
+  // Check aria-hidden attribute
+  const ariaHidden = el.getAttribute('aria-hidden');
+  if (ariaHidden === 'true') {
+    return true;
+  }
+  
+  // Check parent visibility recursively
+  let parent = el.parentElement;
+  while (parent) {
+    const parentStyle = elWindow.getComputedStyle(parent);
+    if (parentStyle.display === 'none' || parentStyle.visibility === 'hidden') {
+      return true;
+    }
+    parent = parent.parentElement;
+  }
+  
+  // Check for off-screen positioning techniques
+  const rect = el.getBoundingClientRect();
+  
+  // Check for position: absolute with off-screen coordinates
+  if (style.position === 'absolute' || style.position === 'fixed') {
+    const left = parseInt(style.left) || 0;
+    const top = parseInt(style.top) || 0;
+    // Common off-screen positioning: left/top: -9999px or similar
+    if ((left < -1000 && left !== -Infinity) || (top < -1000 && top !== -Infinity)) {
+      return true;
+    }
+    // Check if element is positioned outside the viewport with hidden overflow
+    if (rect.bottom < -1000 || rect.right < -1000 || rect.top > (elWindow.innerHeight + 1000) || rect.left > (elWindow.innerWidth + 1000)) {
+      return true;
+    }
+  }
+  
+  // Check for text-indent: -9999px (common for icon-only elements misuse)
+  const textIndent = parseInt(style.textIndent) || 0;
+  if (textIndent < -1000) {
+    return true;
+  }
+  
+  // Check for clip-path that hides the element
+  if (style.clipPath && style.clipPath !== 'none') {
+    if (style.clipPath.includes('inset(100%)') || style.clipPath.includes('circle(0)') || style.clipPath.includes('polygon(0% 0%,0% 0%,0% 0%,0% 0%)')) {
+      return true;
+    }
+  }
+  
+  // Check for size: 0 (CSS trick to hide elements)
+  if ((style.width === '0' && style.height === '0') || (style.width === '0px' && style.height === '0px')) {
+    // But allow if element has natural content dimensions (offsetWidth/offsetHeight > 0)
+    if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+/**
  * Finds elements matching the specified criteria.
  * Searches all frames (main document + iframes) by default.
  * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
  * @param {string|null} [text=null] - Text to search for in content/attributes
  * @param {boolean} [exact=false] - Exact text match vs substring
- * @param {boolean} [includeHidden=false] - Include hidden elements
  * @param {Element|null} [parent=null] - Parent element to search within
- * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
+ * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number, isVisible: boolean}>}} Found elements with metadata
  */
-export function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null) {
+export function findElement(type = "element", text = null, exact = false, parent = null) {
   if (type === null || type === undefined) {
     type = "element";
   }
@@ -552,18 +633,10 @@ export function findElement(type = "element", text = null, exact = false, includ
 
       if (text !== undefined && !matchesContent(el, text, exact)) continue;
 
-      if (!includeHidden) {
-        const elWindow = el.ownerDocument?.defaultView || frame.window;
-        const style = elWindow.getComputedStyle(el);
-        if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
-          continue;
-        }
-        if (el.offsetWidth === 0 || el.offsetHeight === 0) {
-          continue;
-        }
-      }
+      const elWindow = el.ownerDocument?.defaultView || frame.window;
+      const isVisible = !isElementHidden(el, elWindow);
 
-      matches.push({ element: el, frame: frame });
+      matches.push({ element: el, frame: frame, isVisible });
     }
   }
 
@@ -578,18 +651,18 @@ export function findElement(type = "element", text = null, exact = false, includ
 
       if (!excludedElements.has(el)) {
         innermostMatches.unshift(match);
-        let parent = el.parentElement;
-        while (parent) {
-          if (matchedElements.has(parent)) {
-            excludedElements.add(parent);
+        let parentEl = el.parentElement;
+        while (parentEl) {
+          if (matchedElements.has(parentEl)) {
+            excludedElements.add(parentEl);
           }
-          parent = parent.parentElement;
+          parentEl = parentEl.parentElement;
         }
       }
     }
   }
 
-  const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden, type);
+  const expandedMatches = expandColumnMatches(innermostMatches, text, type);
 
   const qualified = expandedMatches.map(item => {
     const boundingBox = getBoundingBox(item.element);
@@ -599,7 +672,8 @@ export function findElement(type = "element", text = null, exact = false, includ
       return {
         boundingBox: boundingBox,
         tagName: tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isVisible: item.isVisible
       };
     }
 
@@ -607,7 +681,8 @@ export function findElement(type = "element", text = null, exact = false, includ
       element: item.element,
       boundingBox: boundingBox,
       tagName: tagName,
-      frameIndex: item.frame.frameIndex
+      frameIndex: item.frame.frameIndex,
+      isVisible: item.isVisible
     };
   });
 

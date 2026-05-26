@@ -85,7 +85,7 @@ describe('Tables Consolidated Tests', () => {
         }))
       };
     `);
-    expect(columnDetails.count).toBe(255);
+    expect(columnDetails.count).toBe(256);
   });
 
   it('should find all cells (td elements only)', async () => {
@@ -99,7 +99,7 @@ describe('Tables Consolidated Tests', () => {
       };
     `);
     // cell type should only return td elements (not th), so fewer than column
-    expect(cellDetails.count).toBe(239);
+    expect(cellDetails.count).toBe(240);
     // All should be td elements
     for (const el of cellDetails.elements) {
       expect(el.tagName).toBe('td');
@@ -204,5 +204,29 @@ describe('Tables Consolidated Tests', () => {
     expect(texts).toContain('Alice');
     expect(texts).toContain('Bob');
     expect(texts).toContain('Charlie');
+  });
+
+  it('should return no results for non-existent element type', async () => {
+    const result = await driver.executeScript(`
+      const result = ElementFinder.findElement('nonexistenttype');
+      return { count: result.elements.length };
+    `);
+    expect(result.count).toBe(0);
+  });
+
+  it('should return no results when searching for non-existent text content', async () => {
+    const result = await driver.executeScript(`
+      const result = ElementFinder.findElement(null, 'NonExistentText');
+      return { count: result.elements.length };
+    `);
+    expect(result.count).toBe(0);
+  });
+
+  it('should return no results for non-existent element type with text search', async () => {
+    const result = await driver.executeScript(`
+      const result = ElementFinder.findElement('nonexistenttype', 'some text');
+      return { count: result.elements.length };
+    `);
+    expect(result.count).toBe(0);
   });
 });

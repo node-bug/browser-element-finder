@@ -60,7 +60,7 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
         }));
       `);
       
-      expect(dropdownDetails.length).toBe(6);
+      expect(dropdownDetails.length).toBe(7);
       console.log(`Found ${dropdownDetails.length} dropdowns`);
     });
 
@@ -80,12 +80,15 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
           x: Math.round(e.boundingBox.x),
           y: Math.round(e.boundingBox.y),
           width: Math.round(e.boundingBox.width),
-          height: Math.round(e.boundingBox.height)
+          height: Math.round(e.boundingBox.height),
+          isVisible: e.isVisible
         }));
       `);
       
-      expect(dropdownInfo.length).toBe(6);
-      dropdownInfo.forEach((item) => {
+      expect(dropdownInfo.length).toBe(7);
+      // Only check visible dropdowns for bounding box dimensions
+      const visibleDropdowns = dropdownInfo.filter(d => d.isVisible);
+      visibleDropdowns.forEach((item) => {
         expect(item.x).toBeGreaterThanOrEqual(0);
         expect(item.y).toBeGreaterThanOrEqual(0);
         expect(item.width).toBeGreaterThanOrEqual(1);
@@ -98,7 +101,7 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
         return ElementFinder.findElement('dropdown');
       `);
       
-      expect(dropdownResult.elements.length).toBe(6);
+      expect(dropdownResult.elements.length).toBe(7);
       
       const firstDropdown = dropdownResult.elements[0].element;
       const tagName = await firstDropdown.getTagName();
@@ -191,13 +194,13 @@ describe('Dropdowns and Forms Consolidated Tests', () => {
         };
       `);
       
-      expect(allDropdowns.count).toBe(6);
+      expect(allDropdowns.count).toBe(7);
       
       const childResult = await driver.executeScript(`
         const parentResult = ElementFinder.findElement(null, 'standard-select-section');
         if (parentResult.elements.length === 0) return { count: 0 };
         const parent = parentResult.elements[0].element;
-        const allDropdowns = ElementFinder.findElement('dropdown', null, false, false);
+        const allDropdowns = ElementFinder.findElement('dropdown');
         const result = {
           elements: allDropdowns.elements.filter(e => parent.contains(e.element))
         };

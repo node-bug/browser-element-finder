@@ -194,7 +194,7 @@ describe('Element Types Consolidated Tests', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElement('image');
       `);
-      expect(result.elements.length).toBe(2);
+      expect(result.elements.length).toBe(3);
     });
   });
 });

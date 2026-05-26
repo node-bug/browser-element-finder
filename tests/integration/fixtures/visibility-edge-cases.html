@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Visibility and Edge Cases</title>
+  <style>
+    .hidden-display { display: none; }
+    .hidden-visibility { visibility: hidden; }
+    .hidden-opacity { opacity: 0; }
+    .hidden-collapse { visibility: collapse; }
+    .hidden-size { width: 0; height: 0; overflow: hidden; }
+    .offscreen-abs { position: absolute; left: -9999px; top: -9999px; }
+    .offscreen-indent { text-indent: -9999px; }
+    .hidden-clip { clip-path: inset(100%); }
+    .parent-hidden { display: none; }
+    .parent-visibility-hidden { visibility: hidden; }
+  </style>
+</head>
+<body>
+  <div id="visible-container">
+    <button id="btn-visible">Visible Button</button>
+    <button id="btn-display-none" class="hidden-display">Display None</button>
+    <button id="btn-vis-hidden" class="hidden-visibility">Visibility Hidden</button>
+    <button id="btn-opacity-0" class="hidden-opacity">Opacity 0</button>
+    <button id="btn-collapse" class="hidden-collapse">Collapse</button>
+    <button id="btn-size-0" class="hidden-size" style="display:none">Size 0</button>
+    <button id="btn-offscreen" class="offscreen-abs">Offscreen Abs</button>
+    <button id="btn-indent" class="offscreen-indent">Text Indent</button>
+    <button id="btn-clip" class="hidden-clip">Clip Path</button>
+    <button id="btn-aria-hidden" aria-hidden="true">Aria Hidden</button>
+  </div>
+
+  <div class="parent-hidden">
+    <button id="btn-parent-display-none">Parent Display None</button>
+  </div>
+  <div class="parent-visibility-hidden">
+    <button id="btn-parent-vis-hidden">Parent Visibility Hidden</button>
+  </div>
+</body>
+</html>
