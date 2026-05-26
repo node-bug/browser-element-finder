@@ -349,8 +349,7 @@ var ElementFinder = (() => {
     }
     return frames;
   }
-  function expandColumnMatches(matches, text, exact, includeHidden, type) {
-    var _a;
+  function expandColumnMatches(matches, text, type) {
     if (!text || type !== "column") return matches;
     const expandedMatches = [];
     const seenElements = /* @__PURE__ */ new Set();
@@ -379,12 +378,6 @@ var ElementFinder = (() => {
           for (let col = headerInfo.colStart; col <= headerInfo.colEnd; col++) {
             const cell = rowData.map.get(col);
             if (!cell || seenElements.has(cell)) continue;
-            if (!includeHidden) {
-              const cellWindow = ((_a = cell.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
-              const style = cellWindow.getComputedStyle(cell);
-              if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") continue;
-              if (cell.offsetWidth === 0 || cell.offsetHeight === 0) continue;
-            }
             expandedMatches.push({ element: cell, frame });
             seenElements.add(cell);
           }
@@ -432,7 +425,57 @@ var ElementFinder = (() => {
     var _a;
     return (_a = elementToCol.get(el)) != null ? _a : null;
   }
-  function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null) {
+  function isElementHidden(el, elWindow) {
+    const style = elWindow.getComputedStyle(el);
+    if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
+      return true;
+    }
+    if (style.visibility === "collapse") {
+      return true;
+    }
+    if (el.offsetWidth === 0 || el.offsetHeight === 0) {
+      return true;
+    }
+    const ariaHidden = el.getAttribute("aria-hidden");
+    if (ariaHidden === "true") {
+      return true;
+    }
+    let parent = el.parentElement;
+    while (parent) {
+      const parentStyle = elWindow.getComputedStyle(parent);
+      if (parentStyle.display === "none" || parentStyle.visibility === "hidden") {
+        return true;
+      }
+      parent = parent.parentElement;
+    }
+    const rect = el.getBoundingClientRect();
+    if (style.position === "absolute" || style.position === "fixed") {
+      const left = parseInt(style.left) || 0;
+      const top = parseInt(style.top) || 0;
+      if (left < -1e3 && left !== -Infinity || top < -1e3 && top !== -Infinity) {
+        return true;
+      }
+      if (rect.bottom < -1e3 || rect.right < -1e3 || rect.top > elWindow.innerHeight + 1e3 || rect.left > elWindow.innerWidth + 1e3) {
+        return true;
+      }
+    }
+    const textIndent = parseInt(style.textIndent) || 0;
+    if (textIndent < -1e3) {
+      return true;
+    }
+    if (style.clipPath && style.clipPath !== "none") {
+      if (style.clipPath.includes("inset(100%)") || style.clipPath.includes("circle(0)") || style.clipPath.includes("polygon(0% 0%,0% 0%,0% 0%,0% 0%)")) {
+        return true;
+      }
+    }
+    if (style.width === "0" && style.height === "0" || style.width === "0px" && style.height === "0px") {
+      if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function findElement(type = "element", text = null, exact = false, parent = null) {
     var _a;
     if (type === null || type === void 0) {
       type = "element";
@@ -452,17 +495,9 @@ var ElementFinder = (() => {
         const el = allElements[i];
         if (type && !matchesType(el, type)) continue;
         if (text !== void 0 && !matchesContent(el, text, exact)) continue;
-        if (!includeHidden) {
-          const elWindow = ((_a = el.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
-          const style = elWindow.getComputedStyle(el);
-          if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
-            continue;
-          }
-          if (el.offsetWidth === 0 || el.offsetHeight === 0) {
-            continue;
-          }
-        }
-        matches.push({ element: el, frame });
+        const elWindow = ((_a = el.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
+        const isVisible = !isElementHidden(el, elWindow);
+        matches.push({ element: el, frame, isVisible });
       }
     }
     const innermostMatches = [];
@@ -474,17 +509,17 @@ var ElementFinder = (() => {
         const el = match.element;
         if (!excludedElements.has(el)) {
           innermostMatches.unshift(match);
-          let parent2 = el.parentElement;
-          while (parent2) {
-            if (matchedElements.has(parent2)) {
-              excludedElements.add(parent2);
+          let parentEl = el.parentElement;
+          while (parentEl) {
+            if (matchedElements.has(parentEl)) {
+              excludedElements.add(parentEl);
             }
-            parent2 = parent2.parentElement;
+            parentEl = parentEl.parentElement;
           }
         }
       }
     }
-    const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden, type);
+    const expandedMatches = expandColumnMatches(innermostMatches, text, type);
     const qualified = expandedMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
@@ -492,14 +527,16 @@ var ElementFinder = (() => {
         return {
           boundingBox,
           tagName,
-          frameIndex: item.frame.frameIndex
+          frameIndex: item.frame.frameIndex,
+          isVisible: item.isVisible
         };
       }
       return {
         element: item.element,
         boundingBox,
         tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isVisible: item.isVisible
       };
     });
     return { elements: qualified };
