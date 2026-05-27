@@ -40,7 +40,7 @@
     "url": "https://github.com/node-bug/browser-element-finder/issues"
   },
   "scripts": {
-    "build": "node build-by-attribute.js && node build-by-type.js",
+    "build": "node build.js",
     "lint": "eslint .",
     "test": "npm run build && vitest run",
     "test:watch": "npm run build && vitest",
