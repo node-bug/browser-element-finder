@@ -30,11 +30,11 @@ describe('ElementFinderByAttribute Integration Tests - Iframes', () => {
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', '..', 'index-by-attribute.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
-      window.ElementFinderByAttribute = ElementFinderByAttribute;
+      window.ElementFinder = ElementFinder;
     `);
 
     await driver.sleep(500);
@@ -51,14 +51,14 @@ describe('ElementFinderByAttribute Integration Tests - Iframes', () => {
   describe('findElementByAttributes', () => {
     it('should find elements matching visible text "Iframe Checkbox"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Iframe Checkbox');
+        return ElementFinder.findElementByAttributes('Iframe Checkbox');
       `);
       expect(result.elements.length).toBe(2);
     });
 
     it('should find elements by id attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('main-checkbox');
+        return ElementFinder.findElementByAttributes('main-checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -68,7 +68,7 @@ describe('ElementFinderByAttribute Integration Tests - Iframes', () => {
 
     it('should find elements by name attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('mainCheckbox');
+        return ElementFinder.findElementByAttributes('mainCheckbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -78,14 +78,14 @@ describe('ElementFinderByAttribute Integration Tests - Iframes', () => {
 
     it('should find elements matching "Data URL Button"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Data URL Button');
+        return ElementFinder.findElementByAttributes('Data URL Button');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements by id attribute "iframe-checkbox" (in iframe)', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('iframe-checkbox');
+        return ElementFinder.findElementByAttributes('iframe-checkbox');
       `);
       // iframe elements are returned without element property (cross-origin restriction)
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
@@ -94,7 +94,7 @@ describe('ElementFinderByAttribute Integration Tests - Iframes', () => {
 
     it('should find elements by name attribute "iframeCheckbox" (in iframe)', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('iframeCheckbox');
+        return ElementFinder.findElementByAttributes('iframeCheckbox');
       `);
       // iframe elements are returned without element property (cross-origin restriction)
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
@@ -103,10 +103,10 @@ describe('ElementFinderByAttribute Integration Tests - Iframes', () => {
 
     it('should be case-sensitive for "iframe checkbox" vs "Iframe Checkbox"', async () => {
       const resultLower = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('iframe checkbox');
+        return ElementFinder.findElementByAttributes('iframe checkbox');
       `);
       const resultUpper = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Iframe Checkbox');
+        return ElementFinder.findElementByAttributes('Iframe Checkbox');
       `);
       expect(resultLower.elements.length).toBe(0);
       expect(resultUpper.elements.length).toBe(2);

@@ -41,15 +41,15 @@ async function test() {
 
         // Find all textboxes
         const result1 = await driver.executeScript(`
-      return ElementFinder.findElement('textbox', 'Single-line Text');
+      return ElementFinder.findElements('textbox', 'Single-line Text');
     `);
 
         const result2 = await driver.executeScript(`
-      return ElementFinder.findElement('textbox');
+      return ElementFinder.findElements('textbox');
     `);
 
         const result3 = await driver.executeScript(`
-      return ElementFinder.findElement(null, 'Single-line Text');
+      return ElementFinder.findElements(null, 'Single-line Text');
     `);
 
         console.log(`Found ${result1.elements.length} textbox elements with text:`);

@@ -30,11 +30,11 @@ describe('ElementFinderByAttribute Integration Tests - Tables', () => {
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', '..', 'index-by-attribute.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
-      window.ElementFinderByAttribute = ElementFinderByAttribute;
+      window.ElementFinder = ElementFinder;
     `);
 
     await driver.sleep(500);
@@ -51,35 +51,35 @@ describe('ElementFinderByAttribute Integration Tests - Tables', () => {
   describe('findElementByAttributes', () => {
     it('should find elements matching visible text "Alice"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Alice');
+        return ElementFinder.findElementByAttributes('Alice');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements matching "New York"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('New York');
+        return ElementFinder.findElementByAttributes('New York');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements matching "Laptop"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Laptop');
+        return ElementFinder.findElementByAttributes('Laptop');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements matching "Electronics"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Electronics');
+        return ElementFinder.findElementByAttributes('Electronics');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements by id attribute "simple-table"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('simple-table');
+        return ElementFinder.findElementByAttributes('simple-table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -89,7 +89,7 @@ describe('ElementFinderByAttribute Integration Tests - Tables', () => {
 
     it('should find elements by id attribute "span-table"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('span-table');
+        return ElementFinder.findElementByAttributes('span-table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -99,7 +99,7 @@ describe('ElementFinderByAttribute Integration Tests - Tables', () => {
 
     it('should find elements by id attribute "outer-table"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('outer-table');
+        return ElementFinder.findElementByAttributes('outer-table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -109,7 +109,7 @@ describe('ElementFinderByAttribute Integration Tests - Tables', () => {
 
     it('should find elements by id attribute "inner-table"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('inner-table');
+        return ElementFinder.findElementByAttributes('inner-table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -119,31 +119,31 @@ describe('ElementFinderByAttribute Integration Tests - Tables', () => {
 
     it('should find elements matching "View"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('View');
+        return ElementFinder.findElementByAttributes('View');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements matching "Activate"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Activate');
+        return ElementFinder.findElementByAttributes('Activate');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements matching "Total"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Total');
+        return ElementFinder.findElementByAttributes('Total');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should be case-sensitive for "alice" vs "Alice"', async () => {
       const resultLower = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('alice');
+        return ElementFinder.findElementByAttributes('alice');
       `);
       const resultUpper = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Alice');
+        return ElementFinder.findElementByAttributes('Alice');
       `);
       expect(resultLower.elements.length).toBe(0);
       expect(resultUpper.elements.length).toBe(1);

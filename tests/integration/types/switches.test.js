@@ -30,11 +30,11 @@ describe('ElementFinderByType - Switches Fixture', () => {
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', '..', 'index-by-type.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
-      window.ElementFinderByType = ElementFinderByType;
+      window.ElementFinder = ElementFinder;
     `);
 
     await driver.sleep(2000);
@@ -51,14 +51,14 @@ describe('ElementFinderByType - Switches Fixture', () => {
   describe('findElementByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('element');
+        return ElementFinder.findElementByType('element');
       `);
       expect(result.elements.length).toBe(37);
     });
 
     it('should find switches', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('switch');
+        return ElementFinder.findElementByType('switch');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // checkbox-switch, aria-switch, button-switch, native-checkbox, disabled-switch, shadow-switch, iframe-switch
@@ -67,7 +67,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find checkboxes', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('checkbox');
+        return ElementFinder.findElementByType('checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // checkbox-switch, native-checkbox, disabled-switch, shadow-switch, iframe-switch
@@ -76,7 +76,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find buttons', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('button');
+        return ElementFinder.findElementByType('button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // button-switch
@@ -85,7 +85,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find textboxes', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('textbox');
+        return ElementFinder.findElementByType('textbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -93,7 +93,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find links', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('link');
+        return ElementFinder.findElementByType('link');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -101,7 +101,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find dropdowns', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('dropdown');
+        return ElementFinder.findElementByType('dropdown');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -109,7 +109,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find sliders', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('slider');
+        return ElementFinder.findElementByType('slider');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -117,7 +117,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find radios', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('radio');
+        return ElementFinder.findElementByType('radio');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -125,7 +125,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find headings', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('heading');
+        return ElementFinder.findElementByType('heading');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // h2 "Ultimate Switch Testing Lab"
@@ -134,7 +134,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find navigation elements', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('navigation');
+        return ElementFinder.findElementByType('navigation');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -142,7 +142,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find images', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('image');
+        return ElementFinder.findElementByType('image');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -150,7 +150,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find tables', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('table');
+        return ElementFinder.findElementByType('table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -158,7 +158,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find lists', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('list');
+        return ElementFinder.findElementByType('list');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -166,7 +166,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find file inputs', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('file');
+        return ElementFinder.findElementByType('file');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -174,7 +174,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find menus', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('menu');
+        return ElementFinder.findElementByType('menu');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -182,7 +182,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find toolbars', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('toolbar');
+        return ElementFinder.findElementByType('toolbar');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -190,7 +190,7 @@ describe('ElementFinderByType - Switches Fixture', () => {
 
     it('should find dialogs', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('dialog');
+        return ElementFinder.findElementByType('dialog');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);

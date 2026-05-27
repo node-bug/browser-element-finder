@@ -30,11 +30,11 @@ describe('ElementFinderByType - Tables Fixture', () => {
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', '..', 'index-by-type.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
-      window.ElementFinderByType = ElementFinderByType;
+      window.ElementFinder = ElementFinder;
     `);
 
     await driver.sleep(500);
@@ -51,14 +51,14 @@ describe('ElementFinderByType - Tables Fixture', () => {
   describe('findElementByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('element');
+        return ElementFinder.findElementByType('element');
       `);
       expect(result.elements.length).toBe(267);
     });
 
     it('should find tables', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('table');
+        return ElementFinder.findElementByType('table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(6);
@@ -66,7 +66,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find rows', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('row');
+        return ElementFinder.findElementByType('row');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(120);
@@ -74,7 +74,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find cells', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('cell');
+        return ElementFinder.findElementByType('cell');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(240);
@@ -82,7 +82,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find columns', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('column');
+        return ElementFinder.findElementByType('column');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(256);
@@ -90,7 +90,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find buttons', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('button');
+        return ElementFinder.findElementByType('button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -98,7 +98,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find headings', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('heading');
+        return ElementFinder.findElementByType('heading');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(7);
@@ -106,7 +106,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find links', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('link');
+        return ElementFinder.findElementByType('link');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -114,7 +114,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find checkboxes', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('checkbox');
+        return ElementFinder.findElementByType('checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -122,7 +122,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find textboxes', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('textbox');
+        return ElementFinder.findElementByType('textbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -130,7 +130,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find dropdowns', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('dropdown');
+        return ElementFinder.findElementByType('dropdown');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -138,7 +138,7 @@ describe('ElementFinderByType - Tables Fixture', () => {
 
     it('should find lists', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('list');
+        return ElementFinder.findElementByType('list');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);

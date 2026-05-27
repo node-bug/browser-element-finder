@@ -1,5 +1,5 @@
 /**
- * Unit tests for ElementFinderByType Node.js module
+ * Unit tests for ElementFinder Node.js module
  * These tests run in Node.js and provide code coverage
  */
 
@@ -17,7 +17,7 @@ import {
   findElementByType,
   highlight,
   unhighlight
-} from '../../src/element-finder-by-type.js';
+} from '../../src/element-finder.js';
 
 describe('ElementFinderByType Node.js Module Tests', () => {
   let window;

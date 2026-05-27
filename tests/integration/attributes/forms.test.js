@@ -30,11 +30,11 @@ describe('ElementFinderByAttribute Integration Tests', () => {
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', '..', 'index-by-attribute.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
-      window.ElementFinderByAttribute = ElementFinderByAttribute;
+      window.ElementFinder = ElementFinder;
     `);
 
     await driver.sleep(500);
@@ -51,21 +51,21 @@ describe('ElementFinderByAttribute Integration Tests', () => {
   describe('findElementByAttributes', () => {
     it('should find elements matching visisble text "Single"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Single');
+        return ElementFinder.findElementByAttributes('Single');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find elements matching "Field"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Field');
+        return ElementFinder.findElementByAttributes('Field');
       `);
       expect(result.elements.length).toBe(9);
     });
 
     it('should find elements by placeholder attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Enter text here');
+        return ElementFinder.findElementByAttributes('Enter text here');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -75,7 +75,7 @@ describe('ElementFinderByAttribute Integration Tests', () => {
 
     it('should find elements by id attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('text-email');
+        return ElementFinder.findElementByAttributes('text-email');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -85,11 +85,11 @@ describe('ElementFinderByAttribute Integration Tests', () => {
 
     it('should be case-sensitive for "field" vs "Field"', async () => {
       const resultLower = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('field');
+        return ElementFinder.findElementByAttributes('field');
       `);
       expect(resultLower.elements.length).toBe(2);
       const resultUpper = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Field');
+        return ElementFinder.findElementByAttributes('Field');
       `);
       expect(resultUpper.elements.length).toBe(9);
     });

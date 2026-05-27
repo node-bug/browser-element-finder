@@ -25,19 +25,11 @@
       "autoAttachChildProcesses": true
     },
     {
-      "name": "Type",
+      "name": "demo",
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
-      "program": "${workspaceFolder}/demo-by-type.js",
-      "autoAttachChildProcesses": true
-    },
-    {
-      "name": "Attrbute",
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/demo-by-attributes.js",
+      "program": "${workspaceFolder}/demo.js",
       "autoAttachChildProcesses": true
     }
   ]

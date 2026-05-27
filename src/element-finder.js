@@ -584,6 +584,102 @@ export function findElementByAttributes(value, exact = false, parent = null) {
 }
 
 /**
+ * Finds elements matching the specified type and/or attribute value.
+ * Combines type and attribute matching in a single call.
+ * @param {string|null} [type=null] - Element type (see ELEMENT_DEFINITIONS for valid types), or null for any type
+ * @param {string|null} [text=null] - Text/attribute value to search for, or null/undefined/'' for any text
+ * @param {boolean} [exact=false] - Exact match vs substring (only used when text is provided)
+ * @param {Element|null} [parent=null] - Parent element to search within
+ * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
+ */
+export function findElements(type = null, text = null, exact = false, parent = null) {
+  // Normalize text parameter
+  if (text === null || text === undefined) {
+    text = '';
+  }
+
+  // Validate type if provided
+  if (type !== null && type !== undefined) {
+    if (typeof type !== 'string') {
+      throw new TypeError(`type must be a string, got ${typeof type}`);
+    }
+    if (!ELEMENT_DEFINITIONS[type]) {
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+      return { elements: [] };
+    }
+  }
+
+  // Validate text if provided
+  if (text !== '' && typeof text !== 'string') {
+    throw new TypeError(`text must be a string, got ${typeof text}`);
+  }
+
+  const matches = [];
+  const frames = getAllFrames(window);
+
+  for (const frame of frames) {
+    const allElements = getAllElements(parent || frame.document);
+
+    for (let i = 0; i < allElements.length; i++) {
+      const el = allElements[i];
+
+      // Check type match if type is specified
+      if (type !== null && type !== undefined && !matchesType(el, type)) continue;
+
+      // Check attribute/text match if text is specified (non-empty)
+      if (text !== '' && !matchesAttribute(el, text, exact)) continue;
+
+      matches.push({ element: el, frame: frame });
+    }
+  }
+
+  // Get innermost matches (exclude parent elements that contain matched children)
+  const innermostMatches = [];
+  if (matches.length > 0) {
+    const matchedElements = new Set(matches.map(m => m.element));
+    const excludedElements = new Set();
+
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const match = matches[i];
+      const el = match.element;
+
+      if (!excludedElements.has(el)) {
+        innermostMatches.unshift(match);
+        let parentEl = el.parentElement;
+        while (parentEl) {
+          if (matchedElements.has(parentEl)) {
+            excludedElements.add(parentEl);
+          }
+          parentEl = parentEl.parentElement;
+        }
+      }
+    }
+  }
+
+  const qualified = innermostMatches.map(item => {
+    const boundingBox = getBoundingBox(item.element);
+    const tagName = item.element.tagName.toLowerCase();
+
+    if (!item.frame.isMainFrame) {
+      return {
+        boundingBox: boundingBox,
+        tagName: tagName,
+        frameIndex: item.frame.frameIndex
+      };
+    }
+
+    return {
+      element: item.element,
+      boundingBox: boundingBox,
+      tagName: tagName,
+      frameIndex: item.frame.frameIndex
+    };
+  });
+
+  return { elements: qualified };
+}
+
+/**
  * Extract elements array from various input formats.
  */
 function extractElements(elements) {

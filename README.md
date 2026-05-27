@@ -9,17 +9,17 @@
 Inject the library and find elements in any browser context (Selenium, Playwright, Puppeteer, or browser console):
 
 ```js
-// Find all visible buttons
-const results = ElementFinder.findElement('button')
+// Find all buttons
+const results = ElementFinder.findElements('button')
 
 // Find a button by text (substring match)
-const results = ElementFinder.findElement('button', 'Submit')
+const results = ElementFinder.findElements('button', 'Submit')
 
 // Find by text only (any type)
-const results = ElementFinder.findElement(null, 'seleniumbase')
+const results = ElementFinder.findElements(null, 'seleniumbase')
 
 // Find in all frames (default)
-const results = ElementFinder.findElement('button')
+const results = ElementFinder.findElements('button')
 
 // Highlight found elements
 ElementFinder.highlight(results.elements.map((e) => e.element))
@@ -27,9 +27,9 @@ ElementFinder.highlight(results.elements.map((e) => e.element))
 // Remove highlight
 ElementFinder.unhighlight(results.elements.map((e) => e.element))
 
-// Check visibility
+// Check element properties
 results.elements.forEach((e) => {
-  console.log('Visible:', e.isVisible)
+  console.log('Tag:', e.tagName, 'Frame:', e.frameIndex)
 })
 ```
 
@@ -39,7 +39,6 @@ results.elements.forEach((e) => {
 - For iframe results, switch context before interacting (see Selenium/Playwright docs)
 - Use `getValidTypes()` to enumerate all supported semantic types
 - Use `getSearchableAttributes()` to see which attributes are searched for text
-- Check `isVisible` property to determine if an element is visible or hidden
 
 ---
 
@@ -148,42 +147,43 @@ const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchabl
 
 ## API Summary
 
-| Function                                 | Description                                               |
-| ---------------------------------------- | --------------------------------------------------------- |
-| `findElement(type, text, exact, parent)` | Find elements by type/text, returns `{ elements: [...] }` |
-| `highlight(elements, color, width)`      | Highlight elements with outline                           |
-| `unhighlight(elements)`                  | Remove highlight                                          |
-| `getValidTypes()`                        | List all supported element types                          |
-| `getBoundingBox(element)`                | Get bounding box for an element                           |
-| `setSearchableAttributes(attributes)`    | Set custom attributes for text search                     |
-| `getSearchableAttributes()`              | Get current searchable attributes                         |
-| `matchesType(el, type)`                  | Check if element matches a type                           |
-| `matchesContent(el, value, exact)`       | Check if element matches text                             |
-| `getAllElements(root)`                   | Get all elements (with shadow DOM)                        |
-| `getAllFrames(root)`                     | Get all frames (main + iframes)                           |
-| `parseXPath(expr, el, depth)`            | Parse XPath-like type expressions                         |
-| `splitByOperator(expr, op)`              | Split XPath by operator                                   |
+| Function                                        | Description                                                    |
+| ----------------------------------------------- | -------------------------------------------------------------- |
+| `findElements(type, text, exact, parent)`       | Find elements by type/text, returns `{ elements: [...] }`      |
+| `findElementByType(type, parent)`               | Find elements by type only, returns `{ elements: [...] }`      |
+| `findElementByAttributes(value, exact, parent)` | Find elements by text/attribute, returns `{ elements: [...] }` |
+| `highlight(elements, color, width)`             | Highlight elements with outline                                |
+| `unhighlight(elements)`                         | Remove highlight                                               |
+| `getValidTypes()`                               | List all supported element types                               |
+| `getBoundingBox(element)`                       | Get bounding box for an element                                |
+| `setSearchableAttributes(attributes)`           | Set custom attributes for text search                          |
+| `getSearchableAttributes()`                     | Get current searchable attributes                              |
+| `matchesType(el, type)`                         | Check if element matches a type                                |
+| `matchesAttribute(el, value, exact)`            | Check if element matches text/attribute                        |
+| `getAllElements(root)`                          | Get all elements (with shadow DOM)                             |
+| `getAllFrames(root)`                            | Get all frames (main + iframes)                                |
+| `parseXPath(expr, el, depth)`                   | Parse XPath-like type expressions                              |
+| `splitByOperator(expr, op)`                     | Split XPath by operator                                        |
 
 ---
 
-### `findElement(type, text, exact, parent)`
+### `findElements(type, text, exact, parent)`
 
-Finds elements matching the specified criteria. Searches all frames (main document + iframes) by default.
+Finds elements matching the specified type and/or text. Combines type and attribute matching in a single call. Searches all frames (main document + iframes) by default.
 
-| Parameter | Type      | Default     | Description                                                                                           |
-| --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------- |
-| `type`    | `string`  | `"element"` | Element type (see supported types below). Must be a string; throws `TypeError` for non-string values. |
-| `text`    | `string`  | `null`      | Text to search for in content/attributes                                                              |
-| `exact`   | `boolean` | `false`     | Exact text match vs substring                                                                         |
-| `parent`  | `Element` | `null`      | Parent element to search within                                                                       |
+| Parameter | Type      | Default | Description                                                                                                      |
+| --------- | --------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `type`    | `string`  | `null`  | Element type (see supported types below). If `null`, matches any type. Throws `TypeError` for non-string values. |
+| `text`    | `string`  | `null`  | Text to search for in content/attributes. If `null`/`''`/`undefined`, matches any text.                          |
+| `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                  |
+| `parent`  | `Element` | `null`  | Parent element to search within                                                                                  |
 
-**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isVisible }] }`
+**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
 
 - `element`: Raw DOM element (main frame only; for iframes, use `frameIndex` and re-query after switching context)
 - `frameIndex`: `-1` for main frame, `0, 1, 2...` for iframes
-- `isVisible`: `true` if element is visible, `false` if hidden
 
-**Agent/Automation Note**: Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElement` inside the iframe.
+**Agent/Automation Note**: Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElements` inside the iframe.
 
 ### `highlight(elements, color, width)`
 
@@ -219,9 +219,28 @@ Returns the current searchable attributes array.
 
 Checks if an element matches the specified type definition.
 
-### `matchesContent(el, value, exact)`
+### `matchesAttribute(el, value, exact)`
 
-Checks if an element matches the specified text content. Safely handles edge case elements that may throw errors on attribute access.
+Checks if an element matches the specified text/attribute value. Safely handles edge case elements that may throw errors on attribute access.
+
+### `findElementByType(type, parent)`
+
+Finds elements by type only. Searches all frames by default.
+
+| Parameter | Type      | Default     | Description                                                                         |
+| --------- | --------- | ----------- | ----------------------------------------------------------------------------------- |
+| `type`    | `string`  | `"element"` | Element type (see supported types below). Throws `TypeError` for non-string values. |
+| `parent`  | `Element` | `null`      | Parent element to search within                                                     |
+
+### `findElementByAttributes(value, exact, parent)`
+
+Finds elements by text/attribute value only. Searches all frames by default.
+
+| Parameter | Type      | Default | Description                                                                                        |
+| --------- | --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `value`   | `string`  | `''`    | Text/attribute value to search for. If `null`/`undefined`, defaults to empty string (matches all). |
+| `exact`   | `boolean` | `false` | Exact text match vs substring                                                                      |
+| `parent`  | `Element` | `null`  | Parent element to search within                                                                    |
 
 ### `getAllElements(root)`
 

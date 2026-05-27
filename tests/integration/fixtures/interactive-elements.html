@@ -42,6 +42,7 @@
         <div class="field-group">
             <button id="btn-enabled">Enabled Button</button>
             <button id="btn-disabled" disabled>Disabled Button</button>
+            <button id="btn-hidden" style="display: none;">Hidden Button</button>
             <div role="button" id="btn-aria-enabled" tabindex="0">ARIA Enabled Button</div>
             <div role="button" id="btn-aria-disabled" aria-disabled="true" tabindex="0" style="color: gray;">ARIA Disabled Button</div>
         </div>
@@ -56,6 +57,9 @@
             
             <label for="slider-disabled">Disabled Slider</label>
             <input type="range" id="slider-disabled" min="0" max="100" value="30" disabled>
+            
+            <label for="slider-hidden">Hidden Slider</label>
+            <input type="range" id="slider-hidden" min="0" max="100" value="20" style="display: none;">
         </div>
     </section>
 

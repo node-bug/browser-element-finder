@@ -30,11 +30,11 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', '..', 'index-by-attribute.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
-      window.ElementFinderByAttribute = ElementFinderByAttribute;
+      window.ElementFinder = ElementFinder;
     `);
 
     await driver.sleep(500);
@@ -51,7 +51,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
   describe('findElementByAttributes - ID', () => {
     it('should find standard checkbox switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('checkbox-switch');
+        return ElementFinder.findElementByAttributes('checkbox-switch');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -61,7 +61,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
 
     it('should find ARIA switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('aria-switch');
+        return ElementFinder.findElementByAttributes('aria-switch');
       `);
       // Finds both the div and its label (aria-labelledby references the label)
       expect(result.elements.length).toBe(1);
@@ -73,7 +73,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
 
     it('should find button switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('button-switch');
+        return ElementFinder.findElementByAttributes('button-switch');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -83,7 +83,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
 
     it('should find native checkbox by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('native-checkbox');
+        return ElementFinder.findElementByAttributes('native-checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -93,7 +93,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
 
     it('should find disabled switch by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('disabled-switch');
+        return ElementFinder.findElementByAttributes('disabled-switch');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -105,7 +105,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
   describe('findElementByAttributes - ARIA attributes', () => {
     it('should find ARIA switch by role attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('switch');
+        return ElementFinder.findElementByAttributes('switch');
       `);
       const mainElements = result.elements.filter(e => e.element);
       const roles = await Promise.all(mainElements.map(e => e.element.getAttribute('role')));
@@ -114,7 +114,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
 
     it('should find ARIA switch by aria-labelledby attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('aria-label');
+        return ElementFinder.findElementByAttributes('aria-label');
       `);
       const mainElements = result.elements.filter(e => e.element);
       const ariaLabelledBy = await Promise.all(mainElements.map(e => e.element.getAttribute('aria-labelledby')));
@@ -125,7 +125,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
   describe('findElementByAttributes - data attributes', () => {
     it('should find button switch by text content "OFF"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('OFF');
+        return ElementFinder.findElementByAttributes('OFF');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -137,28 +137,28 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
   describe('findElementByAttributes - Label Text', () => {
     it('should find switch by label text "Standard Checkbox Switch"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Standard Checkbox Switch');
+        return ElementFinder.findElementByAttributes('Standard Checkbox Switch');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find ARIA switch by label text "ARIA Div Switch"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('ARIA Div Switch');
+        return ElementFinder.findElementByAttributes('ARIA Div Switch');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find button switch by label text "Native Button Switch"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Native Button Switch');
+        return ElementFinder.findElementByAttributes('Native Button Switch');
       `);
       expect(result.elements.length).toBe(1);
     });
 
     it('should find disabled switch by label text', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Disabled Control Switch');
+        return ElementFinder.findElementByAttributes('Disabled Control Switch');
       `);
       expect(result.elements.length).toBe(1);
     });
@@ -167,7 +167,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
   describe('findElementByAttributes - Shadow DOM', () => {
     it('should find switch inside shadow DOM by id', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('shadow-switch');
+        return ElementFinder.findElementByAttributes('shadow-switch');
       `);
       // Shadow DOM elements are found but may not have a direct element reference
       expect(result.elements.length).toBe(1);
@@ -177,7 +177,7 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
   describe('findElementByAttributes - Iframe', () => {
     it('should find switch inside iframe by label text', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Document Switch Window Node');
+        return ElementFinder.findElementByAttributes('Document Switch Window Node');
       `);
       // Iframe elements are found but may not have a direct element reference
       expect(result.elements.length).toBe(1);

@@ -1,5 +1,5 @@
 /**
- * Unit tests for ElementFinderByAttribute Node.js module
+ * Unit tests for ElementFinder Node.js module
  * These tests run in Node.js and provide code coverage
  */
 
@@ -16,7 +16,7 @@ import {
   getValidAttributes,
   highlight,
   unhighlight
-} from '../../src/element-finder-by-attribute.js';
+} from '../../src/element-finder.js';
 
 // Default searchable attributes to reset state between tests
 const DEFAULT_ATTRIBUTES = [

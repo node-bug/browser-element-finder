@@ -30,11 +30,11 @@ describe('ElementFinderByType - Iframes Fixture', () => {
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', '..', 'index-by-type.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
-      window.ElementFinderByType = ElementFinderByType;
+      window.ElementFinder = ElementFinder;
     `);
 
     await driver.sleep(500);
@@ -51,14 +51,14 @@ describe('ElementFinderByType - Iframes Fixture', () => {
   describe('findElementByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('element');
+        return ElementFinder.findElementByType('element');
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should find checkboxes in main document', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('checkbox');
+        return ElementFinder.findElementByType('checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -66,7 +66,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find buttons', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('button');
+        return ElementFinder.findElementByType('button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -74,7 +74,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find textboxes', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('textbox');
+        return ElementFinder.findElementByType('textbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -82,7 +82,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find links', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('link');
+        return ElementFinder.findElementByType('link');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -90,7 +90,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find dropdowns', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('dropdown');
+        return ElementFinder.findElementByType('dropdown');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -98,7 +98,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find sliders', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('slider');
+        return ElementFinder.findElementByType('slider');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -106,7 +106,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find radios', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('radio');
+        return ElementFinder.findElementByType('radio');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -114,7 +114,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find headings', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('heading');
+        return ElementFinder.findElementByType('heading');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -122,7 +122,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find navigation elements', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('navigation');
+        return ElementFinder.findElementByType('navigation');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -130,7 +130,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find images', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('image');
+        return ElementFinder.findElementByType('image');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -138,7 +138,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find tables', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('table');
+        return ElementFinder.findElementByType('table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -146,7 +146,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should find lists', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('list');
+        return ElementFinder.findElementByType('list');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -154,7 +154,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
 
     it('should return empty array for unknown type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByType.findElementByType('unknown-type-xyz');
+        return ElementFinder.findElementByType('unknown-type-xyz');
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -162,7 +162,7 @@ describe('ElementFinderByType - Iframes Fixture', () => {
     it('should throw TypeError for non-string type', async () => {
       await expect(async () => {
         await driver.executeScript(`
-          return ElementFinderByType.findElementByType(123);
+          return ElementFinder.findElementByType(123);
         `);
       }).rejects.toThrow();
     });
