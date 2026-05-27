@@ -2,14 +2,7 @@
   "name": "@nodebug/browser-element-finder",
   "version": "1.1.1",
   "description": "Browser Element Finder - Find elements by type and text content",
-  "main": "index.js",
-  "browser": "index.js",
   "exports": {
-    ".": {
-      "browser": "./index.js",
-      "require": "./index.js",
-      "import": "./index.js"
-    },
     "./element-definitions.json": {
       "browser": "./src/element-definitions.json",
       "require": "./src/element-definitions.json",
@@ -24,7 +17,6 @@
     }
   },
   "files": [
-    "index.js",
     "src/element-definitions.json",
     "src/searchable-attributes.json"
   ],
@@ -48,7 +40,7 @@
     "url": "https://github.com/node-bug/browser-element-finder/issues"
   },
   "scripts": {
-    "build": "node build.js && node build-by-attribute.js",
+    "build": "node build-by-attribute.js && node build-by-type.js",
     "lint": "eslint .",
     "test": "npm run build && vitest run",
     "test:watch": "npm run build && vitest",

@@ -50,11 +50,22 @@ function getDirectText(el) {
 }
 
 /**
- * Checks if an element is inside a STYLE or SCRIPT tag.
+ * Checks if an element is inside a STYLE or SCRIPT tag, or contains STYLE/SCRIPT descendants.
  * @param {Element} el - The DOM element to check
- * @returns {boolean} True if the element is inside a STYLE or SCRIPT tag
+ * @returns {boolean} True if the element is inside a STYLE or SCRIPT tag, or contains one
  */
 function isInsideStyleOrScript(el) {
+  // Check if element itself is a STYLE or SCRIPT tag
+  if (el.tagName === 'STYLE' || el.tagName === 'SCRIPT') {
+    return true;
+  }
+
+  // Check if element contains STYLE or SCRIPT descendants
+  if (el.querySelector('STYLE, SCRIPT')) {
+    return true;
+  }
+
+  // Check if element is inside a STYLE or SCRIPT tag
   let parent = el.parentElement;
   while (parent) {
     if (parent.tagName === 'STYLE' || parent.tagName === 'SCRIPT') {
@@ -107,7 +118,7 @@ export function matchesAttribute(el, value, exact = false) {
 
   // Check full text content (includes nested elements, case-sensitive)
   const textContent = el.textContent;
-  if (exact ? textContent === value : textContent.includes(value)) {
+  if (exact ? textContent.trim() === value : textContent.includes(value)) {
     return true;
   }
 

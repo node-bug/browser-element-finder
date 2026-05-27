@@ -183,10 +183,30 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       expect(matchesAttribute(button, 'Click Me')).toBe(true);
     });
 
-    it('should support exact matching', () => {
+    it('should support exact matching for attributes', () => {
       const input = document.getElementById('txt1');
+      // Exact match should work
       expect(matchesAttribute(input, 'Enter name', true)).toBe(true);
+      // Partial match should fail with exact=true
       expect(matchesAttribute(input, 'Enter', true)).toBe(false);
+      expect(matchesAttribute(input, 'name', true)).toBe(false);
+    });
+
+    it('should support exact matching for text content', () => {
+      const button = document.getElementById('btn1');
+      // Exact match should work
+      expect(matchesAttribute(button, 'Submit', true)).toBe(true);
+      // Partial match should fail with exact=true
+      expect(matchesAttribute(button, 'Sub', true)).toBe(false);
+      expect(matchesAttribute(button, 'mit', true)).toBe(false);
+    });
+
+    it('should support exact matching for nested text content', () => {
+      const div = document.querySelector('.container');
+      // Exact match on full text content
+      expect(matchesAttribute(div, 'Nested text', true)).toBe(true);
+      // Partial match should fail with exact=true
+      expect(matchesAttribute(div, 'Nested', true)).toBe(false);
     });
 
     it('should be case-sensitive', () => {
@@ -299,13 +319,49 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       expect(result.elements[0].element?.id).toBe('btn3');
     });
 
-    it('should support exact matching', () => {
+    it('should support exact matching for attributes', () => {
+      // Exact match should find the element
       const result = findElementByAttributes('Enter name', true);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('txt1');
 
+      // Partial match should not find anything with exact=true
       const result2 = findElementByAttributes('Enter', true);
       expect(result2.elements.length).toBe(0);
+
+      // Partial match should find with exact=false (default)
+      const result3 = findElementByAttributes('Enter', false);
+      expect(result3.elements.length).toBe(3);
+    });
+
+    it('should support exact matching for text content', () => {
+      // Exact match on button text
+      const result = findElementByAttributes('Submit', true);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].element?.id).toBe('btn1');
+
+      // Partial match should not find with exact=true
+      const result2 = findElementByAttributes('Sub', true);
+      expect(result2.elements.length).toBe(0);
+
+      // Partial match should find with exact=false (default)
+      const result3 = findElementByAttributes('Sub', false);
+      expect(result3.elements.length).toBe(1);
+    });
+
+    it('should support exact matching for aria-label', () => {
+      // Exact match on aria-label
+      const result = findElementByAttributes('Cancel button', true);
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].element?.id).toBe('btn2');
+
+      // Partial match should not find with exact=true
+      const result2 = findElementByAttributes('Cancel', true);
+      expect(result2.elements.length).toBe(1);
+
+      // Partial match should find with exact=false (default)
+      const result3 = findElementByAttributes('Cancel', false);
+      expect(result3.elements.length).toBe(1);
     });
 
     it('should return innermost matches only', () => {

@@ -13,7 +13,7 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-describe('ElementFinderByAttribute Integration Tests', () => {
+describe('ElementFinderByAttribute Integration Tests - Dropdowns', () => {
   let driver;
 
   beforeAll(async () => {
@@ -25,12 +25,12 @@ describe('ElementFinderByAttribute Integration Tests', () => {
       .setChromeOptions(options)
       .build();
 
-    const htmlPath = join(__dirname, 'fixtures', 'forms.html');
+    const htmlPath = join(__dirname, '..', 'fixtures', 'dropdowns.html');
     const htmlContent = readFileSync(htmlPath, 'utf8');
     const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     await driver.get(fileUrl);
 
-    const finderPath = join(__dirname, '..', '..', 'index-by-attribute.js');
+    const finderPath = join(__dirname, '..', '..', '..', 'index-by-attribute.js');
     const finderCode = readFileSync(finderPath, 'utf8');
     await driver.executeScript(`
       ${finderCode}
@@ -49,49 +49,66 @@ describe('ElementFinderByAttribute Integration Tests', () => {
   });
 
   describe('findElementByAttributes', () => {
-    it('should find elements matching visisble text "Single"', async () => {
+    it('should find elements matching visible text "Apple"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Single');
+        return ElementFinderByAttribute.findElementByAttributes('Apple');
       `);
       expect(result.elements.length).toBe(1);
     });
 
-    it('should find elements matching "Field"', async () => {
+    it('should find elements matching "Banana"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Field');
+        return ElementFinderByAttribute.findElementByAttributes('Banana');
       `);
-      expect(result.elements.length).toBe(9);
+      expect(result.elements.length).toBe(1);
     });
 
     it('should find elements by placeholder attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Enter text here');
+        return ElementFinderByAttribute.findElementByAttributes('Type to search');
       `);
       const mainElements = result.elements.filter(e => e.element);
-      expect(mainElements.length).toBe(1);
-      const id = await mainElements[0].element.getAttribute('id');
-      expect(id).toBe('text-single');
+      expect(mainElements.length).toBe(0);
     });
 
     it('should find elements by id attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('text-email');
+        return ElementFinderByAttribute.findElementByAttributes('single-select');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
-      expect(id).toBe('text-email');
+      expect(id).toBe('single-select');
     });
 
-    it('should be case-sensitive for "field" vs "Field"', async () => {
+    it('should find elements by aria-label attribute', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinderByAttribute.findElementByAttributes('Custom UI');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(2);
+      const ids = await Promise.all(mainElements.map(e => e.element.getAttribute('id')));
+      expect(ids).toContain('custom-dropdown-1');
+    });
+
+    it('should find elements by value attribute', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinderByAttribute.findElementByAttributes('apple');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+    });
+
+    it('should be case-sensitive for "apple" vs "Apple"', async () => {
       const resultLower = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('field');
+        return ElementFinderByAttribute.findElementByAttributes('apple');
       `);
-      expect(resultLower.elements.length).toBe(3);
       const resultUpper = await driver.executeScript(`
-        return ElementFinderByAttribute.findElementByAttributes('Field');
+        return ElementFinderByAttribute.findElementByAttributes('Apple');
       `);
-      expect(resultUpper.elements.length).toBe(9);
+      // 'apple' should find value attribute matches, 'Apple' should find text content matches
+      expect(resultLower.elements.length).toBe(1);
+      expect(resultUpper.elements.length).toBe(1);
     });
   });
 });

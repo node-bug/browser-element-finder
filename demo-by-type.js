@@ -22,7 +22,7 @@ async function demo() {
 
     try {
         // Load the forms.html fixture
-        const htmlPath = join(__dirname, 'tests', 'integration', 'fixtures', 'forms.html');
+        const htmlPath = join(__dirname, 'tests', 'integration', 'fixtures', 'switches.html');
         const htmlContent = readFileSync(htmlPath, 'utf8');
         const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
         await driver.get(fileUrl);
@@ -36,11 +36,13 @@ async function demo() {
         `);
 
         // Find and highlight all textboxes
-        await driver.executeScript(`
-            const result = ElementFinderByType.findElementByType(123);
+        const res = await driver.executeScript(`
+            const result = ElementFinderByType.findElementByType('element');
             console.log('Found ' + result.elements.length + ' textbox elements');
             ElementFinderByType.highlight(result.elements);
+            return result
         `);
+        console.log(res.elements.length)
 
         // Wait to see highlights
         await driver.sleep(2000);

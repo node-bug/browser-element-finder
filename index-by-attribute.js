@@ -72,6 +72,12 @@ var ElementFinderByAttribute = (() => {
     return text.trim();
   }
   function isInsideStyleOrScript(el) {
+    if (el.tagName === "STYLE" || el.tagName === "SCRIPT") {
+      return true;
+    }
+    if (el.querySelector("STYLE, SCRIPT")) {
+      return true;
+    }
     let parent = el.parentElement;
     while (parent) {
       if (parent.tagName === "STYLE" || parent.tagName === "SCRIPT") {
@@ -105,7 +111,7 @@ var ElementFinderByAttribute = (() => {
       return true;
     }
     const textContent = el.textContent;
-    if (exact ? textContent === value : textContent.includes(value)) {
+    if (exact ? textContent.trim() === value : textContent.includes(value)) {
       return true;
     }
     return false;

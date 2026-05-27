@@ -24,7 +24,7 @@ async function test() {
 
     try {
         // Load the forms.html fixture
-        const htmlPath = join(__dirname, 'tests', 'integration', 'fixtures', 'forms.html');
+        const htmlPath = join(__dirname, 'tests', 'integration', 'fixtures', 'shadow-dom.html');
         const htmlContent = readFileSync(htmlPath, 'utf8');
         const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
         await driver.get(fileUrl);
@@ -37,19 +37,30 @@ async function test() {
       window.ElementFinderByAttribute = ElementFinderByAttribute;
     `);
 
-// Find elements by text 'Single' (matches label text and input id)
-        const result = await driver.executeScript(`
-      return ElementFinderByAttribute.findElementByAttributes('Single');
+// Find elements by partial text match (default behavior)
+        const partialResult = await driver.executeScript(`
+      return ElementFinderByAttribute.findElementByAttributes('Dynamic Button');
     `);
-        console.log(`Found ${result.elements.length} elements with text 'Single':`);
-        result.elements.forEach((el, i) => {
+        console.log(`Found ${partialResult.elements.length} elements with partial text 'ike browser':`);
+        partialResult.elements.forEach((el, i) => {
             console.log(`  ${i + 1}. ${el.tagName} - id: ${el.element?.id || '(no id)'}`);
         });
 
         // Highlight the found elements
         await driver.executeScript(`
       ElementFinderByAttribute.highlight(arguments[0]);
-    `, result.elements);
+    `, partialResult.elements);
+
+        // Find elements by exact text match
+        const exactResult = await driver.executeScript(`
+      return ElementFinderByAttribute.findElementByAttributes('ike browser', true);
+    `);
+        console.log(`\nFound ${exactResult.elements.length} elements with exact text 'ike browser':`);
+        exactResult.elements.forEach((el, i) => {
+            console.log(`  ${i + 1}. ${el.tagName} - id: ${el.element?.id || '(no id)'}`);
+        });
+
+    console.log()
 
     } finally {
         await driver.quit();

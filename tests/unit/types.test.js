@@ -383,10 +383,10 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       const button = document.getElementById('btn1');
       const result = findElementByType('button');
       
-      highlight(result.elements, 'blue', 2);
+      highlight(result.elements);
       
-      expect(button.style.outline).toContain('blue');
-      expect(button.style.outline).toContain('2px');
+      expect(button.style.outline).toContain('red');
+      expect(button.style.outline).toContain('3px');
     });
 
     it('should handle null elements gracefully', () => {

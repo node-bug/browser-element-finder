@@ -74,10 +74,7 @@ npm install @nodebug/browser-element-finder
 
 ```
 browser-element-finder/
-├── index.js                      # Browser-injected library (generated)
-├── build.js                      # Build script to generate index.js
 ├── src/
-│   ├── element-finder.js         # Canonical source (ES module)
 │   ├── element-definitions.json  # XPath-like type definitions
 │   └── searchable-attributes.json  # Attributes searched for text matching
 ├── tests/
@@ -123,41 +120,6 @@ for (const item of results.elements) {
     // (agent/driver-specific code here)
   }
 }
-```
-
-### ESM Import
-
-```js
-import {
-  findElement,
-  highlight,
-  unhighlight,
-  getValidTypes,
-} from '@nodebug/browser-element-finder/src/element-finder.js'
-
-// Find elements (requires DOM environment)
-const results = findElement('button', 'Submit')
-
-// Access metadata from results
-results.elements.forEach((item) => {
-  console.log('Tag:', item.tagName)
-  console.log('Position:', item.boundingBox.x, item.boundingBox.y)
-  console.log('Visible:', item.isVisible)
-})
-
-// Highlight elements (extract DOM elements from wrapper objects)
-highlight(results.elements.map((e) => e.element))
-```
-
-### CommonJS Import
-
-```js
-const {
-  findElement,
-  highlight,
-  unhighlight,
-  getValidTypes,
-} = require('@nodebug/browser-element-finder/src/element-finder.js')
 ```
 
 ### Accessing Element Definitions and Searchable Attributes
