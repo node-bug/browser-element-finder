@@ -25,36 +25,14 @@ var ElementFinder = (() => {
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
-    getSearchableAttributes: () => getSearchableAttributes,
     getValidTypes: () => getValidTypes,
     highlight: () => highlight,
-    matchesContent: () => matchesContent,
     matchesType: () => matchesType,
     parseCondition: () => parseCondition,
     parseXPath: () => parseXPath,
-    setSearchableAttributes: () => setSearchableAttributes,
     splitByOperator: () => splitByOperator,
     unhighlight: () => unhighlight
   });
-
-  // src/searchable-attributes.json
-  var searchable_attributes_default = [
-    "placeholder",
-    "value",
-    "data-test-id",
-    "data-testid",
-    "id",
-    "resource-id",
-    "name",
-    "aria-label",
-    "class",
-    "hint",
-    "title",
-    "tooltip",
-    "alt",
-    "src",
-    "aria-labelledby"
-  ];
 
   // src/element-definitions.json
   var element_definitions_default = {
@@ -67,7 +45,7 @@ var ElementFinder = (() => {
     slider: "self::input[@type='range'] or @role='slider'",
     radio: "(self::input and @type='radio') or @role='radio'",
     dropdown: "(self::select[descendant::option] or @role='combobox' or @role='listbox' or contains(@class, 'dropdown') or contains(@class, 'trigger') or ancestor::*[contains(@class, 'dropdown') or @role='combobox'])",
-    textbox: "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email')) or @role='textbox'",
+    textbox: "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email' or @type='number' or @type='tel' or @type='url')) or @role='textbox'",
     file: "self::input and @type='file'",
     list: "self::ul or self::ol or @role='list'",
     listitem: "self::li or @role='listitem'",
@@ -213,69 +191,10 @@ var ElementFinder = (() => {
     return false;
   }
   var ELEMENT_DEFINITIONS = Object.freeze(element_definitions_default);
-  var SEARCHABLE_ATTRIBUTES = searchable_attributes_default;
-  function setSearchableAttributes(attributes) {
-    if (!Array.isArray(attributes)) {
-      throw new TypeError("attributes must be an array");
-    }
-    SEARCHABLE_ATTRIBUTES = attributes;
-  }
-  function getSearchableAttributes() {
-    return [...SEARCHABLE_ATTRIBUTES];
-  }
   function matchesType(el, type) {
     if (el == null) return false;
     const matcher = TYPE_MATCHERS.get(type);
     return matcher ? matcher(el) : false;
-  }
-  function matchesContent(el, value, exact = false) {
-    if (el == null) return false;
-    if (value === void 0 || value === null || value === "") return true;
-    const normalizedValue = value.toLowerCase().trim();
-    const attrs = SEARCHABLE_ATTRIBUTES;
-    for (let i = 0; i < attrs.length; i++) {
-      const attr = attrs[i];
-      let attrValue;
-      try {
-        attrValue = el.getAttribute(attr);
-      } catch (e) {
-        continue;
-      }
-      if (attrValue) {
-        const normalized = attrValue.toLowerCase().trim();
-        if (exact ? normalized === normalizedValue : normalized.includes(normalizedValue)) {
-          return true;
-        }
-      }
-    }
-    const directText = getDirectText(el);
-    if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
-      return true;
-    }
-    if (el.tagName === "SELECT") {
-      const options = el.querySelectorAll("option");
-      for (let i = 0; i < options.length; i++) {
-        const optionText = options[i].textContent.toLowerCase().trim();
-        if (exact ? optionText === normalizedValue : optionText.includes(normalizedValue)) {
-          return true;
-        }
-      }
-    }
-    const textContent = el.textContent.toLowerCase().trim();
-    if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
-      return true;
-    }
-    return false;
-  }
-  function getDirectText(el) {
-    let text = "";
-    for (let i = 0; i < el.childNodes.length; i++) {
-      const node = el.childNodes[i];
-      if (node.nodeType === Node.TEXT_NODE) {
-        text += node.textContent;
-      }
-    }
-    return text.toLowerCase().trim();
   }
   function getBoundingBox(el) {
     const rect = el.getBoundingClientRect();
@@ -475,31 +394,28 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function findElement(type = "element", text = null, exact = false, parent = null) {
-    var _a;
-    if (type === null || type === void 0) {
-      type = "element";
-    }
-    if (typeof type !== "string") {
-      throw new TypeError(`type must be a string, got ${typeof type}`);
-    }
-    if (type && !ELEMENT_DEFINITIONS[type]) {
-      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
-      return { elements: [] };
-    }
-    const matches = [];
-    const frames = getAllFrames(window);
-    for (const frame of frames) {
-      const allElements = getAllElements(parent || frame.document);
-      for (let i = 0; i < allElements.length; i++) {
-        const el = allElements[i];
-        if (type && !matchesType(el, type)) continue;
-        if (text !== void 0 && !matchesContent(el, text, exact)) continue;
-        const elWindow = ((_a = el.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
-        const isVisible = !isElementHidden(el, elWindow);
-        matches.push({ element: el, frame, isVisible });
+  function calculateDistance(el1, el2) {
+    const box1 = getBoundingBox(el1);
+    const box2 = getBoundingBox(el2);
+    const dx = box1.midx - box2.midx;
+    const dy = box1.midy - box2.midy;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  function findNearestElement(referenceElement, candidates) {
+    if (!candidates || candidates.length === 0) return null;
+    if (candidates.length === 1) return candidates[0];
+    let nearest = candidates[0];
+    let minDistance = calculateDistance(referenceElement, nearest);
+    for (let i = 1; i < candidates.length; i++) {
+      const distance = calculateDistance(referenceElement, candidates[i]);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearest = candidates[i];
       }
     }
+    return nearest;
+  }
+  function filterToInnermost(matches) {
     const innermostMatches = [];
     if (matches.length > 0) {
       const matchedElements = new Set(matches.map((m) => m.element));
@@ -519,7 +435,37 @@ var ElementFinder = (() => {
         }
       }
     }
-    const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+    const finalMatches = [];
+    const labelableElements = /* @__PURE__ */ new Set(["BUTTON", "INPUT", "KEYGEN", "METER", "OUTPUT", "PROGRESS", "SELECT", "TEXTAREA"]);
+    const seenElements = /* @__PURE__ */ new Set();
+    for (const match of innermostMatches) {
+      const el = match.element;
+      if (seenElements.has(el)) continue;
+      seenElements.add(el);
+      if (el.tagName === "LABEL") {
+        let hasAssociatedControl = false;
+        if (el.htmlFor) {
+          const control = el.ownerDocument.getElementById(el.htmlFor);
+          if (control && seenElements.has(control)) {
+            hasAssociatedControl = true;
+          }
+        }
+        if (!hasAssociatedControl) {
+          for (const labelableTag of labelableElements) {
+            const control = el.querySelector(labelableTag.toLowerCase());
+            if (control && seenElements.has(control)) {
+              hasAssociatedControl = true;
+              break;
+            }
+          }
+        }
+        if (hasAssociatedControl) continue;
+      }
+      finalMatches.push(match);
+    }
+    return finalMatches;
+  }
+  function formatResults(expandedMatches) {
     const qualified = expandedMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
@@ -541,6 +487,94 @@ var ElementFinder = (() => {
     });
     return { elements: qualified };
   }
+  function findElement(type = "element", text = null, exact = false, parent = null) {
+    var _a, _b, _c;
+    if (type === null || type === void 0) {
+      type = "element";
+    }
+    if (typeof type !== "string") {
+      throw new TypeError(`type must be a string, got ${typeof type}`);
+    }
+    if (type && !ELEMENT_DEFINITIONS[type]) {
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+      return { elements: [] };
+    }
+    const frames = getAllFrames(window);
+    const typeAndTextMatches = [];
+    const attributeMatches = [];
+    for (const frame of frames) {
+      const allElements = getAllElements(parent || frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        const typeMatches = type && matchesType(el, type);
+        const textMatches = text === void 0 || text === null || matchesContent(el, text, exact);
+        if (typeMatches && textMatches) {
+          const elWindow = ((_a = el.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
+          const isVisible = !isElementHidden(el, elWindow);
+          typeAndTextMatches.push({ element: el, frame, isVisible });
+        }
+        if (text && matchesContent(el, text, exact)) {
+          attributeMatches.push({ element: el, frame });
+        }
+      }
+    }
+    if (typeAndTextMatches.length > 0) {
+      const innermostMatches = filterToInnermost(typeAndTextMatches);
+      const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+      return formatResults(expandedMatches);
+    }
+    if (text && attributeMatches.length > 0) {
+      const resultsByNearestType = [];
+      const seenElements = /* @__PURE__ */ new Set();
+      for (const textMatch of attributeMatches) {
+        const textEl = textMatch.element;
+        if (seenElements.has(textEl)) continue;
+        const frame = textMatch.frame;
+        const typeElements = [];
+        const allElements = getAllElements(parent || frame.document);
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          if (matchesType(el, type)) {
+            typeElements.push(el);
+          }
+        }
+        if (typeElements.length > 0) {
+          const nearest = findNearestElement(textEl, typeElements);
+          if (nearest) {
+            const elWindow = ((_b = nearest.ownerDocument) == null ? void 0 : _b.defaultView) || frame.window;
+            const isVisible = !isElementHidden(nearest, elWindow);
+            resultsByNearestType.push({ element: nearest, frame, isVisible });
+            seenElements.add(nearest);
+          }
+        }
+      }
+      if (resultsByNearestType.length > 0) {
+        const innermostMatches = filterToInnermost(resultsByNearestType);
+        const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+        return formatResults(expandedMatches);
+      }
+    }
+    if (type && type !== "element") {
+      const typeMatches = [];
+      for (const frame of frames) {
+        const allElements = getAllElements(parent || frame.document);
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          if (matchesType(el, type)) {
+            const elWindow = ((_c = el.ownerDocument) == null ? void 0 : _c.defaultView) || frame.window;
+            const isVisible = !isElementHidden(el, elWindow);
+            typeMatches.push({ element: el, frame, isVisible });
+          }
+        }
+      }
+      if (typeMatches.length > 0) {
+        const innermostMatches = filterToInnermost(typeMatches);
+        const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+        return formatResults(expandedMatches);
+      }
+    }
+    return { elements: [] };
+  }
   function extractElements(elements) {
     if (!elements) return [];
     if (elements && elements.elements && Array.isArray(elements.elements)) {
@@ -552,8 +586,8 @@ var ElementFinder = (() => {
     const items = extractElements(elements);
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      const el = item.element ? item.element : item;
-      if (el && el.style) {
+      const el = item && item.element ? item.element : item;
+      if (el && typeof el === "object" && "style" in el) {
         el.style.outline = `${width}px solid ${color}`;
         el.style.outlineOffset = "2px";
         el.style.boxShadow = `0 0 0 2px rgba(255, 255, 255, 0.8)`;
@@ -565,8 +599,8 @@ var ElementFinder = (() => {
     const items = extractElements(elements);
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      const el = item.element ? item.element : item;
-      if (el && el.style) {
+      const el = item && item.element ? item.element : item;
+      if (el && typeof el === "object" && "style" in el) {
         el.style.outline = "";
         el.style.outlineOffset = "";
         el.style.boxShadow = "";

@@ -1,14 +1,12 @@
 /**
  * Browser Element Finder - Node.js Module Version
  *
- * This is the canonical source for the element finder library.
- * The build script generates index.js for browser injection.
+ * Finds elements by type using XPath-like definitions.
  */
 
-import searchableAttributesData from './searchable-attributes.json' with { type: 'json' };
 import elementDefinitionsData from './element-definitions.json' with { type: 'json' };
 
-// Precompiled regex patterns for performance (avoid recompiling on every call)
+// Precompiled regex patterns for performance
 const REGEX_PATTERNS = {
   selfWithTag: /^self::([a-zA-Z0-9-]+)(?:\[([^\]]+)\])?$/,
   contains: /contains\(@([a-zA-Z0-9-]+),\s*['"]([^'"]+)['"]\)/i,
@@ -20,13 +18,11 @@ const REGEX_PATTERNS = {
   operatorAnd: /^\s*\band\b\s*/i
 };
 
-// Maximum recursion depth for XPath parsing to prevent stack overflow
 const MAX_RECURSION_DEPTH = 100;
 
-// Pre-compiled type matcher functions for faster type checking
+// Pre-compiled type matcher functions
 const TYPE_MATCHERS = new Map();
 
-// Compile all type definitions into matcher functions on module load
 for (const [type, expr] of Object.entries(elementDefinitionsData)) {
   if (expr === 'true()') {
     TYPE_MATCHERS.set(type, () => true);
@@ -190,40 +186,15 @@ export function parseCondition(expr, el, depth = 0) {
 
 /**
  * Element type definitions as XPath-like strings.
- * Keys are type names, values are XPath expressions.
  * @type {Object.<string, string>}
  */
 export const ELEMENT_DEFINITIONS = Object.freeze(elementDefinitionsData);
 
-// Searchable attributes (in priority order) - internal state
-let SEARCHABLE_ATTRIBUTES = searchableAttributesData;
-
-/**
- * Sets custom searchable attributes for text matching.
- * @param {string[]} attributes - Array of attribute names to search (in priority order)
- * @throws {TypeError} If attributes is not an array
- */
-export function setSearchableAttributes(attributes) {
-  if (!Array.isArray(attributes)) {
-    throw new TypeError('attributes must be an array');
-  }
-  SEARCHABLE_ATTRIBUTES = attributes;
-}
-
-/**
- * Gets the current searchable attributes array.
- * @returns {string[]} Copy of the current searchable attributes array
- */
-export function getSearchableAttributes() {
-  return [...SEARCHABLE_ATTRIBUTES];
-}
-
 /**
  * Checks if an element matches the specified type definition.
- * Uses pre-compiled matcher functions for better performance.
  * @param {Element} el - The DOM element to check
- * @param {string} type - The element type name (e.g., 'button', 'textbox')
- * @returns {boolean} True if the element matches the type definition
+ * @param {string} type - The element type name
+ * @returns {boolean} True if the element matches the type
  */
 export function matchesType(el, type) {
   if (el == null) return false;
@@ -232,65 +203,7 @@ export function matchesType(el, type) {
 }
 
 /**
- * Checks if an element matches the specified text content.
- * Searches attributes, direct text nodes, and full text content.
- * @param {Element} el - The DOM element to check
- * @param {string} value - The text value to search for
- * @param {boolean} [exact=false] - Whether to match exactly or as substring
- * @returns {boolean} True if the element contains the text
- */
-export function matchesContent(el, value, exact = false) {
-  if (el == null) return false;
-  if (value === undefined || value === null || value === '') return true;
-  const normalizedValue = value.toLowerCase().trim();
-
-  // Check prioritized attributes - use local variable for array length
-  const attrs = SEARCHABLE_ATTRIBUTES;
-  for (let i = 0; i < attrs.length; i++) {
-    const attr = attrs[i];
-    let attrValue;
-    try {
-      attrValue = el.getAttribute(attr);
-    } catch {
-      continue;
-    }
-    if (attrValue) {
-      const normalized = attrValue.toLowerCase().trim();
-      if (exact ? normalized === normalizedValue : normalized.includes(normalizedValue)) {
-        return true;
-      }
-    }
-  }
-
-  // Check direct text nodes first - more efficient than textContent for simple text
-  const directText = getDirectText(el);
-  if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
-    return true;
-  }
-
-  // Check option text for select elements (dropdown matching)
-  if (el.tagName === 'SELECT') {
-    const options = el.querySelectorAll('option');
-    for (let i = 0; i < options.length; i++) {
-      const optionText = options[i].textContent.toLowerCase().trim();
-      if (exact ? optionText === normalizedValue : optionText.includes(normalizedValue)) {
-        return true;
-      }
-    }
-  }
-
-  // Check full text content (includes nested elements) - most expensive, do last
-  const textContent = el.textContent.toLowerCase().trim();
-  if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
-    return true;
-  }
-
-  return false;
-}
-
-/**
  * Gets direct text content from an element's text nodes.
- * More efficient than textContent for simple text matching.
  * @param {Element} el - The DOM element
  * @returns {string} Concatenated text from direct text nodes
  */
@@ -302,7 +215,53 @@ function getDirectText(el) {
       text += node.textContent;
     }
   }
-  return text.toLowerCase().trim();
+  return text.trim();
+}
+
+/**
+ * Checks if an element is inside a STYLE or SCRIPT tag.
+ * @param {Element} el - The DOM element to check
+ * @returns {boolean} True if the element is inside a STYLE or SCRIPT tag
+ */
+function isInsideStyleOrScript(el) {
+  let parent = el.parentElement;
+  while (parent) {
+    if (parent.tagName === 'STYLE' || parent.tagName === 'SCRIPT') {
+      return true;
+    }
+    parent = parent.parentElement;
+  }
+  return false;
+}
+
+/**
+ * Checks if an element matches the specified text content.
+ * Searches through text content. Ignores elements inside STYLE or SCRIPT tags.
+ * @param {Element} el - The DOM element to check
+ * @param {string} value - The text value to search for
+ * @param {boolean} [exact=false] - Whether to match exactly or as substring
+ * @returns {boolean} True if the element has matching text content
+ */
+function matchesContent(el, value, exact = false) {
+  if (el == null) return false;
+  if (value === undefined || value === null || value === '') return true;
+
+  // Skip elements inside STYLE or SCRIPT tags
+  if (isInsideStyleOrScript(el)) return false;
+
+  // Check direct text nodes
+  const directText = getDirectText(el);
+  if (exact ? directText === value : directText.includes(value)) {
+    return true;
+  }
+
+  // Check full text content
+  const textContent = el.textContent;
+  if (exact ? textContent === value : textContent.includes(value)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -598,48 +557,54 @@ function isElementHidden(el, elWindow) {
 }
 
 /**
- * Finds elements matching the specified criteria.
- * Searches all frames (main document + iframes) by default.
- * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
- * @param {string|null} [text=null] - Text to search for in content/attributes
- * @param {boolean} [exact=false] - Exact text match vs substring
- * @param {Element|null} [parent=null] - Parent element to search within
- * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number, isVisible: boolean}>}} Found elements with metadata
+ * Calculates the Euclidean distance between two elements based on their centroids.
+ * @param {Element} el1 - First DOM element
+ * @param {Element} el2 - Second DOM element
+ * @returns {number} Distance between the elements
  */
-export function findElement(type = "element", text = null, exact = false, parent = null) {
-  if (type === null || type === undefined) {
-    type = "element";
-  }
+function calculateDistance(el1, el2) {
+  const box1 = getBoundingBox(el1);
+  const box2 = getBoundingBox(el2);
+  
+  // Calculate distance between centroids
+  const dx = box1.midx - box2.midx;
+  const dy = box1.midy - box2.midy;
+  
+  return Math.sqrt(dx * dx + dy * dy);
+}
 
-  if (typeof type !== 'string') {
-    throw new TypeError(`type must be a string, got ${typeof type}`);
-  }
-
-  if (type && !ELEMENT_DEFINITIONS[type]) {
-    console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
-    return { elements: [] };
-  }
-
-  const matches = [];
-  const frames = getAllFrames(window);
-
-  for (const frame of frames) {
-    const allElements = getAllElements(parent || frame.document);
-
-    for (let i = 0; i < allElements.length; i++) {
-      const el = allElements[i];
-
-      if (type && !matchesType(el, type)) continue;
-
-      if (text !== undefined && !matchesContent(el, text, exact)) continue;
-
-      const elWindow = el.ownerDocument?.defaultView || frame.window;
-      const isVisible = !isElementHidden(el, elWindow);
-
-      matches.push({ element: el, frame: frame, isVisible });
+/**
+ * Finds the nearest element from a list of candidates based on distance from reference element.
+ * @param {Element} referenceElement - The reference element
+ * @param {Element[]} candidates - Array of candidate elements to choose from
+ * @returns {Element|null} The nearest element or null if no candidates
+ */
+function findNearestElement(referenceElement, candidates) {
+  if (!candidates || candidates.length === 0) return null;
+  if (candidates.length === 1) return candidates[0];
+  
+  let nearest = candidates[0];
+  let minDistance = calculateDistance(referenceElement, nearest);
+  
+  for (let i = 1; i < candidates.length; i++) {
+    const distance = calculateDistance(referenceElement, candidates[i]);
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearest = candidates[i];
     }
   }
+  
+  return nearest;
+}
 
+/**
+ * Filters matches to only innermost elements (excludes parent elements).
+ * Also deduplicates when both a label and its associated control are present,
+ * preferring the control element over the label.
+ * @param {Array<{element: Element, frame: Object, isVisible: boolean}>} matches - Matches to filter
+ * @returns {Array<{element: Element, frame: Object, isVisible: boolean}>} Filtered innermost matches
+ */
+function filterToInnermost(matches) {
   const innermostMatches = [];
   if (matches.length > 0) {
     const matchedElements = new Set(matches.map(m => m.element));
@@ -662,8 +627,56 @@ export function findElement(type = "element", text = null, exact = false, parent
     }
   }
 
-  const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+  // Deduplicate: when both a label and its associated control are in results, keep only the control
+  const finalMatches = [];
+  const labelableElements = new Set(['BUTTON', 'INPUT', 'KEYGEN', 'METER', 'OUTPUT', 'PROGRESS', 'SELECT', 'TEXTAREA']);
+  const seenElements = new Set();
 
+  for (const match of innermostMatches) {
+    const el = match.element;
+    
+    if (seenElements.has(el)) continue;
+    seenElements.add(el);
+
+    // If this is a label, check if any of its associated controls are also in the results
+    if (el.tagName === 'LABEL') {
+      let hasAssociatedControl = false;
+
+      // Check for control with matching "for" attribute
+      if (el.htmlFor) {
+        const control = el.ownerDocument.getElementById(el.htmlFor);
+        if (control && seenElements.has(control)) {
+          hasAssociatedControl = true;
+        }
+      }
+
+      // Check for nested control
+      if (!hasAssociatedControl) {
+        for (const labelableTag of labelableElements) {
+          const control = el.querySelector(labelableTag.toLowerCase());
+          if (control && seenElements.has(control)) {
+            hasAssociatedControl = true;
+            break;
+          }
+        }
+      }
+
+      // Skip this label if it has an associated control in the results
+      if (hasAssociatedControl) continue;
+    }
+
+    finalMatches.push(match);
+  }
+
+  return finalMatches;
+}
+
+/**
+ * Formats match results into the standard return format.
+ * @param {Array<{element: Element, frame: Object, isVisible: boolean}>} expandedMatches - Matches to format
+ * @returns {{elements: Array}} Formatted results
+ */
+function formatResults(expandedMatches) {
   const qualified = expandedMatches.map(item => {
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
@@ -690,6 +703,134 @@ export function findElement(type = "element", text = null, exact = false, parent
 }
 
 /**
+ * Finds elements matching the specified criteria.
+ * Strategy:
+ * 1. First, find elements matching both type and searchable attributes (text)
+ * 2. If no match found, find any element by searchable attributes
+ * 3. For each attribute-matched element, find the nearest element of the requested type
+ * Searches all frames (main document + iframes) by default.
+ * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
+ * @param {string|null} [text=null] - Text to search for in content/attributes
+ * @param {boolean} [exact=false] - Exact text match vs substring
+ * @param {Element|null} [parent=null] - Parent element to search within
+ * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number, isVisible: boolean}>}} Found elements with metadata
+ */
+export function findElement(type = "element", text = null, exact = false, parent = null) {
+  if (type === null || type === undefined) {
+    type = "element";
+  }
+
+  if (typeof type !== 'string') {
+    throw new TypeError(`type must be a string, got ${typeof type}`);
+  }
+
+  if (type && !ELEMENT_DEFINITIONS[type]) {
+    console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+    return { elements: [] };
+  }
+
+  const frames = getAllFrames(window);
+  const typeAndTextMatches = [];
+  const attributeMatches = [];
+
+  // First pass: Collect all elements matching type+text and all elements matching text
+  for (const frame of frames) {
+    const allElements = getAllElements(parent || frame.document);
+
+    for (let i = 0; i < allElements.length; i++) {
+      const el = allElements[i];
+
+      const typeMatches = type && matchesType(el, type);
+      const textMatches = text === undefined || text === null || matchesContent(el, text, exact);
+
+      if (typeMatches && textMatches) {
+        const elWindow = el.ownerDocument?.defaultView || frame.window;
+        const isVisible = !isElementHidden(el, elWindow);
+        typeAndTextMatches.push({ element: el, frame: frame, isVisible });
+      }
+
+      // Collect elements matching text (for fallback to nearest matching element)
+      if (text && matchesContent(el, text, exact)) {
+        attributeMatches.push({ element: el, frame: frame });
+      }
+    }
+  }
+
+  // Strategy 1: If we found elements matching both type and text, use those
+  if (typeAndTextMatches.length > 0) {
+    const innermostMatches = filterToInnermost(typeAndTextMatches);
+    const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+    return formatResults(expandedMatches);
+  }
+
+  // Strategy 2: If no type+text match but text was provided, find by text then find nearest by type
+  if (text && attributeMatches.length > 0) {
+    const resultsByNearestType = [];
+    const seenElements = new Set();
+
+    for (const textMatch of attributeMatches) {
+      const textEl = textMatch.element;
+      if (seenElements.has(textEl)) continue;
+
+      // Find all elements of the requested type in the same frame
+      const frame = textMatch.frame;
+      const typeElements = [];
+      const allElements = getAllElements(parent || frame.document);
+
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (matchesType(el, type)) {
+          typeElements.push(el);
+        }
+      }
+
+      // Find the nearest type-matched element to the text-matched element
+      if (typeElements.length > 0) {
+        const nearest = findNearestElement(textEl, typeElements);
+        if (nearest) {
+          const elWindow = nearest.ownerDocument?.defaultView || frame.window;
+          const isVisible = !isElementHidden(nearest, elWindow);
+          resultsByNearestType.push({ element: nearest, frame: frame, isVisible });
+          seenElements.add(nearest);
+        }
+      }
+    }
+
+    if (resultsByNearestType.length > 0) {
+      const innermostMatches = filterToInnermost(resultsByNearestType);
+      const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+      return formatResults(expandedMatches);
+    }
+  }
+
+  // Strategy 3: If no text match or no type match, just return elements matching type
+  if (type && type !== "element") {
+    const typeMatches = [];
+
+    for (const frame of frames) {
+      const allElements = getAllElements(parent || frame.document);
+
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (matchesType(el, type)) {
+          const elWindow = el.ownerDocument?.defaultView || frame.window;
+          const isVisible = !isElementHidden(el, elWindow);
+          typeMatches.push({ element: el, frame: frame, isVisible });
+        }
+      }
+    }
+
+    if (typeMatches.length > 0) {
+      const innermostMatches = filterToInnermost(typeMatches);
+      const expandedMatches = expandColumnMatches(innermostMatches, text, type);
+      return formatResults(expandedMatches);
+    }
+  }
+
+  return { elements: [] };
+}
+
+/**
  * Extract elements array from various input formats.
  */
 function extractElements(elements) {
@@ -708,8 +849,8 @@ export function highlight(elements, color = 'red', width = 3) {
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
-    const el = item.element ? item.element : item;
-    if (el && el.style) {
+    const el = item && item.element ? item.element : item;
+    if (el && typeof el === 'object' && 'style' in el) {
       el.style.outline = `${width}px solid ${color}`;
       el.style.outlineOffset = '2px';
       el.style.boxShadow = `0 0 0 2px rgba(255, 255, 255, 0.8)`;
@@ -726,8 +867,8 @@ export function unhighlight(elements) {
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
-    const el = item.element ? item.element : item;
-    if (el && el.style) {
+    const el = item && item.element ? item.element : item;
+    if (el && typeof el === 'object' && 'style' in el) {
       el.style.outline = '';
       el.style.outlineOffset = '';
       el.style.boxShadow = '';

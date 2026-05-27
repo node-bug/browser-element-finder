@@ -23,6 +23,22 @@
         "should return bounding box info for main frame switches"
       ],
       "autoAttachChildProcesses": true
+    },
+    {
+      "name": "Type",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/demo-by-type.js",
+      "autoAttachChildProcesses": true
+    },
+    {
+      "name": "Attrbute",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/demo-by-attributes.js",
+      "autoAttachChildProcesses": true
     }
   ]
 }

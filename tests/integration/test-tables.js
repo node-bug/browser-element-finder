@@ -229,4 +229,35 @@ describe('Tables Consolidated Tests', () => {
     `);
     expect(result.count).toBe(0);
   });
+
+  it('should handle table with colspan header - find cells in first column position', async () => {
+    const columnResult = await driver.executeScript(`
+      const result = ElementFinder.findElement('column', 'Total');
+      return {
+        count: result.elements.length,
+        elements: result.elements.map(e => ({
+          tagName: e.tagName,
+          text: e.element.textContent.trim()
+        }))
+      };
+    `);
+    // Total header has colspan="3", should find cells in that column position
+    expect(columnResult.count).toBe(1);
+    expect(columnResult.elements[0].text).toBe('Total');
+  });
+
+  it('should handle table with no thead - no column expansion', async () => {
+    const columnResult = await driver.executeScript(`
+      const result = ElementFinder.findElement('column', 'Electronics');
+      return {
+        count: result.elements.length,
+        elements: result.elements.map(e => ({
+          tagName: e.tagName,
+          text: e.element.textContent.trim()
+        }))
+      };
+    `);
+    // Table with rowspan but no thead - should not expand column
+    expect(columnResult.count).toBe(0);
+  });
 });
