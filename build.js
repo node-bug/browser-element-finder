@@ -2,7 +2,7 @@
 
 /**
  * Build script: Generates index.js and index.min.js from src/element-finder.js
- * 
+ *
  * Uses esbuild to bundle the ESM source into a browser-compatible IIFE format.
  */
 

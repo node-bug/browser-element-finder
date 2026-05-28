@@ -20,8 +20,16 @@
         "run",
         "${workspaceFolder}/tests/integration/test-switches.js",
         "-t",
-        "Switch by Text"
+        "should return bounding box info for main frame switches"
       ],
+      "autoAttachChildProcesses": true
+    },
+    {
+      "name": "demo",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/demo.js",
       "autoAttachChildProcesses": true
     }
   ]

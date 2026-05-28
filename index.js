@@ -21,14 +21,18 @@ var ElementFinder = (() => {
   var element_finder_exports = {};
   __export(element_finder_exports, {
     ELEMENT_DEFINITIONS: () => ELEMENT_DEFINITIONS,
-    findElement: () => findElement,
+    findElementByAttributes: () => findElementByAttributes,
+    findElementByType: () => findElementByType,
+    findElements: () => findElements,
+    findProbableElements: () => findProbableElements,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
     getSearchableAttributes: () => getSearchableAttributes,
+    getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
     highlight: () => highlight,
-    matchesContent: () => matchesContent,
+    matchesAttribute: () => matchesAttribute,
     matchesType: () => matchesType,
     parseCondition: () => parseCondition,
     parseXPath: () => parseXPath,
@@ -36,25 +40,6 @@ var ElementFinder = (() => {
     splitByOperator: () => splitByOperator,
     unhighlight: () => unhighlight
   });
-
-  // src/searchable-attributes.json
-  var searchable_attributes_default = [
-    "placeholder",
-    "value",
-    "data-test-id",
-    "data-testid",
-    "id",
-    "resource-id",
-    "name",
-    "aria-label",
-    "class",
-    "hint",
-    "title",
-    "tooltip",
-    "alt",
-    "src",
-    "aria-labelledby"
-  ];
 
   // src/element-definitions.json
   var element_definitions_default = {
@@ -67,7 +52,7 @@ var ElementFinder = (() => {
     slider: "self::input[@type='range'] or @role='slider'",
     radio: "(self::input and @type='radio') or @role='radio'",
     dropdown: "(self::select[descendant::option] or @role='combobox' or @role='listbox' or contains(@class, 'dropdown') or contains(@class, 'trigger') or ancestor::*[contains(@class, 'dropdown') or @role='combobox'])",
-    textbox: "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email')) or @role='textbox'",
+    textbox: "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email' or @type='number' or @type='tel' or @type='url')) or @role='textbox'",
     file: "self::input and @type='file'",
     list: "self::ul or self::ol or @role='list'",
     listitem: "self::li or @role='listitem'",
@@ -82,6 +67,24 @@ var ElementFinder = (() => {
     image: "self::img or @role='img' or @alt",
     element: "true()"
   };
+
+  // src/searchable-attributes.json
+  var searchable_attributes_default = [
+    "placeholder",
+    "value",
+    "data-test-id",
+    "data-testid",
+    "id",
+    "resource-id",
+    "name",
+    "aria-label",
+    "hint",
+    "title",
+    "tooltip",
+    "alt",
+    "src",
+    "aria-labelledby"
+  ];
 
   // src/element-finder.js
   var REGEX_PATTERNS = {
@@ -102,6 +105,16 @@ var ElementFinder = (() => {
     } else {
       TYPE_MATCHERS.set(type, (el) => parseXPath(expr, el));
     }
+  }
+  var SEARCHABLE_ATTRIBUTES = searchable_attributes_default;
+  function setSearchableAttributes(attributes) {
+    if (!Array.isArray(attributes)) {
+      throw new TypeError("attributes must be an array");
+    }
+    SEARCHABLE_ATTRIBUTES = attributes;
+  }
+  function getSearchableAttributes() {
+    return [...SEARCHABLE_ATTRIBUTES];
   }
   function parseXPath(expr, el, depth = 0) {
     if (expr == null || el == null) return false;
@@ -213,25 +226,36 @@ var ElementFinder = (() => {
     return false;
   }
   var ELEMENT_DEFINITIONS = Object.freeze(element_definitions_default);
-  var SEARCHABLE_ATTRIBUTES = searchable_attributes_default;
-  function setSearchableAttributes(attributes) {
-    if (!Array.isArray(attributes)) {
-      throw new TypeError("attributes must be an array");
+  function getDirectText(el) {
+    let text = "";
+    for (let i = 0; i < el.childNodes.length; i++) {
+      const node = el.childNodes[i];
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent;
+      }
     }
-    SEARCHABLE_ATTRIBUTES = attributes;
+    return text.trim();
   }
-  function getSearchableAttributes() {
-    return [...SEARCHABLE_ATTRIBUTES];
+  function isInsideStyleOrScript(el) {
+    if (el.tagName === "STYLE" || el.tagName === "SCRIPT") {
+      return true;
+    }
+    if (el.querySelector("STYLE, SCRIPT")) {
+      return true;
+    }
+    let parent = el.parentElement;
+    while (parent) {
+      if (parent.tagName === "STYLE" || parent.tagName === "SCRIPT") {
+        return true;
+      }
+      parent = parent.parentElement;
+    }
+    return false;
   }
-  function matchesType(el, type) {
-    if (el == null) return false;
-    const matcher = TYPE_MATCHERS.get(type);
-    return matcher ? matcher(el) : false;
-  }
-  function matchesContent(el, value, exact = false) {
+  function matchesAttribute(el, value, exact = false) {
     if (el == null) return false;
     if (value === void 0 || value === null || value === "") return true;
-    const normalizedValue = value.toLowerCase().trim();
+    if (isInsideStyleOrScript(el)) return false;
     const attrs = SEARCHABLE_ATTRIBUTES;
     for (let i = 0; i < attrs.length; i++) {
       const attr = attrs[i];
@@ -242,59 +266,29 @@ var ElementFinder = (() => {
         continue;
       }
       if (attrValue) {
-        const normalized = attrValue.toLowerCase().trim();
-        if (exact ? normalized === normalizedValue : normalized.includes(normalizedValue)) {
+        if (exact ? attrValue === value : attrValue.includes(value)) {
           return true;
         }
       }
     }
     const directText = getDirectText(el);
-    if (exact ? directText === normalizedValue : directText.includes(normalizedValue)) {
+    if (exact ? directText === value : directText.includes(value)) {
       return true;
     }
-    if (el.tagName === "SELECT") {
-      const options = el.querySelectorAll("option");
-      for (let i = 0; i < options.length; i++) {
-        const optionText = options[i].textContent.toLowerCase().trim();
-        if (exact ? optionText === normalizedValue : optionText.includes(normalizedValue)) {
-          return true;
-        }
-      }
-    }
-    const textContent = el.textContent.toLowerCase().trim();
-    if (exact ? textContent === normalizedValue : textContent.includes(normalizedValue)) {
+    const textContent = el.textContent;
+    if (exact ? textContent.trim() === value : textContent.includes(value)) {
       return true;
     }
     return false;
   }
-  function getDirectText(el) {
-    let text = "";
-    for (let i = 0; i < el.childNodes.length; i++) {
-      const node = el.childNodes[i];
-      if (node.nodeType === Node.TEXT_NODE) {
-        text += node.textContent;
-      }
-    }
-    return text.toLowerCase().trim();
-  }
-  function getBoundingBox(el) {
-    const rect = el.getBoundingClientRect();
-    return {
-      x: rect.x,
-      y: rect.y,
-      width: rect.width,
-      height: rect.height,
-      top: rect.top,
-      bottom: rect.bottom,
-      left: rect.left,
-      right: rect.right,
-      midx: rect.x + rect.width / 2,
-      midy: rect.y + rect.height / 2,
-      tagName: el.tagName.toLowerCase()
-    };
+  function matchesType(el, type) {
+    if (el == null) return false;
+    const matcher = TYPE_MATCHERS.get(type);
+    return matcher ? matcher(el) : false;
   }
   function getAllElements(root = document) {
     const elements = [];
+    if (root == null) return elements;
     const rootNode = root.nodeType === Node.DOCUMENT_NODE ? root.documentElement : root;
     if (!rootNode) return elements;
     const stack = [rootNode];
@@ -349,91 +343,23 @@ var ElementFinder = (() => {
     }
     return frames;
   }
-  function expandColumnMatches(matches, text, exact, includeHidden, type) {
-    var _a;
-    if (!text || type !== "column") return matches;
-    const expandedMatches = [];
-    const seenElements = /* @__PURE__ */ new Set();
-    const tableCache = /* @__PURE__ */ new Map();
-    for (const match of matches) {
-      const el = match.element;
-      const frame = match.frame;
-      if (!seenElements.has(el)) {
-        expandedMatches.push(match);
-        seenElements.add(el);
-      }
-      if (type === "column") {
-        const table = el.closest("table");
-        if (!table) continue;
-        let tableData = tableCache.get(table);
-        if (!tableData) {
-          tableData = buildTableColumnData(table);
-          if (!tableData) continue;
-          tableCache.set(table, tableData);
-        }
-        const colPosition = findElementColumnPosition(el, tableData.elementToCol);
-        if (colPosition === null) continue;
-        const headerInfo = tableData.colPositions.find((info) => colPosition >= info.colStart && colPosition <= info.colEnd);
-        if (!headerInfo) continue;
-        for (const rowData of tableData.rowColMaps) {
-          for (let col = headerInfo.colStart; col <= headerInfo.colEnd; col++) {
-            const cell = rowData.map.get(col);
-            if (!cell || seenElements.has(cell)) continue;
-            if (!includeHidden) {
-              const cellWindow = ((_a = cell.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
-              const style = cellWindow.getComputedStyle(cell);
-              if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") continue;
-              if (cell.offsetWidth === 0 || cell.offsetHeight === 0) continue;
-            }
-            expandedMatches.push({ element: cell, frame });
-            seenElements.add(cell);
-          }
-        }
-      }
-    }
-    return expandedMatches;
+  function getBoundingBox(el) {
+    const rect = el.getBoundingClientRect();
+    return {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      top: rect.top,
+      bottom: rect.bottom,
+      left: rect.left,
+      right: rect.right,
+      midx: rect.x + rect.width / 2,
+      midy: rect.y + rect.height / 2,
+      tagName: el.tagName.toLowerCase()
+    };
   }
-  function buildTableColumnData(table) {
-    const thead = table.querySelector("thead");
-    if (!thead) return null;
-    const headerRow = thead.querySelector("tr");
-    if (!headerRow) return null;
-    const headerCells = Array.from(headerRow.children);
-    const colPositions = [];
-    let currentCol = 0;
-    for (let i = 0; i < headerCells.length; i++) {
-      const cell = headerCells[i];
-      const colspan = parseInt(cell.getAttribute("colspan")) || 1;
-      colPositions.push({ cell, colStart: currentCol, colEnd: currentCol + colspan - 1 });
-      currentCol += colspan;
-    }
-    const allRows = table.querySelectorAll("tr");
-    const rowColMaps = [];
-    const elementToCol = /* @__PURE__ */ new Map();
-    for (let r = 0; r < allRows.length; r++) {
-      const row = allRows[r];
-      const cells = Array.from(row.children);
-      const rowColMap = /* @__PURE__ */ new Map();
-      let rowCol = 0;
-      for (let c = 0; c < cells.length; c++) {
-        const cell = cells[c];
-        const colspan = parseInt(cell.getAttribute("colspan")) || 1;
-        for (let k = 0; k < colspan; k++) {
-          rowColMap.set(rowCol + k, cell);
-          elementToCol.set(cell, rowCol + k);
-        }
-        rowCol += colspan;
-      }
-      rowColMaps.push({ row, map: rowColMap, cells });
-    }
-    return { colPositions, rowColMaps, elementToCol };
-  }
-  function findElementColumnPosition(el, elementToCol) {
-    var _a;
-    return (_a = elementToCol.get(el)) != null ? _a : null;
-  }
-  function findElement(type = "element", text = null, exact = false, includeHidden = false, parent = null) {
-    var _a;
+  function findElementByType(type = "element", parent = null) {
     if (type === null || type === void 0) {
       type = "element";
     }
@@ -451,17 +377,6 @@ var ElementFinder = (() => {
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
         if (type && !matchesType(el, type)) continue;
-        if (text !== void 0 && !matchesContent(el, text, exact)) continue;
-        if (!includeHidden) {
-          const elWindow = ((_a = el.ownerDocument) == null ? void 0 : _a.defaultView) || frame.window;
-          const style = elWindow.getComputedStyle(el);
-          if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
-            continue;
-          }
-          if (el.offsetWidth === 0 || el.offsetHeight === 0) {
-            continue;
-          }
-        }
         matches.push({ element: el, frame });
       }
     }
@@ -474,18 +389,237 @@ var ElementFinder = (() => {
         const el = match.element;
         if (!excludedElements.has(el)) {
           innermostMatches.unshift(match);
-          let parent2 = el.parentElement;
-          while (parent2) {
-            if (matchedElements.has(parent2)) {
-              excludedElements.add(parent2);
+          let parentEl = el.parentElement;
+          while (parentEl) {
+            if (matchedElements.has(parentEl)) {
+              excludedElements.add(parentEl);
             }
-            parent2 = parent2.parentElement;
+            parentEl = parentEl.parentElement;
           }
         }
       }
     }
-    const expandedMatches = expandColumnMatches(innermostMatches, text, exact, includeHidden, type);
-    const qualified = expandedMatches.map((item) => {
+    const qualified = innermostMatches.map((item) => {
+      const boundingBox = getBoundingBox(item.element);
+      const tagName = item.element.tagName.toLowerCase();
+      if (!item.frame.isMainFrame) {
+        return {
+          boundingBox,
+          tagName,
+          frameIndex: item.frame.frameIndex
+        };
+      }
+      return {
+        element: item.element,
+        boundingBox,
+        tagName,
+        frameIndex: item.frame.frameIndex
+      };
+    });
+    return { elements: qualified };
+  }
+  function findElementByAttributes(value, exact = false, parent = null) {
+    if (value === null || value === void 0) {
+      value = "";
+    }
+    if (typeof value !== "string") {
+      throw new TypeError(`value must be a string, got ${typeof value}`);
+    }
+    const matches = [];
+    const frames = getAllFrames(window);
+    for (const frame of frames) {
+      const allElements = getAllElements(parent || frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (!matchesAttribute(el, value, exact)) continue;
+        matches.push({ element: el, frame });
+      }
+    }
+    const innermostMatches = [];
+    if (matches.length > 0) {
+      const matchedElements = new Set(matches.map((m) => m.element));
+      const excludedElements = /* @__PURE__ */ new Set();
+      for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
+        const el = match.element;
+        if (!excludedElements.has(el)) {
+          innermostMatches.unshift(match);
+          let parentEl = el.parentElement;
+          while (parentEl) {
+            if (matchedElements.has(parentEl)) {
+              excludedElements.add(parentEl);
+            }
+            parentEl = parentEl.parentElement;
+          }
+        }
+      }
+    }
+    const qualified = innermostMatches.map((item) => {
+      const boundingBox = getBoundingBox(item.element);
+      const tagName = item.element.tagName.toLowerCase();
+      if (!item.frame.isMainFrame) {
+        return {
+          boundingBox,
+          tagName,
+          frameIndex: item.frame.frameIndex
+        };
+      }
+      return {
+        element: item.element,
+        boundingBox,
+        tagName,
+        frameIndex: item.frame.frameIndex
+      };
+    });
+    return { elements: qualified };
+  }
+  function findElements(type = null, text = null, exact = false, parent = null) {
+    if (text === null || text === void 0) {
+      text = "";
+    }
+    if (type !== null && type !== void 0) {
+      if (typeof type !== "string") {
+        throw new TypeError(`type must be a string, got ${typeof type}`);
+      }
+      if (!ELEMENT_DEFINITIONS[type]) {
+        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+        return { elements: [] };
+      }
+    }
+    if (text !== "" && typeof text !== "string") {
+      throw new TypeError(`text must be a string, got ${typeof text}`);
+    }
+    const matches = [];
+    const frames = getAllFrames(window);
+    for (const frame of frames) {
+      const allElements = getAllElements(parent || frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (type !== null && type !== void 0 && !matchesType(el, type)) continue;
+        if (text !== "" && !matchesAttribute(el, text, exact)) continue;
+        matches.push({ element: el, frame });
+      }
+    }
+    const innermostMatches = [];
+    if (matches.length > 0) {
+      const matchedElements = new Set(matches.map((m) => m.element));
+      const excludedElements = /* @__PURE__ */ new Set();
+      for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
+        const el = match.element;
+        if (!excludedElements.has(el)) {
+          innermostMatches.unshift(match);
+          let parentEl = el.parentElement;
+          while (parentEl) {
+            if (matchedElements.has(parentEl)) {
+              excludedElements.add(parentEl);
+            }
+            parentEl = parentEl.parentElement;
+          }
+        }
+      }
+    }
+    const qualified = innermostMatches.map((item) => {
+      const boundingBox = getBoundingBox(item.element);
+      const tagName = item.element.tagName.toLowerCase();
+      if (!item.frame.isMainFrame) {
+        return {
+          boundingBox,
+          tagName,
+          frameIndex: item.frame.frameIndex
+        };
+      }
+      return {
+        element: item.element,
+        boundingBox,
+        tagName,
+        frameIndex: item.frame.frameIndex
+      };
+    });
+    return { elements: qualified };
+  }
+  function findNearbyElementType(el, targetType) {
+    let parent = el.parentElement;
+    while (parent) {
+      if (matchesType(parent, targetType)) {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    const allElements = getAllElements(el);
+    for (const child of allElements) {
+      if (matchesType(child, targetType)) {
+        return child;
+      }
+    }
+    const siblings = el.parentElement ? Array.from(el.parentElement.children) : [];
+    for (const sibling of siblings) {
+      if (sibling !== el && matchesType(sibling, targetType)) {
+        return sibling;
+      }
+    }
+    return null;
+  }
+  function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+    if (typeof elementType !== "string") {
+      throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
+    }
+    if (!ELEMENT_DEFINITIONS[elementType]) {
+      console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+      return { elements: [] };
+    }
+    if (typeof attributeText !== "string") {
+      throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+    }
+    const matches = [];
+    const frames = getAllFrames(window);
+    for (const frame of frames) {
+      const allElements = getAllElements(parent || frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (!matchesType(el, elementType)) continue;
+        if (!matchesAttribute(el, attributeText, exact)) continue;
+        matches.push({ element: el, frame });
+      }
+    }
+    if (matches.length === 0) {
+      const attributeMatches = [];
+      for (const frame of frames) {
+        const allElements = getAllElements(parent || frame.document);
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          if (matchesAttribute(el, attributeText, exact)) {
+            attributeMatches.push({ element: el, frame });
+          }
+        }
+      }
+      for (const match of attributeMatches) {
+        const nearbyElement = findNearbyElementType(match.element, elementType);
+        if (nearbyElement) {
+          matches.push({ element: nearbyElement, frame: match.frame });
+        }
+      }
+    }
+    const innermostMatches = [];
+    if (matches.length > 0) {
+      const matchedElements = new Set(matches.map((m) => m.element));
+      const excludedElements = /* @__PURE__ */ new Set();
+      for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
+        const el = match.element;
+        if (!excludedElements.has(el)) {
+          innermostMatches.unshift(match);
+          let parentEl = el.parentElement;
+          while (parentEl) {
+            if (matchedElements.has(parentEl)) {
+              excludedElements.add(parentEl);
+            }
+            parentEl = parentEl.parentElement;
+          }
+        }
+      }
+    }
+    const qualified = innermostMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       if (!item.frame.isMainFrame) {
@@ -539,6 +673,9 @@ var ElementFinder = (() => {
   }
   function getValidTypes() {
     return Object.keys(ELEMENT_DEFINITIONS);
+  }
+  function getValidAttributes() {
+    return [...SEARCHABLE_ATTRIBUTES];
   }
   return __toCommonJS(element_finder_exports);
 })();
