@@ -214,6 +214,36 @@ describe('ElementFinderByType - Shadow DOM Fixture', () => {
       expect(mainElements.length).toBeGreaterThan(5);
     });
 
+    it('should find the Component Input textbox by placeholder', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElements('textbox', 'Type here');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+      const id = await mainElements[0].element.getAttribute('id');
+      expect(id).toBe('custom-input-field');
+    });
+
+    it('should find the Component Input textbox using findProbableElements', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findProbableElements('textbox', 'Type here');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+      const id = await mainElements[0].element.getAttribute('id');
+      expect(id).toBe('custom-input-field');
+    });
+
+    it('should find the Component Input textbox using findProbableElements by label text', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findProbableElements('textbox', 'Component Input');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+      const id = await mainElements[0].element.getAttribute('id');
+      expect(id).toBe('custom-input-field');
+    });
+
     it('should find checkboxes in custom toggle web component', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElementByType('checkbox');
