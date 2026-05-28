@@ -709,20 +709,69 @@ export function findElements(type = null, text = null, exact = false, parent = n
 }
 
 /**
+ * Gets the parent element, handling shadow DOM elements.
+ * For elements inside shadow roots, returns the shadow root's host element.
+ * @param {Element} el - The element to get parent for
+ * @returns {Element|null} - The parent element or shadow host
+ */
+function getParentElement(el) {
+  // Try standard parentElement first
+  if (el.parentElement) {
+    return el.parentElement;
+  }
+  
+  // For elements inside shadow roots, getRootNode() returns the shadow root
+  // The shadow root has a 'host' property pointing to the custom element
+  try {
+    const rootNode = el.getRootNode();
+    if (rootNode && rootNode.host) {
+      return rootNode.host;
+    }
+  } catch {
+    // Restricted shadow root - return null
+  }
+  
+  return null;
+}
+
+/**
+ * Gets siblings of an element, handling shadow DOM elements.
+ * @param {Element} el - The element to get siblings for
+ * @returns {Element[]} - Array of sibling elements
+ */
+function getSiblingElements(el) {
+  const parent = getParentElement(el);
+  if (!parent) return [];
+  
+  // If parent is a shadow root host, get children from the shadow root
+  if (parent.shadowRoot) {
+    try {
+      return Array.from(parent.shadowRoot.children);
+    } catch {
+      // Restricted shadow root
+      return [];
+    }
+  }
+  
+  return Array.from(parent.children);
+}
+
+/**
  * Finds a nearby element of the specified type relative to the given element.
  * Searches parent, then children, then siblings.
+ * Handles shadow DOM elements by traversing through shadow boundaries.
  * @param {Element} el - The reference element
  * @param {string} targetType - The element type to find
  * @returns {Element|null} - Nearby element of target type, or null
  */
 function findNearbyElementType(el, targetType) {
-  // Check parent elements
-  let parent = el.parentElement;
+  // Check parent elements (including shadow host traversal)
+  let parent = getParentElement(el);
   while (parent) {
     if (matchesType(parent, targetType)) {
       return parent;
     }
-    parent = parent.parentElement;
+    parent = getParentElement(parent);
   }
 
   // Check immediate children only (not all descendants)
@@ -734,8 +783,8 @@ function findNearbyElementType(el, targetType) {
     }
   }
 
-  // Check siblings
-  const siblings = el.parentElement ? Array.from(el.parentElement.children) : [];
+  // Check siblings (including shadow DOM siblings)
+  const siblings = getSiblingElements(el);
   for (const sibling of siblings) {
     if (sibling !== el && matchesType(sibling, targetType)) {
       return sibling;

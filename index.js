@@ -545,13 +545,38 @@ var ElementFinder = (() => {
     });
     return { elements: qualified };
   }
+  function getParentElement(el) {
+    if (el.parentElement) {
+      return el.parentElement;
+    }
+    try {
+      const rootNode = el.getRootNode();
+      if (rootNode && rootNode.host) {
+        return rootNode.host;
+      }
+    } catch (e) {
+    }
+    return null;
+  }
+  function getSiblingElements(el) {
+    const parent = getParentElement(el);
+    if (!parent) return [];
+    if (parent.shadowRoot) {
+      try {
+        return Array.from(parent.shadowRoot.children);
+      } catch (e) {
+        return [];
+      }
+    }
+    return Array.from(parent.children);
+  }
   function findNearbyElementType(el, targetType) {
-    let parent = el.parentElement;
+    let parent = getParentElement(el);
     while (parent) {
       if (matchesType(parent, targetType)) {
         return parent;
       }
-      parent = parent.parentElement;
+      parent = getParentElement(parent);
     }
     const immediateChildren = el.children || [];
     for (const child of immediateChildren) {
@@ -559,7 +584,7 @@ var ElementFinder = (() => {
         return child;
       }
     }
-    const siblings = el.parentElement ? Array.from(el.parentElement.children) : [];
+    const siblings = getSiblingElements(el);
     for (const sibling of siblings) {
       if (sibling !== el && matchesType(sibling, targetType)) {
         return sibling;
