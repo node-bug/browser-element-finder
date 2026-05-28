@@ -24,6 +24,7 @@ var ElementFinder = (() => {
     findElementByAttributes: () => findElementByAttributes,
     findElementByType: () => findElementByType,
     findElements: () => findElements,
+    findProbableElements: () => findProbableElements,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
@@ -497,6 +498,106 @@ var ElementFinder = (() => {
         if (type !== null && type !== void 0 && !matchesType(el, type)) continue;
         if (text !== "" && !matchesAttribute(el, text, exact)) continue;
         matches.push({ element: el, frame });
+      }
+    }
+    const innermostMatches = [];
+    if (matches.length > 0) {
+      const matchedElements = new Set(matches.map((m) => m.element));
+      const excludedElements = /* @__PURE__ */ new Set();
+      for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
+        const el = match.element;
+        if (!excludedElements.has(el)) {
+          innermostMatches.unshift(match);
+          let parentEl = el.parentElement;
+          while (parentEl) {
+            if (matchedElements.has(parentEl)) {
+              excludedElements.add(parentEl);
+            }
+            parentEl = parentEl.parentElement;
+          }
+        }
+      }
+    }
+    const qualified = innermostMatches.map((item) => {
+      const boundingBox = getBoundingBox(item.element);
+      const tagName = item.element.tagName.toLowerCase();
+      if (!item.frame.isMainFrame) {
+        return {
+          boundingBox,
+          tagName,
+          frameIndex: item.frame.frameIndex
+        };
+      }
+      return {
+        element: item.element,
+        boundingBox,
+        tagName,
+        frameIndex: item.frame.frameIndex
+      };
+    });
+    return { elements: qualified };
+  }
+  function findNearbyElementType(el, targetType) {
+    let parent = el.parentElement;
+    while (parent) {
+      if (matchesType(parent, targetType)) {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    const allElements = getAllElements(el);
+    for (const child of allElements) {
+      if (matchesType(child, targetType)) {
+        return child;
+      }
+    }
+    const siblings = el.parentElement ? Array.from(el.parentElement.children) : [];
+    for (const sibling of siblings) {
+      if (sibling !== el && matchesType(sibling, targetType)) {
+        return sibling;
+      }
+    }
+    return null;
+  }
+  function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+    if (typeof elementType !== "string") {
+      throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
+    }
+    if (!ELEMENT_DEFINITIONS[elementType]) {
+      console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+      return { elements: [] };
+    }
+    if (typeof attributeText !== "string") {
+      throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+    }
+    const matches = [];
+    const frames = getAllFrames(window);
+    for (const frame of frames) {
+      const allElements = getAllElements(parent || frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (!matchesType(el, elementType)) continue;
+        if (!matchesAttribute(el, attributeText, exact)) continue;
+        matches.push({ element: el, frame });
+      }
+    }
+    if (matches.length === 0) {
+      const attributeMatches = [];
+      for (const frame of frames) {
+        const allElements = getAllElements(parent || frame.document);
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          if (matchesAttribute(el, attributeText, exact)) {
+            attributeMatches.push({ element: el, frame });
+          }
+        }
+      }
+      for (const match of attributeMatches) {
+        const nearbyElement = findNearbyElementType(match.element, elementType);
+        if (nearbyElement) {
+          matches.push({ element: nearbyElement, frame: match.frame });
+        }
       }
     }
     const innermostMatches = [];

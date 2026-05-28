@@ -21,6 +21,10 @@ const results = ElementFinder.findElements(null, 'seleniumbase')
 // Find in all frames (default)
 const results = ElementFinder.findElements('button')
 
+// Find with fallback to nearby elements
+const results = ElementFinder.findProbableElements('button', 'Click Me')
+// Returns button even if "Click Me" is in a nearby label
+
 // Highlight found elements
 ElementFinder.highlight(results.elements.map((e) => e.element))
 
@@ -147,23 +151,24 @@ const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchabl
 
 ## API Summary
 
-| Function                                        | Description                                                    |
-| ----------------------------------------------- | -------------------------------------------------------------- |
-| `findElements(type, text, exact, parent)`       | Find elements by type/text, returns `{ elements: [...] }`      |
-| `findElementByType(type, parent)`               | Find elements by type only, returns `{ elements: [...] }`      |
-| `findElementByAttributes(value, exact, parent)` | Find elements by text/attribute, returns `{ elements: [...] }` |
-| `highlight(elements, color, width)`             | Highlight elements with outline                                |
-| `unhighlight(elements)`                         | Remove highlight                                               |
-| `getValidTypes()`                               | List all supported element types                               |
-| `getBoundingBox(element)`                       | Get bounding box for an element                                |
-| `setSearchableAttributes(attributes)`           | Set custom attributes for text search                          |
-| `getSearchableAttributes()`                     | Get current searchable attributes                              |
-| `matchesType(el, type)`                         | Check if element matches a type                                |
-| `matchesAttribute(el, value, exact)`            | Check if element matches text/attribute                        |
-| `getAllElements(root)`                          | Get all elements (with shadow DOM)                             |
-| `getAllFrames(root)`                            | Get all frames (main + iframes)                                |
-| `parseXPath(expr, el, depth)`                   | Parse XPath-like type expressions                              |
-| `splitByOperator(expr, op)`                     | Split XPath by operator                                        |
+| Function                                          | Description                                                                   |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                     |
+| `findElementByType(type, parent)`                 | Find elements by type only, returns `{ elements: [...] }`                     |
+| `findElementByAttributes(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                |
+| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }` |
+| `highlight(elements, color, width)`               | Highlight elements with outline                                               |
+| `unhighlight(elements)`                           | Remove highlight                                                              |
+| `getValidTypes()`                                 | List all supported element types                                              |
+| `getBoundingBox(element)`                         | Get bounding box for an element                                               |
+| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                         |
+| `getSearchableAttributes()`                       | Get current searchable attributes                                             |
+| `matchesType(el, type)`                           | Check if element matches a type                                               |
+| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                       |
+| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                            |
+| `getAllFrames(root)`                              | Get all frames (main + iframes)                                               |
+| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                             |
+| `splitByOperator(expr, op)`                       | Split XPath by operator                                                       |
 
 ---
 
@@ -184,6 +189,49 @@ Finds elements matching the specified type and/or text. Combines type and attrib
 - `frameIndex`: `-1` for main frame, `0, 1, 2...` for iframes
 
 **Agent/Automation Note**: Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElements` inside the iframe.
+
+### `findProbableElements(type, text, exact, parent)`
+
+Finds elements matching the specified type with intelligent fallback to nearby elements. This function first attempts a direct match (element contains both type and text), then falls back to finding elements of the specified type near elements that match the text.
+
+**Use Case**: When UI patterns separate content from interactive elements (e.g., a label with text "Email" next to an input field), `findProbableElements` will find the input even though the text isn't inside it.
+
+| Parameter | Type      | Default | Description                                                                         |
+| --------- | --------- | ------- | ----------------------------------------------------------------------------------- |
+| `type`    | `string`  | -       | Element type (see supported types below). Throws `TypeError` for non-string values. |
+| `text`    | `string`  | -       | Text to search for in content/attributes. Throws `TypeError` for non-string values. |
+| `exact`   | `boolean` | `false` | Exact text match vs substring                                                       |
+| `parent`  | `Element` | `null`  | Parent element to search within                                                     |
+
+**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
+
+**Fallback Strategy**: When no element matches both type and text directly, searches for nearby elements in this order:
+
+1. Parent elements (walk up the DOM tree)
+2. Sibling elements (same parent)
+3. Child elements (descendants)
+
+**Example**:
+
+```javascript
+// Direct match - element contains text
+const result1 = ElementFinder.findProbableElements('button', 'Submit')
+// Returns button with text "Submit" inside it
+
+// Fallback match - text in nearby element
+const result2 = ElementFinder.findProbableElements('textbox', 'Email')
+// Returns input element when "Email" text is in a nearby label
+
+// Fallback match - text in parent
+const result3 = ElementFinder.findProbableElements('button', 'Menu Item 1')
+// Returns button when "Menu Item 1" is in a child span
+```
+
+**When to use**:
+
+- Use `findElements` when you need strict matching (element must contain the text)
+- Use `findProbableElements` when text might be in a nearby element (labels, icons, wrappers)
+- Both functions search all frames by default
 
 ### `highlight(elements, color, width)`
 

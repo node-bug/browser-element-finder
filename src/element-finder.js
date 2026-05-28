@@ -680,6 +680,155 @@ export function findElements(type = null, text = null, exact = false, parent = n
 }
 
 /**
+ * Finds a nearby element of the specified type relative to the given element.
+ * Searches parent, then children, then siblings.
+ * @param {Element} el - The reference element
+ * @param {string} targetType - The element type to find
+ * @returns {Element|null} - Nearby element of target type, or null
+ */
+function findNearbyElementType(el, targetType) {
+  // Check parent elements
+  let parent = el.parentElement;
+  while (parent) {
+    if (matchesType(parent, targetType)) {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+
+  // Check children (including descendants)
+  const allElements = getAllElements(el);
+  for (const child of allElements) {
+    if (matchesType(child, targetType)) {
+      return child;
+    }
+  }
+
+  // Check siblings
+  const siblings = el.parentElement ? Array.from(el.parentElement.children) : [];
+  for (const sibling of siblings) {
+    if (sibling !== el && matchesType(sibling, targetType)) {
+      return sibling;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Finds elements matching the specified type and/or attribute value.
+ * When both type and text are provided but no element matches both,
+ * finds elements matching the attribute/text and returns a nearby element of the specified type.
+ * @param {string} elementType - Element type (see ELEMENT_DEFINITIONS for valid types)
+ * @param {string} attributeText - Text/attribute value to search for
+ * @param {boolean} [exact=false] - Exact match vs substring
+ * @param {Element|null} [parent=null] - Parent element to search within
+ * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
+ */
+export function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+  // Validate elementType
+  if (typeof elementType !== 'string') {
+    throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
+  }
+  if (!ELEMENT_DEFINITIONS[elementType]) {
+    console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+    return { elements: [] };
+  }
+
+  // Validate attributeText
+  if (typeof attributeText !== 'string') {
+    throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+  }
+
+  const matches = [];
+  const frames = getAllFrames(window);
+
+  // First, try to find elements matching both type and attribute text
+  for (const frame of frames) {
+    const allElements = getAllElements(parent || frame.document);
+
+    for (let i = 0; i < allElements.length; i++) {
+      const el = allElements[i];
+
+      // Check type match
+      if (!matchesType(el, elementType)) continue;
+
+      // Check attribute/text match
+      if (!matchesAttribute(el, attributeText, exact)) continue;
+
+      matches.push({ element: el, frame: frame });
+    }
+  }
+
+  // If no matches found with both criteria, try fallback: find attribute matches and get nearby type elements
+  if (matches.length === 0) {
+    const attributeMatches = [];
+    for (const frame of frames) {
+      const allElements = getAllElements(parent || frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (matchesAttribute(el, attributeText, exact)) {
+          attributeMatches.push({ element: el, frame: frame });
+        }
+      }
+    }
+
+    // For each attribute match, find a nearby element of the specified type
+    for (const match of attributeMatches) {
+      const nearbyElement = findNearbyElementType(match.element, elementType);
+      if (nearbyElement) {
+        matches.push({ element: nearbyElement, frame: match.frame });
+      }
+    }
+  }
+
+  // Get innermost matches (exclude parent elements that contain matched children)
+  const innermostMatches = [];
+  if (matches.length > 0) {
+    const matchedElements = new Set(matches.map(m => m.element));
+    const excludedElements = new Set();
+
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const match = matches[i];
+      const el = match.element;
+
+      if (!excludedElements.has(el)) {
+        innermostMatches.unshift(match);
+        let parentEl = el.parentElement;
+        while (parentEl) {
+          if (matchedElements.has(parentEl)) {
+            excludedElements.add(parentEl);
+          }
+          parentEl = parentEl.parentElement;
+        }
+      }
+    }
+  }
+
+  const qualified = innermostMatches.map(item => {
+    const boundingBox = getBoundingBox(item.element);
+    const tagName = item.element.tagName.toLowerCase();
+
+    if (!item.frame.isMainFrame) {
+      return {
+        boundingBox: boundingBox,
+        tagName: tagName,
+        frameIndex: item.frame.frameIndex
+      };
+    }
+
+    return {
+      element: item.element,
+      boundingBox: boundingBox,
+      tagName: tagName,
+      frameIndex: item.frame.frameIndex
+    };
+  });
+
+  return { elements: qualified };
+}
+
+/**
  * Extract elements array from various input formats.
  */
 function extractElements(elements) {
