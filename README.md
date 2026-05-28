@@ -196,14 +196,20 @@ Finds elements matching the specified type with intelligent fallback to nearby e
 
 **Use Case**: When UI patterns separate content from interactive elements (e.g., a label with text "Email" next to an input field), `findProbableElements` will find the input even though the text isn't inside it.
 
-| Parameter | Type      | Default | Description                                                                         |
-| --------- | --------- | ------- | ----------------------------------------------------------------------------------- |
-| `type`    | `string`  | -       | Element type (see supported types below). Throws `TypeError` for non-string values. |
-| `text`    | `string`  | -       | Text to search for in content/attributes. Throws `TypeError` for non-string values. |
-| `exact`   | `boolean` | `false` | Exact text match vs substring                                                       |
-| `parent`  | `Element` | `null`  | Parent element to search within                                                     |
+| Parameter | Type      | Default | Description                                                                                                                       |
+| --------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | `string`  | `null`  | Element type (see supported types below). If `null`/`undefined`/`''`, matches any type. Throws `TypeError` for non-string values. |
+| `text`    | `string`  | `null`  | Text to search for in content/attributes. If `null`/`undefined`/`''`, matches any text. Throws `TypeError` for non-string values. |
+| `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                   |
+| `parent`  | `Element` | `null`  | Parent element to search within                                                                                                   |
 
 **Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
+
+**Behavior**:
+
+- If only `type` is provided: delegates to `findElementByType(type, parent)`
+- If only `text` is provided: delegates to `findElementByAttributes(text, exact, parent)`
+- If both are provided: attempts direct match, then falls back to nearby elements
 
 **Fallback Strategy**: When no element matches both type and text directly, searches for nearby elements in this order:
 
@@ -214,16 +220,24 @@ Finds elements matching the specified type with intelligent fallback to nearby e
 **Example**:
 
 ```javascript
+// Type-only search (delegates to findElementByType)
+const result1 = ElementFinder.findProbableElements('button')
+// Returns all buttons on the page
+
+// Text-only search (delegates to findElementByAttributes)
+const result2 = ElementFinder.findProbableElements(null, 'Submit')
+// Returns all elements containing "Submit"
+
 // Direct match - element contains text
-const result1 = ElementFinder.findProbableElements('button', 'Submit')
+const result3 = ElementFinder.findProbableElements('button', 'Submit')
 // Returns button with text "Submit" inside it
 
 // Fallback match - text in nearby element
-const result2 = ElementFinder.findProbableElements('textbox', 'Email')
+const result4 = ElementFinder.findProbableElements('textbox', 'Email')
 // Returns input element when "Email" text is in a nearby label
 
 // Fallback match - text in parent
-const result3 = ElementFinder.findProbableElements('button', 'Menu Item 1')
+const result5 = ElementFinder.findProbableElements('button', 'Menu Item 1')
 // Returns button when "Menu Item 1" is in a child span
 ```
 

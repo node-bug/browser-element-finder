@@ -561,15 +561,27 @@ var ElementFinder = (() => {
     return null;
   }
   function findProbableElements(elementType, attributeText, exact = false, parent = null) {
-    if (typeof elementType !== "string") {
-      throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
+    const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
+    const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
+    if (hasType && !hasText) {
+      return findElementByType(elementType, parent);
     }
-    if (!ELEMENT_DEFINITIONS[elementType]) {
-      console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
-      return { elements: [] };
+    if (!hasType && hasText) {
+      return findElementByAttributes(attributeText, exact, parent);
     }
-    if (typeof attributeText !== "string") {
-      throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+    if (hasType) {
+      if (typeof elementType !== "string") {
+        throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
+      }
+      if (!ELEMENT_DEFINITIONS[elementType]) {
+        console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+        return { elements: [] };
+      }
+    }
+    if (hasText) {
+      if (typeof attributeText !== "string") {
+        throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+      }
     }
     const matches = [];
     const frames = getAllFrames(window);
@@ -577,20 +589,19 @@ var ElementFinder = (() => {
       const allElements = getAllElements(parent || frame.document);
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
-        if (!matchesType(el, elementType)) continue;
-        if (!matchesAttribute(el, attributeText, exact)) continue;
+        if (hasType && !matchesType(el, elementType)) continue;
+        if (hasText && !matchesAttribute(el, attributeText, exact)) continue;
         matches.push({ element: el, frame });
       }
     }
-    if (matches.length === 0) {
+    if (matches.length === 0 && hasType && hasText) {
       const attributeMatches = [];
       for (const frame of frames) {
         const allElements = getAllElements(parent || frame.document);
         for (let i = 0; i < allElements.length; i++) {
           const el = allElements[i];
-          if (matchesAttribute(el, attributeText, exact)) {
-            attributeMatches.push({ element: el, frame });
-          }
+          if (!matchesAttribute(el, attributeText, exact)) continue;
+          attributeMatches.push({ element: el, frame });
         }
       }
       for (const match of attributeMatches) {
