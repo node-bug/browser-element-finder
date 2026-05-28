@@ -82,9 +82,11 @@ describe('ElementFinderByAttribute Integration Tests - Tables', () => {
         return ElementFinder.findElementByAttributes('simple-table');
       `);
       const mainElements = result.elements.filter(e => e.element);
-      expect(mainElements.length).toBe(1);
-      const id = await mainElements[0].element.getAttribute('id');
-      expect(id).toBe('simple-table');
+      // Should find: section with id "simple-table-section" and table with id "simple-table"
+      // Both match because "simple-table-section" contains "simple-table" as substring
+      expect(mainElements.length).toBe(2);
+      const ids = await Promise.all(mainElements.map(e => e.element.getAttribute('id')));
+      expect(ids).toContain('simple-table');
     });
 
     it('should find elements by id attribute "span-table"', async () => {

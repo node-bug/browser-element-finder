@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeleniumBase Demo Page</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; background-color: #f9f9f9; }
+        section { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: white; }
+        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .field-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+        label { font-weight: bold; }
+        .inline-group { display: flex; align-items: center; gap: 10px; }
+        .inline-group input { margin: 0; }
+        .error-text { color: red; font-size: 12px; display: none; }
+        .success-text { color: green; font-size: 12px; display: none; }
+    </style>
+</head>
+<body>
+    <h1 id="page-title">SeleniumBase Demo Page</h1>
+
+    <!-- 1. Buttons -->
+    <section id="buttons-section">
+        <h2>1. Buttons</h2>
+        <div class="field-group">
+            <button id="click-me-green" class="btn btn-success" onclick="handleClick('green')">Click Me (Green)</button>
+            <button id="click-me-blue" class="btn btn-primary">Click Me (Blue)</button>
+        </div>
+    </section>
+
+    <!-- 2. Text Inputs -->
+    <section id="text-inputs-section">
+        <h2>2. Text-based Inputs</h2>
+        <div class="field-group">
+            <label for="text-input-field">Text Input Field</label>
+            <input type="text" id="text-input-field" placeholder="Enter text here...">
+        </div>
+        <div class="field-group">
+            <label for="textarea">Textarea</label>
+            <textarea id="textarea" rows="4" placeholder="Enter long text..."></textarea>
+        </div>
+    </section>
+
+    <!-- 3. Checkboxes -->
+    <section id="checkboxes-section">
+        <h2>3. Checkboxes</h2>
+        <div class="field-group">
+            <div class="inline-group">
+                <input type="checkbox" id="checkbox-in-iframe" name="pref" value="iframe">
+                <label for="checkbox-in-iframe">CheckBox in iFrame</label>
+            </div>
+            <div class="inline-group">
+                <input type="checkbox" id="checkbox-test" name="pref" value="test">
+                <label for="checkbox-test">CheckBox</label>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Radio Buttons -->
+    <section id="radios-section">
+        <h2>4. Radio Buttons</h2>
+        <div class="field-group">
+            <div class="inline-group">
+                <input type="radio" id="radio-button-1" name="radio" value="1">
+                <label for="radio-button-1">RadioButton 1</label>
+            </div>
+            <div class="inline-group">
+                <input type="radio" id="radio-button-2" name="radio" value="2">
+                <label for="radio-button-2">RadioButton 2</label>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Dropdown -->
+    <section id="dropdown-section">
+        <h2>5. Dropdown</h2>
+        <div class="field-group">
+            <label for="select-dropdown">Select Dropdown</label>
+            <select id="select-dropdown">
+                <option value="">Please choose...</option>
+                <option value="25">Set to 25%</option>
+                <option value="50">Set to 50%</option>
+                <option value="75">Set to 75%</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- 6. Hover Elements -->
+    <section id="hover-section">
+        <h2>6. Hover Elements</h2>
+        <div class="field-group">
+            <button id="hover-dropdown" class="btn">Hover Dropdown</button>
+        </div>
+    </section>
+
+    <div style="margin-top: 40px; text-align: center;">
+        <button id="submit-form" style="padding: 10px 20px; cursor: pointer;">Submit Form</button>
+        <p id="form-status" style="margin-top: 10px;"></p>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        function handleClick(color) {
+            clickCount++;
+            console.log('Button clicked:', color);
+        }
+    </script>
+</body>
+</html>
