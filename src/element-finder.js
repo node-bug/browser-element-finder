@@ -719,25 +719,45 @@ function findNearbyElementType(el, targetType) {
  * Finds elements matching the specified type and/or attribute value.
  * When both type and text are provided but no element matches both,
  * finds elements matching the attribute/text and returns a nearby element of the specified type.
- * @param {string} elementType - Element type (see ELEMENT_DEFINITIONS for valid types)
- * @param {string} attributeText - Text/attribute value to search for
+ * If only type is provided, delegates to findElementByType.
+ * If only text is provided, delegates to findElementByAttributes.
+ * @param {string|null|undefined} elementType - Element type (see ELEMENT_DEFINITIONS for valid types). If null/undefined/blank, matches any type.
+ * @param {string|null|undefined} attributeText - Text/attribute value to search for. If null/undefined/blank, matches any text.
  * @param {boolean} [exact=false] - Exact match vs substring
  * @param {Element|null} [parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
 export function findProbableElements(elementType, attributeText, exact = false, parent = null) {
-  // Validate elementType
-  if (typeof elementType !== 'string') {
-    throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
-  }
-  if (!ELEMENT_DEFINITIONS[elementType]) {
-    console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
-    return { elements: [] };
+  // Normalize parameters
+  const hasType = elementType !== null && elementType !== undefined && elementType !== '';
+  const hasText = attributeText !== null && attributeText !== undefined && attributeText !== '';
+
+  // If only type is provided, delegate to findElementByType
+  if (hasType && !hasText) {
+    return findElementByType(elementType, parent);
   }
 
-  // Validate attributeText
-  if (typeof attributeText !== 'string') {
-    throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+  // If only text is provided, delegate to findElementByAttributes
+  if (!hasType && hasText) {
+    return findElementByAttributes(attributeText, exact, parent);
+  }
+
+  // Validate elementType if provided
+  if (hasType) {
+    if (typeof elementType !== 'string') {
+      throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
+    }
+    if (!ELEMENT_DEFINITIONS[elementType]) {
+      console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+      return { elements: [] };
+    }
+  }
+
+  // Validate attributeText if provided
+  if (hasText) {
+    if (typeof attributeText !== 'string') {
+      throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+    }
   }
 
   const matches = [];
@@ -750,26 +770,26 @@ export function findProbableElements(elementType, attributeText, exact = false, 
     for (let i = 0; i < allElements.length; i++) {
       const el = allElements[i];
 
-      // Check type match
-      if (!matchesType(el, elementType)) continue;
+      // Check type match if type is specified
+      if (hasType && !matchesType(el, elementType)) continue;
 
-      // Check attribute/text match
-      if (!matchesAttribute(el, attributeText, exact)) continue;
+      // Check attribute/text match if text is specified
+      if (hasText && !matchesAttribute(el, attributeText, exact)) continue;
 
       matches.push({ element: el, frame: frame });
     }
   }
 
   // If no matches found with both criteria, try fallback: find attribute matches and get nearby type elements
-  if (matches.length === 0) {
+  if (matches.length === 0 && hasType && hasText) {
     const attributeMatches = [];
     for (const frame of frames) {
       const allElements = getAllElements(parent || frame.document);
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
-        if (matchesAttribute(el, attributeText, exact)) {
-          attributeMatches.push({ element: el, frame: frame });
-        }
+        // Check attribute match
+        if (!matchesAttribute(el, attributeText, exact)) continue;
+        attributeMatches.push({ element: el, frame: frame });
       }
     }
 

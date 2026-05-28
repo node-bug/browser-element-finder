@@ -357,5 +357,41 @@ describe('findElements combined search', () => {
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.getAttribute('data-testid')).toBe('nested-span');
     });
+
+    it('should delegate to findElementByType when only type is provided', () => {
+      const result = findProbableElements('button', null);
+      // Should return all buttons (same as findElementByType)
+      expect(result.elements.length).toBe(3);
+      result.elements.forEach(el => {
+        expect(el.tagName).toBe('button');
+      });
+    });
+
+    it('should delegate to findElementByType when type is empty string', () => {
+      const result = findProbableElements('button', '');
+      // Should return all buttons (same as findElementByType)
+      expect(result.elements.length).toBe(3);
+      result.elements.forEach(el => {
+        expect(el.tagName).toBe('button');
+      });
+    });
+
+    it('should delegate to findElementByAttributes when only text is provided', () => {
+      const result = findProbableElements(null, 'Submit');
+      // Should return all elements containing "Submit" (same as findElementByAttributes)
+      expect(result.elements.length).toBe(1);
+    });
+
+    it('should delegate to findElementByAttributes when text is provided with null type', () => {
+      const result = findProbableElements(undefined, 'Cancel');
+      // Should return all elements containing "Cancel"
+      expect(result.elements.length).toBe(1);
+    });
+
+    it('should delegate to findElementByAttributes when text is provided with empty type', () => {
+      const result = findProbableElements('', 'Click');
+      // Should return all elements containing "Click"
+      expect(result.elements.length).toBe(1);
+    });
   });
 });
