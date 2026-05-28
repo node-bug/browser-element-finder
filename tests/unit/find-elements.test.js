@@ -204,8 +204,11 @@ describe('findElements combined search', () => {
     it('should combine type and parent search', () => {
       const container = document.querySelector('.container');
       const result = findElements('element', null, false, container);
-      expect(result.elements.length).toBe(1);
-      expect(result.elements[0].tagName).toBe('span');
+      // Returns both div and span since both match the 'element' type
+      expect(result.elements.length).toBe(2);
+      const tagNames = result.elements.map(el => el.tagName);
+      expect(tagNames).toContain('div');
+      expect(tagNames).toContain('span');
     });
 
     it('should combine text and parent search', () => {

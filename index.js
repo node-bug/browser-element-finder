@@ -435,26 +435,18 @@ var ElementFinder = (() => {
         matches.push({ element: el, frame });
       }
     }
-    const innermostMatches = [];
-    if (matches.length > 0) {
-      const matchedElements = new Set(matches.map((m) => m.element));
-      const excludedElements = /* @__PURE__ */ new Set();
-      for (let i = matches.length - 1; i >= 0; i--) {
-        const match = matches[i];
-        const el = match.element;
-        if (!excludedElements.has(el)) {
-          innermostMatches.unshift(match);
-          let parentEl = el.parentElement;
-          while (parentEl) {
-            if (matchedElements.has(parentEl)) {
-              excludedElements.add(parentEl);
-            }
-            parentEl = parentEl.parentElement;
-          }
+    const filteredMatches = matches.filter((item) => {
+      const el = item.element;
+      const hasDirectMatch = hasOwnMatch(el, value, exact);
+      if (hasDirectMatch) return true;
+      for (const other of matches) {
+        if (other.element !== el && el.contains(other.element)) {
+          return false;
         }
       }
-    }
-    const qualified = innermostMatches.map((item) => {
+      return true;
+    });
+    const qualified = filteredMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       if (!item.frame.isMainFrame) {
@@ -472,6 +464,29 @@ var ElementFinder = (() => {
       };
     });
     return { elements: qualified };
+  }
+  function hasOwnMatch(el, value, exact = false) {
+    if (value === void 0 || value === null || value === "") return true;
+    const attrs = SEARCHABLE_ATTRIBUTES;
+    for (let i = 0; i < attrs.length; i++) {
+      const attr = attrs[i];
+      let attrValue;
+      try {
+        attrValue = el.getAttribute(attr);
+      } catch (e) {
+        continue;
+      }
+      if (attrValue) {
+        if (exact ? attrValue === value : attrValue.includes(value)) {
+          return true;
+        }
+      }
+    }
+    const directText = getDirectText(el);
+    if (exact ? directText === value : directText.includes(value)) {
+      return true;
+    }
+    return false;
   }
   function findElements(type = null, text = null, exact = false, parent = null) {
     if (text === null || text === void 0) {
@@ -500,26 +515,18 @@ var ElementFinder = (() => {
         matches.push({ element: el, frame });
       }
     }
-    const innermostMatches = [];
-    if (matches.length > 0) {
-      const matchedElements = new Set(matches.map((m) => m.element));
-      const excludedElements = /* @__PURE__ */ new Set();
-      for (let i = matches.length - 1; i >= 0; i--) {
-        const match = matches[i];
-        const el = match.element;
-        if (!excludedElements.has(el)) {
-          innermostMatches.unshift(match);
-          let parentEl = el.parentElement;
-          while (parentEl) {
-            if (matchedElements.has(parentEl)) {
-              excludedElements.add(parentEl);
-            }
-            parentEl = parentEl.parentElement;
-          }
+    const filteredMatches = text !== "" ? matches.filter((item) => {
+      const el = item.element;
+      const hasDirectMatch = hasOwnMatch(el, text, exact);
+      if (hasDirectMatch) return true;
+      for (const other of matches) {
+        if (other.element !== el && el.contains(other.element)) {
+          return false;
         }
       }
-    }
-    const qualified = innermostMatches.map((item) => {
+      return true;
+    }) : matches;
+    const qualified = filteredMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       if (!item.frame.isMainFrame) {
@@ -546,8 +553,8 @@ var ElementFinder = (() => {
       }
       parent = parent.parentElement;
     }
-    const allElements = getAllElements(el);
-    for (const child of allElements) {
+    const immediateChildren = el.children || [];
+    for (const child of immediateChildren) {
       if (matchesType(child, targetType)) {
         return child;
       }
@@ -604,33 +611,27 @@ var ElementFinder = (() => {
           attributeMatches.push({ element: el, frame });
         }
       }
+      const foundElements = /* @__PURE__ */ new Set();
       for (const match of attributeMatches) {
         const nearbyElement = findNearbyElementType(match.element, elementType);
-        if (nearbyElement) {
+        if (nearbyElement && !foundElements.has(nearbyElement)) {
+          foundElements.add(nearbyElement);
           matches.push({ element: nearbyElement, frame: match.frame });
         }
       }
     }
-    const innermostMatches = [];
-    if (matches.length > 0) {
-      const matchedElements = new Set(matches.map((m) => m.element));
-      const excludedElements = /* @__PURE__ */ new Set();
-      for (let i = matches.length - 1; i >= 0; i--) {
-        const match = matches[i];
-        const el = match.element;
-        if (!excludedElements.has(el)) {
-          innermostMatches.unshift(match);
-          let parentEl = el.parentElement;
-          while (parentEl) {
-            if (matchedElements.has(parentEl)) {
-              excludedElements.add(parentEl);
-            }
-            parentEl = parentEl.parentElement;
-          }
+    const filteredMatches = hasText ? matches.filter((item) => {
+      const el = item.element;
+      const hasDirectMatch = hasOwnMatch(el, attributeText, exact);
+      if (hasDirectMatch) return true;
+      for (const other of matches) {
+        if (other.element !== el && el.contains(other.element)) {
+          return false;
         }
       }
-    }
-    const qualified = innermostMatches.map((item) => {
+      return true;
+    }) : matches;
+    const qualified = filteredMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       if (!item.frame.isMainFrame) {

@@ -254,30 +254,24 @@ export function findElementByAttributes(value, exact = false, parent = null) {
     }
   }
 
-  // Get innermost matches (exclude parent elements that contain matched children)
-  const innermostMatches = [];
-  if (matches.length > 0) {
-    const matchedElements = new Set(matches.map(m => m.element));
-    const excludedElements = new Set();
-
-    for (let i = matches.length - 1; i >= 0; i--) {
-      const match = matches[i];
-      const el = match.element;
-
-      if (!excludedElements.has(el)) {
-        innermostMatches.unshift(match);
-        let parentEl = el.parentElement;
-        while (parentEl) {
-          if (matchedElements.has(parentEl)) {
-            excludedElements.add(parentEl);
-          }
-          parentEl = parentEl.parentElement;
-        }
+  // Filter out parent elements that ONLY match because they contain matching children
+  // Keep elements that have their own independent match (attribute or direct text)
+  const filteredMatches = matches.filter(item => {
+    const el = item.element;
+    // Check if this element has its own direct match (not just via descendant)
+    const hasDirectMatch = hasOwnMatch(el, value, exact);
+    if (hasDirectMatch) return true; // Keep elements with their own match
+    
+    // Check if any descendant also matches - if so, this parent is redundant
+    for (const other of matches) {
+      if (other.element !== el && el.contains(other.element)) {
+        return false; // This element only matches via descendant
       }
     }
-  }
+    return true;
+  });
 
-  const qualified = innermostMatches.map(item => {
+  const qualified = filteredMatches.map(item => {
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
 
@@ -298,6 +292,44 @@ export function findElementByAttributes(value, exact = false, parent = null) {
   });
 
   return { elements: qualified };
+}
+
+/**
+ * Checks if an element has its own direct match (attribute or direct text),
+ * not just via descendant elements.
+ * @param {Element} el - The DOM element to check
+ * @param {string} value - The attribute value to search for
+ * @param {boolean} [exact=false] - Whether to match exactly or as substring
+ * @returns {boolean} True if the element has its own direct match
+ */
+function hasOwnMatch(el, value, exact = false) {
+  if (value === undefined || value === null || value === '') return true;
+
+  const attrs = SEARCHABLE_ATTRIBUTES;
+
+  // Check if any attribute on this element matches
+  for (let i = 0; i < attrs.length; i++) {
+    const attr = attrs[i];
+    let attrValue;
+    try {
+      attrValue = el.getAttribute(attr);
+    } catch {
+      continue;
+    }
+    if (attrValue) {
+      if (exact ? attrValue === value : attrValue.includes(value)) {
+        return true;
+      }
+    }
+  }
+
+  // Check if direct text nodes match
+  const directText = getDirectText(el);
+  if (exact ? directText === value : directText.includes(value)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
