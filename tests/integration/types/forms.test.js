@@ -104,6 +104,22 @@ describe('ElementFinderByType Integration Tests', () => {
       expect(mainElements.length).toBe(1);
     });
 
+    it('should find datepickers', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElementByType('datepicker');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+    });
+
+    it('should find colorpickers', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElementByType('colorpicker');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+    });
+
     it('should find radios', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElementByType('radio');

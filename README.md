@@ -373,31 +373,33 @@ if (iframeElements.length > 0) {
 
 ## Supported Element Types
 
-| Type         | Description                                             |
-| ------------ | ------------------------------------------------------- |
-| `button`     | `<button>`, `[role="button"]`, `[type="button"]`        |
-| `checkbox`   | `<input type="checkbox">`, `[role="checkbox"]`          |
-| `switch`     | Toggle switches, checkboxes with switch role            |
-| `slider`     | `<input type="range">`, `[role="slider"]`               |
-| `radio`      | `<input type="radio">`, `[role="radio"]`                |
-| `dropdown`   | `<select>`, `[role="combobox"]`, `[role="listbox"]`     |
-| `textbox`    | `<input>`, `<textarea>`, `[role="textbox"]`             |
-| `link`       | `<a>`, `[role="link"]`, `[href]`                        |
-| `heading`    | `<h1>-<h6>`, `[role="heading"]`                         |
-| `navigation` | `<nav>`, `[role="navigation"]`                          |
-| `list`       | `<ul>`, `<ol>`, `[role="list"]`                         |
-| `listitem`   | `<li>`, `[role="listitem"]`                             |
-| `menu`       | `<menu>`, `[role="menu"]`                               |
-| `menuitem`   | `[role="menuitem"]`                                     |
-| `toolbar`    | `[role="toolbar"]`                                      |
-| `dialog`     | `[role="dialog"]`                                       |
-| `table`      | `<table>`, `[role="table"]`                             |
-| `row`        | `<tr>`, `[role="row"]`                                  |
-| `column`     | `<td>`, `<th>`, `[role="cell"]`                         |
-| `cell`       | `<td>`, `[role="cell"]` (data cells only, no expansion) |
-| `image`      | `<img>`, `[role="img"]`                                 |
-| `file`       | `<input type="file"]`                                   |
-| `element`    | Matches all elements                                    |
+| Type          | Description                                             |
+| ------------- | ------------------------------------------------------- |
+| `button`      | `<button>`, `[role="button"]`, `[type="button"]`        |
+| `checkbox`    | `<input type="checkbox">`, `[role="checkbox"]`          |
+| `switch`      | Toggle switches, checkboxes with switch role            |
+| `slider`      | `<input type="range">`, `[role="slider"]`               |
+| `datepicker`  | `<input type="date">`                                   |
+| `colorpicker` | `<input type="color">`                                  |
+| `radio`       | `<input type="radio">`, `[role="radio"]`                |
+| `dropdown`    | `<select>`, `[role="combobox"]`, `[role="listbox"]`     |
+| `textbox`     | `<input>`, `<textarea>`, `[role="textbox"]`             |
+| `link`        | `<a>`, `[role="link"]`, `[href]`                        |
+| `heading`     | `<h1>-<h6>`, `[role="heading"]`                         |
+| `navigation`  | `<nav>`, `[role="navigation"]`                          |
+| `list`        | `<ul>`, `<ol>`, `[role="list"]`                         |
+| `listitem`    | `<li>`, `[role="listitem"]`                             |
+| `menu`        | `<menu>`, `[role="menu"]`                               |
+| `menuitem`    | `[role="menuitem"]`                                     |
+| `toolbar`     | `[role="toolbar"]`                                      |
+| `dialog`      | `[role="dialog"]`                                       |
+| `table`       | `<table>`, `[role="table"]`                             |
+| `row`         | `<tr>`, `[role="row"]`                                  |
+| `column`      | `<td>`, `<th>`, `[role="cell"]`                         |
+| `cell`        | `<td>`, `[role="cell"]` (data cells only, no expansion) |
+| `image`       | `<img>`, `[role="img"]`                                 |
+| `file`        | `<input type="file"]`                                   |
+| `element`     | Matches all elements                                    |
 
 ---
 

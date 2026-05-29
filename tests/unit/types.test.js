@@ -37,6 +37,8 @@ describe('ElementFinderByType Node.js Module Tests', () => {
           <input type="checkbox" id="chk1" />
           <input type="radio" id="radio1" name="group1" />
           <input type="range" id="slider1" min="0" max="100" />
+          <input type="date" id="datepicker1" />
+          <input type="color" id="colorpicker1" value="#ff0000" />
           <a href="/page1" id="link1">Home</a>
           <a href="/page2" id="link2">About</a>
           <select id="dropdown1">
@@ -239,6 +241,16 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       expect(matchesType(slider, 'slider')).toBe(true);
     });
 
+    it('should match datepicker elements', () => {
+      const datepicker = document.getElementById('datepicker1');
+      expect(matchesType(datepicker, 'datepicker')).toBe(true);
+    });
+
+    it('should match colorpicker elements', () => {
+      const colorpicker = document.getElementById('colorpicker1');
+      expect(matchesType(colorpicker, 'colorpicker')).toBe(true);
+    });
+
     it('should match link elements', () => {
       const link = document.getElementById('link1');
       expect(matchesType(link, 'link')).toBe(true);
@@ -322,6 +334,22 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       expect(result.elements.length).toBe(3);
       result.elements.forEach(el => {
         expect(['input', 'textarea']).toContain(el.tagName);
+      });
+    });
+
+    it('should find all datepicker elements', () => {
+      const result = findElementByType('datepicker');
+      expect(result.elements.length).toBe(1);
+      result.elements.forEach(el => {
+        expect(el.tagName).toBe('input');
+      });
+    });
+
+    it('should find all colorpicker elements', () => {
+      const result = findElementByType('colorpicker');
+      expect(result.elements.length).toBe(1);
+      result.elements.forEach(el => {
+        expect(el.tagName).toBe('input');
       });
     });
 
