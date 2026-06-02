@@ -265,6 +265,30 @@ function isInsideStyleOrScript(el) {
 }
 
 /**
+ * Gets the text content from elements referenced by aria-labelledby.
+ * @param {Element} el - The DOM element to check
+ * @returns {string} Concatenated text from referenced elements, or empty string
+ */
+function getAriaLabelledByText(el) {
+  const labelledBy = el.getAttribute('aria-labelledby');
+  if (!labelledBy) return '';
+  
+  const ids = labelledBy.split(/\s+/);
+  let text = '';
+  for (const id of ids) {
+    try {
+      const refEl = document.getElementById(id);
+      if (refEl) {
+        text += refEl.textContent;
+      }
+    } catch {
+      // Skip if element not found or access denied
+    }
+  }
+  return text;
+}
+
+/**
  * Checks if an element matches the specified attribute value.
  * Searches through all searchable attributes in priority order, then text content.
  * Text matching is case-sensitive. Ignores elements inside STYLE or SCRIPT tags.
@@ -292,7 +316,20 @@ export function matchesAttribute(el, value, exact = false) {
       continue;
     }
     if (attrValue) {
-      if (exact ? attrValue === value : attrValue.includes(value)) {
+      // Special handling for aria-labelledby - check both raw value and resolved text
+      if (attr === 'aria-labelledby') {
+        // First check if the raw attribute value contains the search string
+        if (exact ? attrValue === value : attrValue.includes(value)) {
+          return true;
+        }
+        // Then check the resolved text from referenced elements
+        const resolvedText = getAriaLabelledByText(el);
+        if (resolvedText) {
+          if (exact ? resolvedText === value : resolvedText.includes(value)) {
+            return true;
+          }
+        }
+      } else if (exact ? attrValue === value : attrValue.includes(value)) {
         return true;
       }
     }
@@ -600,7 +637,20 @@ function hasOwnMatch(el, value, exact = false) {
       continue;
     }
     if (attrValue) {
-      if (exact ? attrValue === value : attrValue.includes(value)) {
+      // Special handling for aria-labelledby - check both raw value and resolved text
+      if (attr === 'aria-labelledby') {
+        // First check if the raw attribute value contains the search string
+        if (exact ? attrValue === value : attrValue.includes(value)) {
+          return true;
+        }
+        // Then check the resolved text from referenced elements
+        const resolvedText = getAriaLabelledByText(el);
+        if (resolvedText) {
+          if (exact ? resolvedText === value : resolvedText.includes(value)) {
+            return true;
+          }
+        }
+      } else if (exact ? attrValue === value : attrValue.includes(value)) {
         return true;
       }
     }
