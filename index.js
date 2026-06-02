@@ -254,6 +254,22 @@ var ElementFinder = (() => {
     }
     return false;
   }
+  function getAriaLabelledByText(el) {
+    const labelledBy = el.getAttribute("aria-labelledby");
+    if (!labelledBy) return "";
+    const ids = labelledBy.split(/\s+/);
+    let text = "";
+    for (const id of ids) {
+      try {
+        const refEl = document.getElementById(id);
+        if (refEl) {
+          text += refEl.textContent;
+        }
+      } catch (e) {
+      }
+    }
+    return text;
+  }
   function matchesAttribute(el, value, exact = false) {
     if (el == null) return false;
     if (value === void 0 || value === null || value === "") return true;
@@ -268,7 +284,17 @@ var ElementFinder = (() => {
         continue;
       }
       if (attrValue) {
-        if (exact ? attrValue === value : attrValue.includes(value)) {
+        if (attr === "aria-labelledby") {
+          if (exact ? attrValue === value : attrValue.includes(value)) {
+            return true;
+          }
+          const resolvedText = getAriaLabelledByText(el);
+          if (resolvedText) {
+            if (exact ? resolvedText === value : resolvedText.includes(value)) {
+              return true;
+            }
+          }
+        } else if (exact ? attrValue === value : attrValue.includes(value)) {
           return true;
         }
       }
@@ -479,7 +505,17 @@ var ElementFinder = (() => {
         continue;
       }
       if (attrValue) {
-        if (exact ? attrValue === value : attrValue.includes(value)) {
+        if (attr === "aria-labelledby") {
+          if (exact ? attrValue === value : attrValue.includes(value)) {
+            return true;
+          }
+          const resolvedText = getAriaLabelledByText(el);
+          if (resolvedText) {
+            if (exact ? resolvedText === value : resolvedText.includes(value)) {
+              return true;
+            }
+          }
+        } else if (exact ? attrValue === value : attrValue.includes(value)) {
           return true;
         }
       }

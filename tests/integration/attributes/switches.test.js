@@ -146,7 +146,11 @@ describe('ElementFinderByAttribute Integration Tests - Switches', () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElementByAttributes('ARIA Div Switch');
       `);
-      expect(result.elements.length).toBe(1);
+      // Both the label element and the div with aria-labelledby should be found
+      // The div with role="switch" is the actual control, while the label is just text
+      expect(result.elements.length).toBe(2);
+      const roles = await Promise.all(result.elements.map(e => e.element ? e.element.getAttribute('role') : null));
+      expect(roles).toContain('switch');
     });
 
     it('should find button switch by label text "Native Button Switch"', async () => {
