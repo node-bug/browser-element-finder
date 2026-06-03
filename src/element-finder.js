@@ -841,6 +841,17 @@ function findNearbyElementType(el, targetType) {
     }
   }
 
+  // Check descendants of siblings (for cases where the target element is nested within a sibling)
+  for (const sibling of siblings) {
+    if (sibling === el) continue;
+    const siblingElements = getAllElements(sibling);
+    for (let i = 0; i < siblingElements.length; i++) {
+      if (matchesType(siblingElements[i], targetType)) {
+        return siblingElements[i];
+      }
+    }
+  }
+
   return null;
 }
 

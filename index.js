@@ -50,8 +50,8 @@ var ElementFinder = (() => {
     checkbox: "(self::input and @type='checkbox') or @role='checkbox'",
     switch: "(self::input and @type='checkbox') or @role='switch' or (self::button and (contains(@class, 'switch') or @data-state))",
     slider: "self::input[@type='range'] or @role='slider'",
-    datepicker: "self::input and @type='date'",
-    colorpicker: "self::input and @type='color'",
+    datepicker: "self::input[@type='date'] or @role='date'",
+    colorpicker: "self::input[@type='color'] or @role='color'",
     radio: "(self::input and @type='radio') or @role='radio'",
     dropdown: "(self::select[descendant::option] or @role='combobox' or @role='listbox' or contains(@class, 'dropdown') or contains(@class, 'trigger') or ancestor::*[contains(@class, 'dropdown') or @role='combobox'])",
     textbox: "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email' or @type='number' or @type='tel' or @type='url')) or @role='textbox'",
@@ -626,6 +626,15 @@ var ElementFinder = (() => {
     for (const sibling of siblings) {
       if (sibling !== el && matchesType(sibling, targetType)) {
         return sibling;
+      }
+    }
+    for (const sibling of siblings) {
+      if (sibling === el) continue;
+      const siblingElements = getAllElements(sibling);
+      for (let i = 0; i < siblingElements.length; i++) {
+        if (matchesType(siblingElements[i], targetType)) {
+          return siblingElements[i];
+        }
       }
     }
     return null;
