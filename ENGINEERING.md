@@ -1,7 +1,7 @@
 # Engineering Documentation: Browser Element Finder
 
-**Version**: 1.1.1  
-**Last Updated**: May 2026  
+**Version**: 1.1.7  
+**Last Updated**: June 2026  
 **Purpose**: Complete technical reference for developing, maintaining, and extending the browser-element-finder library.
 
 ---
@@ -45,10 +45,10 @@
 
 ```javascript
 // Case 1: Type-only search (find all buttons)
-ElementFinder.findElementByType('button')
+ElementFinder.findElementsByType('button')
 
 // Case 2: Attribute-only search (find anything with text "Submit")
-ElementFinder.findElementByAttributes('Submit')
+ElementFinder.findElementsByAttribute('Submit')
 
 // Case 3: Strict combined search (find a button WITH text "Submit")
 ElementFinder.findElements('button', 'Submit')
@@ -460,7 +460,7 @@ function parseCondition(cond, el) {
    it('should match native range inputs as slider', () => {
      const html = '<input type="range" min="0" max="100" />'
      const doc = new JSDOM(html).window.document
-     const result = findElementByType('slider', null, doc.body)
+     const result = findElementsByType('slider', null, doc.body)
      expect(result.elements.length).toBe(1)
    })
    ```
@@ -470,7 +470,7 @@ function parseCondition(cond, el) {
    ```javascript
    it('should find slider in complex form', async () => {
      const result = await driver.executeScript(`
-       return ElementFinder.findElementByType('slider');
+       return ElementFinder.findElementsByType('slider');
      `)
      expect(result.elements.length).toBeGreaterThan(0)
    })
@@ -647,14 +647,14 @@ console.log(ElementFinder.getSearchableAttributes())
 
 ## 5. The Four Search Functions
 
-### 5.1 `findElementByType(type, parent = null)`
+### 5.1 `findElementsByType(type, parent = null)`
 
 **Purpose**: Find all elements matching a semantic type definition.
 
 **Signature**:
 
 ```javascript
-export function findElementByType(type = 'element', parent = null)
+export function findElementsByType(type = 'element', parent = null)
   → { elements: [...], totalCount: number }
 ```
 
@@ -674,7 +674,7 @@ export function findElementByType(type = 'element', parent = null)
 
 ```javascript
 // Find all buttons on the page
-const result = ElementFinder.findElementByType('button')
+const result = ElementFinder.findElementsByType('button')
 // {
 //   elements: [
 //     { element: <button>, boundingBox: {...}, frameIndex: -1, ... },
@@ -684,7 +684,7 @@ const result = ElementFinder.findElementByType('button')
 
 // Find all textboxes in a form
 const form = document.getElementById('login-form')
-const result = ElementFinder.findElementByType('textbox', form)
+const result = ElementFinder.findElementsByType('textbox', form)
 // Returns only textboxes within the form
 ```
 
@@ -715,14 +715,14 @@ const result = ElementFinder.findElementByType('textbox', form)
 }
 ```
 
-### 5.2 `findElementByAttributes(value, exact = false, parent = null)`
+### 5.2 `findElementsByAttribute(value, exact = false, parent = null)`
 
 **Purpose**: Find all elements matching searchable attributes or text content.
 
 **Signature**:
 
 ```javascript
-export function findElementByAttributes(value, exact = false, parent = null)
+export function findElementsByAttribute(value, exact = false, parent = null)
   → { elements: [...], totalCount: number }
 ```
 
@@ -740,17 +740,17 @@ export function findElementByAttributes(value, exact = false, parent = null)
 
 ```javascript
 // Find elements with text containing "Submit"
-const result = ElementFinder.findElementByAttributes('Submit')
+const result = ElementFinder.findElementsByAttribute('Submit')
 // Returns all elements (any type) containing "Submit"
 // Matches: <button>Submit</button>, id="submit", placeholder="submit", etc.
 
 // Exact match only
-const result = ElementFinder.findElementByAttributes('Submit', true)
+const result = ElementFinder.findElementsByAttribute('Submit', true)
 // Returns only elements with exactly "Submit" (not "Submit Button")
 
 // Search within a specific container
 const dialog = document.querySelector('[role="dialog"]')
-const result = ElementFinder.findElementByAttributes('Close', false, dialog)
+const result = ElementFinder.findElementsByAttribute('Close', false, dialog)
 ```
 
 ### 5.3 `findElements(type = null, text = null, exact = false, parent = null)` - Strict Combined
@@ -929,8 +929,8 @@ const result = ElementFinder.findProbableElements('textbox', 'Username')
 
 | Function                  | Use When                                                       |
 | ------------------------- | -------------------------------------------------------------- |
-| `findElementByType`       | Just need a specific element type (any button)                 |
-| `findElementByAttributes` | Just need text/attribute matching (any element with "Submit")  |
+| `findElementsByType`      | Just need a specific element type (any button)                 |
+| `findElementsByAttribute` | Just need text/attribute matching (any element with "Submit")  |
 | `findElements`            | Need STRICT matching (must be button WITH "Submit" text in it) |
 | `findProbableElements`    | Need FLEXIBLE matching (button with text nearby is OK)         |
 
@@ -1022,6 +1022,7 @@ export function getBoundingBox(element) {
 - `top`, `bottom`, `left`, `right`: Aliases for clarity
 - `midx`, `midy`: Center coordinates (useful for clicking)
 - `tagName`: HTML tag name
+- `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, or zero dimensions)
 
 **Usage Example**:
 
@@ -1030,18 +1031,43 @@ const result = ElementFinder.findElements('button', 'Submit')
 if (result.elements.length > 0) {
   const bbox = result.elements[0].boundingBox
 
+  // Check visibility using isHidden flag
+  if (!result.elements[0].isHidden) {
+    console.log('Element is visible and can be interacted with')
+  }
+
   // Center coordinates for clicking
   console.log(`Click at (${bbox.midx}, ${bbox.midy})`)
 
   // Check if visible
   if (bbox.width > 0 && bbox.height > 0) {
-    console.log('Element is visible')
+    console.log('Element has dimensions')
   }
 
   // Positioning
   console.log(`Top-left: (${bbox.x}, ${bbox.y})`)
   console.log(`Size: ${bbox.width}x${bbox.height}`)
 }
+```
+
+**isHidden Detection**:
+
+The `isHidden` flag is determined by checking:
+
+1. `offsetWidth === 0 && offsetHeight === 0` - Element has no rendered dimensions
+2. CSS `visibility: hidden` or `visibility: collapse`
+3. CSS `display: none`
+4. Presence of `hidden` attribute
+
+**Usage Example**:
+
+```javascript
+const result = ElementFinder.findElements('button', null)
+const visibleButtons = result.elements.filter((e) => !e.isHidden)
+const hiddenButtons = result.elements.filter((e) => e.isHidden)
+
+console.log(`Found ${visibleButtons.length} visible buttons`)
+console.log(`Found ${hiddenButtons.length} hidden buttons`)
 ```
 
 ---
@@ -1385,7 +1411,7 @@ const matcher = TYPE_MATCHERS.get(type)
 const matches = matcher(element)
 
 // BAD: Parsing on every call
-function findElementByType(type) {
+function findElementsByType(type) {
   const expr = elementDefinitionsData[type]
   // Parse expression on EVERY search - expensive!
 }
@@ -1479,7 +1505,7 @@ Typical performance on modern hardware:
 ```
 Operation                    Time
 ────────────────────────────────────
-findElementByType('button')   2-5ms      (10 buttons on page)
+findElementsByType('button')   2-5ms      (10 buttons on page)
 findElements('button', 'OK')  3-8ms      (direct match)
 findProbableElements(...)     8-15ms     (includes fallback search)
 Shadow DOM traversal          5-20ms     (varies by depth)
@@ -1546,8 +1572,8 @@ Main entry point exports:
 
 ```javascript
 // Main functions
-export { findElementByType }
-export { findElementByAttributes }
+export { findElementsByType }
+export { findElementsByAttribute }
 export { findElements }
 export { findProbableElements }
 
@@ -2105,7 +2131,7 @@ function inventoryElements() {
   const inventory = {}
 
   for (const type of types) {
-    const result = ElementFinder.findElementByType(type)
+    const result = ElementFinder.findElementsByType(type)
     inventory[type] = result.elements.length
   }
 
@@ -2121,6 +2147,20 @@ console.log(counts)
 //   link: 42,
 //   ...
 // }
+```
+
+### 13.8 List All Searchable Attributes
+
+```javascript
+function listSearchableAttributes() {
+  const attrs = ElementFinder.getValidAttributes()
+  console.log('Searchable attributes:', attrs)
+  return attrs
+}
+
+// Usage
+listSearchableAttributes()
+// ['placeholder', 'value', 'data-test-id', 'data-testid', 'id', ...]
 ```
 
 ### 13.9 Handle Multi-Frame Results
@@ -2187,7 +2227,7 @@ npm run build               # Should create index.js and index.min.js
 it('should match breadcrumb navigation', () => {
   const html = '<nav aria-label="breadcrumb"><a href="/">Home</a></nav>'
   const doc = new JSDOM(html).window.document
-  const result = findElementByType('breadcrumb', null, doc.body)
+  const result = findElementsByType('breadcrumb', null, doc.body)
   expect(result.elements.length).toBe(1)
 })
 ```
@@ -2204,7 +2244,7 @@ npm test -- tests/unit/types.test.js
 // tests/integration/types/breadcrumb.test.js
 it('should find breadcrumb in page', async () => {
   const result = await driver.executeScript(`
-    return ElementFinder.findElementByType('breadcrumb');
+    return ElementFinder.findElementsByType('breadcrumb');
   `)
   expect(result.elements.length).toBeGreaterThan(0)
 })
@@ -2502,7 +2542,7 @@ ElementFinder.parseCondition('@data-mytype', element) // Should be true
    ElementFinder.findElements('button', 'Submit')
 
    // If you know the text, maybe:
-   ElementFinder.findElementByType('button') // If text not needed
+   ElementFinder.findElementsByType('button') // If text not needed
    ```
 
 3. **Cache results**:
@@ -2585,7 +2625,7 @@ const value = picker.value // Access through public property
 // Or use Selenium to find via accessible tree
 const result = await driver.executeScript(`
   // The custom element itself is searchable by type
-  return ElementFinder.findElementByType('element');
+  return ElementFinder.findElementsByType('element');
   // Then filter for custom-element tags
 `)
 ```
@@ -2620,8 +2660,8 @@ allResults.length = 0
 
 | Function                                          | Purpose                                 | Example                                                    |
 | ------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------- |
-| `findElementByType(type, parent)`                 | Find by semantic type                   | `findElementByType('button')`                              |
-| `findElementByAttributes(value, exact, parent)`   | Find by text/attributes                 | `findElementByAttributes('Submit')`                        |
+| `findElementsByType(type, parent)`                | Find by semantic type                   | `findElementsByType('button')`                             |
+| `findElementsByAttribute(value, exact, parent)`   | Find by text/attributes                 | `findElementsByAttribute('Submit')`                        |
 | `findElements(type, text, exact, parent)`         | Strict combined search                  | `findElements('button', 'Submit')`                         |
 | `findProbableElements(type, text, exact, parent)` | Flexible combined search                | `findProbableElements('button', 'Click')`                  |
 | `matchesType(el, type)`                           | Check if element matches type           | `matchesType(button, 'button')` → true                     |
@@ -2633,6 +2673,7 @@ allResults.length = 0
 | `highlight(elements)`                             | Highlight elements red                  | `highlight([button1, button2])`                            |
 | `unhighlight(elements)`                           | Remove highlight                        | `unhighlight([button1, button2])`                          |
 | `getValidTypes()`                                 | List all element types                  | `getValidTypes()` → ['button', 'textbox', ...]             |
+| `getValidAttributes()`                            | List all valid searchable attributes    | `getValidAttributes()` → ['placeholder', 'value', ...]     |
 | `getSearchableAttributes()`                       | List attribute search order             | `getSearchableAttributes()` → ['data-testid', ...]         |
 | `setSearchableAttributes(array)`                  | Set attribute search order              | `setSearchableAttributes(['data-qa', ...])`                |
 
@@ -2692,10 +2733,11 @@ UNIVERSAL
 
 ## Document History
 
-| Date     | Version | Changes                                    |
-| -------- | ------- | ------------------------------------------ |
-| May 2026 | 1.1.1   | Added `findProbableElements` documentation |
-| May 2026 | 1.1.0   | Initial engineering documentation          |
+| Date      | Version | Changes                                    |
+| --------- | ------- | ------------------------------------------ |
+| June 2026 | 1.1.7   | Added `getValidAttributes()` documentation |
+| May 2026  | 1.1.1   | Added `findProbableElements` documentation |
+| May 2026  | 1.1.0   | Initial engineering documentation          |
 
 ---
 

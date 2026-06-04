@@ -394,15 +394,15 @@
                 </style>
                 <div class="form-group">
                     <label id="shadow-name-label" for="shadow-name-input">Full Name</label>
-                    <input type="text" id="shadow-name-input" placeholder="Enter your name" value="">
+                    <input type="text" id="shadow-name-input" data-test-id="shadow-name-input" placeholder="Enter your name" value="">
                 </div>
                 <div class="form-group">
                     <label id="shadow-email-label" for="shadow-email-input">Email Address</label>
-                    <input type="email" id="shadow-email-input" placeholder="you@example.com" value="">
+                    <input type="email" id="shadow-email-input" data-test-id="shadow-email-input" placeholder="you@example.com" value="">
                 </div>
                 <div class="form-group">
                     <label id="shadow-role-label">Role</label>
-                    <select id="shadow-role-select">
+                    <select id="shadow-role-select" data-test-id="shadow-role-select">
                         <option value="">Select role...</option>
                         <option value="admin">Administrator</option>
                         <option value="user">Regular User</option>
@@ -410,15 +410,15 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <input type="checkbox" id="shadow-terms-checkbox">
+                    <input type="checkbox" id="shadow-terms-checkbox" data-test-id="shadow-terms-checkbox">
                     <label for="shadow-terms-checkbox" id="shadow-terms-label">I accept the terms and conditions</label>
                 </div>
                 <div class="form-group">
-                    <button id="shadow-submit-btn">Submit</button>
-                    <button id="shadow-cancel-btn" class="secondary">Cancel</button>
+                    <button id="shadow-submit-btn" data-test-id="shadow-submit-btn">Submit</button>
+                    <button id="shadow-cancel-btn" class="secondary" data-test-id="shadow-cancel-btn">Cancel</button>
                 </div>
                 <div class="form-group">
-                    <a href="#" id="shadow-help-link" data-test-id="shadow-help">Need help?</a>
+                    <a href="#" id="shadow-help-link" data-test-id="shadow-help-link">Need help?</a>
                 </div>
             `;
         })();
@@ -438,11 +438,11 @@
                     button { padding: 8px 16px; border: none; background: #3182ce; color: #fff; border-radius: 4px; cursor: pointer; width: 100%; }
                 </style>
                 <label id="login-user-label" for="login-user-input">Username</label>
-                <input type="text" id="login-user-input" placeholder="Username">
+                <input type="text" id="login-user-input" data-test-id="login-user-input" placeholder="Username">
                 <label id="login-pass-label" for="login-pass-input">Password</label>
-                <input type="password" id="login-pass-input" placeholder="Password">
-                <button id="login-submit-btn">Submit</button>
-                <a href="#" id="login-forgot-link" style="display:block; margin-top:8px; color:#3182ce;">Forgot password?</a>
+                <input type="password" id="login-pass-input" data-test-id="login-pass-input" placeholder="Password">
+                <button id="login-submit-btn" data-test-id="login-submit-btn">Submit</button>
+                <a href="#" id="login-forgot-link" style="display:block; margin-top:8px; color:#3182ce;" data-test-id="login-forgot-link">Forgot password?</a>
             `;
 
             // Host B - Signup
@@ -456,11 +456,11 @@
                     button { padding: 8px 16px; border: none; background: #38a169; color: #fff; border-radius: 4px; cursor: pointer; width: 100%; }
                 </style>
                 <label id="signup-name-label" for="signup-name-input">Full Name</label>
-                <input type="text" id="signup-name-input" placeholder="Full Name">
+                <input type="text" id="signup-name-input" data-test-id="signup-name-input" placeholder="Full Name">
                 <label id="signup-email-label" for="signup-email-input">Email</label>
-                <input type="email" id="signup-email-input" placeholder="Email">
-                <button id="signup-submit-btn">Submit</button>
-                <a href="#" id="signup-terms-link" style="display:block; margin-top:8px; color:#38a169;">Terms of Service</a>
+                <input type="email" id="signup-email-input" data-test-id="signup-email-input" placeholder="Email">
+                <button id="signup-submit-btn" data-test-id="signup-submit-btn">Submit</button>
+                <a href="#" id="signup-terms-link" style="display:block; margin-top:8px; color:#38a169;" data-test-id="signup-terms-link">Terms of Service</a>
             `;
         })();
 
@@ -479,7 +479,7 @@
                 </style>
                 <div class="wrapper">
                     <label id="outer-label">Outer Shadow Content</label>
-                    <button id="outer-btn">Outer Button</button>
+                    <button id="outer-btn" data-test-id="outer-btn">Outer Button</button>
                     <nested-inner-host></nested-inner-host>
                 </div>
             `;
@@ -497,9 +497,9 @@
                         </style>
                         <div class="inner-box">
                             <label id="inner-label">Inner Shadow Content</label>
-                            <input type="text" id="inner-input" placeholder="Inner input">
-                            <button id="inner-btn">Inner Button</button>
-                            <input type="checkbox" id="inner-checkbox">
+                            <input type="text" id="inner-input" data-test-id="inner-input" placeholder="Inner input">
+                            <button id="inner-btn" data-test-id="inner-btn">Inner Button</button>
+                            <input type="checkbox" id="inner-checkbox" data-test-id="inner-checkbox">
                             <label for="inner-checkbox" id="inner-check-label">Inner checkbox</label>
                         </div>
                     `;
@@ -518,7 +518,7 @@
                 </style>
                 <div class="level l1">
                     <span id="deep-l1-text">Level 1 Shadow</span>
-                    <button id="deep-l1-btn">Level 1 Button</button>
+                    <button id="deep-l1-btn" data-test-id="deep-l1-btn">Level 1 Button</button>
                     <deep-level-two></deep-level-two>
                 </div>
             `;
@@ -534,7 +534,7 @@
                         </style>
                         <div class="level l2">
                             <span id="deep-l2-text">Level 2 Shadow</span>
-                            <input type="text" id="deep-l2-input" placeholder="Level 2 input">
+                            <input type="text" id="deep-l2-input" data-test-id="deep-l2-input" placeholder="Level 2 input">
                             <deep-level-three></deep-level-three>
                         </div>
                     `;
@@ -554,8 +554,8 @@
                         </style>
                         <div class="level l3">
                             <span id="deep-l3-text">Level 3 Shadow</span>
-                            <button id="deep-l3-btn">Level 3 Button</button>
-                            <input type="checkbox" id="deep-l3-checkbox">
+                            <button id="deep-l3-btn" data-test-id="deep-l3-btn">Level 3 Button</button>
+                            <input type="checkbox" id="deep-l3-checkbox" data-test-id="deep-l3-checkbox">
                             <label for="deep-l3-checkbox" id="deep-l3-check-label">Level 3 checkbox</label>
                         </div>
                     `;
@@ -588,31 +588,31 @@
                 <!-- Container for .within tests -->
                 <div class="container-box" id="spatial-container">
                     <label id="spatial-container-title">Container Section</label>
-                    <input type="text" id="spatial-container-input" placeholder="Inside container">
-                    <button id="spatial-container-btn">Container Button</button>
+                    <input type="text" id="spatial-container-input" data-test-id="spatial-container-input" placeholder="Inside container">
+                    <button id="spatial-container-btn" data-test-id="spatial-container-btn">Container Button</button>
                 </div>
 
                 <!-- Below / Above tests -->
                 <label id="spatial-heading" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">Personal Information</label>
-                <input type="text" id="spatial-below-heading-input" placeholder="Below heading">
-                <button id="spatial-below-heading-btn" style="margin-top: 8px;">Below Heading Button</button>
+                <input type="text" id="spatial-below-heading-input" data-test-id="spatial-below-heading-input" placeholder="Below heading">
+                <button id="spatial-below-heading-btn" data-test-id="spatial-below-heading-btn" style="margin-top: 8px;">Below Heading Button</button>
 
                 <!-- Left / Right tests -->
                 <div class="row-inline" style="margin-top: 16px;">
-                    <button id="spatial-left-btn">Left Button</button>
-                    <input type="text" id="spatial-right-input" placeholder="To the right">
-                    <button id="spatial-far-right-btn" class="outline">Far Right</button>
+                    <button id="spatial-left-btn" data-test-id="spatial-left-btn">Left Button</button>
+                    <input type="text" id="spatial-right-input" data-test-id="spatial-right-input" placeholder="To the right">
+                    <button id="spatial-far-right-btn" data-test-id="spatial-far-right-btn" class="outline">Far Right</button>
                 </div>
 
                 <!-- Near tests (same row, close vertically) -->
                 <div class="grid" style="margin-top: 16px;">
                     <div class="column">
                         <label id="spatial-near-label">Near Reference</label>
-                        <a href="#" id="spatial-near-link">Nearby Link</a>
+                        <a href="#" id="spatial-near-link" data-test-id="spatial-near-link">Nearby Link</a>
                     </div>
                     <div class="column">
                         <label id="spatial-near-label-2">Another Label</label>
-                        <button id="spatial-near-btn">Near Button</button>
+                        <button id="spatial-near-btn" data-test-id="spatial-near-btn">Near Button</button>
                     </div>
                 </div>
 
@@ -620,11 +620,11 @@
                 <div class="grid" style="margin-top: 16px;">
                     <div class="column">
                         <label id="spatial-align-label-a">Column A Label</label>
-                        <input type="text" id="spatial-align-input-a" placeholder="Column A">
+                        <input type="text" id="spatial-align-input-a" data-test-id="spatial-align-input-a" placeholder="Column A">
                     </div>
                     <div class="column">
                         <label id="spatial-align-label-b">Column B Label</label>
-                        <input type="text" id="spatial-align-input-b" placeholder="Column B">
+                        <input type="text" id="spatial-align-input-b" data-test-id="spatial-align-input-b" placeholder="Column B">
                     </div>
                 </div>
             `;
@@ -657,8 +657,8 @@
 
                     <!-- Regular iframe elements -->
                     <label id="frame-regular-label">Regular iFrame Input</label>
-                    <input type="text" id="frame-regular-input" placeholder="Regular input in frame">
-                    <button id="frame-regular-btn">Regular Frame Button</button>
+                    <input type="text" id="frame-regular-input" data-test-id="frame-regular-input" placeholder="Regular input in frame">
+                    <button id="frame-regular-btn" data-test-id="frame-regular-btn">Regular Frame Button</button>
 
                     <hr style="margin: 16px 0; border: none; border-top: 1px dashed #cbd5e0;">
 
@@ -687,9 +687,9 @@
                     button { padding: 8px 16px; background: #805ad5; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
                 </style>
                 <label id="frame-shadow-label">Shadow Input in Frame</label>
-                <input type="text" id="frame-shadow-input" placeholder="Shadow input in frame">
-                <button id="frame-shadow-btn">Shadow Frame Button</button>
-                <input type="checkbox" id="frame-shadow-checkbox">
+                <input type="text" id="frame-shadow-input" data-test-id="frame-shadow-input" placeholder="Shadow input in frame">
+                <button id="frame-shadow-btn" data-test-id="frame-shadow-btn">Shadow Frame Button</button>
+                <input type="checkbox" id="frame-shadow-checkbox" data-test-id="frame-shadow-checkbox">
                 <label for="frame-shadow-checkbox" id="frame-shadow-check-label">Frame shadow checkbox</label>
             `;
 
@@ -704,7 +704,7 @@
                 </style>
                 <div class="outer">
                     <span id="frame-nested-outer-text">Frame Nested Outer</span>
-                    <button id="frame-nested-outer-btn">Frame Outer Button</button>
+                    <button id="frame-nested-outer-btn" data-test-id="frame-nested-outer-btn">Frame Outer Button</button>
                     <frame-nested-inner></frame-nested-inner>
                 </div>
             `;
@@ -723,8 +723,8 @@
                         </style>
                         <div class="inner">
                             <span id="frame-nested-inner-text">Frame Nested Inner</span>
-                            <input type="text" id="frame-nested-inner-input" placeholder="Frame inner input">
-                            <button id="frame-nested-inner-btn">Frame Inner Button</button>
+                            <input type="text" id="frame-nested-inner-input" data-test-id="frame-nested-inner-input" placeholder="Frame inner input">
+                            <button id="frame-nested-inner-btn" data-test-id="frame-nested-inner-btn">Frame Inner Button</button>
                         </div>
                     `;
                 }
@@ -762,8 +762,8 @@
                         button { padding: 8px 16px; background: #dd6b20; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
                     </style>
                     <label id="dynamic-label">Dynamic Shadow Content</label>
-                    <input type="text" id="dynamic-input" placeholder="Dynamically created">
-                    <button id="dynamic-btn">Dynamic Button</button>
+                    <input type="text" id="dynamic-input" data-test-id="dynamic-input" placeholder="Dynamically created">
+                    <button id="dynamic-btn" data-test-id="dynamic-btn">Dynamic Button</button>
                 `;
             }, 500);
 
@@ -775,14 +775,14 @@
                     :host { display: block; }
                     button { padding: 8px 16px; background: #38a169; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
                 </style>
-                <button id="mutable-original-btn">Original Button</button>
+                <button id="mutable-original-btn" data-test-id="mutable-original-btn">Original Button</button>
             `;
 
             // Mutation handler
             document.getElementById('mutate-shadow-btn').addEventListener('click', () => {
                 mutableRoot.innerHTML = `
-                    <button id="mutable-replaced-btn">Replaced Button</button>
-                    <input type="text" id="mutable-new-input" placeholder="New input after mutation">
+                    <button id="mutable-replaced-btn" data-test-id="mutable-replaced-btn">Replaced Button</button>
+                    <input type="text" id="mutable-new-input" data-test-id="mutable-new-input" placeholder="New input after mutation">
                 `;
             });
         })();
@@ -804,7 +804,7 @@
                             button { padding: 10px 20px; background: #3182ce; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
                             button:hover { background: #2b6cb0; }
                         </style>
-                        <button id="custom-btn-action">${text}</button>
+                        <button id="custom-btn-action" data-test-id="custom-btn-action">${text}</button>
                     `;
                     root.querySelector('button').addEventListener('click', () => {
                         this.dispatchEvent(new CustomEvent('custom-click', { bubbles: true }));
@@ -833,7 +833,7 @@
                             input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; }
                         </style>
                         <label id="custom-input-label">${label}</label>
-                        <input type="text" id="custom-input-field" placeholder="${placeholder}">
+                        <input type="text" id="custom-input-field" data-test-id="custom-input-field" placeholder="${placeholder}">
                     `;
                 }
             }
@@ -854,7 +854,7 @@
                             input[type="checkbox"] { width: 18px; height: 18px; }
                         </style>
                         <div class="toggle-row">
-                            <input type="checkbox" id="custom-toggle-checkbox">
+                            <input type="checkbox" id="custom-toggle-checkbox" data-test-id="custom-toggle-checkbox">
                             <label for="custom-toggle-checkbox" id="custom-toggle-label">${label}</label>
                         </div>
                     `;
@@ -876,10 +876,10 @@
                     input { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; margin-bottom: 8px; }
                     button { padding: 8px 16px; background: #3182ce; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 8px; }
                 </style>
-                <button id="combined-shadow-btn">Submit</button>
+                <button id="combined-shadow-btn" data-test-id="combined-shadow-btn">Submit</button>
                 <label id="combined-shadow-input-label">Username</label>
-                <input type="text" id="combined-shadow-input" placeholder="Username">
-                <input type="checkbox" id="combined-shadow-checkbox">
+                <input type="text" id="combined-shadow-input" data-test-id="combined-shadow-input" placeholder="Username">
+                <input type="checkbox" id="combined-shadow-checkbox" data-test-id="combined-shadow-checkbox">
                 <label for="combined-shadow-checkbox" id="combined-shadow-check-label">Accept terms</label>
             `;
         })();

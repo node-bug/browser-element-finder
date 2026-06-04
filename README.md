@@ -1,5 +1,7 @@
 # @nodebug/browser-element-finder
 
+**Version**: 1.1.7
+
 **A robust, agent-friendly JavaScript library for identifying DOM elements by type and/or text content, with full support for shadow DOM, iframes, and automation workflows.**
 
 ---
@@ -52,7 +54,7 @@ results.elements.forEach((e) => {
 - **Text content search**: Search within element text, attributes, and placeholders
 - **Shadow DOM support**: Automatically traverses shadow roots to find nested elements
 - **Iframe support**: Automatically searches all frames (main document + iframes) by default
-- **Visibility detection**: All elements returned with `isVisible` property (`true`/`false`)
+- **Visibility detection**: All elements returned with `isHidden` property (`true`/`false`)
 - **Bounding box data**: Returns position and dimensions for each found element
 - **XPath-like type definitions**: Extensible element type matching using XPath-like expressions
 - **Optimized performance**: Pre-compiled type matchers, O(n) innermost element filtering, and efficient Set-based lookups
@@ -92,14 +94,14 @@ browser-element-finder/
 
 ```js
 // Find all elements (visible and hidden)
-const results = ElementFinder.findElement('button')
+const results = ElementFinder.findElements('button')
 // Find by text
-const results = ElementFinder.findElement('button', 'Submit')
+const results = ElementFinder.findElements('button', 'Submit')
 // Find by text only
-const results = ElementFinder.findElement(null, 'seleniumbase')
+const results = ElementFinder.findElements(null, 'seleniumbase')
 // Check visibility of found elements
 results.elements.forEach((e) => {
-  console.log('Visible:', e.isVisible)
+  console.log('Hidden:', e.isHidden)
 })
 ```
 
@@ -113,7 +115,7 @@ The library automatically searches all frames (main + iframes). For agent/automa
 **Example**:
 
 ```js
-const results = ElementFinder.findElement('button')
+const results = ElementFinder.findElements('button')
 for (const item of results.elements) {
   if (item.frameIndex === -1 && item.element) {
     // Interact directly
@@ -123,6 +125,23 @@ for (const item of results.elements) {
     // (agent/driver-specific code here)
   }
 }
+```
+
+### Customizing Searchable Attributes
+
+You can customize which attributes the library searches for text (e.g., adding a custom `data-test-id` or removing `placeholder`).
+
+```js
+// Get current attributes
+const currentAttrs = ElementFinder.getSearchableAttributes()
+
+// Set new priority list
+ElementFinder.setSearchableAttributes([
+  'id',
+  'name',
+  'data-testid',
+  'placeholder',
+])
 ```
 
 ### Accessing Element Definitions and Searchable Attributes
@@ -151,24 +170,26 @@ const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchabl
 
 ## API Summary
 
-| Function                                          | Description                                                                   |
-| ------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                     |
-| `findElementByType(type, parent)`                 | Find elements by type only, returns `{ elements: [...] }`                     |
-| `findElementByAttributes(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                |
-| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }` |
-| `highlight(elements, color, width)`               | Highlight elements with outline                                               |
-| `unhighlight(elements)`                           | Remove highlight                                                              |
-| `getValidTypes()`                                 | List all supported element types                                              |
-| `getBoundingBox(element)`                         | Get bounding box for an element                                               |
-| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                         |
-| `getSearchableAttributes()`                       | Get current searchable attributes                                             |
-| `matchesType(el, type)`                           | Check if element matches a type                                               |
-| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                       |
-| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                            |
-| `getAllFrames(root)`                              | Get all frames (main + iframes)                                               |
-| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                             |
-| `splitByOperator(expr, op)`                       | Split XPath by operator                                                       |
+| Function                                          | Description                                                                    |
+| ------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                      |
+| `findElementsByType(type, parent)`                | Find elements by type only, returns `{ elements: [...] }`                      |
+| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                 |
+| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`  |
+| `highlight(elements, color, width)`               | Highlight elements with outline                                                |
+| `unhighlight(elements)`                           | Remove highlight                                                               |
+| `getValidTypes()`                                 | List all supported element types                                               |
+| `getValidAttributes()`                            | List all valid searchable attribute names                                      |
+| `getBoundingBox(element)`                         | Get bounding box for an element                                                |
+| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                          |
+| `getSearchableAttributes()`                       | Get current searchable attributes                                              |
+| `matchesType(el, type)`                           | Check if element matches a type                                                |
+| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                        |
+| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                             |
+| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                |
+| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                              |
+| `splitByOperator(expr, op)`                       | Split XPath by operator                                                        |
+| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute) |
 
 ---
 
@@ -183,10 +204,11 @@ Finds elements matching the specified type and/or text. Combines type and attrib
 | `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                  |
 | `parent`  | `Element` | `null`  | Parent element to search within                                                                                  |
 
-**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
+**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden }] }`
 
 - `element`: Raw DOM element (main frame only; for iframes, use `frameIndex` and re-query after switching context)
 - `frameIndex`: `-1` for main frame, `0, 1, 2...` for iframes
+- `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, or zero dimensions)
 
 **Agent/Automation Note**: Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElements` inside the iframe.
 
@@ -207,8 +229,8 @@ Finds elements matching the specified type with intelligent fallback to nearby e
 
 **Behavior**:
 
-- If only `type` is provided: delegates to `findElementByType(type, parent)`
-- If only `text` is provided: delegates to `findElementByAttributes(text, exact, parent)`
+- If only `type` is provided: delegates to `findElementsByType(type, parent)`
+- If only `text` is provided: delegates to `findElementsByAttribute(text, exact, parent)`
 - If both are provided: attempts direct match, then falls back to nearby elements
 
 **Fallback Strategy**: When no element matches both type and text directly, searches for nearby elements in this order:
@@ -220,11 +242,11 @@ Finds elements matching the specified type with intelligent fallback to nearby e
 **Example**:
 
 ```javascript
-// Type-only search (delegates to findElementByType)
+// Type-only search (delegates to findElementsByType)
 const result1 = ElementFinder.findProbableElements('button')
 // Returns all buttons on the page
 
-// Text-only search (delegates to findElementByAttributes)
+// Text-only search (delegates to findElementsByAttribute)
 const result2 = ElementFinder.findProbableElements(null, 'Submit')
 // Returns all elements containing "Submit"
 
@@ -265,6 +287,10 @@ Removes highlighting from elements.
 
 Returns an array of all valid element type names.
 
+### `getValidAttributes()`
+
+Returns an array of all valid searchable attribute names (same as `getSearchableAttributes()`).
+
 ### `getBoundingBox(element)`
 
 Returns the bounding box for an element.
@@ -285,7 +311,7 @@ Checks if an element matches the specified type definition.
 
 Checks if an element matches the specified text/attribute value. Safely handles edge case elements that may throw errors on attribute access.
 
-### `findElementByType(type, parent)`
+### `findElementsByType(type, parent)`
 
 Finds elements by type only. Searches all frames by default.
 
@@ -294,7 +320,7 @@ Finds elements by type only. Searches all frames by default.
 | `type`    | `string`  | `"element"` | Element type (see supported types below). Throws `TypeError` for non-string values. |
 | `parent`  | `Element` | `null`      | Parent element to search within                                                     |
 
-### `findElementByAttributes(value, exact, parent)`
+### `findElementsByAttribute(value, exact, parent)`
 
 Finds elements by text/attribute value only. Searches all frames by default.
 
@@ -329,7 +355,7 @@ The library automatically searches all frames (main + iframes) by default. Howev
 ### Iframe Element Limitations
 
 ```javascript
-const results = ElementFinder.findElement('button')
+const results = ElementFinder.findElements('button')
 
 results.elements.forEach((item) => {
   if (item.frameIndex === -1) {
@@ -352,7 +378,7 @@ To interact with elements inside an iframe, you must switch the Selenium driver 
 ```javascript
 // Find iframe elements
 const results = await driver.executeScript(`
-  return ElementFinder.findElement('button');
+  return ElementFinder.findElements('button');
 `)
 
 // Switch to iframe and interact
@@ -363,7 +389,7 @@ if (iframeElements.length > 0) {
 
   // Now find and interact with elements in the iframe
   const iframeResults = await driver.executeScript(`
-    return ElementFinder.findElement('button');
+    return ElementFinder.findElements('button');
   `)
   // These elements will have the element property since we're in the iframe context
 }

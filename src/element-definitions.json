@@ -17,7 +17,7 @@
   "menu": "self::menu or @role='menu'",
   "menuitem": "@role='menuitem'",
   "toolbar": "@role='toolbar'",
-  "dialog": "@role='dialog'",
+  "dialog": "@role='dialog' or @role='alertdialog'",
   "table": "self::table or @role='table'",
   "row": "self::tr or @role='row'",
   "column": "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",

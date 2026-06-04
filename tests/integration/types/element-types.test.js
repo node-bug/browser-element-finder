@@ -48,145 +48,193 @@ describe('ElementFinderByType - Element Types Fixture', () => {
     }
   });
 
-  describe('findElementByType', () => {
+  describe('findElementsByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('element');
+        return ElementFinder.findElementsByType('element');
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
-    it('should find buttons', async () => {
+    it('should find buttons and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('button');
+        return ElementFinder.findElementsByType('button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(7);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find checkboxes', async () => {
+    it('should find checkboxes and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('checkbox');
+        return ElementFinder.findElementsByType('checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find textboxes', async () => {
+    it('should find textboxes and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('textbox');
+        return ElementFinder.findElementsByType('textbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(6);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find links', async () => {
+    it('should find links and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('link');
+        return ElementFinder.findElementsByType('link');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find dropdowns', async () => {
+    it('should find dropdowns and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('dropdown');
+        return ElementFinder.findElementsByType('dropdown');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(4);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find sliders', async () => {
+    it('should find sliders and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('slider');
+        return ElementFinder.findElementsByType('slider');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find radios', async () => {
+    it('should find radios and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('radio');
+        return ElementFinder.findElementsByType('radio');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find headings', async () => {
+    it('should find headings and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('heading');
+        return ElementFinder.findElementsByType('heading');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(24);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find navigation elements', async () => {
+    it('should find navigation elements and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('navigation');
+        return ElementFinder.findElementsByType('navigation');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find images', async () => {
+    it('should find images and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('image');
+        return ElementFinder.findElementsByType('image');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find tables', async () => {
+    it('should find tables and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('table');
+        return ElementFinder.findElementsByType('table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find lists', async () => {
+    it('should find lists and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('list');
+        return ElementFinder.findElementsByType('list');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find file inputs', async () => {
+    it('should find file inputs and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('file');
+        return ElementFinder.findElementsByType('file');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find menus', async () => {
+    it('should find menus and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('menu');
+        return ElementFinder.findElementsByType('menu');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find toolbars', async () => {
+    it('should find toolbars and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('toolbar');
+        return ElementFinder.findElementsByType('toolbar');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find dialogs', async () => {
+    it('should find dialogs and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('dialog');
+        return ElementFinder.findElementsByType('dialog');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
+      // Validate first match has correct data-test-id
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
     it('should return empty array for unknown type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('unknown-type-xyz');
+        return ElementFinder.findElementsByType('unknown-type-xyz');
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -194,7 +242,7 @@ describe('ElementFinderByType - Element Types Fixture', () => {
     it('should throw TypeError for non-string type', async () => {
       await expect(async () => {
         await driver.executeScript(`
-          return ElementFinder.findElementByType(123);
+          return ElementFinder.findElementsByType(123);
         `);
       }).rejects.toThrow();
     });

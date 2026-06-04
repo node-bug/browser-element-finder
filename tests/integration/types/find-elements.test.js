@@ -55,6 +55,8 @@ describe('ElementFinder - findElements combined search', () => {
       const mainElements = result.elements.filter(e => e.element);
       // buttons-section (4) + menu-section (1) + toolbar-section (1) + switch-section (1) = 7
       expect(mainElements.length).toBe(7);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
     it('should find all links when type is "link" and text is undefined', async () => {
@@ -63,6 +65,8 @@ describe('ElementFinder - findElements combined search', () => {
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
     it('should find all elements when type is null', async () => {
@@ -74,7 +78,7 @@ describe('ElementFinder - findElements combined search', () => {
   });
 
   describe('findElements with text only', () => {
-    it('should find elements by text when type is null', async () => {
+    it('should find elements by text when type is null and validate first match', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElements(null, 'Standard Button');
       `);
@@ -82,19 +86,23 @@ describe('ElementFinder - findElements combined search', () => {
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('btn-standard');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('btn-standard');
     });
 
-    it('should find elements by id when type is null', async () => {
+    it('should find elements by id when type is null and validate first match', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElements(null, 'btn-standard');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('btn-standard');
     });
   });
 
   describe('findElements with type and text combined', () => {
-    it('should find button with matching text', async () => {
+    it('should find button with matching text and validate first match', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElements('button', 'Standard Button');
       `);
@@ -102,9 +110,11 @@ describe('ElementFinder - findElements combined search', () => {
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('btn-standard');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('btn-standard');
     });
 
-    it('should find link with matching text', async () => {
+    it('should find link with matching text and validate first match', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElements('link', 'Home');
       `);
@@ -112,9 +122,11 @@ describe('ElementFinder - findElements combined search', () => {
       expect(mainElements.length).toBe(1);
       const href = await mainElements[0].element.getAttribute('href');
       expect(href).toContain('home');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('link-home');
     });
 
-    it('should find textbox with matching placeholder', async () => {
+    it('should find textbox with matching placeholder and validate first match', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElements('textbox', 'Textarea content');
       `);
@@ -122,6 +134,8 @@ describe('ElementFinder - findElements combined search', () => {
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('textbox-textarea');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('textbox-textarea');
     });
 
     it('should return empty when no match for combined criteria', async () => {
@@ -133,12 +147,14 @@ describe('ElementFinder - findElements combined search', () => {
   });
 
   describe('findElements with exact matching', () => {
-    it('should find exact text match', async () => {
+    it('should find exact text match and validate first match', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElements(null, 'Standard Button', true);
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('btn-standard');
     });
 
     it('should not find partial match with exact=true', async () => {
@@ -154,20 +170,24 @@ describe('ElementFinder - findElements combined search', () => {
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('btn-standard');
     });
   });
 
   describe('findElements with parent parameter', () => {
-    it('should find elements within parent by type only', async () => {
+    it('should find elements within parent by type only and validate first match', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
         return ElementFinder.findElements('button', null, false, parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(4);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find elements within parent by text only', async () => {
+    it('should find elements within parent by text only and validate first match', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
         return ElementFinder.findElements(null, 'Standard Button', false, parent);
@@ -176,9 +196,11 @@ describe('ElementFinder - findElements combined search', () => {
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('btn-standard');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('btn-standard');
     });
 
-    it('should find elements within parent by type and text', async () => {
+    it('should find elements within parent by type and text and validate first match', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
         return ElementFinder.findElements('button', 'Standard Button', false, parent);
@@ -187,6 +209,8 @@ describe('ElementFinder - findElements combined search', () => {
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('btn-standard');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('btn-standard');
     });
 
     it('should return empty when no match in parent', async () => {
@@ -197,7 +221,7 @@ describe('ElementFinder - findElements combined search', () => {
       expect(result.elements.length).toBe(0);
     });
 
-    it('should find links within navigation section', async () => {
+    it('should find links within navigation section and validate first match', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('navigation-section');
         return ElementFinder.findElements('link', 'Home', false, parent);

@@ -38,7 +38,7 @@
         
         <div class="field-group">
             <label for="single-select">Single Select</label>
-            <select id="single-select">
+            <select id="single-select" data-test-id="single-select">
                 <option value="">Please choose...</option>
                 <option value="apple">Apple</option>
                 <option value="banana">Banana</option>
@@ -48,7 +48,7 @@
 
         <div class="field-group">
             <label for="multi-select">Multiple Select (Ctrl/Cmd + Click)</label>
-            <select id="multi-select" multiple size="5">
+            <select id="multi-select" data-test-id="multi-select" multiple size="5">
                 <option value="opt1">Option 1</option>
                 <option value="opt2">Option 2</option>
                 <option value="opt3">Option 3</option>
@@ -63,7 +63,7 @@
         <h2>2. Custom Div-based Dropdown</h2>
         <div class="field-group">
             <label>Custom UI Dropdown</label>
-            <div class="custom-dropdown" id="custom-dropdown-1" aria-label="Custom UI">
+            <div class="custom-dropdown" id="custom-dropdown-1" data-test-id="custom-dropdown-1" aria-label="Custom UI">
                 <div class="custom-dropdown-trigger" onclick="toggleCustomDropdown('custom-dropdown-1')">
                     <span class="selected-value">Select an option</span>
                     <span>▼</span>
@@ -82,7 +82,7 @@
         <h2>3. Cascading Dropdowns</h2>
         <div class="field-group">
             <label for="category-select">Category</label>
-            <select id="category-select" onchange="updateSubcategory(this.value)">
+            <select id="category-select" data-test-id="category-select" onchange="updateSubcategory(this.value)">
                 <option value="">Select Category</option>
                 <option value="fruits">Fruits</option>
                 <option value="vehicles">Vehicles</option>
@@ -90,7 +90,7 @@
         </div>
         <div class="field-group">
             <label for="subcategory-select">Subcategory</label>
-            <select id="subcategory-select" disabled>
+            <select id="subcategory-select" data-test-id="subcategory-select" disabled>
                 <option value="">First select category</option>
             </select>
         </div>

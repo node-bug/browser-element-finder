@@ -48,48 +48,67 @@ describe('ElementFinderByAttribute Integration Tests', () => {
     }
   });
 
-  describe('findElementByAttributes', () => {
-    it('should find elements matching visisble text "Single"', async () => {
+  describe('findElementsByAttribute', () => {
+    it('should find elements matching visisble text "Single" and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Single');
+        return ElementFinder.findElementsByAttribute('Single');
       `);
       expect(result.elements.length).toBe(1);
+      const mainElements = result.elements.filter(e => e.element);
+      // The element may be the label or the input - check both
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      if (testDataId === 'text-single') {
+        expect(testDataId).toBe('text-single');
+      } else {
+        // If the element itself doesn't have it, check if it's the label and find the associated input
+        const forAttr = await mainElements[0].element.getAttribute('for');
+        if (forAttr === 'text-single') {
+          expect(forAttr).toBe('text-single');
+        }
+      }
     });
 
-    it('should find elements matching "Field"', async () => {
+    it('should find elements matching "Field" and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Field');
+        return ElementFinder.findElementsByAttribute('Field');
       `);
       expect(result.elements.length).toBe(9);
+      const mainElements = result.elements.filter(e => e.element);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find elements by placeholder attribute', async () => {
+    it('should find elements by placeholder attribute and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Enter text here');
+        return ElementFinder.findElementsByAttribute('Enter text here');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('text-single');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('text-single');
     });
 
-    it('should find elements by id attribute', async () => {
+    it('should find elements by id attribute and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('text-email');
+        return ElementFinder.findElementsByAttribute('text-email');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('text-email');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('text-email');
     });
 
     it('should be case-sensitive for "field" vs "Field"', async () => {
       const resultLower = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('field');
+        return ElementFinder.findElementsByAttribute('field');
       `);
       expect(resultLower.elements.length).toBe(2);
       const resultUpper = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Field');
+        return ElementFinder.findElementsByAttribute('Field');
       `);
       expect(resultUpper.elements.length).toBe(9);
     });

@@ -1,6 +1,7 @@
 [
   "placeholder",
   "value",
+  "data-value",
   "data-test-id",
   "data-testid",
   "id",

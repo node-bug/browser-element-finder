@@ -48,97 +48,109 @@ describe('ElementFinderByType - Tables Fixture', () => {
     }
   });
 
-  describe('findElementByType', () => {
+  describe('findElementsByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('element');
+        return ElementFinder.findElementsByType('element');
       `);
       expect(result.elements.length).toBe(267);
     });
 
-    it('should find tables', async () => {
+    it('should find tables and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('table');
+        return ElementFinder.findElementsByType('table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(6);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find rows', async () => {
+    it('should find rows and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('row');
+        return ElementFinder.findElementsByType('row');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(120);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find cells', async () => {
+    it('should find cells and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('cell');
+        return ElementFinder.findElementsByType('cell');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(240);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find columns', async () => {
+    it('should find columns and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('column');
+        return ElementFinder.findElementsByType('column');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(256);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find buttons', async () => {
+    it('should find buttons and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('button');
+        return ElementFinder.findElementsByType('button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find headings', async () => {
+    it('should find headings and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('heading');
+        return ElementFinder.findElementsByType('heading');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(7);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find links', async () => {
+    it('should find links and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('link');
+        return ElementFinder.findElementsByType('link');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find checkboxes', async () => {
+    it('should find checkboxes and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('checkbox');
+        return ElementFinder.findElementsByType('checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find textboxes', async () => {
+    it('should find textboxes and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('textbox');
+        return ElementFinder.findElementsByType('textbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find dropdowns', async () => {
+    it('should find dropdowns and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('dropdown');
+        return ElementFinder.findElementsByType('dropdown');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find lists', async () => {
+    it('should find lists and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('list');
+        return ElementFinder.findElementsByType('list');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);

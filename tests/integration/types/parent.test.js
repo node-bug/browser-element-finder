@@ -48,11 +48,11 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     }
   });
 
-  describe('findElementByType with parent parameter', () => {
+  describe('findElementsByType with parent parameter', () => {
     it('should find elements within a specific parent element', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementByType('button', parent);
+        return ElementFinder.findElementsByType('button', parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Only buttons within buttons-section: btn-standard, btn-submit, btn-role, btn-input
@@ -62,7 +62,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should find buttons within navigation section', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('navigation-section');
-        return ElementFinder.findElementByType('link', parent);
+        return ElementFinder.findElementsByType('link', parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Only links within navigation-section: Home, About, Page 1
@@ -72,7 +72,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should find textboxes within textboxes section', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('textboxes-section');
-        return ElementFinder.findElementByType('textbox', parent);
+        return ElementFinder.findElementsByType('textbox', parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Only textboxes within textboxes-section: textarea, text, password, email, search, role textbox
@@ -82,7 +82,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should return empty array when no elements match in parent', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementByType('textbox', parent);
+        return ElementFinder.findElementsByType('textbox', parent);
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -90,7 +90,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should find checkboxes within checkboxes section', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('checkboxes-section');
-        return ElementFinder.findElementByType('checkbox', parent);
+        return ElementFinder.findElementsByType('checkbox', parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Only checkboxes within checkboxes-section: checkbox-standard, checkbox-role
@@ -98,11 +98,11 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     });
   });
 
-  describe('findElementByAttributes with parent parameter', () => {
+  describe('findElementsByAttribute with parent parameter', () => {
     it('should find elements within a specific parent element', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementByAttributes('Standard Button', false, parent);
+        return ElementFinder.findElementsByAttribute('Standard Button', false, parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Only "Standard Button" within buttons-section
@@ -112,7 +112,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should find elements by id within parent section', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementByAttributes('btn-standard', false, parent);
+        return ElementFinder.findElementsByAttribute('btn-standard', false, parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -121,7 +121,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should return empty array when no elements match in parent', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementByAttributes('Home', false, parent);
+        return ElementFinder.findElementsByAttribute('Home', false, parent);
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -129,7 +129,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should find links within navigation section by text', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('navigation-section');
-        return ElementFinder.findElementByAttributes('Home', false, parent);
+        return ElementFinder.findElementsByAttribute('Home', false, parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -138,7 +138,7 @@ describe('ElementFinder - Parent Parameter Tests', () => {
     it('should find textboxes within textboxes section', async () => {
       const result = await driver.executeScript(`
         const parent = document.getElementById('textboxes-section');
-        return ElementFinder.findElementByAttributes('Textarea content', false, parent);
+        return ElementFinder.findElementsByAttribute('Textarea content', false, parent);
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);

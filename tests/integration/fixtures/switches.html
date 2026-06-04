@@ -171,7 +171,7 @@
             <div class="label-desc">The real checkbox is hidden. Testing frameworks often throw "Element is not interceptable" errors unless clicking the sibling <code>.slider</code> label/span layer.</div>
         </div>
         <label class="switch-cb">
-            <input type="checkbox" id="checkbox-switch">
+            <input type="checkbox" id="checkbox-switch" data-test-id="checkbox-switch">
             <span class="slider"></span>
         </label>
     </div>
@@ -182,7 +182,7 @@
             <label id="aria-label">ARIA Div Switch</label>
             <div class="label-desc">No native form controls. Uses JavaScript to handle state transitions. Automation needs to parse <code>aria-checked</code> rather than properties.</div>
         </div>
-        <div id="aria-switch" class="aria-switch" role="switch" aria-checked="false" aria-labelledby="aria-label" tabindex="0"></div>
+        <div id="aria-switch" class="aria-switch" data-test-id="aria-switch" role="switch" aria-checked="false" aria-labelledby="aria-label" tabindex="0"></div>
     </div>
 
     <!-- 3. Dynamic Native Button toggles -->
@@ -191,7 +191,7 @@
             <label for="button-switch">Native Button Switch</label>
             <div class="label-desc">Standard HTML button control changing classes or attribute flags dynamically via JavaScript execution.</div>
         </div>
-        <button id="button-switch" class="btn-switch" data-state="off">OFF</button>
+        <button id="button-switch" class="btn-switch" data-test-id="button-switch" data-state="off">OFF</button>
     </div>
 
     <!-- 4. Pure HTML baseline element -->
@@ -200,7 +200,7 @@
             <label for="native-checkbox">Bare Native Checkbox</label>
             <div class="label-desc">Unstyled baseline representation. Handled flawlessly out of the box by standard <code>.click()</code> or <code>.check()</code> commands.</div>
         </div>
-        <input type="checkbox" id="native-checkbox" style="transform: scale(1.5); margin-right: 10px;">
+        <input type="checkbox" id="native-checkbox" data-test-id="native-checkbox" style="transform: scale(1.5); margin-right: 10px;">
     </div>
 
 
@@ -214,7 +214,7 @@
             <div class="label-desc">Validates if the framework cleanly intercepts disabled parameters and throws expected interaction errors safely.</div>
         </div>
         <label class="switch-cb">
-            <input type="checkbox" id="disabled-switch" disabled>
+            <input type="checkbox" id="disabled-switch" data-test-id="disabled-switch" disabled>
             <span class="slider"></span>
         </label>
     </div>
@@ -226,7 +226,7 @@
             <div class="label-desc">Playwright pierces this natively. Selenium requires extracting the web component host shadow root context first.</div>
         </div>
         <!-- Shadow Host Mount Node Target -->
-        <div id="shadow-host"></div>
+        <div id="shadow-host" data-test-id="shadow-host"></div>
     </div>
 
     <!-- 7. Document Frame encapsulation (IFrame) -->
@@ -235,7 +235,7 @@
             <label>Switch inside an iFrame Document</label>
             <div class="label-desc">Requires driving a context switch step (e.g., <code>driver.switchTo().frame()</code> or Playwright Frame Locators).</div>
         </div>
-        <iframe id="switch-iframe" title="Iframe Switch Environment"></iframe>
+        <iframe id="switch-iframe" data-test-id="switch-iframe" title="Iframe Switch Environment"></iframe>
     </div>
 </div>
 

@@ -310,7 +310,7 @@ export function getBoundingBox(el) {
  * @param {Element|null} [parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementByType(type = "element", parent = null) {
+export function findElementsByType(type = "element", parent = null) {
   if (type === null || type === undefined) {
     type = "element";
   }
@@ -399,7 +399,7 @@ function extractElements(elements) {
 /**
  * Highlights elements on the page with a colored outline.
  * Only highlights elements that have a DOM element reference (skips iframe elements).
- * @param {Array|Object} elements - Elements to highlight (from findElementByType result or array)
+ * @param {Array|Object} elements - Elements to highlight (from findElementsByType result or array)
  */
 export function highlight(elements) {
   const items = extractElements(elements);
@@ -420,7 +420,7 @@ export function highlight(elements) {
 
 /**
  * Removes highlighting from elements.
- * @param {Array|Object} elements - Elements to unhighlight (from findElementByType result or array)
+ * @param {Array|Object} elements - Elements to unhighlight (from findElementsByType result or array)
  */
 export function unhighlight(elements) {
   const items = extractElements(elements);
