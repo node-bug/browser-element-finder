@@ -9,6 +9,7 @@
 - [x] **Code deduplication**: Extracted common element extraction logic for `highlight`/`unhighlight`
 - [x] **Null input handling**: `extractElements` now guards against null/undefined input
 - [x] **Shadow DOM safety**: `getAllElements` wraps shadowRoot access in try-catch for restricted elements
+- [x] **Animation control**: `pauseAnimations()` and `resumeAnimations()` for stable screenshots
 
 ## Phase 1: High-Impact, Low-Effort Features
 

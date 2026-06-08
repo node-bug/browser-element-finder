@@ -1117,6 +1117,112 @@ export function unhighlight(elements) {
 }
 
 /**
+ * Global state for animation pausing (supports nested pause/resume)
+ */
+const animationPauseStack = [];
+
+/**
+ * Pauses all CSS animations and transitions on the page.
+ * Stores original animation state for later restoration.
+ * Supports nested calls - each pause() needs a corresponding resume().
+ * @returns {Object} Object containing the restore function and state info
+ */
+export function pauseAnimations() {
+  // Store original styles for restoration
+  const originalStyles = new Map();
+  const elements = getAllElements();
+
+  for (const el of elements) {
+    if (el && el.style) {
+      // Only store and modify if not already paused
+      if (el.style.animationPlayState !== 'paused') {
+        originalStyles.set(el, {
+          animationPlayState: el.style.animationPlayState,
+          transitionProperty: el.style.transitionProperty,
+          webkitAnimationPlayState: el.style.webkitAnimationPlayState,
+          webkitTransitionProperty: el.style.webkitTransitionProperty,
+        });
+
+        // Pause animations and disable transitions
+        el.style.animationPlayState = 'paused';
+        el.style.transitionProperty = 'none';
+        el.style.webkitAnimationPlayState = 'paused';
+        el.style.webkitTransitionProperty = 'none';
+      }
+    }
+  }
+
+  // Also pause animations on document level via CSSOM
+  // Only add stylesheet if not already present
+  let styleSheet = document.getElementById('elementfinder-animation-pause');
+  if (!styleSheet) {
+    styleSheet = document.createElement('style');
+    styleSheet.id = 'elementfinder-animation-pause';
+    styleSheet.textContent = `
+      *, *::before, *::after {
+        animation-play-state: paused !important;
+        transition-property: none !important;
+        -webkit-animation-play-state: paused !important;
+        -webkit-transition-property: none !important;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        *, *::before, *::after {
+          animation-duration: 0s !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0s !important;
+        }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+  }
+
+  // Push to stack for nested support
+  const pauseState = { originalStyles, pausedCount: originalStyles.size };
+  animationPauseStack.push(pauseState);
+
+  return pauseState;
+}
+
+/**
+ * Resumes all CSS animations and transitions that were previously paused.
+ * Supports nested calls - only removes stylesheet when stack is empty.
+ * @param {Object} [pauseState] - Optional state object from pauseAnimations(). If omitted, pops the most recent pause.
+ */
+export function resumeAnimations(pauseState) {
+  // If no pauseState provided, pop the most recent from stack (for Selenium/browser use)
+  if (!pauseState) {
+    if (animationPauseStack.length === 0) return;
+    pauseState = animationPauseStack.pop();
+  } else {
+    // If pauseState provided, remove it from stack
+    const index = animationPauseStack.indexOf(pauseState);
+    if (index === -1) return; // Not found in stack
+    animationPauseStack.splice(index, 1);
+  }
+
+  // Restore original styles
+  const originalStyles = pauseState.originalStyles;
+  if (originalStyles) {
+    for (const [el, styles] of originalStyles) {
+      if (el && el.style) {
+        el.style.animationPlayState = styles.animationPlayState || '';
+        el.style.transitionProperty = styles.transitionProperty || '';
+        el.style.webkitAnimationPlayState = styles.webkitAnimationPlayState || '';
+        el.style.webkitTransitionProperty = styles.webkitTransitionProperty || '';
+      }
+    }
+  }
+
+  // Only remove stylesheet when stack is empty (all pauses resolved)
+  if (animationPauseStack.length === 0) {
+    const styleSheet = document.getElementById('elementfinder-animation-pause');
+    if (styleSheet) {
+      styleSheet.remove();
+    }
+  }
+}
+
+/**
  * Returns an array of all valid element type names.
  */
 export function getValidTypes() {

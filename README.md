@@ -1,6 +1,6 @@
 # @nodebug/browser-element-finder
 
-**Version**: 1.1.7
+**Version**: 1.1.8
 
 **A robust, agent-friendly JavaScript library for identifying DOM elements by type and/or text content, with full support for shadow DOM, iframes, and automation workflows.**
 
@@ -144,6 +144,33 @@ ElementFinder.setSearchableAttributes([
 ])
 ```
 
+### Pausing Animations for Screenshots
+
+When taking screenshots or performing visual assertions, animations can cause flaky tests. Use `pauseAnimations()` and `resumeAnimations()` to freeze and restore animations:
+
+```js
+// Pause all CSS animations and transitions
+const pauseState = ElementFinder.pauseAnimations()
+
+// Take screenshot or perform visual assertions
+// ... screenshot code here ...
+
+// Resume animations
+ElementFinder.resumeAnimations(pauseState)
+```
+
+For Selenium WebDriver tests, call the functions directly in the browser context:
+
+```js
+// Pause animations (state is stored internally in browser)
+await driver.executeScript('return ElementFinder.pauseAnimations()')
+
+// ... take screenshot ...
+
+// Resume animations (pops from internal stack - no argument needed)
+await driver.executeScript('ElementFinder.resumeAnimations()')
+```
+
 ### Accessing Element Definitions and Searchable Attributes
 
 The package exports JSON files containing element type definitions and searchable attributes:
@@ -178,6 +205,8 @@ const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchabl
 | `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`  |
 | `highlight(elements, color, width)`               | Highlight elements with outline                                                |
 | `unhighlight(elements)`                           | Remove highlight                                                               |
+| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                 |
+| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                         |
 | `getValidTypes()`                                 | List all supported element types                                               |
 | `getValidAttributes()`                            | List all valid searchable attribute names                                      |
 | `getBoundingBox(element)`                         | Get bounding box for an element                                                |
@@ -225,7 +254,7 @@ Finds elements matching the specified type with intelligent fallback to nearby e
 | `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                   |
 | `parent`  | `Element` | `null`  | Parent element to search within                                                                                                   |
 
-**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex }] }`
+**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden }] }`
 
 **Behavior**:
 
@@ -399,33 +428,33 @@ if (iframeElements.length > 0) {
 
 ## Supported Element Types
 
-| Type          | Description                                             |
-| ------------- | ------------------------------------------------------- |
-| `button`      | `<button>`, `[role="button"]`, `[type="button"]`        |
-| `checkbox`    | `<input type="checkbox">`, `[role="checkbox"]`          |
-| `switch`      | Toggle switches, checkboxes with switch role            |
-| `slider`      | `<input type="range">`, `[role="slider"]`               |
-| `datepicker`  | `<input type="date">`                                   |
-| `colorpicker` | `<input type="color">`                                  |
-| `radio`       | `<input type="radio">`, `[role="radio"]`                |
-| `dropdown`    | `<select>`, `[role="combobox"]`, `[role="listbox"]`     |
-| `textbox`     | `<input>`, `<textarea>`, `[role="textbox"]`             |
-| `link`        | `<a>`, `[role="link"]`, `[href]`                        |
-| `heading`     | `<h1>-<h6>`, `[role="heading"]`                         |
-| `navigation`  | `<nav>`, `[role="navigation"]`                          |
-| `list`        | `<ul>`, `<ol>`, `[role="list"]`                         |
-| `listitem`    | `<li>`, `[role="listitem"]`                             |
-| `menu`        | `<menu>`, `[role="menu"]`                               |
-| `menuitem`    | `[role="menuitem"]`                                     |
-| `toolbar`     | `[role="toolbar"]`                                      |
-| `dialog`      | `[role="dialog"]`                                       |
-| `table`       | `<table>`, `[role="table"]`                             |
-| `row`         | `<tr>`, `[role="row"]`                                  |
-| `column`      | `<td>`, `<th>`, `[role="cell"]`                         |
-| `cell`        | `<td>`, `[role="cell"]` (data cells only, no expansion) |
-| `image`       | `<img>`, `[role="img"]`                                 |
-| `file`        | `<input type="file"]`                                   |
-| `element`     | Matches all elements                                    |
+| Type          | Description                                                                                          |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| `button`      | `<button>`, `[role="button"]`, `[type="button"]`, `[type="submit"]`                                  |
+| `checkbox`    | `<input type="checkbox">`, `[role="checkbox"]`                                                       |
+| `switch`      | Toggle switches, checkboxes with switch role, buttons with `class="switch"` or `data-state`          |
+| `slider`      | `<input type="range">`, `[role="slider"]`                                                            |
+| `datepicker`  | `<input type="date">`, `[role="date"]`                                                               |
+| `colorpicker` | `<input type="color">`, `[role="color"]`                                                             |
+| `radio`       | `<input type="radio">`, `[role="radio"]`                                                             |
+| `dropdown`    | `<select>`, `[role="combobox"]`, `[role="listbox"]`, class-based dropdown/trigger, ancestor matching |
+| `textbox`     | `<textarea>`, `<input>` (text/password/search/email/number/tel/url), `[role="textbox"]`              |
+| `link`        | `<a>`, `[role="link"]`, `[href]`                                                                     |
+| `heading`     | `<h1>-<h6>`, `[role="heading"]`                                                                      |
+| `navigation`  | `<nav>`, `[role="navigation"]`                                                                       |
+| `list`        | `<ul>`, `<ol>`, `[role="list"]`                                                                      |
+| `listitem`    | `<li>`, `[role="listitem"]`                                                                          |
+| `menu`        | `<menu>`, `[role="menu"]`                                                                            |
+| `menuitem`    | `[role="menuitem"]`                                                                                  |
+| `toolbar`     | `[role="toolbar"]`                                                                                   |
+| `dialog`      | `[role="dialog"]`, `[role="alertdialog"]`                                                            |
+| `table`       | `<table>`, `[role="table"]`                                                                          |
+| `row`         | `<tr>`, `[role="row"]`                                                                               |
+| `column`      | `<td>`, `<th>`, `[role="cell"]`, `[role="gridcell"]`, `[role="columnheader"]`                        |
+| `cell`        | `<td>`, `[role="cell"]`, `[role="gridcell"]` (data cells only, no expansion)                         |
+| `image`       | `<img>`, `[role="img"]`, `[alt]`                                                                     |
+| `file`        | `<input type="file">`                                                                                |
+| `element`     | Matches all elements                                                                                 |
 
 ---
 
@@ -464,8 +493,8 @@ const headerCell = ElementFinder.findElement('cell', 'City')
 
 By default, the library searches these attributes (in priority order):
 
-- `placeholder`, `value`, `data-test-id`, `data-testid`, `id`
-- `resource-id`, `name`, `aria-label`, `class`, `hint`
+- `placeholder`, `value`, `data-value`, `data-test-id`, `data-testid`, `id`
+- `resource-id`, `name`, `aria-label`, `hint`
 - `title`, `tooltip`, `alt`, `src`, `aria-labelledby`
 
 ---
