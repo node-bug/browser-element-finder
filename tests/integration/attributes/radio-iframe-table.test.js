@@ -48,10 +48,10 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
     }
   });
 
-  describe('findElementByAttributes - Button text search', () => {
+  describe('findElementsByAttribute - Button text search', () => {
     it('should find elements containing "Button" in text or attributes', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Button');
+        return ElementFinder.findElementsByAttribute('Button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Should find: 2 td elements with "RadioButton 1/2" text + 2 input elements with "radioButton1/2" ids
@@ -60,7 +60,7 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
 
     it('should find elements by exact text "RadioButton 1:"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('RadioButton 1:');
+        return ElementFinder.findElementsByAttribute('RadioButton 1:');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Should find: 1 td element with text "RadioButton 1:" (input id "radioButton1" doesn't match due to case sensitivity)
@@ -69,7 +69,7 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
 
     it('should find elements by partial text "RadioButton 1" (substring match)', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('RadioButton 1');
+        return ElementFinder.findElementsByAttribute('RadioButton 1');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Should find: 1 td element with text "RadioButton 1:" (input id "radioButton1" doesn't match due to case sensitivity)
@@ -78,7 +78,7 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
 
     it('should find elements by exact text "RadioButton 2:"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('RadioButton 2:');
+        return ElementFinder.findElementsByAttribute('RadioButton 2:');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // Should find: 1 td element with text "RadioButton 2:" (input id "radioButton2" doesn't match due to case sensitivity)
@@ -87,7 +87,7 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
 
     it('should find radio buttons by name attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('radioGroup1');
+        return ElementFinder.findElementsByAttribute('radioGroup1');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -95,7 +95,7 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
 
     it('should find iframes by id attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('myFrame1');
+        return ElementFinder.findElementsByAttribute('myFrame1');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -103,17 +103,17 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
 
     it('should find iframes by name attribute', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('frameName2');
+        return ElementFinder.findElementsByAttribute('frameName2');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
     });
   });
 
-  describe('findElementByAttributes - Button text search', () => {
+  describe('findElementsByAttribute - Button text search', () => {
     it('should find 4 elements containing "Button"', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Button');
+        return ElementFinder.findElementsByAttribute('Button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(4);

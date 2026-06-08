@@ -9,10 +9,12 @@
 - [x] **Code deduplication**: Extracted common element extraction logic for `highlight`/`unhighlight`
 - [x] **Null input handling**: `extractElements` now guards against null/undefined input
 - [x] **Shadow DOM safety**: `getAllElements` wraps shadowRoot access in try-catch for restricted elements
+- [x] **Animation control**: `pauseAnimations()` and `resumeAnimations()` for stable screenshots
 
 ## Phase 1: High-Impact, Low-Effort Features
 
 - [x] `findElements(type, text, exact, parent)` - Combined type and attribute search (completed)
+- [x] `isHidden` flag - All returned elements include `isHidden` property for visibility detection
 - [ ] `countElements(type, text, exact, parent)` - Return count without full element data
 - [ ] `waitForElement(type, text, timeout, interval, exact, parent)` - Poll until found or timeout
 - [ ] `getElementState(element)` - Get `{ visible, enabled, selected, checked, focused }` state

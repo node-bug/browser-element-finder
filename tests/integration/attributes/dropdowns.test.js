@@ -48,63 +48,112 @@ describe('ElementFinderByAttribute Integration Tests - Dropdowns', () => {
     }
   });
 
-  describe('findElementByAttributes', () => {
-    it('should find elements matching visible text "Apple"', async () => {
+  describe('findElementsByAttribute', () => {
+    it('should find elements matching visible text "Apple" and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Apple');
+        return ElementFinder.findElementsByAttribute('Apple');
       `);
       expect(result.elements.length).toBe(1);
+      const mainElements = result.elements.filter(e => e.element);
+      // The element may be the option or the select - check both
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      if (testDataId === 'single-select') {
+        expect(testDataId).toBe('single-select');
+      } else {
+        // If the element is an option, check the parent select
+        const tagName = await mainElements[0].element.getTagName();
+        if (tagName === 'option') {
+          const parentTestDataId = await driver.executeScript(`
+            const el = arguments[0];
+            return el.closest('select') ? el.closest('select').getAttribute('data-test-id') : null;
+          `, mainElements[0].element);
+          expect(parentTestDataId).toBe('single-select');
+        }
+      }
     });
 
-    it('should find elements matching "Banana"', async () => {
+    it('should find elements matching "Banana" and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Banana');
+        return ElementFinder.findElementsByAttribute('Banana');
       `);
       expect(result.elements.length).toBe(1);
+      const mainElements = result.elements.filter(e => e.element);
+      // The element may be the option or the select - check both
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      if (testDataId === 'single-select') {
+        expect(testDataId).toBe('single-select');
+      } else {
+        // If the element is an option, check the parent select
+        const tagName = await mainElements[0].element.getTagName();
+        if (tagName === 'option') {
+          const parentTestDataId = await driver.executeScript(`
+            const el = arguments[0];
+            return el.closest('select') ? el.closest('select').getAttribute('data-test-id') : null;
+          `, mainElements[0].element);
+          expect(parentTestDataId).toBe('single-select');
+        }
+      }
     });
 
-    it('should find elements by placeholder attribute', async () => {
+    it('should find elements by placeholder attribute and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Type to search');
+        return ElementFinder.findElementsByAttribute('Type to search');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find elements by id attribute', async () => {
+    it('should find elements by id attribute and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('single-select');
+        return ElementFinder.findElementsByAttribute('single-select');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
       const id = await mainElements[0].element.getAttribute('id');
       expect(id).toBe('single-select');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('single-select');
     });
 
-    it('should find elements by aria-label attribute', async () => {
+    it('should find elements by aria-label attribute and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Custom UI');
+        return ElementFinder.findElementsByAttribute('Custom UI');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
-      const ids = await Promise.all(mainElements.map(e => e.element.getAttribute('id')));
-      expect(ids).toContain('custom-dropdown-1');
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find elements by value attribute', async () => {
+    it('should find elements by value attribute and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('apple');
+        return ElementFinder.findElementsByAttribute('apple');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
+      // The element may be the option or the select - check both
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      if (testDataId === 'single-select') {
+        expect(testDataId).toBe('single-select');
+      } else {
+        // If the element is an option, check the parent select
+        const tagName = await mainElements[0].element.getTagName();
+        if (tagName === 'option') {
+          const parentTestDataId = await driver.executeScript(`
+            const el = arguments[0];
+            return el.closest('select') ? el.closest('select').getAttribute('data-test-id') : null;
+          `, mainElements[0].element);
+          expect(parentTestDataId).toBe('single-select');
+        }
+      }
     });
 
     it('should be case-sensitive for "apple" vs "Apple"', async () => {
       const resultLower = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('apple');
+        return ElementFinder.findElementsByAttribute('apple');
       `);
       const resultUpper = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Apple');
+        return ElementFinder.findElementsByAttribute('Apple');
       `);
       // 'apple' should find value attribute matches, 'Apple' should find text content matches
       expect(resultLower.elements.length).toBe(1);

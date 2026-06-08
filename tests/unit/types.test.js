@@ -14,7 +14,7 @@ import {
   getBoundingBox,
   matchesType,
   getAllElements,
-  findElementByType,
+  findElementsByType,
   highlight,
   unhighlight
 } from '../../src/element-finder.js';
@@ -310,18 +310,18 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     });
   });
 
-  describe('findElementByType', () => {
+  describe('findElementsByType', () => {
     it('should return empty array for unknown type', () => {
-      const result = findElementByType('unknown-type');
+      const result = findElementsByType('unknown-type');
       expect(result.elements).toEqual([]);
     });
 
     it('should throw TypeError for non-string type', () => {
-      expect(() => findElementByType(123)).toThrow(TypeError);
+      expect(() => findElementsByType(123)).toThrow(TypeError);
     });
 
     it('should find all button elements', () => {
-      const result = findElementByType('button');
+      const result = findElementsByType('button');
       expect(result.elements.length).toBe(3);
       result.elements.forEach(el => {
         expect(el.tagName).toBe('button');
@@ -329,7 +329,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     });
 
     it('should find all textbox elements', () => {
-      const result = findElementByType('textbox');
+      const result = findElementsByType('textbox');
       // 2 text inputs + 1 textarea
       expect(result.elements.length).toBe(3);
       result.elements.forEach(el => {
@@ -338,7 +338,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     });
 
     it('should find all datepicker elements', () => {
-      const result = findElementByType('datepicker');
+      const result = findElementsByType('datepicker');
       expect(result.elements.length).toBe(1);
       result.elements.forEach(el => {
         expect(el.tagName).toBe('input');
@@ -346,7 +346,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     });
 
     it('should find all colorpicker elements', () => {
-      const result = findElementByType('colorpicker');
+      const result = findElementsByType('colorpicker');
       expect(result.elements.length).toBe(1);
       result.elements.forEach(el => {
         expect(el.tagName).toBe('input');
@@ -354,7 +354,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     });
 
     it('should find all link elements', () => {
-      const result = findElementByType('link');
+      const result = findElementsByType('link');
       expect(result.elements.length).toBe(2);
       result.elements.forEach(el => {
         expect(el.tagName).toBe('a');
@@ -362,12 +362,12 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     });
 
     it('should find all elements with "element" type', () => {
-      const result = findElementByType('element');
+      const result = findElementsByType('element');
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should return elements with boundingBox and tagName', () => {
-      const result = findElementByType('button');
+      const result = findElementsByType('button');
       expect(result.elements.length).toBeGreaterThan(0);
       
       const firstElement = result.elements[0];
@@ -378,19 +378,19 @@ describe('ElementFinderByType Node.js Module Tests', () => {
 
     it('should search within parent element when provided', () => {
       const container = document.querySelector('.container');
-      const result = findElementByType('element', container);
+      const result = findElementsByType('element', container);
       // Container + span child, but innermost will be just span
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].tagName).toBe('span');
     });
 
     it('should default to "element" type when type is null', () => {
-      const result = findElementByType(null);
+      const result = findElementsByType(null);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should default to "element" type when type is undefined', () => {
-      const result = findElementByType(undefined);
+      const result = findElementsByType(undefined);
       expect(result.elements.length).toBeGreaterThan(0);
     });
   });
@@ -398,7 +398,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
   describe('highlight', () => {
     it('should highlight elements with default color', () => {
       const button = document.getElementById('btn1');
-      const result = findElementByType('button');
+      const result = findElementsByType('button');
       
       highlight(result.elements);
       
@@ -409,7 +409,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
 
     it('should highlight elements with custom color', () => {
       const button = document.getElementById('btn1');
-      const result = findElementByType('button');
+      const result = findElementsByType('button');
       
       highlight(result.elements);
       
@@ -425,7 +425,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
   describe('unhighlight', () => {
     it('should remove highlighting from elements', () => {
       const button = document.getElementById('btn1');
-      const result = findElementByType('button');
+      const result = findElementsByType('button');
       
       highlight(result.elements);
       unhighlight(result.elements);

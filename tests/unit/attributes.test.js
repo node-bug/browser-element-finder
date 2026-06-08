@@ -12,7 +12,7 @@ import {
   getBoundingBox,
   getAllElements,
   getAllFrames,
-  findElementByAttributes,
+  findElementsByAttribute,
   getValidAttributes,
   highlight,
   unhighlight
@@ -277,102 +277,102 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
     });
   });
 
-  describe('findElementByAttributes', () => {
+  describe('findElementsByAttribute', () => {
     it('should throw TypeError for non-string value', () => {
-      expect(() => findElementByAttributes(123)).toThrow(TypeError);
-      expect(() => findElementByAttributes(null)).not.toThrow();
-      expect(() => findElementByAttributes(undefined)).not.toThrow();
+      expect(() => findElementsByAttribute(123)).toThrow(TypeError);
+      expect(() => findElementsByAttribute(null)).not.toThrow();
+      expect(() => findElementsByAttribute(undefined)).not.toThrow();
     });
 
     it('should return all elements for empty value', () => {
-      const result = findElementByAttributes('');
+      const result = findElementsByAttribute('');
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should find elements by placeholder attribute', () => {
-      const result = findElementByAttributes('Enter name');
+      const result = findElementsByAttribute('Enter name');
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('txt1');
     });
 
     it('should find elements by data-testid attribute', () => {
-      const result = findElementByAttributes('email-input');
+      const result = findElementsByAttribute('email-input');
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('txt2');
     });
 
     it('should find elements by id attribute', () => {
-      const result = findElementByAttributes('btn1');
+      const result = findElementsByAttribute('btn1');
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('btn1');
     });
 
     it('should find elements by aria-label attribute', () => {
-      const result = findElementByAttributes('Cancel button');
+      const result = findElementsByAttribute('Cancel button');
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('btn2');
     });
 
     it('should find elements by title attribute', () => {
-      const result = findElementByAttributes('Click Me');
+      const result = findElementsByAttribute('Click Me');
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('btn3');
     });
 
     it('should support exact matching for attributes', () => {
       // Exact match should find the element
-      const result = findElementByAttributes('Enter name', true);
+      const result = findElementsByAttribute('Enter name', true);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('txt1');
 
       // Partial match should not find anything with exact=true
-      const result2 = findElementByAttributes('Enter', true);
+      const result2 = findElementsByAttribute('Enter', true);
       expect(result2.elements.length).toBe(0);
 
       // Partial match should find with exact=false (default)
-      const result3 = findElementByAttributes('Enter', false);
+      const result3 = findElementsByAttribute('Enter', false);
       expect(result3.elements.length).toBe(3);
     });
 
     it('should support exact matching for text content', () => {
       // Exact match on button text
-      const result = findElementByAttributes('Submit', true);
+      const result = findElementsByAttribute('Submit', true);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('btn1');
 
       // Partial match should not find with exact=true
-      const result2 = findElementByAttributes('Sub', true);
+      const result2 = findElementsByAttribute('Sub', true);
       expect(result2.elements.length).toBe(0);
 
       // Partial match should find with exact=false (default)
-      const result3 = findElementByAttributes('Sub', false);
+      const result3 = findElementsByAttribute('Sub', false);
       expect(result3.elements.length).toBe(1);
     });
 
     it('should support exact matching for aria-label', () => {
       // Exact match on aria-label
-      const result = findElementByAttributes('Cancel button', true);
+      const result = findElementsByAttribute('Cancel button', true);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.id).toBe('btn2');
 
       // Partial match should not find with exact=true
-      const result2 = findElementByAttributes('Cancel', true);
+      const result2 = findElementsByAttribute('Cancel', true);
       expect(result2.elements.length).toBe(1);
 
       // Partial match should find with exact=false (default)
-      const result3 = findElementByAttributes('Cancel', false);
+      const result3 = findElementsByAttribute('Cancel', false);
       expect(result3.elements.length).toBe(1);
     });
 
     it('should return innermost matches only', () => {
-      const result = findElementByAttributes('container');
+      const result = findElementsByAttribute('container');
       // Should match the div with data-test-id="container-div"
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element?.getAttribute('data-test-id')).toBe('container-div');
     });
 
     it('should return elements with bounding box and tagName', () => {
-      const result = findElementByAttributes('btn1');
+      const result = findElementsByAttribute('btn1');
       expect(result.elements[0].boundingBox).toBeDefined();
       expect(result.elements[0].tagName).toBe('button');
       expect(result.elements[0].frameIndex).toBe(-1);
@@ -406,7 +406,7 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
     });
 
     it('should handle highlight with result wrapper format', () => {
-      const result = findElementByAttributes('btn1');
+      const result = findElementsByAttribute('btn1');
       highlight(result, 'blue', 2);
       const btn = document.getElementById('btn1');
       expect(btn.style.outline).toBe('2px solid blue');

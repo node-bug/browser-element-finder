@@ -230,7 +230,7 @@ export function getAllFrames(root = window) {
  * @param {Element|null} [parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementByAttributes(value, exact = false, parent = null) {
+export function findElementsByAttribute(value, exact = false, parent = null) {
   if (value === null || value === undefined) {
     value = '';
   }
@@ -352,7 +352,7 @@ function extractElements(elements) {
 
 /**
  * Highlights elements on the page with a colored outline.
- * @param {Array|Object} elements - Elements to highlight (from findElementByAttributes result or array)
+ * @param {Array|Object} elements - Elements to highlight (from findElementsByAttribute result or array)
  * @param {string} [color='red'] - Outline color
  * @param {number} [width=3] - Outline width in pixels
  */
@@ -373,7 +373,7 @@ export function highlight(elements, color = 'red', width = 3) {
 
 /**
  * Removes highlighting from elements.
- * @param {Array|Object} elements - Elements to unhighlight (from findElementByAttributes result or array)
+ * @param {Array|Object} elements - Elements to unhighlight (from findElementsByAttribute result or array)
  */
 export function unhighlight(elements) {
   const items = extractElements(elements);

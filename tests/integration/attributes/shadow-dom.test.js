@@ -51,7 +51,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
   describe('Basic Shadow DOM - Section 1', () => {
     it('should find elements by id attribute in basic shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('shadow-name-input');
+        return ElementFinder.findElementsByAttribute('shadow-name-input');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -62,7 +62,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements by placeholder attribute in shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Enter your name');
+        return ElementFinder.findElementsByAttribute('Enter your name');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -73,7 +73,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements by visible text in shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Submit');
+        return ElementFinder.findElementsByAttribute('Submit');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(5);
@@ -81,7 +81,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements by data-test-id attribute in shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('shadow-help');
+        return ElementFinder.findElementsByAttribute('shadow-help');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -94,7 +94,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
   describe('Multiple Shadow Hosts - Section 2', () => {
     it('should find elements in multiple shadow hosts', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Submit');
+        return ElementFinder.findElementsByAttribute('Submit');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(5); // shadow-submit-btn, login-submit-btn, signup-submit-btn, combined-shadow-btn, dynamic-btn
@@ -102,7 +102,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements by id in specific shadow host', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('login-user-input');
+        return ElementFinder.findElementsByAttribute('login-user-input');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1); // Found in shadow root and possibly another context
@@ -110,7 +110,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements by id in second shadow host', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('signup-name-input');
+        return ElementFinder.findElementsByAttribute('signup-name-input');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1); // Found in shadow root and possibly another context
@@ -120,7 +120,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
   describe('Nested Shadow DOM - Section 3', () => {
     it('should find elements in two-level nested shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Inner Button');
+        return ElementFinder.findElementsByAttribute('Inner Button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1); // inner-btn and possibly another match
@@ -128,7 +128,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements in three-level deep nested shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Level 3 Button');
+        return ElementFinder.findElementsByAttribute('Level 3 Button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1); // deep-l3-btn and possibly another match
@@ -136,7 +136,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements in five-level deep nested shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Deepest Button');
+        return ElementFinder.findElementsByAttribute('Deepest Button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1); // five-deepest-btn and possibly another match
@@ -146,7 +146,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
   describe('Shadow DOM in Iframe - Section 5', () => {
     it('should find elements in shadow DOM inside iframe', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Shadow input in frame');
+        return ElementFinder.findElementsByAttribute('Shadow input in frame');
       `);
       // iframe shadow elements are returned without element property
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
@@ -155,7 +155,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find buttons in shadow DOM inside iframe', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Shadow Frame Button');
+        return ElementFinder.findElementsByAttribute('Shadow Frame Button');
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(1);
@@ -163,7 +163,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements in nested shadow inside iframe', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Frame Inner Button');
+        return ElementFinder.findElementsByAttribute('Frame Inner Button');
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(1);
@@ -173,7 +173,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
   describe('Web Components - Section 8', () => {
     it('should find elements in custom button web component', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Component Button');
+        return ElementFinder.findElementsByAttribute('Component Button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -181,7 +181,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements in custom input web component', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Component Input');
+        return ElementFinder.findElementsByAttribute('Component Input');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -189,7 +189,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find elements in custom toggle web component', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Component Toggle');
+        return ElementFinder.findElementsByAttribute('Component Toggle');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -199,7 +199,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
   describe('Combined Regular + Shadow DOM - Section 9', () => {
     it('should find elements in both regular and shadow DOM contexts', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Submit');
+        return ElementFinder.findElementsByAttribute('Submit');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(1);
@@ -207,7 +207,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
 
     it('should find regular DOM elements separately', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('regular-btn');
+        return ElementFinder.findElementsByAttribute('regular-btn');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -217,7 +217,7 @@ describe('ElementFinderByAttribute Integration Tests - Shadow DOM', () => {
   describe('Dynamic Shadow DOM - Section 7', () => {
     it('should find elements in dynamically created shadow DOM', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByAttributes('Dynamic Button');
+        return ElementFinder.findElementsByAttribute('Dynamic Button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1); // dynamic-btn and possibly another match

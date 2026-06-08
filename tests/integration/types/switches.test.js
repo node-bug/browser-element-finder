@@ -48,152 +48,182 @@ describe('ElementFinderByType - Switches Fixture', () => {
     }
   });
 
-  describe('findElementByType', () => {
+  describe('findElementsByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('element');
+        return ElementFinder.findElementsByType('element');
       `);
       expect(result.elements.length).toBe(37);
     });
 
-    it('should find switches', async () => {
+    it('should find switches and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('switch');
+        return ElementFinder.findElementsByType('switch');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // checkbox-switch, aria-switch, button-switch, native-checkbox, disabled-switch, shadow-switch, iframe-switch
       expect(mainElements.length).toBe(6);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find checkboxes', async () => {
+    it('should find checkboxes and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('checkbox');
+        return ElementFinder.findElementsByType('checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // checkbox-switch, native-checkbox, disabled-switch, shadow-switch, iframe-switch
       expect(mainElements.length).toBe(4);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find buttons', async () => {
+    it('should find buttons and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('button');
+        return ElementFinder.findElementsByType('button');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // button-switch
       expect(mainElements.length).toBe(1);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBe('button-switch');
     });
 
-    it('should find textboxes', async () => {
+    it('should find textboxes and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('textbox');
+        return ElementFinder.findElementsByType('textbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find links', async () => {
+    it('should find links and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('link');
+        return ElementFinder.findElementsByType('link');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find dropdowns', async () => {
+    it('should find dropdowns and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('dropdown');
+        return ElementFinder.findElementsByType('dropdown');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find sliders', async () => {
+    it('should find sliders and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('slider');
+        return ElementFinder.findElementsByType('slider');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find radios', async () => {
+    it('should find radios and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('radio');
+        return ElementFinder.findElementsByType('radio');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find headings', async () => {
+    it('should find headings and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('heading');
+        return ElementFinder.findElementsByType('heading');
       `);
       const mainElements = result.elements.filter(e => e.element);
       // h2 "Ultimate Switch Testing Lab"
       expect(mainElements.length).toBe(1);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find navigation elements', async () => {
+    it('should find navigation elements and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('navigation');
+        return ElementFinder.findElementsByType('navigation');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find images', async () => {
+    it('should find images and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('image');
+        return ElementFinder.findElementsByType('image');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find tables', async () => {
+    it('should find tables and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('table');
+        return ElementFinder.findElementsByType('table');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find lists', async () => {
+    it('should find lists and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('list');
+        return ElementFinder.findElementsByType('list');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find file inputs', async () => {
+    it('should find file inputs and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('file');
+        return ElementFinder.findElementsByType('file');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find menus', async () => {
+    it('should find menus and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('menu');
+        return ElementFinder.findElementsByType('menu');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find toolbars', async () => {
+    it('should find toolbars and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('toolbar');
+        return ElementFinder.findElementsByType('toolbar');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
     });
 
-    it('should find dialogs', async () => {
+    it('should find dialogs and validate first match', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementByType('dialog');
+        return ElementFinder.findElementsByType('dialog');
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
+    });
+  });
+
+  describe('findProbableElements - nearby element fallback', () => {
+    it('should find nearby checkbox when label text matches and validate first match', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findProbableElements('checkbox', 'Standard Checkbox Switch');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('checkbox-switch');
+    });
+
+    it('should find nearby switch when label text matches and validate first match', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findProbableElements('switch', 'Standard Checkbox Switch');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('checkbox-switch');
     });
   });
 });

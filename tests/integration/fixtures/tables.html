@@ -22,29 +22,29 @@
     <!-- 1. Simple Standard Table -->
     <section id="simple-table-section">
         <h2>1. Simple Standard Table</h2>
-        <table id="simple-table">
+        <table id="simple-table" data-test-id="simple-table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>City</th>
+                    <th data-test-id="th-name">Name</th>
+                    <th data-test-id="th-age">Age</th>
+                    <th data-test-id="th-city">City</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Alice</td>
-                    <td>30</td>
-                    <td>New York</td>
+                    <td data-test-id="td-alice-name">Alice</td>
+                    <td data-test-id="td-alice-age">30</td>
+                    <td data-test-id="td-alice-city">New York</td>
                 </tr>
                 <tr>
-                    <td>Bob</td>
-                    <td>25</td>
-                    <td>London</td>
+                    <td data-test-id="td-bob-name">Bob</td>
+                    <td data-test-id="td-bob-age">25</td>
+                    <td data-test-id="td-bob-city">London</td>
                 </tr>
                 <tr>
-                    <td>Charlie</td>
-                    <td>35</td>
-                    <td>Paris</td>
+                    <td data-test-id="td-charlie-name">Charlie</td>
+                    <td data-test-id="td-charlie-age">35</td>
+                    <td data-test-id="td-charlie-city">Paris</td>
                 </tr>
             </tbody>
         </table>
@@ -53,41 +53,41 @@
     <!-- 2. Table with Colspan and Rowspan -->
     <section id="complex-span-section">
         <h2>2. Table with Colspan and Rowspan</h2>
-        <table id="span-table">
+        <table id="span-table" data-test-id="span-table">
             <thead>
                 <tr>
-                    <th>Category</th>
-                    <th>Item</th>
-                    <th>Details</th>
-                    <th>Price</th>
+                    <th data-test-id="th-category">Category</th>
+                    <th data-test-id="th-item">Item</th>
+                    <th data-test-id="th-details">Details</th>
+                    <th data-test-id="th-price">Price</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td rowspan="2">Electronics</td>
-                    <td>Laptop</td>
-                    <td>16GB RAM</td>
-                    <td>$1200</td>
+                    <td data-test-id="td-electronics" rowspan="2">Electronics</td>
+                    <td data-test-id="td-laptop">Laptop</td>
+                    <td data-test-id="td-ram">16GB RAM</td>
+                    <td data-test-id="td-1200">$1200</td>
                 </tr>
                 <tr>
-                    <td>Mouse</td>
-                    <td>Wireless</td>
-                    <td>$25</td>
+                    <td data-test-id="td-mouse">Mouse</td>
+                    <td data-test-id="td-wireless">Wireless</td>
+                    <td data-test-id="td-25">$25</td>
                 </tr>
                 <tr>
-                    <td rowspan="2">Books</td>
-                    <td>Novel</td>
-                    <td>Hardcover</td>
-                    <td>$20</td>
+                    <td data-test-id="td-books" rowspan="2">Books</td>
+                    <td data-test-id="td-novel">Novel</td>
+                    <td data-test-id="td-hardcover">Hardcover</td>
+                    <td data-test-id="td-20">$20</td>
                 </tr>
                 <tr>
-                    <td>Textbook</td>
-                    <td>Academic</td>
-                    <td>$80</td>
+                    <td data-test-id="td-textbook">Textbook</td>
+                    <td data-test-id="td-academic">Academic</td>
+                    <td data-test-id="td-80">$80</td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="text-align:center"><strong>Total</strong></td>
-                    <td><strong>$1325</strong></td>
+                    <td data-test-id="td-total" colspan="3" style="text-align:center"><strong>Total</strong></td>
+                    <td data-test-id="td-total-value"><strong>$1325</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -96,22 +96,22 @@
     <!-- 3. Nested Tables -->
     <section id="nested-table-section">
         <h2>3. Nested Tables</h2>
-        <table id="outer-table">
+        <table id="outer-table" data-test-id="outer-table">
             <tr>
-                <th>Outer Col 1</th>
-                <th>Outer Col 2</th>
+                <th data-test-id="th-outer-col1">Outer Col 1</th>
+                <th data-test-id="th-outer-col2">Outer Col 2</th>
             </tr>
             <tr>
-                <td>Row 1 Col 1</td>
-                <td>
-                    <table id="inner-table" class="nested-table">
+                <td data-test-id="td-outer-row1-col1">Row 1 Col 1</td>
+                <td data-test-id="td-outer-row1-col2">
+                    <table id="inner-table" class="nested-table" data-test-id="inner-table">
                         <tr>
-                            <td>Inner 1.1</td>
-                            <td>Inner 1.2</td>
+                            <td data-test-id="td-inner-1-1">Inner 1.1</td>
+                            <td data-test-id="td-inner-1-2">Inner 1.2</td>
                         </tr>
                         <tr>
-                            <td>Inner 2.1</td>
-                            <td>Inner 2.2</td>
+                            <td data-test-id="td-inner-2-1">Inner 2.1</td>
+                            <td data-test-id="td-inner-2-2">Inner 2.2</td>
                         </tr>
                     </table>
                 </td>
@@ -122,24 +122,24 @@
     <!-- 4. Table with Hidden Elements and Dynamic Content -->
     <section id="dynamic-table-section">
         <h2>4. Table with Hidden Elements & Dynamic Content</h2>
-        <table id="dynamic-table">
+        <table id="dynamic-table" data-test-id="dynamic-table">
             <thead>
                 <tr>
-                    <th>Status</th>
-                    <th>Message</th>
-                    <th>Action</th>
+                    <th data-test-id="th-status">Status</th>
+                    <th data-test-id="th-message">Message</th>
+                    <th data-test-id="th-action">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Active</td>
-                    <td>System is running</td>
-                    <td><button id="btn-active">View</button></td>
+                    <td data-test-id="td-active">Active</td>
+                    <td data-test-id="td-active-msg">System is running</td>
+                    <td><button id="btn-active" data-test-id="btn-active">View</button></td>
                 </tr>
                 <tr>
-                    <td>Inactive</td>
-                    <td class="hidden">This is a hidden message</td>
-                    <td><button id="btn-inactive">Activate</button></td>
+                    <td data-test-id="td-inactive">Inactive</td>
+                    <td class="hidden" data-test-id="td-hidden-msg">This is a hidden message</td>
+                    <td><button id="btn-inactive" data-test-id="btn-inactive">Activate</button></td>
                 </tr>
             </tbody>
         </table>

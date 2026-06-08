@@ -8,7 +8,7 @@ import { JSDOM } from 'jsdom';
 import {
   setSearchableAttributes,
   findElements,
-  findElementByAttributes,
+  findElementsByAttribute,
   parseXPath
 } from '../../src/element-finder.js';
 
@@ -130,21 +130,44 @@ describe('ElementFinder Edge Cases', () => {
     });
 
     it('should NOT find text inside script tags', () => {
-      const result = findElementByAttributes("don't find me");
+      const result = findElementsByAttribute("don't find me");
       expect(result.elements.length).toBe(0);
     });
 
     it('should NOT find text inside style tags', () => {
-      const result = findElementByAttributes("don't find me either");
+      const result = findElementsByAttribute("don't find me either");
       expect(result.elements.length).toBe(0);
     });
 
     it('should respect attribute priority (data-test-id > id > placeholder)', () => {
       // The element has: id="prio-btn", placeholder="priority-placeholder", data-test-id="priority-id"
       // We search for "priority-id" which is the highest priority attribute
-      const result = findElementByAttributes('priority-id');
+      const result = findElementsByAttribute('priority-id');
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].element.id).toBe('prio-btn');
+    });
+  });
+
+  describe('isHidden flag', () => {
+    it('should include isHidden flag in returned elements', () => {
+      const result = findElements('button', null);
+      expect(result.elements.length).toBeGreaterThan(0);
+      expect(result.elements[0].isHidden).toBeDefined();
+      expect(typeof result.elements[0].isHidden).toBe('boolean');
+    });
+
+    it('should detect hidden elements with hidden attribute', () => {
+      const hiddenDiv = document.createElement('div');
+      hiddenDiv.id = 'hidden-attr-test';
+      hiddenDiv.setAttribute('data-test-id', 'hidden-attr-id');
+      hiddenDiv.setAttribute('hidden', '');
+      document.body.appendChild(hiddenDiv);
+
+      const result = findElementsByAttribute('hidden-attr-id');
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].isHidden).toBe(true);
+
+      document.body.removeChild(hiddenDiv);
     });
   });
 

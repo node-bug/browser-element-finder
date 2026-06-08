@@ -2,7 +2,7 @@
  * Element Finder - Combined Module
  *
  * This module provides functionality to find elements by type and/or searchable attributes.
- * Combined implementation supporting both findElementByType and findElementByAttributes.
+ * Combined implementation supporting both findElementsByType and findElementsByAttribute.
  */
 
 import elementDefinitionsData from './element-definitions.json' with { type: 'json' };
@@ -461,13 +461,48 @@ export function getBoundingBox(el) {
 }
 
 /**
+ * Checks if an element is hidden (not visible on the page).
+ * Considers offset dimensions, CSS visibility, display, and hidden attribute.
+ * @param {Element} el - The DOM element to check
+ * @returns {boolean} True if the element is hidden
+ */
+export function isHidden(el) {
+  if (el == null) return true;
+
+  // Check offset dimensions (element has no size)
+  if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+    return true;
+  }
+
+  // Check computed styles for visibility and display
+  try {
+    const style = window.getComputedStyle(el);
+    if (style.visibility === 'hidden' || style.visibility === 'collapse') {
+      return true;
+    }
+    if (style.display === 'none') {
+      return true;
+    }
+  } catch {
+    // Restricted access - continue with other checks
+  }
+
+  // Check hidden attribute
+  if (el.hasAttribute('hidden')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Finds elements matching the specified type.
  * Searches all frames (main document + iframes) by default.
  * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
  * @param {Element|null} [parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementByType(type = "element", parent = null) {
+export function findElementsByType(type = "element", parent = null) {
   if (type === null || type === undefined) {
     type = "element";
   }
@@ -522,12 +557,14 @@ export function findElementByType(type = "element", parent = null) {
   const qualified = innermostMatches.map(item => {
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
+    const hidden = isHidden(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     }
 
@@ -535,7 +572,8 @@ export function findElementByType(type = "element", parent = null) {
       element: item.element,
       boundingBox: boundingBox,
       tagName: tagName,
-      frameIndex: item.frame.frameIndex
+      frameIndex: item.frame.frameIndex,
+      isHidden: hidden
     };
   });
 
@@ -550,7 +588,7 @@ export function findElementByType(type = "element", parent = null) {
  * @param {Element|null} [parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementByAttributes(value, exact = false, parent = null) {
+export function findElementsByAttribute(value, exact = false, parent = null) {
   if (value === null || value === undefined) {
     value = '';
   }
@@ -594,12 +632,14 @@ export function findElementByAttributes(value, exact = false, parent = null) {
   const qualified = filteredMatches.map(item => {
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
+    const hidden = isHidden(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     }
 
@@ -607,7 +647,8 @@ export function findElementByAttributes(value, exact = false, parent = null) {
       element: item.element,
       boundingBox: boundingBox,
       tagName: tagName,
-      frameIndex: item.frame.frameIndex
+      frameIndex: item.frame.frameIndex,
+      isHidden: hidden
     };
   });
 
@@ -738,12 +779,14 @@ export function findElements(type = null, text = null, exact = false, parent = n
   const qualified = filteredMatches.map(item => {
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
+    const hidden = isHidden(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     }
 
@@ -751,7 +794,8 @@ export function findElements(type = null, text = null, exact = false, parent = n
       element: item.element,
       boundingBox: boundingBox,
       tagName: tagName,
-      frameIndex: item.frame.frameIndex
+      frameIndex: item.frame.frameIndex,
+      isHidden: hidden
     };
   });
 
@@ -852,6 +896,33 @@ function findNearbyElementType(el, targetType) {
     }
   }
 
+  // Check siblings of ancestors (for cases where the target element is a sibling of the parent)
+  // This handles structures like:
+  // <div class="switch-row">
+  //   <div><label>Label text</label></div>
+  //   <label class="switch-cb"><input type="checkbox"></label>
+  // </div>
+  let ancestor = el.parentElement;
+  while (ancestor) {
+    const ancestorSiblings = getSiblingElements(ancestor);
+    for (const sibling of ancestorSiblings) {
+      if (sibling !== ancestor) {
+        // Check the sibling itself
+        if (matchesType(sibling, targetType)) {
+          return sibling;
+        }
+        // Check descendants of the sibling
+        const siblingElements = getAllElements(sibling);
+        for (let i = 0; i < siblingElements.length; i++) {
+          if (matchesType(siblingElements[i], targetType)) {
+            return siblingElements[i];
+          }
+        }
+      }
+    }
+    ancestor = ancestor.parentElement;
+  }
+
   return null;
 }
 
@@ -859,8 +930,8 @@ function findNearbyElementType(el, targetType) {
  * Finds elements matching the specified type and/or attribute value.
  * When both type and text are provided but no element matches both,
  * finds elements matching the attribute/text and returns a nearby element of the specified type.
- * If only type is provided, delegates to findElementByType.
- * If only text is provided, delegates to findElementByAttributes.
+ * If only type is provided, delegates to findElementsByType.
+ * If only text is provided, delegates to findElementsByAttribute.
  * @param {string|null|undefined} elementType - Element type (see ELEMENT_DEFINITIONS for valid types). If null/undefined/blank, matches any type.
  * @param {string|null|undefined} attributeText - Text/attribute value to search for. If null/undefined/blank, matches any text.
  * @param {boolean} [exact=false] - Exact match vs substring
@@ -872,14 +943,14 @@ export function findProbableElements(elementType, attributeText, exact = false, 
   const hasType = elementType !== null && elementType !== undefined && elementType !== '';
   const hasText = attributeText !== null && attributeText !== undefined && attributeText !== '';
 
-  // If only type is provided, delegate to findElementByType
+  // If only type is provided, delegate to findElementsByType
   if (hasType && !hasText) {
-    return findElementByType(elementType, parent);
+    return findElementsByType(elementType, parent);
   }
 
-  // If only text is provided, delegate to findElementByAttributes
+  // If only text is provided, delegate to findElementsByAttribute
   if (!hasType && hasText) {
-    return findElementByAttributes(attributeText, exact, parent);
+    return findElementsByAttribute(attributeText, exact, parent);
   }
 
   // Validate elementType if provided
@@ -929,7 +1000,10 @@ export function findProbableElements(elementType, attributeText, exact = false, 
         const el = allElements[i];
         // Check attribute match
         if (!matchesAttribute(el, attributeText, exact)) continue;
-        attributeMatches.push({ element: el, frame: frame });
+        // Only consider elements with their own direct match (not just via descendant)
+        if (hasOwnMatch(el, attributeText, exact)) {
+          attributeMatches.push({ element: el, frame: frame });
+        }
       }
     }
 
@@ -968,12 +1042,14 @@ export function findProbableElements(elementType, attributeText, exact = false, 
   const qualified = filteredMatches.map(item => {
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
+    const hidden = isHidden(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     }
 
@@ -981,7 +1057,8 @@ export function findProbableElements(elementType, attributeText, exact = false, 
       element: item.element,
       boundingBox: boundingBox,
       tagName: tagName,
-      frameIndex: item.frame.frameIndex
+      frameIndex: item.frame.frameIndex,
+      isHidden: hidden
     };
   });
 
@@ -1001,7 +1078,7 @@ function extractElements(elements) {
 
 /**
  * Highlights elements on the page with a colored outline.
- * @param {Array|Object} elements - Elements to highlight (from findElementByType or findElementByAttributes result or array)
+ * @param {Array|Object} elements - Elements to highlight (from findElementsByType or findElementsByAttribute result or array)
  * @param {string} [color='red'] - Outline color
  * @param {number} [width=3] - Outline width in pixels
  */
@@ -1022,7 +1099,7 @@ export function highlight(elements, color = 'red', width = 3) {
 
 /**
  * Removes highlighting from elements.
- * @param {Array|Object} elements - Elements to unhighlight (from findElementByType or findElementByAttributes result or array)
+ * @param {Array|Object} elements - Elements to unhighlight (from findElementsByType or findElementsByAttribute result or array)
  */
 export function unhighlight(elements) {
   const items = extractElements(elements);
@@ -1035,6 +1112,112 @@ export function unhighlight(elements) {
       el.style.outlineOffset = '';
       el.style.boxShadow = '';
       el.classList.remove('elementfinder-highlighted');
+    }
+  }
+}
+
+/**
+ * Global state for animation pausing (supports nested pause/resume)
+ */
+const animationPauseStack = [];
+
+/**
+ * Pauses all CSS animations and transitions on the page.
+ * Stores original animation state for later restoration.
+ * Supports nested calls - each pause() needs a corresponding resume().
+ * @returns {Object} Object containing the restore function and state info
+ */
+export function pauseAnimations() {
+  // Store original styles for restoration
+  const originalStyles = new Map();
+  const elements = getAllElements();
+
+  for (const el of elements) {
+    if (el && el.style) {
+      // Only store and modify if not already paused
+      if (el.style.animationPlayState !== 'paused') {
+        originalStyles.set(el, {
+          animationPlayState: el.style.animationPlayState,
+          transitionProperty: el.style.transitionProperty,
+          webkitAnimationPlayState: el.style.webkitAnimationPlayState,
+          webkitTransitionProperty: el.style.webkitTransitionProperty,
+        });
+
+        // Pause animations and disable transitions
+        el.style.animationPlayState = 'paused';
+        el.style.transitionProperty = 'none';
+        el.style.webkitAnimationPlayState = 'paused';
+        el.style.webkitTransitionProperty = 'none';
+      }
+    }
+  }
+
+  // Also pause animations on document level via CSSOM
+  // Only add stylesheet if not already present
+  let styleSheet = document.getElementById('elementfinder-animation-pause');
+  if (!styleSheet) {
+    styleSheet = document.createElement('style');
+    styleSheet.id = 'elementfinder-animation-pause';
+    styleSheet.textContent = `
+      *, *::before, *::after {
+        animation-play-state: paused !important;
+        transition-property: none !important;
+        -webkit-animation-play-state: paused !important;
+        -webkit-transition-property: none !important;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        *, *::before, *::after {
+          animation-duration: 0s !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0s !important;
+        }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+  }
+
+  // Push to stack for nested support
+  const pauseState = { originalStyles, pausedCount: originalStyles.size };
+  animationPauseStack.push(pauseState);
+
+  return pauseState;
+}
+
+/**
+ * Resumes all CSS animations and transitions that were previously paused.
+ * Supports nested calls - only removes stylesheet when stack is empty.
+ * @param {Object} [pauseState] - Optional state object from pauseAnimations(). If omitted, pops the most recent pause.
+ */
+export function resumeAnimations(pauseState) {
+  // If no pauseState provided, pop the most recent from stack (for Selenium/browser use)
+  if (!pauseState) {
+    if (animationPauseStack.length === 0) return;
+    pauseState = animationPauseStack.pop();
+  } else {
+    // If pauseState provided, remove it from stack
+    const index = animationPauseStack.indexOf(pauseState);
+    if (index === -1) return; // Not found in stack
+    animationPauseStack.splice(index, 1);
+  }
+
+  // Restore original styles
+  const originalStyles = pauseState.originalStyles;
+  if (originalStyles) {
+    for (const [el, styles] of originalStyles) {
+      if (el && el.style) {
+        el.style.animationPlayState = styles.animationPlayState || '';
+        el.style.transitionProperty = styles.transitionProperty || '';
+        el.style.webkitAnimationPlayState = styles.webkitAnimationPlayState || '';
+        el.style.webkitTransitionProperty = styles.webkitTransitionProperty || '';
+      }
+    }
+  }
+
+  // Only remove stylesheet when stack is empty (all pauses resolved)
+  if (animationPauseStack.length === 0) {
+    const styleSheet = document.getElementById('elementfinder-animation-pause');
+    if (styleSheet) {
+      styleSheet.remove();
     }
   }
 }

@@ -25,42 +25,42 @@
         
         <div class="field-group">
             <label for="text-single">Single-line Text</label>
-            <input type="text" id="text-single" placeholder="Enter text here...">
+            <input type="text" id="text-single" data-test-id="text-single" placeholder="Enter text here...">
         </div>
 
         <div class="field-group">
             <label for="text-password">Password Field</label>
-            <input type="password" id="text-password" placeholder="Enter password...">
+            <input type="password" id="text-password" data-test-id="text-password" placeholder="Enter password...">
         </div>
 
         <div class="field-group">
             <label for="text-email">Email Field</label>
-            <input type="email" id="text-email" placeholder="email@example.com">
+            <input type="email" id="text-email" data-test-id="text-email" placeholder="email@example.com">
         </div>
 
         <div class="field-group">
             <label for="text-number">Number Field</label>
-            <input type="number" id="text-number" value="10" min="0" max="100">
+            <input type="number" id="text-number" data-test-id="text-number" value="10" min="0" max="100">
         </div>
 
         <div class="field-group">
             <label for="text-tel">Telephone Field</label>
-            <input type="tel" id="text-tel" placeholder="+1 234 567 890">
+            <input type="tel" id="text-tel" data-test-id="text-tel" placeholder="+1 234 567 890">
         </div>
 
         <div class="field-group">
             <label for="text-url">URL Field</label>
-            <input type="url" id="text-url" placeholder="https://example.com">
+            <input type="url" id="text-url" data-test-id="text-url" placeholder="https://example.com">
         </div>
 
         <div class="field-group">
             <label for="text-textarea">Multi-line Text (Textarea)</label>
-            <textarea id="text-textarea" rows="4" placeholder="Enter long text..."></textarea>
+            <textarea id="text-textarea" data-test-id="text-textarea" rows="4" placeholder="Enter long text..."></textarea>
         </div>
 
         <div class="field-group">
             <label for="text-search">Search Field</label>
-            <input type="search" id="text-search" placeholder="Search...">
+            <input type="search" id="text-search" data-test-id="text-search" placeholder="Search...">
         </div>
     </section>
 
@@ -71,19 +71,19 @@
         <div class="field-group">
             <label>Preferences</label>
             <div class="inline-group">
-                <input type="checkbox" id="check-newsletter" name="pref" value="newsletter">
+                <input type="checkbox" id="check-newsletter" data-test-id="check-newsletter" name="pref" value="newsletter">
                 <label for="check-newsletter">Subscribe to newsletter</label>
             </div>
             <div class="inline-group">
-                <input type="checkbox" id="check-terms" name="pref" value="terms">
+                <input type="checkbox" id="check-terms" data-test-id="check-terms" name="pref" value="terms">
                 <label for="check-terms">Accept terms and conditions</label>
             </div>
             <div class="inline-group">
-                <input type="checkbox" id="check-hidden" name="pref" value="hidden" style="display:none;">
+                <input type="checkbox" id="check-hidden" data-test-id="check-hidden" name="pref" value="hidden" style="display:none;">
                 <label for="check-hidden">Hidden Checkbox (should not be interactable)</label>
             </div>
             <div class="inline-group">
-                <input type="checkbox" id="check-disabled" name="pref" value="disabled" disabled>
+                <input type="checkbox" id="check-disabled" data-test-id="check-disabled" name="pref" value="disabled" disabled>
                 <label for="check-disabled">Disabled Checkbox</label>
             </div>
         </div>
@@ -96,15 +96,15 @@
         <div class="field-group">
             <label>Payment Method</label>
             <div class="inline-group">
-                <input type="radio" id="radio-credit" name="payment" value="credit">
+                <input type="radio" id="radio-credit" data-test-id="radio-credit" name="payment" value="credit">
                 <label for="radio-credit">Credit Card</label>
             </div>
             <div class="inline-group">
-                <input type="radio" id="radio-paypal" name="payment" value="paypal">
+                <input type="radio" id="radio-paypal" data-test-id="radio-paypal" name="payment" value="paypal">
                 <label for="radio-paypal">PayPal</label>
             </div>
             <div class="inline-group">
-                <input type="radio" id="radio-bank" name="payment" value="bank">
+                <input type="radio" id="radio-bank" data-test-id="radio-bank" name="payment" value="bank">
                 <label for="radio-bank">Bank Transfer</label>
             </div>
         </div>
@@ -112,19 +112,19 @@
         <div class="field-group">
             <label>Gender</label>
             <div class="inline-group">
-                <input type="radio" id="radio-male" name="gender" value="male">
+                <input type="radio" id="radio-male" data-test-id="radio-male" name="gender" value="male">
                 <label for="radio-male">Male</label>
             </div>
             <div class="inline-group">
-                <input type="radio" id="radio-female" name="gender" value="female">
+                <input type="radio" id="radio-female" data-test-id="radio-female" name="gender" value="female">
                 <label for="radio-female">Female</label>
             </div>
             <div class="inline-group">
-                <input type="radio" id="radio-other" name="gender" value="other">
+                <input type="radio" id="radio-other" data-test-id="radio-other" name="gender" value="other">
                 <label for="radio-other">Other</label>
             </div>
             <div class="inline-group">
-                <input type="radio" id="radio-disabled" name="gender" value="disabled" disabled>
+                <input type="radio" id="radio-disabled" data-test-id="radio-disabled" name="gender" value="disabled" disabled>
                 <label for="radio-disabled">Disabled Radio</label>
             </div>
         </div>
@@ -136,17 +136,17 @@
         
         <div class="field-group">
             <label for="input-date">Date Picker</label>
-            <input type="date" id="input-date">
+            <input type="date" id="input-date" data-test-id="input-date">
         </div>
 
         <div class="field-group">
             <label for="input-color">Color Picker</label>
-            <input type="color" id="input-color" value="#ff0000">
+            <input type="color" id="input-color" data-test-id="input-color" value="#ff0000">
         </div>
 
         <div class="field-group">
             <label for="input-range">Range Slider</label>
-            <input type="range" id="input-range" min="0" max="100" value="50">
+            <input type="range" id="input-range" data-test-id="input-range" min="0" max="100" value="50">
         </div>
     </section>
 
@@ -156,29 +156,29 @@
         
         <div class="field-group">
             <label for="val-required">Required Field (HTML5)</label>
-            <input type="text" id="val-required" required placeholder="This field is required">
+            <input type="text" id="val-required" data-test-id="val-required" required placeholder="This field is required">
             <span id="err-required" class="error-text">This field is required!</span>
         </div>
 
         <div class="field-group">
             <label for="val-email">Email Validation (HTML5)</label>
-            <input type="email" id="val-email" required placeholder="Enter a valid email">
+            <input type="email" id="val-email" data-test-id="val-email" required placeholder="Enter a valid email">
             <span id="err-email" class="error-text">Please enter a valid email address.</span>
         </div>
 
         <div class="field-group">
             <label for="val-disabled">Disabled Field</label>
-            <input type="text" id="val-disabled" disabled value="Cannot edit this">
+            <input type="text" id="val-disabled" data-test-id="val-disabled" disabled value="Cannot edit this">
         </div>
 
         <div class="field-group">
             <label for="val-readonly">Read-only Field</label>
-            <input type="text" id="val-readonly" readonly value="Read only content">
+            <input type="text" id="val-readonly" data-test-id="val-readonly" readonly value="Read only content">
         </div>
     </section>
 
     <div style="margin-top: 40px; text-align: center;">
-        <button id="submit-form" style="padding: 10px 20px; cursor: pointer;">Submit Form</button>
+        <button id="submit-form" data-test-id="submit-form" style="padding: 10px 20px; cursor: pointer;">Submit Form</button>
         <p id="form-status" style="margin-top: 10px;"></p>
     </div>
 

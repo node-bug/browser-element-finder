@@ -21,9 +21,9 @@ var ElementFinder = (() => {
   var element_finder_exports = {};
   __export(element_finder_exports, {
     ELEMENT_DEFINITIONS: () => ELEMENT_DEFINITIONS,
-    findElementByAttributes: () => findElementByAttributes,
-    findElementByType: () => findElementByType,
     findElements: () => findElements,
+    findElementsByAttribute: () => findElementsByAttribute,
+    findElementsByType: () => findElementsByType,
     findProbableElements: () => findProbableElements,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
@@ -32,10 +32,13 @@ var ElementFinder = (() => {
     getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
     highlight: () => highlight,
+    isHidden: () => isHidden,
     matchesAttribute: () => matchesAttribute,
     matchesType: () => matchesType,
     parseCondition: () => parseCondition,
     parseXPath: () => parseXPath,
+    pauseAnimations: () => pauseAnimations,
+    resumeAnimations: () => resumeAnimations,
     setSearchableAttributes: () => setSearchableAttributes,
     splitByOperator: () => splitByOperator,
     unhighlight: () => unhighlight
@@ -61,7 +64,7 @@ var ElementFinder = (() => {
     menu: "self::menu or @role='menu'",
     menuitem: "@role='menuitem'",
     toolbar: "@role='toolbar'",
-    dialog: "@role='dialog'",
+    dialog: "@role='dialog' or @role='alertdialog'",
     table: "self::table or @role='table'",
     row: "self::tr or @role='row'",
     column: "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",
@@ -74,6 +77,7 @@ var ElementFinder = (() => {
   var searchable_attributes_default = [
     "placeholder",
     "value",
+    "data-value",
     "data-test-id",
     "data-testid",
     "id",
@@ -387,7 +391,27 @@ var ElementFinder = (() => {
       tagName: el.tagName.toLowerCase()
     };
   }
-  function findElementByType(type = "element", parent = null) {
+  function isHidden(el) {
+    if (el == null) return true;
+    if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+      return true;
+    }
+    try {
+      const style = window.getComputedStyle(el);
+      if (style.visibility === "hidden" || style.visibility === "collapse") {
+        return true;
+      }
+      if (style.display === "none") {
+        return true;
+      }
+    } catch (e) {
+    }
+    if (el.hasAttribute("hidden")) {
+      return true;
+    }
+    return false;
+  }
+  function findElementsByType(type = "element", parent = null) {
     if (type === null || type === void 0) {
       type = "element";
     }
@@ -430,23 +454,26 @@ var ElementFinder = (() => {
     const qualified = innermostMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
+      const hidden = isHidden(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
-          frameIndex: item.frame.frameIndex
+          frameIndex: item.frame.frameIndex,
+          isHidden: hidden
         };
       }
       return {
         element: item.element,
         boundingBox,
         tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     });
     return { elements: qualified };
   }
-  function findElementByAttributes(value, exact = false, parent = null) {
+  function findElementsByAttribute(value, exact = false, parent = null) {
     if (value === null || value === void 0) {
       value = "";
     }
@@ -477,18 +504,21 @@ var ElementFinder = (() => {
     const qualified = filteredMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
+      const hidden = isHidden(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
-          frameIndex: item.frame.frameIndex
+          frameIndex: item.frame.frameIndex,
+          isHidden: hidden
         };
       }
       return {
         element: item.element,
         boundingBox,
         tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     });
     return { elements: qualified };
@@ -567,18 +597,21 @@ var ElementFinder = (() => {
     const qualified = filteredMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
+      const hidden = isHidden(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
-          frameIndex: item.frame.frameIndex
+          frameIndex: item.frame.frameIndex,
+          isHidden: hidden
         };
       }
       return {
         element: item.element,
         boundingBox,
         tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     });
     return { elements: qualified };
@@ -637,16 +670,34 @@ var ElementFinder = (() => {
         }
       }
     }
+    let ancestor = el.parentElement;
+    while (ancestor) {
+      const ancestorSiblings = getSiblingElements(ancestor);
+      for (const sibling of ancestorSiblings) {
+        if (sibling !== ancestor) {
+          if (matchesType(sibling, targetType)) {
+            return sibling;
+          }
+          const siblingElements = getAllElements(sibling);
+          for (let i = 0; i < siblingElements.length; i++) {
+            if (matchesType(siblingElements[i], targetType)) {
+              return siblingElements[i];
+            }
+          }
+        }
+      }
+      ancestor = ancestor.parentElement;
+    }
     return null;
   }
   function findProbableElements(elementType, attributeText, exact = false, parent = null) {
     const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
     const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
     if (hasType && !hasText) {
-      return findElementByType(elementType, parent);
+      return findElementsByType(elementType, parent);
     }
     if (!hasType && hasText) {
-      return findElementByAttributes(attributeText, exact, parent);
+      return findElementsByAttribute(attributeText, exact, parent);
     }
     if (hasType) {
       if (typeof elementType !== "string") {
@@ -680,7 +731,9 @@ var ElementFinder = (() => {
         for (let i = 0; i < allElements.length; i++) {
           const el = allElements[i];
           if (!matchesAttribute(el, attributeText, exact)) continue;
-          attributeMatches.push({ element: el, frame });
+          if (hasOwnMatch(el, attributeText, exact)) {
+            attributeMatches.push({ element: el, frame });
+          }
         }
       }
       const foundElements = /* @__PURE__ */ new Set();
@@ -706,18 +759,21 @@ var ElementFinder = (() => {
     const qualified = filteredMatches.map((item) => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
+      const hidden = isHidden(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
-          frameIndex: item.frame.frameIndex
+          frameIndex: item.frame.frameIndex,
+          isHidden: hidden
         };
       }
       return {
         element: item.element,
         boundingBox,
         tagName,
-        frameIndex: item.frame.frameIndex
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden
       };
     });
     return { elements: qualified };
@@ -752,6 +808,78 @@ var ElementFinder = (() => {
         el.style.outlineOffset = "";
         el.style.boxShadow = "";
         el.classList.remove("elementfinder-highlighted");
+      }
+    }
+  }
+  var animationPauseStack = [];
+  function pauseAnimations() {
+    const originalStyles = /* @__PURE__ */ new Map();
+    const elements = getAllElements();
+    for (const el of elements) {
+      if (el && el.style) {
+        if (el.style.animationPlayState !== "paused") {
+          originalStyles.set(el, {
+            animationPlayState: el.style.animationPlayState,
+            transitionProperty: el.style.transitionProperty,
+            webkitAnimationPlayState: el.style.webkitAnimationPlayState,
+            webkitTransitionProperty: el.style.webkitTransitionProperty
+          });
+          el.style.animationPlayState = "paused";
+          el.style.transitionProperty = "none";
+          el.style.webkitAnimationPlayState = "paused";
+          el.style.webkitTransitionProperty = "none";
+        }
+      }
+    }
+    let styleSheet = document.getElementById("elementfinder-animation-pause");
+    if (!styleSheet) {
+      styleSheet = document.createElement("style");
+      styleSheet.id = "elementfinder-animation-pause";
+      styleSheet.textContent = `
+      *, *::before, *::after {
+        animation-play-state: paused !important;
+        transition-property: none !important;
+        -webkit-animation-play-state: paused !important;
+        -webkit-transition-property: none !important;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        *, *::before, *::after {
+          animation-duration: 0s !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0s !important;
+        }
+      }
+    `;
+      document.head.appendChild(styleSheet);
+    }
+    const pauseState = { originalStyles, pausedCount: originalStyles.size };
+    animationPauseStack.push(pauseState);
+    return pauseState;
+  }
+  function resumeAnimations(pauseState) {
+    if (!pauseState) {
+      if (animationPauseStack.length === 0) return;
+      pauseState = animationPauseStack.pop();
+    } else {
+      const index = animationPauseStack.indexOf(pauseState);
+      if (index === -1) return;
+      animationPauseStack.splice(index, 1);
+    }
+    const originalStyles = pauseState.originalStyles;
+    if (originalStyles) {
+      for (const [el, styles] of originalStyles) {
+        if (el && el.style) {
+          el.style.animationPlayState = styles.animationPlayState || "";
+          el.style.transitionProperty = styles.transitionProperty || "";
+          el.style.webkitAnimationPlayState = styles.webkitAnimationPlayState || "";
+          el.style.webkitTransitionProperty = styles.webkitTransitionProperty || "";
+        }
+      }
+    }
+    if (animationPauseStack.length === 0) {
+      const styleSheet = document.getElementById("elementfinder-animation-pause");
+      if (styleSheet) {
+        styleSheet.remove();
       }
     }
   }
