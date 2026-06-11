@@ -31,6 +31,7 @@
   "files": [
     "index.js",
     "index.min.js",
+    "src/element-finder.js",
     "src/element-definitions.json",
     "src/searchable-attributes.json"
   ],
