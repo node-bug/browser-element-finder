@@ -61,6 +61,255 @@ export function getSearchableAttributes() {
 }
 
 /**
+ * Gets the current values of searchable attributes on an element.
+ * Only returns attributes that exist on the element and have non-empty values.
+ * @param {Element|null|undefined} el - The DOM element to inspect
+ * @returns {Object.<string, string>} Attribute name to value map
+ */
+export function getSearchableAttributeValues(el) {
+  if (el == null || el.nodeType !== Node.ELEMENT_NODE) return {};
+
+  const values = {};
+  const attrs = SEARCHABLE_ATTRIBUTES;
+
+  for (let i = 0; i < attrs.length; i++) {
+    const attr = attrs[i];
+    let attrValue;
+    try {
+      attrValue = el.getAttribute(attr);
+    } catch {
+      continue;
+    }
+
+    if (attrValue !== null && attrValue !== undefined && attrValue !== '') {
+      values[attr] = attrValue;
+    }
+  }
+
+  return values;
+}
+
+/**
+ * Normalizes descriptor text for consistent matching.
+ * @param {string|null|undefined} text - Text to normalize
+ * @returns {string} Normalized text
+ */
+function normalizeDescriptorText(text) {
+  if (text == null) return '';
+  return String(text).replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Gets the filename portion of an image src without path or extension.
+ * @param {string|null|undefined} src - Image src value
+ * @returns {string} Filename without path or extension
+ */
+function getImageFilenameWithoutExtension(src) {
+  const normalizedSrc = normalizeDescriptorText(src);
+  if (!normalizedSrc) return '';
+
+  const withoutQueryOrFragment = normalizedSrc.split(/[?#]/)[0];
+  const lastSlashIndex = Math.max(
+    withoutQueryOrFragment.lastIndexOf('/'),
+    withoutQueryOrFragment.lastIndexOf('\\')
+  );
+  const filenameWithExtension = lastSlashIndex >= 0
+    ? withoutQueryOrFragment.slice(lastSlashIndex + 1)
+    : withoutQueryOrFragment;
+
+  const lastDotIndex = filenameWithExtension.lastIndexOf('.');
+  return lastDotIndex > 0
+    ? filenameWithExtension.slice(0, lastDotIndex)
+    : filenameWithExtension;
+}
+
+/**
+ * Gets the text content from elements referenced by aria-labelledby.
+ * @param {Element} el - The DOM element to check
+ * @returns {string} Concatenated resolved text from referenced elements, or empty string
+ */
+function getResolvedAriaLabelledByText(el) {
+  const labelledBy = el.getAttribute('aria-labelledby');
+  if (!labelledBy) return '';
+
+  const ids = labelledBy.split(/\s+/);
+  const ownerDocument = el.ownerDocument || document;
+  let text = '';
+
+  for (const id of ids) {
+    try {
+      const refEl = ownerDocument.getElementById(id);
+      if (!refEl) continue;
+
+      const refText = normalizeDescriptorText(refEl.textContent);
+      if (refText) {
+        text = text ? `${text} ${refText}` : refText;
+      }
+    } catch {
+      // Skip if element not found or access denied
+    }
+  }
+
+  return text;
+}
+
+/**
+ * Gets the first searchable attribute or text fallback identifiable text for an element.
+ * @param {Element} el - The DOM element to describe
+ * @returns {{attributeName: string|null, identifiableText: string}|null} Descriptor source and identifiable text
+ */
+function getElementDescriptorText(el) {
+  const values = getSearchableAttributeValues(el);
+  const attrs = SEARCHABLE_ATTRIBUTES;
+
+  for (let i = 0; i < attrs.length; i++) {
+    const attr = attrs[i];
+    if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
+
+    const rawText = attr === 'aria-labelledby'
+      ? getResolvedAriaLabelledByText(el)
+      : attr === 'src'
+        ? getImageFilenameWithoutExtension(values[attr])
+        : values[attr];
+    const identifiableText = normalizeDescriptorText(rawText);
+
+    if (identifiableText) {
+      return { attributeName: attr, identifiableText };
+    }
+  }
+
+  const directText = normalizeDescriptorText(getDirectText(el));
+  if (directText) {
+    return { attributeName: 'text', identifiableText: directText };
+  }
+
+  const fullText = normalizeDescriptorText(el.textContent);
+  if (fullText) {
+    return { attributeName: 'text', identifiableText: fullText };
+  }
+
+  return null;
+}
+
+/**
+ * Gets the root document to use for descriptor uniqueness checks.
+ * @param {Element} el - The DOM element to describe
+ * @returns {Document|null} The element's frame document, if available
+ */
+function getElementDescriptorFrame(el) {
+  if (!el || !el.ownerDocument) return null;
+
+  try {
+    const frames = getAllFrames(window);
+    for (let i = 0; i < frames.length; i++) {
+      if (frames[i].document === el.ownerDocument) {
+        return frames[i].document;
+      }
+    }
+  } catch {
+    // Fall back to the element's owner document below
+  }
+
+  return el.ownerDocument;
+}
+
+/**
+ * Gets occurrence index for descriptor text within the element's frame.
+ * @param {Element} el - The element to describe
+ * @param {string} text - Descriptor text to count
+ * @returns {{index: number}} 1-based occurrence index
+ */
+function getElementDescriptorUniqueness(el, text) {
+  const root = getElementDescriptorFrame(el);
+  if (!root) {
+    return { index: 1 };
+  }
+
+  const elements = getAllElements(root);
+  let index = 1;
+  let count = 0;
+
+  for (let i = 0; i < elements.length; i++) {
+    const candidate = elements[i];
+
+    if (candidate !== el && (candidate === root.documentElement || candidate.tagName === 'BODY')) {
+      continue;
+    }
+
+    const candidateDescriptor = getElementDescriptorText(candidate);
+
+    if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
+
+    count++;
+    if (candidate === el) {
+      index = count;
+    }
+  }
+
+  return { index };
+}
+
+/**
+ * Gets the first matching semantic type for an element.
+ * @param {Element} el - The DOM element to classify
+ * @returns {string|null} Matching type name, or null for non-elements
+ */
+function getElementDescriptorType(el) {
+  if (el == null || el.nodeType !== Node.ELEMENT_NODE) return null;
+
+  const types = Object.keys(ELEMENT_DEFINITIONS);
+  for (let i = 0; i < types.length; i++) {
+    const type = types[i];
+    if (type === 'element') continue;
+    if (matchesType(el, type)) return type;
+  }
+
+  return 'element';
+}
+
+/**
+ * Gets a plain-text identifier for a DOM element.
+ * Uses the first non-empty searchable attribute value, falls back to element text,
+ * reports occurrence index within the current frame, and includes the semantic element type.
+ * @param {Element|null|undefined} el - The DOM element to describe
+ * @returns {{identifiableText: string|null, attributeName: string|null, index: number, type: string|null, tagName: string|null}} Element descriptor
+ */
+export function getElementDescriptor(el) {
+  if (el == null || el.nodeType !== Node.ELEMENT_NODE) {
+    return {
+      identifiableText: null,
+      attributeName: null,
+      index: 1,
+      type: null,
+      tagName: null
+    };
+  }
+
+  const type = getElementDescriptorType(el);
+  const descriptorSource = getElementDescriptorText(el);
+
+  if (!descriptorSource) {
+    return {
+      identifiableText: null,
+      attributeName: null,
+      index: 1,
+      type,
+      tagName: el.tagName.toLowerCase()
+    };
+  }
+
+  const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText);
+
+  return {
+    identifiableText: descriptorSource.identifiableText,
+    attributeName: descriptorSource.attributeName,
+    index: uniqueness.index,
+    type,
+    tagName: el.tagName.toLowerCase()
+  };
+}
+
+/**
  * Parses an XPath-like expression for element type matching.
  * Supports conditions like self::tag, @attr='value', contains(), descendant::, ancestor::*
  * @param {string} expr - The XPath-like expression to parse
@@ -500,9 +749,10 @@ export function isHidden(el) {
  * Searches all frames (main document + iframes) by default.
  * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
  * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementsByType(type = "element", parent = null) {
+export function findElementsByType(type = "element", parent = null, options = null) {
   if (type === null || type === undefined) {
     type = "element";
   }
@@ -511,8 +761,13 @@ export function findElementsByType(type = "element", parent = null) {
     throw new TypeError(`type must be a string, got ${typeof type}`);
   }
 
+  const failOnUnknownType = options && options.failOnUnknownType === true;
   if (type && !ELEMENT_DEFINITIONS[type]) {
-    console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+    const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
+    if (failOnUnknownType) {
+      throw new TypeError(`Unknown element type: ${type}`);
+    }
+    console.warn(message);
     return { elements: [] };
   }
 
@@ -707,15 +962,72 @@ function hasOwnMatch(el, value, exact = false) {
 }
 
 /**
+ * Gets counts of elements by semantic type on the current screen.
+ * Excludes the generic `element` type unless a specific type is requested.
+ * If no type is provided, returns counts for all defined non-generic types.
+ * Searches all frames (main document + iframes) by default.
+ * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined non-generic types.
+ * @param {Element|null} [parent=null] - Parent element to count within
+ * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
+ * @returns {Object.<string, number>} Counts keyed by semantic element type, or `{ [type]: count }` when type is provided
+ */
+export function getElementCounts(type = null, parent = null, options = null) {
+  const hasType = type !== null && type !== undefined;
+
+  if (hasType) {
+    if (typeof type !== 'string') {
+      throw new TypeError(`type must be a string, got ${typeof type}`);
+    }
+    if (!ELEMENT_DEFINITIONS[type]) {
+      const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
+      if (options && options.failOnUnknownType === true) {
+        throw new TypeError(`Unknown element type: ${type}`);
+      }
+      console.warn(message);
+      return { [type]: 0 };
+    }
+  }
+
+  const counts = {};
+  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS).filter((item) => item !== 'element');
+
+  for (let i = 0; i < targetTypes.length; i++) {
+    counts[targetTypes[i]] = 0;
+  }
+
+  const frames = getAllFrames(window);
+
+  for (let i = 0; i < frames.length; i++) {
+    const frame = frames[i];
+    const allElements = getAllElements(parent || frame.document);
+
+    for (let j = 0; j < allElements.length; j++) {
+      const el = allElements[j];
+      
+      // Check against all target types and increment count for each match
+      for (let k = 0; k < targetTypes.length; k++) {
+        const targetType = targetTypes[k];
+        if (matchesType(el, targetType)) {
+          counts[targetType] += 1;
+        }
+      }
+    }
+  }
+
+  return counts;
+}
+
+/**
  * Finds elements matching the specified type and/or attribute value.
  * Combines type and attribute matching in a single call.
  * @param {string|null} [type=null] - Element type (see ELEMENT_DEFINITIONS for valid types), or null for any type
  * @param {string|null} [text=null] - Text/attribute value to search for, or null/undefined/'' for any text
  * @param {boolean} [exact=false] - Exact match vs substring (only used when text is provided)
  * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElements(type = null, text = null, exact = false, parent = null) {
+export function findElements(type = null, text = null, exact = false, parent = null, options = null) {
   // Normalize text parameter
   if (text === null || text === undefined) {
     text = '';
@@ -727,7 +1039,11 @@ export function findElements(type = null, text = null, exact = false, parent = n
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
     if (!ELEMENT_DEFINITIONS[type]) {
-      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+      const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
+      if (options && options.failOnUnknownType === true) {
+        throw new TypeError(`Unknown element type: ${type}`);
+      }
+      console.warn(message);
       return { elements: [] };
     }
   }
@@ -936,16 +1252,17 @@ function findNearbyElementType(el, targetType) {
  * @param {string|null|undefined} attributeText - Text/attribute value to search for. If null/undefined/blank, matches any text.
  * @param {boolean} [exact=false] - Exact match vs substring
  * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+export function findProbableElements(elementType, attributeText, exact = false, parent = null, options = null) {
   // Normalize parameters
   const hasType = elementType !== null && elementType !== undefined && elementType !== '';
   const hasText = attributeText !== null && attributeText !== undefined && attributeText !== '';
 
   // If only type is provided, delegate to findElementsByType
   if (hasType && !hasText) {
-    return findElementsByType(elementType, parent);
+    return findElementsByType(elementType, parent, options);
   }
 
   // If only text is provided, delegate to findElementsByAttribute
@@ -959,7 +1276,11 @@ export function findProbableElements(elementType, attributeText, exact = false, 
       throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
     }
     if (!ELEMENT_DEFINITIONS[elementType]) {
-      console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+      const message = `Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
+      if (options && options.failOnUnknownType === true) {
+        throw new TypeError(`Unknown element type: ${elementType}`);
+      }
+      console.warn(message);
       return { elements: [] };
     }
   }

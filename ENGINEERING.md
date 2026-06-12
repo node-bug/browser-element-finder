@@ -637,11 +637,31 @@ console.log(ElementFinder.getSearchableAttributes())
 // ['data-qa', 'data-test-id', 'id', 'aria-label', 'placeholder', 'value']
 ```
 
+### 4.6 Inspecting Attribute Values
+
+Use `getSearchableAttributeValues(el)` to inspect the current non-empty searchable attribute values on a specific element.
+
+```javascript
+const input = document.querySelector('input')
+const values = ElementFinder.getSearchableAttributeValues(input)
+
+console.log(values)
+// { placeholder: 'Email Address', 'data-testid': 'email-input', id: 'email' }
+```
+
+Behavior:
+
+1. Returns `{}` for `null`, `undefined`, or non-element nodes.
+2. Only includes attributes currently configured in `SEARCHABLE_ATTRIBUTES`.
+3. Omits missing attributes and attributes whose value is `''`.
+4. Preserves the current searchable-attribute order in the returned object keys.
+
 **Use Cases**:
 
 - Your project uses `data-qa` instead of `data-testid`
 - Different priority order for your app structure
 - Add project-specific attributes to search
+- Inspect an element before debugging why a text search did or did not match
 
 ---
 
@@ -1591,6 +1611,7 @@ export { splitByOperator }
 export { ELEMENT_DEFINITIONS }
 export { setSearchableAttributes }
 export { getSearchableAttributes }
+export { getSearchableAttributeValues }
 
 // Inspection
 export { getValidTypes }
@@ -1609,14 +1630,11 @@ The library is distributed as an NPM package with multiple export formats:
 {
   "exports": {
     ".": {
-      "browser": "./index.js",
-      "require": "./index.js",
       "import": "./src/element-finder.js",
-      "default": "./index.js"
+      "default": "./src/element-finder.js"
     },
-    "./min": {
-      "default": "./index.min.js"
-    },
+    "./browser": "./index.js",
+    "./min": "./index.min.js",
     "./element-definitions.json": {
       "default": "./src/element-definitions.json"
     },
@@ -1630,14 +1648,14 @@ The library is distributed as an NPM package with multiple export formats:
 **Usage**:
 
 ```javascript
-// Default (built version)
-import ElementFinder from '@nodebug/browser-element-finder'
+// ESM source entry point (bundlers and Node ESM)
+import * as ElementFinder from '@nodebug/browser-element-finder'
 
-// Minified
-import ElementFinder from '@nodebug/browser-element-finder/min'
+// Browser IIFE bundle (creates global ElementFinder)
+import '@nodebug/browser-element-finder/browser'
 
-// Source (for bundling)
-import * as ElementFinder from '@nodebug/browser-element-finder/src/element-finder.js'
+// Minified browser IIFE bundle
+import '@nodebug/browser-element-finder/min'
 
 // Configuration files
 import definitions from '@nodebug/browser-element-finder/element-definitions.json'
@@ -1773,10 +1791,20 @@ Priority order for attribute searching. Attributes are checked in this order unt
    - Test with your element structure
 
 3. **Query current attributes**:
+
    ```javascript
    const attrs = ElementFinder.getSearchableAttributes()
    console.log('Searching attributes in order:', attrs)
    // ['data-testid', 'id', 'aria-label', ...]
+   ```
+
+4. **Inspect current values on an element**:
+   ```javascript
+   const values = ElementFinder.getSearchableAttributeValues(
+     document.querySelector('input'),
+   )
+   console.log(values)
+   // { placeholder: 'Email', 'data-testid': 'email-input' }
    ```
 
 ### 11.3 vitest.config.js
@@ -2676,6 +2704,7 @@ allResults.length = 0
 | `getValidAttributes()`                            | List all valid searchable attributes    | `getValidAttributes()` → ['placeholder', 'value', ...]     |
 | `getSearchableAttributes()`                       | List attribute search order             | `getSearchableAttributes()` → ['data-testid', ...]         |
 | `setSearchableAttributes(array)`                  | Set attribute search order              | `setSearchableAttributes(['data-qa', ...])`                |
+| `getSearchableAttributeValues(element)`           | Inspect non-empty searchable attributes | `getSearchableAttributeValues(input)` → { id: 'email' }    |
 
 ---
 

@@ -8,15 +8,16 @@
 
 import { build } from 'esbuild';
 import { join } from 'path';
-import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const repoRoot = dirname(__dirname);
 
 async function runBuild() {
-  const entryPoint = join(__dirname, 'src', 'element-finder.js');
-  const outputFile = join(__dirname, 'index.js');
-  const minifiedFile = join(__dirname, 'index.min.js');
+  const entryPoint = join(repoRoot, 'src', 'element-finder.js');
+  const outputFile = join(repoRoot, 'index.js');
+  const minifiedFile = join(repoRoot, 'index.min.js');
 
   try {
     // 1. Build the unminified IIFE bundle

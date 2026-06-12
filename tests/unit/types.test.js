@@ -12,6 +12,7 @@ import {
   ELEMENT_DEFINITIONS,
   getValidTypes,
   getBoundingBox,
+  getElementCounts,
   matchesType,
   getAllElements,
   findElementsByType,
@@ -135,11 +136,25 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       expect(parseXPath('self::div or self::span', span)).toBe(true);
     });
 
-    it('should handle AND conditions', () => {
+    it('should return false when all OR conditions fail', () => {
       const input = document.createElement('input');
       input.setAttribute('type', 'text');
       
-      expect(parseXPath('self::input and @type="text"', input)).toBe(true);
+      expect(parseXPath('self::button or @type="checkbox"', input)).toBe(false);
+    });
+
+    it('should handle nested outer parentheses', () => {
+      const button = document.createElement('button');
+      button.setAttribute('type', 'submit');
+      
+      expect(parseXPath('(self::button)', button)).toBe(true);
+      expect(parseXPath('((self::button and @type="submit"))', button)).toBe(true);
+    });
+
+    it('should return false when any AND condition fails', () => {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      
       expect(parseXPath('self::input and @type="checkbox"', input)).toBe(false);
     });
   });
@@ -184,6 +199,32 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       
       expect(parseCondition('descendant::span', parent)).toBe(true);
       expect(parseCondition('descendant::div', parent)).toBe(false);
+    });
+
+    it('should match ancestor:: expressions', () => {
+      const grandparent = document.createElement('div');
+      grandparent.id = 'ancestor-root';
+      const parent = document.createElement('div');
+      const child = document.createElement('span');
+      parent.appendChild(child);
+      grandparent.appendChild(parent);
+
+      expect(parseCondition('ancestor::*[self::div]', child)).toBe(true);
+      expect(parseCondition('ancestor::*[@id="missing"]', child)).toBe(false);
+    });
+
+    it('should match attribute existence expressions', () => {
+      const input = document.createElement('input');
+      input.setAttribute('required', '');
+
+      expect(parseCondition('@required', input)).toBe(true);
+      expect(parseCondition('@disabled', input)).toBe(false);
+    });
+
+    it('should return false for unknown conditions', () => {
+      const div = document.createElement('div');
+
+      expect(parseCondition('unknown-condition', div)).toBe(false);
     });
   });
 
@@ -392,6 +433,47 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     it('should default to "element" type when type is undefined', () => {
       const result = findElementsByType(undefined);
       expect(result.elements.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('getElementCounts', () => {
+    it('should count all defined non-generic element types', () => {
+      const counts = getElementCounts();
+
+      expect(counts.button).toBe(3);
+      expect(counts.textbox).toBe(3);
+      expect(counts.checkbox).toBe(1);
+      expect(counts.radio).toBe(1);
+      expect(counts.slider).toBe(1);
+      expect(counts.datepicker).toBe(1);
+      expect(counts.colorpicker).toBe(1);
+      expect(counts.link).toBe(2);
+      expect(counts.dropdown).toBe(1);
+      expect(counts.table).toBe(1);
+      expect(counts.row).toBe(2);
+      expect(counts.column).toBe(6);
+      expect(counts.cell).toBe(3);
+      expect(counts.element).toBeUndefined();
+    });
+
+    it('should count a specific element type when provided', () => {
+      expect(getElementCounts('button')).toEqual({ button: 3 });
+      expect(getElementCounts('textbox')).toEqual({ textbox: 3 });
+      expect(getElementCounts('link')).toEqual({ link: 2 });
+    });
+
+    it('should count within a parent element when provided', () => {
+      const container = document.querySelector('.container');
+
+      expect(getElementCounts('element', container)).toEqual({ element: 2 });
+    });
+
+    it('should return zero for unknown type by default', () => {
+      expect(getElementCounts('unknown-type')).toEqual({ 'unknown-type': 0 });
+    });
+
+    it('should throw TypeError for non-string type', () => {
+      expect(() => getElementCounts(123)).toThrow(TypeError);
     });
   });
 

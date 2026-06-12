@@ -28,6 +28,9 @@ var ElementFinder = (() => {
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
+    getElementCounts: () => getElementCounts,
+    getElementDescriptor: () => getElementDescriptor,
+    getSearchableAttributeValues: () => getSearchableAttributeValues,
     getSearchableAttributes: () => getSearchableAttributes,
     getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
@@ -121,6 +124,156 @@ var ElementFinder = (() => {
   }
   function getSearchableAttributes() {
     return [...SEARCHABLE_ATTRIBUTES];
+  }
+  function getSearchableAttributeValues(el) {
+    if (el == null || el.nodeType !== Node.ELEMENT_NODE) return {};
+    const values = {};
+    const attrs = SEARCHABLE_ATTRIBUTES;
+    for (let i = 0; i < attrs.length; i++) {
+      const attr = attrs[i];
+      let attrValue;
+      try {
+        attrValue = el.getAttribute(attr);
+      } catch (e) {
+        continue;
+      }
+      if (attrValue !== null && attrValue !== void 0 && attrValue !== "") {
+        values[attr] = attrValue;
+      }
+    }
+    return values;
+  }
+  function normalizeDescriptorText(text) {
+    if (text == null) return "";
+    return String(text).replace(/\s+/g, " ").trim();
+  }
+  function getImageFilenameWithoutExtension(src) {
+    const normalizedSrc = normalizeDescriptorText(src);
+    if (!normalizedSrc) return "";
+    const withoutQueryOrFragment = normalizedSrc.split(/[?#]/)[0];
+    const lastSlashIndex = Math.max(
+      withoutQueryOrFragment.lastIndexOf("/"),
+      withoutQueryOrFragment.lastIndexOf("\\")
+    );
+    const filenameWithExtension = lastSlashIndex >= 0 ? withoutQueryOrFragment.slice(lastSlashIndex + 1) : withoutQueryOrFragment;
+    const lastDotIndex = filenameWithExtension.lastIndexOf(".");
+    return lastDotIndex > 0 ? filenameWithExtension.slice(0, lastDotIndex) : filenameWithExtension;
+  }
+  function getResolvedAriaLabelledByText(el) {
+    const labelledBy = el.getAttribute("aria-labelledby");
+    if (!labelledBy) return "";
+    const ids = labelledBy.split(/\s+/);
+    const ownerDocument = el.ownerDocument || document;
+    let text = "";
+    for (const id of ids) {
+      try {
+        const refEl = ownerDocument.getElementById(id);
+        if (!refEl) continue;
+        const refText = normalizeDescriptorText(refEl.textContent);
+        if (refText) {
+          text = text ? `${text} ${refText}` : refText;
+        }
+      } catch (e) {
+      }
+    }
+    return text;
+  }
+  function getElementDescriptorText(el) {
+    const values = getSearchableAttributeValues(el);
+    const attrs = SEARCHABLE_ATTRIBUTES;
+    for (let i = 0; i < attrs.length; i++) {
+      const attr = attrs[i];
+      if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
+      const rawText = attr === "aria-labelledby" ? getResolvedAriaLabelledByText(el) : attr === "src" ? getImageFilenameWithoutExtension(values[attr]) : values[attr];
+      const identifiableText = normalizeDescriptorText(rawText);
+      if (identifiableText) {
+        return { attributeName: attr, identifiableText };
+      }
+    }
+    const directText = normalizeDescriptorText(getDirectText(el));
+    if (directText) {
+      return { attributeName: "text", identifiableText: directText };
+    }
+    const fullText = normalizeDescriptorText(el.textContent);
+    if (fullText) {
+      return { attributeName: "text", identifiableText: fullText };
+    }
+    return null;
+  }
+  function getElementDescriptorFrame(el) {
+    if (!el || !el.ownerDocument) return null;
+    try {
+      const frames = getAllFrames(window);
+      for (let i = 0; i < frames.length; i++) {
+        if (frames[i].document === el.ownerDocument) {
+          return frames[i].document;
+        }
+      }
+    } catch (e) {
+    }
+    return el.ownerDocument;
+  }
+  function getElementDescriptorUniqueness(el, text) {
+    const root = getElementDescriptorFrame(el);
+    if (!root) {
+      return { index: 1 };
+    }
+    const elements = getAllElements(root);
+    let index = 1;
+    let count = 0;
+    for (let i = 0; i < elements.length; i++) {
+      const candidate = elements[i];
+      if (candidate !== el && (candidate === root.documentElement || candidate.tagName === "BODY")) {
+        continue;
+      }
+      const candidateDescriptor = getElementDescriptorText(candidate);
+      if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
+      count++;
+      if (candidate === el) {
+        index = count;
+      }
+    }
+    return { index };
+  }
+  function getElementDescriptorType(el) {
+    if (el == null || el.nodeType !== Node.ELEMENT_NODE) return null;
+    const types = Object.keys(ELEMENT_DEFINITIONS);
+    for (let i = 0; i < types.length; i++) {
+      const type = types[i];
+      if (type === "element") continue;
+      if (matchesType(el, type)) return type;
+    }
+    return "element";
+  }
+  function getElementDescriptor(el) {
+    if (el == null || el.nodeType !== Node.ELEMENT_NODE) {
+      return {
+        identifiableText: null,
+        attributeName: null,
+        index: 1,
+        type: null,
+        tagName: null
+      };
+    }
+    const type = getElementDescriptorType(el);
+    const descriptorSource = getElementDescriptorText(el);
+    if (!descriptorSource) {
+      return {
+        identifiableText: null,
+        attributeName: null,
+        index: 1,
+        type,
+        tagName: el.tagName.toLowerCase()
+      };
+    }
+    const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText);
+    return {
+      identifiableText: descriptorSource.identifiableText,
+      attributeName: descriptorSource.attributeName,
+      index: uniqueness.index,
+      type,
+      tagName: el.tagName.toLowerCase()
+    };
   }
   function parseXPath(expr, el, depth = 0) {
     if (expr == null || el == null) return false;
@@ -411,15 +564,20 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function findElementsByType(type = "element", parent = null) {
+  function findElementsByType(type = "element", parent = null, options = null) {
     if (type === null || type === void 0) {
       type = "element";
     }
     if (typeof type !== "string") {
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
+    const failOnUnknownType = options && options.failOnUnknownType === true;
     if (type && !ELEMENT_DEFINITIONS[type]) {
-      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+      const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
+      if (failOnUnknownType) {
+        throw new TypeError(`Unknown element type: ${type}`);
+      }
+      console.warn(message);
       return { elements: [] };
     }
     const matches = [];
@@ -556,7 +714,43 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function findElements(type = null, text = null, exact = false, parent = null) {
+  function getElementCounts(type = null, parent = null, options = null) {
+    const hasType = type !== null && type !== void 0;
+    if (hasType) {
+      if (typeof type !== "string") {
+        throw new TypeError(`type must be a string, got ${typeof type}`);
+      }
+      if (!ELEMENT_DEFINITIONS[type]) {
+        const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
+        if (options && options.failOnUnknownType === true) {
+          throw new TypeError(`Unknown element type: ${type}`);
+        }
+        console.warn(message);
+        return { [type]: 0 };
+      }
+    }
+    const counts = {};
+    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS).filter((item) => item !== "element");
+    for (let i = 0; i < targetTypes.length; i++) {
+      counts[targetTypes[i]] = 0;
+    }
+    const frames = getAllFrames(window);
+    for (let i = 0; i < frames.length; i++) {
+      const frame = frames[i];
+      const allElements = getAllElements(parent || frame.document);
+      for (let j = 0; j < allElements.length; j++) {
+        const el = allElements[j];
+        for (let k = 0; k < targetTypes.length; k++) {
+          const targetType = targetTypes[k];
+          if (matchesType(el, targetType)) {
+            counts[targetType] += 1;
+          }
+        }
+      }
+    }
+    return counts;
+  }
+  function findElements(type = null, text = null, exact = false, parent = null, options = null) {
     if (text === null || text === void 0) {
       text = "";
     }
@@ -565,7 +759,11 @@ var ElementFinder = (() => {
         throw new TypeError(`type must be a string, got ${typeof type}`);
       }
       if (!ELEMENT_DEFINITIONS[type]) {
-        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+        const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
+        if (options && options.failOnUnknownType === true) {
+          throw new TypeError(`Unknown element type: ${type}`);
+        }
+        console.warn(message);
         return { elements: [] };
       }
     }
@@ -690,11 +888,11 @@ var ElementFinder = (() => {
     }
     return null;
   }
-  function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+  function findProbableElements(elementType, attributeText, exact = false, parent = null, options = null) {
     const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
     const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
     if (hasType && !hasText) {
-      return findElementsByType(elementType, parent);
+      return findElementsByType(elementType, parent, options);
     }
     if (!hasType && hasText) {
       return findElementsByAttribute(attributeText, exact, parent);
@@ -704,7 +902,11 @@ var ElementFinder = (() => {
         throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
       }
       if (!ELEMENT_DEFINITIONS[elementType]) {
-        console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+        const message = `Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
+        if (options && options.failOnUnknownType === true) {
+          throw new TypeError(`Unknown element type: ${elementType}`);
+        }
+        console.warn(message);
         return { elements: [] };
       }
     }

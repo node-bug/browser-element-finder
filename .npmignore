@@ -5,7 +5,7 @@
 # Explicitly ignore development files
 tests/
 src/
-build.js
+scripts/build.js
 vitest.config.js
 eslint.config.js
 .gitignore
