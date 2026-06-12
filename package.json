@@ -1,29 +1,23 @@
 {
   "name": "@nodebug/browser-element-finder",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Browser Element Finder - Find elements by type and text content",
   "exports": {
     ".": {
-      "browser": "./index.js",
-      "require": "./index.js",
       "import": "./src/element-finder.js",
+      "default": "./src/element-finder.js"
+    },
+    "./browser": {
       "default": "./index.js"
     },
     "./min": {
-      "browser": "./index.min.js",
-      "require": "./index.min.js",
-      "import": "./index.min.js",
       "default": "./index.min.js"
     },
     "./element-definitions.json": {
-      "browser": "./src/element-definitions.json",
-      "require": "./src/element-definitions.json",
       "import": "./src/element-definitions.json",
       "default": "./src/element-definitions.json"
     },
     "./searchable-attributes.json": {
-      "browser": "./src/searchable-attributes.json",
-      "require": "./src/searchable-attributes.json",
       "import": "./src/searchable-attributes.json",
       "default": "./src/searchable-attributes.json"
     }
@@ -54,7 +48,8 @@
     "url": "https://github.com/node-bug/browser-element-finder/issues"
   },
   "scripts": {
-    "build": "node build.js",
+    "build": "node scripts/build.js",
+    "prepack": "npm run build",
     "lint": "eslint .",
     "test": "npm run build && vitest run",
     "test:watch": "npm run build && vitest",
@@ -63,7 +58,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.6",
     "esbuild": "^0.28.0",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
@@ -73,10 +68,10 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.2",
     "selenium-webdriver": "^4.43.0",
-    "vitest": "^3.0.0"
+    "vitest": "^3.2.6"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "*.js": [
       "eslint --fix"
     ],
     "*.{json,yaml,yml,md,sh,groovy}": [

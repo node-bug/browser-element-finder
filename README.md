@@ -20,6 +20,14 @@ const results = ElementFinder.findElements('button', 'Submit')
 // Find by text only (any type)
 const results = ElementFinder.findElements(null, 'seleniumbase')
 
+// Count semantic element types on the screen
+const counts = ElementFinder.getElementCounts()
+// Returns counts for all defined non-generic types, excluding `element`
+
+// Count one semantic type
+const buttonCount = ElementFinder.getElementCounts('button')
+// Returns `{ button: 3 }`
+
 // Find in all frames (default)
 const results = ElementFinder.findElements('button')
 
@@ -45,6 +53,7 @@ results.elements.forEach((e) => {
 - For iframe results, switch context before interacting (see Selenium/Playwright docs)
 - Use `getValidTypes()` to enumerate all supported semantic types
 - Use `getSearchableAttributes()` to see which attributes are searched for text
+- Use `getSearchableAttributeValues(element)` to inspect which searchable attributes are present on a specific element
 
 ---
 
@@ -99,6 +108,10 @@ const results = ElementFinder.findElements('button')
 const results = ElementFinder.findElements('button', 'Submit')
 // Find by text only
 const results = ElementFinder.findElements(null, 'seleniumbase')
+// Count element types
+const counts = ElementFinder.getElementCounts()
+// Count one type
+const buttonCount = ElementFinder.getElementCounts('button')
 // Check visibility of found elements
 results.elements.forEach((e) => {
   console.log('Hidden:', e.isHidden)
@@ -144,6 +157,20 @@ ElementFinder.setSearchableAttributes([
 ])
 ```
 
+### Inspecting Attribute Values
+
+Use `getSearchableAttributeValues(element)` to inspect which current searchable attributes are present on a specific element and what values they contain.
+
+```js
+const input = document.querySelector('input')
+const values = ElementFinder.getSearchableAttributeValues(input)
+
+console.log(values)
+// { placeholder: 'Email', 'data-testid': 'email-input', id: 'email' }
+```
+
+The returned object only includes searchable attributes that exist on the element and have non-empty values. It respects any custom attribute order set with `setSearchableAttributes()`.
+
 ### Pausing Animations for Screenshots
 
 When taking screenshots or performing visual assertions, animations can cause flaky tests. Use `pauseAnimations()` and `resumeAnimations()` to freeze and restore animations:
@@ -177,8 +204,8 @@ The package exports JSON files containing element type definitions and searchabl
 
 ```javascript
 // ESM - Import JSON directly
-import ELEMENT_DEFINITIONS from '@nodebug/browser-element-finder/element-definitions.json' assert { type: 'json' }
-import SEARCHABLE_ATTRIBUTES from '@nodebug/browser-element-finder/searchable-attributes.json' assert { type: 'json' }
+import ELEMENT_DEFINITIONS from '@nodebug/browser-element-finder/element-definitions.json' with { type: 'json' }
+import SEARCHABLE_ATTRIBUTES from '@nodebug/browser-element-finder/searchable-attributes.json' with { type: 'json' }
 
 // Get all valid element types
 console.log(Object.keys(ELEMENT_DEFINITIONS)) // ['button', 'checkbox', 'dropdown', ...]
@@ -187,38 +214,37 @@ console.log(Object.keys(ELEMENT_DEFINITIONS)) // ['button', 'checkbox', 'dropdow
 console.log(SEARCHABLE_ATTRIBUTES) // ['placeholder', 'value', 'data-test-id', ...]
 ```
 
-```javascript
-// CommonJS - Use require
-const ELEMENT_DEFINITIONS = require('@nodebug/browser-element-finder/element-definitions.json')
-const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchable-attributes.json')
-```
+The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples are not supported.
 
 ---
 
 ## API Summary
 
-| Function                                          | Description                                                                    |
-| ------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                      |
-| `findElementsByType(type, parent)`                | Find elements by type only, returns `{ elements: [...] }`                      |
-| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                 |
-| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`  |
-| `highlight(elements, color, width)`               | Highlight elements with outline                                                |
-| `unhighlight(elements)`                           | Remove highlight                                                               |
-| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                 |
-| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                         |
-| `getValidTypes()`                                 | List all supported element types                                               |
-| `getValidAttributes()`                            | List all valid searchable attribute names                                      |
-| `getBoundingBox(element)`                         | Get bounding box for an element                                                |
-| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                          |
-| `getSearchableAttributes()`                       | Get current searchable attributes                                              |
-| `matchesType(el, type)`                           | Check if element matches a type                                                |
-| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                        |
-| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                             |
-| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                |
-| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                              |
-| `splitByOperator(expr, op)`                       | Split XPath by operator                                                        |
-| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute) |
+| Function                                          | Description                                                                                  |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                                    |
+| `findElementsByType(type, parent)`                | Find elements by type only, returns `{ elements: [...] }`                                    |
+| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                               |
+| `getElementCounts(type, parent)`                  | Count elements by semantic type, excluding generic `element` by default                      |
+| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                |
+| `highlight(elements, color, width)`               | Highlight elements with outline                                                              |
+| `unhighlight(elements)`                           | Remove highlight                                                                             |
+| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                               |
+| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                                       |
+| `getValidTypes()`                                 | List all supported element types                                                             |
+| `getValidAttributes()`                            | List all valid searchable attribute names                                                    |
+| `getBoundingBox(element)`                         | Get bounding box for an element                                                              |
+| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                                        |
+| `getSearchableAttributes()`                       | Get current searchable attributes                                                            |
+| `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                            |
+| `getElementDescriptor(element)`                   | Get identifiable text, source attribute, occurrence index, type, and tag name for an element |
+| `matchesType(el, type)`                           | Check if element matches a type                                                              |
+| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                      |
+| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                                           |
+| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                              |
+| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                                            |
+| `splitByOperator(expr, op)`                       | Split XPath by operator                                                                      |
+| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute)               |
 
 ---
 
@@ -226,12 +252,12 @@ const SEARCHABLE_ATTRIBUTES = require('@nodebug/browser-element-finder/searchabl
 
 Finds elements matching the specified type and/or text. Combines type and attribute matching in a single call. Searches all frames (main document + iframes) by default.
 
-| Parameter | Type      | Default | Description                                                                                                      |
-| --------- | --------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
-| `type`    | `string`  | `null`  | Element type (see supported types below). If `null`, matches any type. Throws `TypeError` for non-string values. |
-| `text`    | `string`  | `null`  | Text to search for in content/attributes. If `null`/`''`/`undefined`, matches any text.                          |
-| `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                  |
-| `parent`  | `Element` | `null`  | Parent element to search within                                                                                  |
+| Parameter | Type      | Default | Description                                                                                                                     |
+| --------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | `string`  | `null`  | Element type (see supported types below). If `null` or `undefined`, matches any type. Throws `TypeError` for non-string values. |
+| `text`    | `string`  | `null`  | Text to search for in content/attributes. If `null`/`''`/`undefined`, matches any text.                                         |
+| `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                 |
+| `parent`  | `Element` | `null`  | Parent element to search within                                                                                                 |
 
 **Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden }] }`
 
@@ -332,6 +358,47 @@ Sets custom searchable attributes.
 
 Returns the current searchable attributes array.
 
+### `getElementDescriptor(element)`
+
+Returns identifiable text for a DOM element, plus structured metadata about where it came from, its 1-based occurrence index, its semantic type, and its HTML tag name. Uniqueness can be inferred from `index`: `index === 1` means the identifiable text is unique within the current frame.
+
+```javascript
+const descriptor = ElementFinder.getElementDescriptor(element)
+```
+
+**Returns**:
+
+```javascript
+{
+  identifiableText: 'Save', // Plain searchable text only; no CSS/XPath/index syntax
+  attributeName: 'title',   // Attribute name, or 'text' for direct/textContent fallback
+  index: 2,                 // 1-based occurrence index; index > 1 means not unique
+  type: 'button',           // Semantic element type, or null for non-elements
+  tagName: 'button'         // Lowercase HTML tag name, or null for non-elements
+}
+```
+
+Descriptor selection follows the same searchable-attribute priority as text search:
+
+1. First non-empty searchable attribute value is used.
+2. `aria-labelledby` is resolved to referenced element text before returning the identifiable text.
+3. `src` values are returned as the image filename without path, query string, fragment, or extension.
+4. If no searchable attribute exists, direct text nodes are used and `attributeName` is set to `'text'`.
+5. If direct text is empty, trimmed full `textContent` is used and `attributeName` is set to `'text'`.
+6. If no text exists, `identifiableText` and `attributeName` are `null`, but `index`, `type`, and `tagName` are still returned.
+
+Null or non-element input returns:
+
+```javascript
+{
+  identifiableText: null,
+  attributeName: null,
+  index: 1,
+  type: null,
+  tagName: null
+}
+```
+
 ### `matchesType(el, type)`
 
 Checks if an element matches the specified type definition.
@@ -348,6 +415,36 @@ Finds elements by type only. Searches all frames by default.
 | --------- | --------- | ----------- | ----------------------------------------------------------------------------------- |
 | `type`    | `string`  | `"element"` | Element type (see supported types below). Throws `TypeError` for non-string values. |
 | `parent`  | `Element` | `null`      | Parent element to search within                                                     |
+
+### `getElementCounts(type, parent)`
+
+Counts elements by semantic type on the current screen. Searches all frames (main document + iframes) by default.
+
+| Parameter | Type      | Default | Description                                                                                                   |
+| --------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------- |
+| `type`    | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types except `element`. |
+| `parent`  | `Element` | `null`  | Parent element to count within                                                                                |
+
+**Returns**: `Object.<string, number>` keyed by semantic element type.
+
+```javascript
+// Count all defined non-generic types
+const counts = ElementFinder.getElementCounts()
+// { button: 3, textbox: 2, link: 1, ... }
+
+// Count one type
+const buttons = ElementFinder.getElementCounts('button')
+// { button: 3 }
+
+// Count within a parent element
+const inputs = ElementFinder.getElementCounts(
+  'textbox',
+  document.querySelector('form'),
+)
+// { textbox: 2 }
+```
+
+The generic `element` type is excluded from the all-types count so the result contains only semantic types such as `button`, `textbox`, `link`, and `table`.
 
 ### `findElementsByAttribute(value, exact, parent)`
 
@@ -471,19 +568,19 @@ Both `column` and `cell` types find table cells, but they behave differently:
 
 ```javascript
 // Find all cells in the "City" column (header + 3 data cells = 4 total)
-const columnResult = ElementFinder.findElement('column', 'City')
+const columnResult = ElementFinder.findElements('column', 'City')
 // Returns: [th:City, td:New York, td:London, td:Paris]
 
 // Find all cells when searching for a data cell value
-const columnResult2 = ElementFinder.findElement('column', 'Paris')
+const columnResult2 = ElementFinder.findElements('column', 'Paris')
 // Returns: [th:City, td:New York, td:London, td:Paris]
 
 // Find only the specific cell containing "Paris"
-const cellResult = ElementFinder.findElement('cell', 'Paris')
+const cellResult = ElementFinder.findElements('cell', 'Paris')
 // Returns: [td:Paris]
 
 // Find by header text with cell type - returns only the header cell
-const headerCell = ElementFinder.findElement('cell', 'City')
+const headerCell = ElementFinder.findElements('cell', 'City')
 // Returns: [] (no td elements match "City" header text)
 ```
 

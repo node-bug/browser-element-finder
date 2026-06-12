@@ -308,9 +308,10 @@ export function getBoundingBox(el) {
  * Searches all frames (main document + iframes) by default.
  * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
  * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementsByType(type = "element", parent = null) {
+export function findElementsByType(type = "element", parent = null, options = null) {
   if (type === null || type === undefined) {
     type = "element";
   }
@@ -319,8 +320,13 @@ export function findElementsByType(type = "element", parent = null) {
     throw new TypeError(`type must be a string, got ${typeof type}`);
   }
 
+  const failOnUnknownType = options && options.failOnUnknownType === true;
   if (type && !ELEMENT_DEFINITIONS[type]) {
-    console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+    const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
+    if (failOnUnknownType) {
+      throw new TypeError(`Unknown element type: ${type}`);
+    }
+    console.warn(message);
     return { elements: [] };
   }
 

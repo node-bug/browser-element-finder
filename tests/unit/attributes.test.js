@@ -3,11 +3,13 @@
  * These tests run in Node.js and provide code coverage
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import { JSDOM } from 'jsdom';
 import {
   setSearchableAttributes,
   getSearchableAttributes,
+  getSearchableAttributeValues,
+  getElementDescriptor,
   matchesAttribute,
   getBoundingBox,
   getAllElements,
@@ -39,6 +41,7 @@ const DEFAULT_ATTRIBUTES = [
 describe('ElementFinderByAttribute Node.js Module Tests', () => {
   let window;
   let document;
+  let fixtureBodyHTML;
 
   beforeAll(() => {
     // Create jsdom instance
@@ -93,6 +96,7 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
 
     window = dom.window;
     document = window.document;
+    fixtureBodyHTML = document.body.innerHTML;
 
     // Set up global document and Node for getAllElements
     global.document = document;
@@ -137,6 +141,274 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       const attrs1 = getSearchableAttributes();
       const attrs2 = getSearchableAttributes();
       expect(attrs1).not.toBe(attrs2);
+    });
+  });
+
+  describe('getSearchableAttributeValues', () => {
+    it('should return current values for searchable attributes on an element', () => {
+      const input = document.getElementById('txt2');
+
+      expect(getSearchableAttributeValues(input)).toEqual({
+        placeholder: 'Enter email',
+        'data-testid': 'email-input',
+        id: 'txt2'
+      });
+    });
+
+    it('should exclude missing, empty, and non-searchable attributes', () => {
+      const input = document.createElement('input');
+      input.setAttribute('placeholder', '');
+      input.setAttribute('data-testid', '');
+      input.setAttribute('custom-attr', 'ignored');
+      input.setAttribute('aria-label', 'Email Address');
+
+      expect(getSearchableAttributeValues(input)).toEqual({
+        'aria-label': 'Email Address'
+      });
+    });
+
+    it('should respect custom searchable attributes', () => {
+      const el = document.createElement('button');
+      el.setAttribute('id', 'save');
+      el.setAttribute('data-qa', 'save-button');
+      el.setAttribute('aria-label', 'Save changes');
+
+      setSearchableAttributes(['data-qa', 'id']);
+
+      expect(getSearchableAttributeValues(el)).toEqual({
+        'data-qa': 'save-button',
+        id: 'save'
+      });
+      expect(Object.keys(getSearchableAttributeValues(el))).toEqual(['data-qa', 'id']);
+    });
+
+    it('should return an empty object for null or non-element nodes', () => {
+      expect(getSearchableAttributeValues(null)).toEqual({});
+      expect(getSearchableAttributeValues(document.createTextNode('not an element'))).toEqual({});
+    });
+  });
+
+  describe('getElementDescriptor', () => {
+    beforeEach(() => {
+      document.body.innerHTML = '';
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = fixtureBodyHTML;
+    });
+
+    it('should return unique id descriptor with type and index', () => {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'email-input';
+      document.body.appendChild(input);
+
+      expect(getElementDescriptor(input)).toEqual({
+        identifiableText: 'email-input',
+        attributeName: 'id',
+        index: 1,
+        type: 'textbox',
+        tagName: 'input'
+      });
+    });
+
+    it('should return duplicate title descriptor with separate occurrence index', () => {
+      const first = document.createElement('button');
+      first.setAttribute('title', 'Save');
+      document.body.appendChild(first);
+
+      const second = document.createElement('button');
+      second.setAttribute('title', 'Save');
+      document.body.appendChild(second);
+
+      expect(getElementDescriptor(first)).toMatchObject({
+        identifiableText: 'Save',
+        attributeName: 'title',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+      expect(getElementDescriptor(second)).toMatchObject({
+        identifiableText: 'Save',
+        attributeName: 'title',
+        index: 2,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should return image src filename without path or extension', () => {
+      const image = document.createElement('img');
+      image.setAttribute('src', '/assets/images/user-avatar.png?size=large#profile');
+      document.body.appendChild(image);
+
+      expect(getElementDescriptor(image)).toEqual({
+        identifiableText: 'user-avatar',
+        attributeName: 'src',
+        index: 1,
+        type: 'image',
+        tagName: 'img'
+      });
+    });
+
+    it('should fall back to direct text when no searchable attribute exists', () => {
+      const button = document.createElement('button');
+      button.textContent = 'Submit';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Submit',
+        attributeName: 'text',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should resolve aria-labelledby text for descriptor and uniqueness', () => {
+      const label = document.createElement('label');
+      label.id = 'save-label';
+      label.textContent = 'Save';
+      document.body.appendChild(label);
+
+      const button = document.createElement('button');
+      button.setAttribute('aria-labelledby', 'save-label');
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Save',
+        attributeName: 'aria-labelledby',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should resolve multiple aria-labelledby references and ignore missing labels', () => {
+      const firstLabel = document.createElement('label');
+      firstLabel.id = 'first-label';
+      firstLabel.textContent = 'First';
+      document.body.appendChild(firstLabel);
+
+      const secondLabel = document.createElement('label');
+      secondLabel.id = 'second-label';
+      secondLabel.textContent = 'Second';
+      document.body.appendChild(secondLabel);
+
+      const button = document.createElement('button');
+      button.setAttribute('aria-labelledby', 'first-label missing-label second-label');
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'First Second',
+        attributeName: 'aria-labelledby',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should ignore empty aria-labelledby references before falling back to text', () => {
+      const emptyLabel = document.createElement('label');
+      emptyLabel.id = 'empty-label';
+      emptyLabel.textContent = '   ';
+      document.body.appendChild(emptyLabel);
+
+      const button = document.createElement('button');
+      button.setAttribute('aria-labelledby', 'empty-label');
+      button.textContent = 'Fallback';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Fallback',
+        attributeName: 'text',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should ignore empty aria-labelledby references before falling back to attributes', () => {
+      const emptyLabel = document.createElement('label');
+      emptyLabel.id = 'empty-label';
+      emptyLabel.textContent = '   ';
+      document.body.appendChild(emptyLabel);
+
+      const button = document.createElement('button');
+      button.setAttribute('aria-labelledby', 'empty-label');
+      button.setAttribute('title', 'Fallback Title');
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Fallback Title',
+        attributeName: 'title',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should fall back to full text when direct text is empty', () => {
+      const button = document.createElement('button');
+      const span = document.createElement('span');
+      span.textContent = 'Nested Action';
+      button.appendChild(span);
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Nested Action',
+        attributeName: 'text',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should return null descriptor with index and type when no text exists', () => {
+      const div = document.createElement('div');
+      document.body.appendChild(div);
+
+      expect(getElementDescriptor(div)).toEqual({
+        identifiableText: null,
+        attributeName: null,
+        index: 1,
+        type: 'element',
+        tagName: 'div'
+      });
+    });
+
+    it('should return safe descriptor object for null or non-element input', () => {
+      expect(getElementDescriptor(null)).toEqual({
+        identifiableText: null,
+        attributeName: null,
+        index: 1,
+        type: null,
+        tagName: null
+      });
+      expect(getElementDescriptor(document.createTextNode('not an element'))).toEqual({
+        identifiableText: null,
+        attributeName: null,
+        index: 1,
+        type: null,
+        tagName: null
+      });
+    });
+
+    it('should detect semantic element type', () => {
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.setAttribute('aria-label', 'Accept terms');
+      document.body.appendChild(checkbox);
+
+      expect(getElementDescriptor(checkbox).type).toBe('checkbox');
+    });
+
+    it('should default type to element when no specific type matches', () => {
+      const div = document.createElement('div');
+      div.setAttribute('aria-label', 'Panel');
+      document.body.appendChild(div);
+
+      expect(getElementDescriptor(div).type).toBe('element');
     });
   });
 
