@@ -962,14 +962,14 @@ function hasOwnMatch(el, value, exact = false) {
 }
 
 /**
- * Gets counts of elements by semantic type on the current screen.
+ * Gets counts of elements by semantic type and visibility on the current screen.
  * Excludes the generic `element` type unless a specific type is requested.
  * If no type is provided, returns counts for all defined non-generic types.
  * Searches all frames (main document + iframes) by default.
  * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined non-generic types.
  * @param {Element|null} [parent=null] - Parent element to count within
  * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
- * @returns {Object.<string, number>} Counts keyed by semantic element type, or `{ [type]: count }` when type is provided
+ * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type, or `{ [type]: { visible, hidden, total } }` when type is provided
  */
 export function getElementCounts(type = null, parent = null, options = null) {
   const hasType = type !== null && type !== undefined;
@@ -984,7 +984,7 @@ export function getElementCounts(type = null, parent = null, options = null) {
         throw new TypeError(`Unknown element type: ${type}`);
       }
       console.warn(message);
-      return { [type]: 0 };
+      return { [type]: { visible: 0, hidden: 0, total: 0 } };
     }
   }
 
@@ -992,7 +992,7 @@ export function getElementCounts(type = null, parent = null, options = null) {
   const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS).filter((item) => item !== 'element');
 
   for (let i = 0; i < targetTypes.length; i++) {
-    counts[targetTypes[i]] = 0;
+    counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
   }
 
   const frames = getAllFrames(window);
@@ -1008,7 +1008,9 @@ export function getElementCounts(type = null, parent = null, options = null) {
       for (let k = 0; k < targetTypes.length; k++) {
         const targetType = targetTypes[k];
         if (matchesType(el, targetType)) {
-          counts[targetType] += 1;
+          const bucket = isHidden(el) ? 'hidden' : 'visible';
+          counts[targetType][bucket] += 1;
+          counts[targetType].total += 1;
         }
       }
     }

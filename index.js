@@ -726,13 +726,13 @@ var ElementFinder = (() => {
           throw new TypeError(`Unknown element type: ${type}`);
         }
         console.warn(message);
-        return { [type]: 0 };
+        return { [type]: { visible: 0, hidden: 0, total: 0 } };
       }
     }
     const counts = {};
     const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS).filter((item) => item !== "element");
     for (let i = 0; i < targetTypes.length; i++) {
-      counts[targetTypes[i]] = 0;
+      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
     }
     const frames = getAllFrames(window);
     for (let i = 0; i < frames.length; i++) {
@@ -743,7 +743,9 @@ var ElementFinder = (() => {
         for (let k = 0; k < targetTypes.length; k++) {
           const targetType = targetTypes[k];
           if (matchesType(el, targetType)) {
-            counts[targetType] += 1;
+            const bucket = isHidden(el) ? "hidden" : "visible";
+            counts[targetType][bucket] += 1;
+            counts[targetType].total += 1;
           }
         }
       }

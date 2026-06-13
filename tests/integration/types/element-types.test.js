@@ -48,6 +48,60 @@ describe('ElementFinderByType - Element Types Fixture', () => {
     }
   });
 
+  describe('getElementCounts', () => {
+    it('should return visible, hidden, and total counts for all semantic types', async () => {
+      const counts = await driver.executeScript('return ElementFinder.getElementCounts()');
+
+      expect(counts.link).toEqual({ visible: 3, hidden: 0, total: 3 });
+      expect(counts.navigation).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.heading).toEqual({ visible: 24, hidden: 0, total: 24 });
+      expect(counts.button).toEqual({ visible: 7, hidden: 0, total: 7 });
+      expect(counts.checkbox).toEqual({ visible: 3, hidden: 0, total: 3 });
+      expect(counts.switch).toEqual({ visible: 4, hidden: 0, total: 4 });
+      expect(counts.slider).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.radio).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.dropdown).toEqual({ visible: 4, hidden: 0, total: 4 });
+      expect(counts.textbox).toEqual({ visible: 6, hidden: 0, total: 6 });
+      expect(counts.table).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.row).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.column).toEqual({ visible: 3, hidden: 0, total: 3 });
+      expect(counts.cell).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.image).toEqual({ visible: 3, hidden: 0, total: 3 });
+      expect(counts.element).toBeUndefined();
+    });
+
+    it('should return visible, hidden, and total counts for one semantic type', async () => {
+      const counts = await driver.executeScript('return ElementFinder.getElementCounts("button")');
+
+      expect(counts).toEqual({ button: { visible: 7, hidden: 0, total: 7 } });
+    });
+
+    it('should count elements within a parent element', async () => {
+      const counts = await driver.executeScript(`
+        const parent = document.getElementById('buttons-section');
+        return ElementFinder.getElementCounts('button', parent);
+      `);
+
+      expect(counts).toEqual({ button: { visible: 4, hidden: 0, total: 4 } });
+    });
+
+    it('should count hidden elements in the browser', async () => {
+      const counts = await driver.executeScript(`
+        const hiddenButton = document.createElement('button');
+        hiddenButton.hidden = true;
+        document.body.appendChild(hiddenButton);
+
+        try {
+          return ElementFinder.getElementCounts('button');
+        } finally {
+          hiddenButton.remove();
+        }
+      `);
+
+      expect(counts).toEqual({ button: { visible: 7, hidden: 1, total: 8 } });
+    });
+  });
+
   describe('findElementsByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await driver.executeScript(`
