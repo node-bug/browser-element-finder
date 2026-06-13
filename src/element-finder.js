@@ -23,6 +23,9 @@ const REGEX_PATTERNS = {
 // Maximum recursion depth for XPath parsing to prevent stack overflow
 const MAX_RECURSION_DEPTH = 100;
 
+// Maximum length for text/textContent fallback descriptors
+const MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
+
 // Pre-compiled type matcher functions for faster type checking
 const TYPE_MATCHERS = new Map();
 
@@ -97,6 +100,33 @@ export function getSearchableAttributeValues(el) {
 function normalizeDescriptorText(text) {
   if (text == null) return '';
   return String(text).replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Shortens text fallback descriptors without cutting words.
+ * Uses only the first non-empty line so text after new lines is ignored.
+ * @param {string|null|undefined} text - Text to shorten
+ * @returns {string} Shortened normalized text
+ */
+function shortenDescriptorText(text) {
+  if (text == null) return '';
+
+  const lines = String(text).split(/\r\n|\r|\n/);
+  let normalizedText = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    normalizedText = normalizeDescriptorText(lines[i]);
+    if (normalizedText) break;
+  }
+
+  if (!normalizedText || normalizedText.length <= MAX_IDENTIFIABLE_TEXT_LENGTH) {
+    return normalizedText;
+  }
+
+  const shortened = normalizedText.slice(0, MAX_IDENTIFIABLE_TEXT_LENGTH);
+  const lastSpaceIndex = shortened.lastIndexOf(' ');
+
+  return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : normalizedText;
 }
 
 /**
@@ -178,12 +208,12 @@ function getElementDescriptorText(el) {
     }
   }
 
-  const directText = normalizeDescriptorText(getDirectText(el));
+  const directText = shortenDescriptorText(getDirectText(el));
   if (directText) {
     return { attributeName: 'text', identifiableText: directText };
   }
 
-  const fullText = normalizeDescriptorText(el.textContent);
+  const fullText = shortenDescriptorText(el.textContent);
   if (fullText) {
     return { attributeName: 'text', identifiableText: fullText };
   }

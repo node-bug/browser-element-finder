@@ -265,6 +265,44 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       });
     });
 
+    it('should shorten direct text fallback without cutting words or including text after new lines', () => {
+      const button = document.createElement('button');
+      button.textContent = 'This is a very long button label\nSecond line should be ignored';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toMatchObject({
+        identifiableText: 'This is a very long',
+        attributeName: 'text',
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should shorten full text fallback without cutting words or including text after new lines', () => {
+      const button = document.createElement('button');
+      const span = document.createElement('span');
+      span.textContent = 'Nested text with spaces and another line\nIgnored line';
+      button.appendChild(span);
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toMatchObject({
+        identifiableText: 'Nested text with spaces',
+        attributeName: 'text',
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should not shorten searchable attribute descriptor values', () => {
+      const button = document.createElement('button');
+      button.setAttribute('aria-label', 'This is a very long aria label that should not be shortened');
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button).identifiableText).toBe(
+        'This is a very long aria label that should not be shortened'
+      );
+    });
+
     it('should resolve aria-labelledby text for descriptor and uniqueness', () => {
       const label = document.createElement('label');
       label.id = 'save-label';
