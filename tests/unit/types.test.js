@@ -13,6 +13,7 @@ import {
   getValidTypes,
   getBoundingBox,
   getElementCounts,
+  isHidden,
   matchesType,
   getAllElements,
   findElementsByType,
@@ -508,6 +509,60 @@ describe('ElementFinderByType Node.js Module Tests', () => {
         expect(getElementCounts('button')).toEqual({ button: { visible: 3, hidden: 1, total: 4 } });
       } finally {
         hiddenButton.remove();
+      }
+    });
+
+    it('should count elements hidden by aria-hidden ancestor', () => {
+      const menu = document.createElement('div');
+      menu.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(menu);
+
+      const link = document.createElement('a');
+      link.href = '/nonprofits';
+      link.textContent = 'Nonprofits';
+      menu.appendChild(link);
+
+      try {
+        expect(isHidden(link)).toBe(true);
+        expect(getElementCounts('link')).toEqual({ link: { visible: 2, hidden: 1, total: 3 } });
+      } finally {
+        menu.remove();
+      }
+    });
+
+    it('should count elements hidden by inert ancestor', () => {
+      const menu = document.createElement('div');
+      menu.inert = true;
+      document.body.appendChild(menu);
+
+      const link = document.createElement('a');
+      link.href = '/nonprofits';
+      link.textContent = 'Nonprofits';
+      menu.appendChild(link);
+
+      try {
+        expect(isHidden(link)).toBe(true);
+        expect(getElementCounts('link')).toEqual({ link: { visible: 2, hidden: 1, total: 3 } });
+      } finally {
+        menu.remove();
+      }
+    });
+
+    it('should count elements hidden by zero opacity ancestor', () => {
+      const menu = document.createElement('div');
+      menu.style.opacity = '0';
+      document.body.appendChild(menu);
+
+      const link = document.createElement('a');
+      link.href = '/nonprofits';
+      link.textContent = 'Nonprofits';
+      menu.appendChild(link);
+
+      try {
+        expect(isHidden(link)).toBe(true);
+        expect(getElementCounts('link')).toEqual({ link: { visible: 2, hidden: 1, total: 3 } });
+      } finally {
+        menu.remove();
       }
     });
 

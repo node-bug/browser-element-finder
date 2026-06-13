@@ -741,34 +741,58 @@ export function getBoundingBox(el) {
 
 /**
  * Checks if an element is hidden (not visible on the page).
- * Considers offset dimensions, CSS visibility, display, and hidden attribute.
+ * Considers native visibility checks, ancestor visibility, CSS visibility/display/opacity,
+ * hidden/inert/aria-hidden attributes, and offset dimensions.
  * @param {Element} el - The DOM element to check
  * @returns {boolean} True if the element is hidden
  */
 export function isHidden(el) {
   if (el == null) return true;
 
-  // Check offset dimensions (element has no size)
-  if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+  let parent = el;
+  while (parent) {
+    if (isElementHidden(parent)) {
+      return true;
+    }
+    parent = parent.parentElement;
+  }
+
+  return false;
+}
+
+function isElementHidden(el) {
+  if (
+    el.hasAttribute('hidden') ||
+    el.getAttribute('aria-hidden') === 'true' ||
+    el.inert ||
+    (el.offsetWidth === 0 && el.offsetHeight === 0)
+  ) {
     return true;
   }
 
-  // Check computed styles for visibility and display
-  try {
-    const style = window.getComputedStyle(el);
-    if (style.visibility === 'hidden' || style.visibility === 'collapse') {
+  if (typeof el.checkVisibility === 'function') {
+    if (!el.checkVisibility({
+      checkOpacity: true,
+      checkVisibilityCSS: true,
+      contentVisibilityAuto: true
+    })) {
       return true;
     }
-    if (style.display === 'none') {
+    return false;
+  }
+
+  try {
+    const style = window.getComputedStyle(el);
+    if (
+      style.visibility === 'hidden' ||
+      style.visibility === 'collapse' ||
+      style.display === 'none' ||
+      style.opacity === '0'
+    ) {
       return true;
     }
   } catch {
     // Restricted access - continue with other checks
-  }
-
-  // Check hidden attribute
-  if (el.hasAttribute('hidden')) {
-    return true;
   }
 
   return false;
