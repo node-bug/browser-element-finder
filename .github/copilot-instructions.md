@@ -432,7 +432,7 @@ See `TODO.md` for the feature roadmap:
 
 ### Planned Features
 
-- `getElementCounts()` — Return counts by semantic element type
+- `getElementCounts()` — Return counts by semantic element type and visibility
 - `waitForElement()` — Poll until found or timeout
 - `getElementState()` — Get visibility/enabled/selected state
 - `generateSelector()` — Generate unique CSS selector

@@ -107,6 +107,7 @@ var ElementFinder = (() => {
     operatorAnd: /^\s*\band\b\s*/i
   };
   var MAX_RECURSION_DEPTH = 100;
+  var MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
   for (const [type, expr] of Object.entries(element_definitions_default)) {
     if (expr === "true()") {
@@ -146,6 +147,21 @@ var ElementFinder = (() => {
   function normalizeDescriptorText(text) {
     if (text == null) return "";
     return String(text).replace(/\s+/g, " ").trim();
+  }
+  function shortenDescriptorText(text) {
+    if (text == null) return "";
+    const lines = String(text).split(/\r\n|\r|\n/);
+    let normalizedText = "";
+    for (let i = 0; i < lines.length; i++) {
+      normalizedText = normalizeDescriptorText(lines[i]);
+      if (normalizedText) break;
+    }
+    if (!normalizedText || normalizedText.length <= MAX_IDENTIFIABLE_TEXT_LENGTH) {
+      return normalizedText;
+    }
+    const shortened = normalizedText.slice(0, MAX_IDENTIFIABLE_TEXT_LENGTH);
+    const lastSpaceIndex = shortened.lastIndexOf(" ");
+    return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : normalizedText;
   }
   function getImageFilenameWithoutExtension(src) {
     const normalizedSrc = normalizeDescriptorText(src);
@@ -190,11 +206,11 @@ var ElementFinder = (() => {
         return { attributeName: attr, identifiableText };
       }
     }
-    const directText = normalizeDescriptorText(getDirectText(el));
+    const directText = shortenDescriptorText(getDirectText(el));
     if (directText) {
       return { attributeName: "text", identifiableText: directText };
     }
-    const fullText = normalizeDescriptorText(el.textContent);
+    const fullText = shortenDescriptorText(el.textContent);
     if (fullText) {
       return { attributeName: "text", identifiableText: fullText };
     }
@@ -726,13 +742,13 @@ var ElementFinder = (() => {
           throw new TypeError(`Unknown element type: ${type}`);
         }
         console.warn(message);
-        return { [type]: 0 };
+        return { [type]: { visible: 0, hidden: 0, total: 0 } };
       }
     }
     const counts = {};
     const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS).filter((item) => item !== "element");
     for (let i = 0; i < targetTypes.length; i++) {
-      counts[targetTypes[i]] = 0;
+      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
     }
     const frames = getAllFrames(window);
     for (let i = 0; i < frames.length; i++) {
@@ -743,7 +759,9 @@ var ElementFinder = (() => {
         for (let k = 0; k < targetTypes.length; k++) {
           const targetType = targetTypes[k];
           if (matchesType(el, targetType)) {
-            counts[targetType] += 1;
+            const bucket = isHidden(el) ? "hidden" : "visible";
+            counts[targetType][bucket] += 1;
+            counts[targetType].total += 1;
           }
         }
       }

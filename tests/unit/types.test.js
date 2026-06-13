@@ -82,6 +82,19 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     window = dom.window;
     document = window.document;
     
+    Object.defineProperty(window.HTMLElement.prototype, 'offsetWidth', {
+      configurable: true,
+      get() {
+        return 10;
+      }
+    });
+    Object.defineProperty(window.HTMLElement.prototype, 'offsetHeight', {
+      configurable: true,
+      get() {
+        return 10;
+      }
+    });
+    
     // Set up global document and Node for getAllElements
     global.document = document;
     global.Node = window.Node;
@@ -437,39 +450,101 @@ describe('ElementFinderByType Node.js Module Tests', () => {
   });
 
   describe('getElementCounts', () => {
-    it('should count all defined non-generic element types', () => {
+    it('should count all defined non-generic element types by visibility', () => {
       const counts = getElementCounts();
 
-      expect(counts.button).toBe(3);
-      expect(counts.textbox).toBe(3);
-      expect(counts.checkbox).toBe(1);
-      expect(counts.radio).toBe(1);
-      expect(counts.slider).toBe(1);
-      expect(counts.datepicker).toBe(1);
-      expect(counts.colorpicker).toBe(1);
-      expect(counts.link).toBe(2);
-      expect(counts.dropdown).toBe(1);
-      expect(counts.table).toBe(1);
-      expect(counts.row).toBe(2);
-      expect(counts.column).toBe(6);
-      expect(counts.cell).toBe(3);
+      expect(counts.button).toEqual({ visible: 3, hidden: 0, total: 3 });
+      expect(counts.textbox).toEqual({ visible: 3, hidden: 0, total: 3 });
+      expect(counts.checkbox).toEqual({ visible: 1, hidden: 0, total: 1 });
+      expect(counts.radio).toEqual({ visible: 1, hidden: 0, total: 1 });
+      expect(counts.slider).toEqual({ visible: 1, hidden: 0, total: 1 });
+      expect(counts.datepicker).toEqual({ visible: 1, hidden: 0, total: 1 });
+      expect(counts.colorpicker).toEqual({ visible: 1, hidden: 0, total: 1 });
+      expect(counts.link).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.dropdown).toEqual({ visible: 1, hidden: 0, total: 1 });
+      expect(counts.table).toEqual({ visible: 1, hidden: 0, total: 1 });
+      expect(counts.row).toEqual({ visible: 2, hidden: 0, total: 2 });
+      expect(counts.column).toEqual({ visible: 6, hidden: 0, total: 6 });
+      expect(counts.cell).toEqual({ visible: 3, hidden: 0, total: 3 });
       expect(counts.element).toBeUndefined();
     });
 
-    it('should count a specific element type when provided', () => {
-      expect(getElementCounts('button')).toEqual({ button: 3 });
-      expect(getElementCounts('textbox')).toEqual({ textbox: 3 });
-      expect(getElementCounts('link')).toEqual({ link: 2 });
+    it('should count a specific element type by visibility when provided', () => {
+      expect(getElementCounts('button')).toEqual({ button: { visible: 3, hidden: 0, total: 3 } });
+      expect(getElementCounts('textbox')).toEqual({ textbox: { visible: 3, hidden: 0, total: 3 } });
+      expect(getElementCounts('link')).toEqual({ link: { visible: 2, hidden: 0, total: 2 } });
+    });
+
+    it('should separate visible and hidden elements', () => {
+      const hiddenButton = document.createElement('button');
+      hiddenButton.hidden = true;
+      document.body.appendChild(hiddenButton);
+
+      try {
+        expect(getElementCounts('button')).toEqual({ button: { visible: 3, hidden: 1, total: 4 } });
+      } finally {
+        hiddenButton.remove();
+      }
+    });
+
+    it('should count elements hidden by display none', () => {
+      const hiddenButton = document.createElement('button');
+      hiddenButton.style.display = 'none';
+      document.body.appendChild(hiddenButton);
+
+      try {
+        expect(getElementCounts('button')).toEqual({ button: { visible: 3, hidden: 1, total: 4 } });
+      } finally {
+        hiddenButton.remove();
+      }
+    });
+
+    it('should count elements hidden by visibility hidden', () => {
+      const hiddenButton = document.createElement('button');
+      hiddenButton.style.visibility = 'hidden';
+      document.body.appendChild(hiddenButton);
+
+      try {
+        expect(getElementCounts('button')).toEqual({ button: { visible: 3, hidden: 1, total: 4 } });
+      } finally {
+        hiddenButton.remove();
+      }
+    });
+
+    it('should count elements hidden by zero dimensions', () => {
+      const hiddenButton = document.createElement('button');
+      Object.defineProperty(hiddenButton, 'offsetWidth', { value: 0 });
+      Object.defineProperty(hiddenButton, 'offsetHeight', { value: 0 });
+      document.body.appendChild(hiddenButton);
+
+      try {
+        expect(getElementCounts('button')).toEqual({ button: { visible: 3, hidden: 1, total: 4 } });
+      } finally {
+        hiddenButton.remove();
+      }
+    });
+
+    it('should count all defined types including generic element when requested', () => {
+      const counts = getElementCounts('element');
+
+      expect(counts.element).toEqual({
+        visible: 31,
+        hidden: 1,
+        total: 32
+      });
+      expect(counts.button).toBeUndefined();
     });
 
     it('should count within a parent element when provided', () => {
       const container = document.querySelector('.container');
 
-      expect(getElementCounts('element', container)).toEqual({ element: 2 });
+      expect(getElementCounts('element', container)).toEqual({ element: { visible: 2, hidden: 0, total: 2 } });
     });
 
     it('should return zero for unknown type by default', () => {
-      expect(getElementCounts('unknown-type')).toEqual({ 'unknown-type': 0 });
+      expect(getElementCounts('unknown-type')).toEqual({
+        'unknown-type': { visible: 0, hidden: 0, total: 0 }
+      });
     });
 
     it('should throw TypeError for non-string type', () => {

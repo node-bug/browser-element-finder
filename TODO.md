@@ -15,7 +15,7 @@
 
 - [x] `findElements(type, text, exact, parent)` - Combined type and attribute search (completed)
 - [x] `isHidden` flag - All returned elements include `isHidden` property for visibility detection
-- [x] `getElementCounts(type, parent)` - Return counts by semantic element type
+- [x] `getElementCounts(type, parent)` - Return counts by semantic element type and visibility
 - [ ] `waitForElement(type, text, timeout, interval, exact, parent)` - Poll until found or timeout
 - [ ] `getElementState(element)` - Get `{ visible, enabled, selected, checked, focused }` state
 

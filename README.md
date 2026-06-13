@@ -22,11 +22,11 @@ const results = ElementFinder.findElements(null, 'seleniumbase')
 
 // Count semantic element types on the screen
 const counts = ElementFinder.getElementCounts()
-// Returns counts for all defined non-generic types, excluding `element`
+// Returns { button: { visible: 3, hidden: 0, total: 3 }, ... }
 
 // Count one semantic type
 const buttonCount = ElementFinder.getElementCounts('button')
-// Returns `{ button: 3 }`
+// Returns `{ button: { visible: 3, hidden: 0, total: 3 } }`
 
 // Find in all frames (default)
 const results = ElementFinder.findElements('button')
@@ -225,7 +225,7 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                                    |
 | `findElementsByType(type, parent)`                | Find elements by type only, returns `{ elements: [...] }`                                    |
 | `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                               |
-| `getElementCounts(type, parent)`                  | Count elements by semantic type, excluding generic `element` by default                      |
+| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, excluding generic `element` by default       |
 | `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                |
 | `highlight(elements, color, width)`               | Highlight elements with outline                                                              |
 | `unhighlight(elements)`                           | Remove highlight                                                                             |
@@ -418,30 +418,30 @@ Finds elements by type only. Searches all frames by default.
 
 ### `getElementCounts(type, parent)`
 
-Counts elements by semantic type on the current screen. Searches all frames (main document + iframes) by default.
+Counts elements by semantic type and visibility on the current screen. Searches all frames (main document + iframes) by default.
 
 | Parameter | Type      | Default | Description                                                                                                   |
 | --------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------- |
 | `type`    | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types except `element`. |
 | `parent`  | `Element` | `null`  | Parent element to count within                                                                                |
 
-**Returns**: `Object.<string, number>` keyed by semantic element type.
+**Returns**: `Object.<string, { visible: number, hidden: number, total: number }>` keyed by semantic element type.
 
 ```javascript
 // Count all defined non-generic types
 const counts = ElementFinder.getElementCounts()
-// { button: 3, textbox: 2, link: 1, ... }
+// { button: { visible: 3, hidden: 0, total: 3 }, textbox: { visible: 2, hidden: 0, total: 2 }, ... }
 
 // Count one type
 const buttons = ElementFinder.getElementCounts('button')
-// { button: 3 }
+// { button: { visible: 3, hidden: 0, total: 3 } }
 
 // Count within a parent element
 const inputs = ElementFinder.getElementCounts(
   'textbox',
   document.querySelector('form'),
 )
-// { textbox: 2 }
+// { textbox: { visible: 2, hidden: 0, total: 2 } }
 ```
 
 The generic `element` type is excluded from the all-types count so the result contains only semantic types such as `button`, `textbox`, `link`, and `table`.
