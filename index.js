@@ -562,21 +562,35 @@ var ElementFinder = (() => {
   }
   function isHidden(el) {
     if (el == null) return true;
-    if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+    let parent = el;
+    while (parent) {
+      if (isElementHidden(parent)) {
+        return true;
+      }
+      parent = parent.parentElement;
+    }
+    return false;
+  }
+  function isElementHidden(el) {
+    if (el.hasAttribute("hidden") || el.getAttribute("aria-hidden") === "true" || el.inert || el.offsetWidth === 0 && el.offsetHeight === 0) {
       return true;
+    }
+    if (typeof el.checkVisibility === "function") {
+      if (!el.checkVisibility({
+        checkOpacity: true,
+        checkVisibilityCSS: true,
+        contentVisibilityAuto: true
+      })) {
+        return true;
+      }
+      return false;
     }
     try {
       const style = window.getComputedStyle(el);
-      if (style.visibility === "hidden" || style.visibility === "collapse") {
-        return true;
-      }
-      if (style.display === "none") {
+      if (style.visibility === "hidden" || style.visibility === "collapse" || style.display === "none" || style.opacity === "0") {
         return true;
       }
     } catch (e) {
-    }
-    if (el.hasAttribute("hidden")) {
-      return true;
     }
     return false;
   }
