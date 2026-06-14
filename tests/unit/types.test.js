@@ -17,6 +17,7 @@ import {
   matchesType,
   getAllElements,
   findElementsByType,
+  findElements,
   highlight,
   unhighlight
 } from '../../src/element-finder.js';
@@ -594,6 +595,13 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       const container = document.querySelector('.container');
 
       expect(getElementCounts('element', container)).toEqual({ element: { visible: 2, hidden: 0, total: 2 } });
+    });
+
+    it('should match findElements counts for a specific element type', () => {
+      const counts = getElementCounts('dropdown');
+      const found = findElements('dropdown').elements.length;
+
+      expect(counts.dropdown.total).toBe(found);
     });
 
     it('should return zero for unknown type by default', () => {

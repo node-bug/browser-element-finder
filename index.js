@@ -746,6 +746,7 @@ var ElementFinder = (() => {
   }
   function getElementCounts(type = null, parent = null, options = null) {
     const hasType = type !== null && type !== void 0;
+    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
     if (hasType) {
       if (typeof type !== "string") {
         throw new TypeError(`type must be a string, got ${typeof type}`);
@@ -760,24 +761,18 @@ var ElementFinder = (() => {
       }
     }
     const counts = {};
-    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
     for (let i = 0; i < targetTypes.length; i++) {
       counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
     }
-    const frames = getAllFrames(window);
-    for (let i = 0; i < frames.length; i++) {
-      const frame = frames[i];
-      const allElements = getAllElements(parent || frame.document);
-      for (let j = 0; j < allElements.length; j++) {
-        const el = allElements[j];
-        for (let k = 0; k < targetTypes.length; k++) {
-          const targetType = targetTypes[k];
-          if (matchesType(el, targetType)) {
-            const bucket = isHidden(el) ? "hidden" : "visible";
-            counts[targetType][bucket] += 1;
-            counts[targetType].total += 1;
-          }
-        }
+    for (let i = 0; i < targetTypes.length; i++) {
+      const targetType = targetTypes[i];
+      const result = findElements(targetType, null, false, parent, options);
+      const typeCounts = counts[targetType];
+      for (let j = 0; j < result.elements.length; j++) {
+        const item = result.elements[j];
+        const bucket = item.isHidden ? "hidden" : "visible";
+        typeCounts[bucket] += 1;
+        typeCounts.total += 1;
       }
     }
     return counts;
