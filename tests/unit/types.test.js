@@ -451,7 +451,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
   });
 
   describe('getElementCounts', () => {
-    it('should count all defined non-generic element types by visibility', () => {
+    it('should count all defined element types by visibility', () => {
       const counts = getElementCounts();
 
       expect(counts.button).toEqual({ visible: 3, hidden: 0, total: 3 });
@@ -467,7 +467,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       expect(counts.row).toEqual({ visible: 2, hidden: 0, total: 2 });
       expect(counts.column).toEqual({ visible: 6, hidden: 0, total: 6 });
       expect(counts.cell).toEqual({ visible: 3, hidden: 0, total: 3 });
-      expect(counts.element).toBeUndefined();
+      expect(counts.element).toEqual({ visible: 31, hidden: 1, total: 32 });
     });
 
     it('should count a specific element type by visibility when provided', () => {

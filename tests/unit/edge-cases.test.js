@@ -169,6 +169,41 @@ describe('ElementFinder Edge Cases', () => {
 
       document.body.removeChild(hiddenDiv);
     });
+
+    it('should detect elements with zero width and height as hidden', () => {
+      const zeroSizeDiv = document.createElement('div');
+      zeroSizeDiv.id = 'zero-size-test';
+      zeroSizeDiv.setAttribute('data-test-id', 'zero-size-id');
+      zeroSizeDiv.style.width = '0px';
+      zeroSizeDiv.style.height = '0px';
+      document.body.appendChild(zeroSizeDiv);
+
+      const result = findElementsByAttribute('zero-size-id');
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].isHidden).toBe(true);
+
+      document.body.removeChild(zeroSizeDiv);
+    });
+
+    it('should detect descendants of zero-size ancestors as hidden', () => {
+      const zeroSizeParent = document.createElement('div');
+      zeroSizeParent.id = 'zero-size-parent-test';
+      zeroSizeParent.style.width = '0px';
+      zeroSizeParent.style.height = '0px';
+
+      const child = document.createElement('button');
+      child.id = 'zero-size-child-test';
+      child.setAttribute('data-test-id', 'zero-size-child-id');
+      child.textContent = 'Zero Size Child';
+      zeroSizeParent.appendChild(child);
+      document.body.appendChild(zeroSizeParent);
+
+      const result = findElementsByAttribute('zero-size-child-id');
+      expect(result.elements.length).toBe(1);
+      expect(result.elements[0].isHidden).toBe(true);
+
+      document.body.removeChild(zeroSizeParent);
+    });
   });
 
   describe('XPath Recursion Limit', () => {
