@@ -1027,6 +1027,7 @@ function hasOwnMatch(el, value, exact = false) {
  */
 export function getElementCounts(type = null, parent = null, options = null) {
   const hasType = type !== null && type !== undefined;
+  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
 
   if (hasType) {
     if (typeof type !== 'string') {
@@ -1043,30 +1044,23 @@ export function getElementCounts(type = null, parent = null, options = null) {
   }
 
   const counts = {};
-  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
-
   for (let i = 0; i < targetTypes.length; i++) {
     counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
   }
 
-  const frames = getAllFrames(window);
+  // Use findElements() as the source of truth so counts match its returned
+  // element set, including its filtering behavior for each semantic type.
+  for (let i = 0; i < targetTypes.length; i++) {
+    const targetType = targetTypes[i];
+    const result = findElements(targetType, null, false, parent, options);
+    const typeCounts = counts[targetType];
 
-  for (let i = 0; i < frames.length; i++) {
-    const frame = frames[i];
-    const allElements = getAllElements(parent || frame.document);
+    for (let j = 0; j < result.elements.length; j++) {
+      const item = result.elements[j];
+      const bucket = item.isHidden ? 'hidden' : 'visible';
 
-    for (let j = 0; j < allElements.length; j++) {
-      const el = allElements[j];
-      
-      // Check against all target types and increment count for each match
-      for (let k = 0; k < targetTypes.length; k++) {
-        const targetType = targetTypes[k];
-        if (matchesType(el, targetType)) {
-          const bucket = isHidden(el) ? 'hidden' : 'visible';
-          counts[targetType][bucket] += 1;
-          counts[targetType].total += 1;
-        }
-      }
+      typeCounts[bucket] += 1;
+      typeCounts.total += 1;
     }
   }
 

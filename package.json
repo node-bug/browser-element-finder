@@ -1,6 +1,6 @@
 {
   "name": "@nodebug/browser-element-finder",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Browser Element Finder - Find elements by type and text content",
   "exports": {
     ".": {
