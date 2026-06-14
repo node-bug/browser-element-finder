@@ -225,7 +225,7 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                                    |
 | `findElementsByType(type, parent)`                | Find elements by type only, returns `{ elements: [...] }`                                    |
 | `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                               |
-| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, excluding generic `element` by default       |
+| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, including generic `element` by default       |
 | `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                |
 | `highlight(elements, color, width)`               | Highlight elements with outline                                                              |
 | `unhighlight(elements)`                           | Remove highlight                                                                             |
@@ -420,17 +420,17 @@ Finds elements by type only. Searches all frames by default.
 
 Counts elements by semantic type and visibility on the current screen. Searches all frames (main document + iframes) by default.
 
-| Parameter | Type      | Default | Description                                                                                                   |
-| --------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------- |
-| `type`    | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types except `element`. |
-| `parent`  | `Element` | `null`  | Parent element to count within                                                                                |
+| Parameter | Type      | Default | Description                                                                                  |
+| --------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
+| `type`    | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types. |
+| `parent`  | `Element` | `null`  | Parent element to count within                                                               |
 
 **Returns**: `Object.<string, { visible: number, hidden: number, total: number }>` keyed by semantic element type.
 
 ```javascript
-// Count all defined non-generic types
+// Count all defined types
 const counts = ElementFinder.getElementCounts()
-// { button: { visible: 3, hidden: 0, total: 3 }, textbox: { visible: 2, hidden: 0, total: 2 }, ... }
+// { element: { visible: 98, hidden: 6, total: 104 }, button: { visible: 3, hidden: 0, total: 3 }, textbox: { visible: 2, hidden: 0, total: 2 }, ... }
 
 // Count one type
 const buttons = ElementFinder.getElementCounts('button')
@@ -444,7 +444,7 @@ const inputs = ElementFinder.getElementCounts(
 // { textbox: { visible: 2, hidden: 0, total: 2 } }
 ```
 
-The generic `element` type is excluded from the all-types count so the result contains only semantic types such as `button`, `textbox`, `link`, and `table`.
+The generic `element` type is included in the all-types count, so the result contains both the catch-all `element` count and semantic types such as `button`, `textbox`, `link`, and `table`.
 
 ### `findElementsByAttribute(value, exact, parent)`
 

@@ -1017,10 +1017,10 @@ function hasOwnMatch(el, value, exact = false) {
 
 /**
  * Gets counts of elements by semantic type and visibility on the current screen.
- * Excludes the generic `element` type unless a specific type is requested.
- * If no type is provided, returns counts for all defined non-generic types.
+ * Includes the generic `element` type by default.
+ * If no type is provided, returns counts for all defined types.
  * Searches all frames (main document + iframes) by default.
- * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined non-generic types.
+ * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined types.
  * @param {Element|null} [parent=null] - Parent element to count within
  * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type, or `{ [type]: { visible, hidden, total } }` when type is provided
@@ -1043,7 +1043,7 @@ export function getElementCounts(type = null, parent = null, options = null) {
   }
 
   const counts = {};
-  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS).filter((item) => item !== 'element');
+  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
 
   for (let i = 0; i < targetTypes.length; i++) {
     counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };

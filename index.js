@@ -760,7 +760,7 @@ var ElementFinder = (() => {
       }
     }
     const counts = {};
-    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS).filter((item) => item !== "element");
+    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
     for (let i = 0; i < targetTypes.length; i++) {
       counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
     }
