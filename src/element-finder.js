@@ -1310,9 +1310,10 @@ export function findProbableElements(elementType, attributeText, exact = false, 
   const hasType = elementType !== null && elementType !== undefined && elementType !== '';
   const hasText = attributeText !== null && attributeText !== undefined && attributeText !== '';
 
-  // If only type is provided, delegate to findElementsByType
+  // If only type is provided, delegate to the same type-only search used by
+  // findElements(type, '') so counts and result sets match exactly.
   if (hasType && !hasText) {
-    return findElementsByType(elementType, parent, options);
+    return findElements(elementType, null, false, parent, options);
   }
 
   // If only text is provided, delegate to findElementsByAttribute

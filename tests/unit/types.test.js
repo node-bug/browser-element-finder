@@ -18,6 +18,7 @@ import {
   getAllElements,
   findElementsByType,
   findElements,
+  findProbableElements,
   highlight,
   unhighlight
 } from '../../src/element-finder.js';
@@ -602,6 +603,14 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       const found = findElements('dropdown').elements.length;
 
       expect(counts.dropdown.total).toBe(found);
+    });
+
+    it('should delegate type-only probable search to findElements', () => {
+      const strict = findElements('dropdown');
+      const probable = findProbableElements('dropdown');
+
+      expect(probable.elements.length).toBe(strict.elements.length);
+      expect(probable.elements.map(item => item.element)).toEqual(strict.elements.map(item => item.element));
     });
 
     it('should return zero for unknown type by default', () => {

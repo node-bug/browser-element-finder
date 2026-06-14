@@ -919,7 +919,7 @@ var ElementFinder = (() => {
     const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
     const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
     if (hasType && !hasText) {
-      return findElementsByType(elementType, parent, options);
+      return findElements(elementType, null, false, parent, options);
     }
     if (!hasType && hasText) {
       return findElementsByAttribute(attributeText, exact, parent);
