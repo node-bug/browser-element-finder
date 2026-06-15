@@ -7,6 +7,10 @@
 
 import searchableAttributesData from './searchable-attributes.json' with { type: 'json' };
 
+const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT'];
+
+let IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
+
 /**
  * Searchable attributes (in priority order) - internal state
  */
@@ -33,6 +37,128 @@ export function getSearchableAttributes() {
 }
 
 /**
+ * Normalizes a tag list for ignored tag configuration.
+ * @param {string[]} tags - Array of tag names
+ * @returns {string[]} Normalized uppercase tag names
+ * @throws {TypeError} If tags is not an array
+ */
+function normalizeTagList(tags) {
+  if (!Array.isArray(tags)) {
+    throw new TypeError('tags must be an array');
+  }
+
+  const normalizedTags = [];
+  for (let i = 0; i < tags.length; i++) {
+    if (typeof tags[i] === 'string' && tags[i].trim() !== '') {
+      normalizedTags.push(tags[i].toUpperCase());
+    }
+  }
+  return normalizedTags;
+}
+
+/**
+ * Sets custom tags to ignore during traversal.
+ * Tag names are case-insensitive. Passing an empty array clears ignored tags.
+ * @param {string[]} tags - Array of tag names to ignore
+ * @throws {TypeError} If tags is not an array
+ */
+export function setIgnoredTags(tags) {
+  IGNORED_TAGS = new Set(normalizeTagList(tags));
+}
+
+/**
+ * Gets the current ignored tags array.
+ * @returns {string[]} Copy of the current ignored tags array
+ */
+export function getIgnoredTags() {
+  return [...IGNORED_TAGS].sort();
+}
+
+/**
+ * Adds tags to the ignored tag list.
+ * @param {string[]} tags - Array of tag names to ignore
+ * @throws {TypeError} If tags is not an array
+ */
+export function addIgnoredTags(tags) {
+  const normalizedTags = normalizeTagList(tags);
+  for (let i = 0; i < normalizedTags.length; i++) {
+    IGNORED_TAGS.add(normalizedTags[i]);
+  }
+}
+
+/**
+ * Removes tags from the ignored tag list.
+ * @param {string[]} tags - Array of tag names to allow
+ * @throws {TypeError} If tags is not an array
+ */
+export function removeIgnoredTags(tags) {
+  const normalizedTags = normalizeTagList(tags);
+  for (let i = 0; i < normalizedTags.length; i++) {
+    IGNORED_TAGS.delete(normalizedTags[i]);
+  }
+}
+
+/**
+ * Checks if a tag name is configured to be ignored.
+ * @param {string} tagName - The tag name to check
+ * @returns {boolean} True if the tag name is ignored
+ */
+function isIgnoredTag(tagName) {
+  return IGNORED_TAGS.has(String(tagName).toUpperCase());
+}
+
+/**
+ * Checks if an element's tag should be ignored during traversal.
+ * Also returns true for descendants of ignored tags so direct matcher calls are consistent.
+ * @param {Element} el - The DOM element to check
+ * @returns {boolean} True if the element or one of its ancestors is ignored
+ */
+function isIgnoredElement(el) {
+  let current = el;
+  while (current) {
+    if (isIgnoredTag(current.tagName)) {
+      return true;
+    }
+    current = current.parentElement;
+  }
+  return false;
+}
+
+/**
+ * Gets text content while excluding ignored tags and their descendants.
+ * This intentionally stays within the element's light DOM children; shadow DOM
+ * descendants are discovered separately by getAllElements().
+ * @param {Element} el - The DOM element to inspect
+ * @returns {string} Text content excluding ignored subtrees
+ */
+function getSearchableTextContent(el) {
+  if (el == null || isIgnoredElement(el)) return '';
+
+  let text = '';
+  const stack = [el];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      text += node.textContent || '';
+      continue;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE || isIgnoredElement(node)) {
+      continue;
+    }
+
+    const children = node.childNodes;
+    for (let i = children.length - 1; i >= 0; i--) {
+      stack.push(children[i]);
+    }
+  }
+
+  return text;
+}
+
+/**
  * Gets direct text content from an element's text nodes.
  * More efficient than textContent for simple text matching.
  * @param {Element} el - The DOM element
@@ -50,36 +176,9 @@ function getDirectText(el) {
 }
 
 /**
- * Checks if an element is inside a STYLE or SCRIPT tag, or contains STYLE/SCRIPT descendants.
- * @param {Element} el - The DOM element to check
- * @returns {boolean} True if the element is inside a STYLE or SCRIPT tag, or contains one
- */
-function isInsideStyleOrScript(el) {
-  // Check if element itself is a STYLE or SCRIPT tag
-  if (el.tagName === 'STYLE' || el.tagName === 'SCRIPT') {
-    return true;
-  }
-
-  // Check if element contains STYLE or SCRIPT descendants
-  if (el.querySelector('STYLE, SCRIPT')) {
-    return true;
-  }
-
-  // Check if element is inside a STYLE or SCRIPT tag
-  let parent = el.parentElement;
-  while (parent) {
-    if (parent.tagName === 'STYLE' || parent.tagName === 'SCRIPT') {
-      return true;
-    }
-    parent = parent.parentElement;
-  }
-  return false;
-}
-
-/**
  * Checks if an element matches the specified attribute value.
  * Searches through all searchable attributes in priority order, then text content.
- * Text matching is case-sensitive. Ignores elements inside STYLE or SCRIPT tags.
+ * Text matching is case-sensitive. Ignores elements whose tag is configured as ignored.
  * @param {Element} el - The DOM element to check
  * @param {string} value - The attribute value to search for
  * @param {boolean} [exact=false] - Whether to match exactly or as substring
@@ -89,8 +188,8 @@ export function matchesAttribute(el, value, exact = false) {
   if (el == null) return false;
   if (value === undefined || value === null || value === '') return true;
 
-  // Skip elements inside STYLE or SCRIPT tags
-  if (isInsideStyleOrScript(el)) return false;
+  // Skip elements whose tag is configured to be ignored
+  if (isIgnoredElement(el)) return false;
 
   const attrs = SEARCHABLE_ATTRIBUTES;
 
@@ -117,7 +216,7 @@ export function matchesAttribute(el, value, exact = false) {
   }
 
   // Check full text content (includes nested elements, case-sensitive)
-  const textContent = el.textContent;
+  const textContent = getSearchableTextContent(el);
   if (exact ? textContent.trim() === value : textContent.includes(value)) {
     return true;
   }
@@ -162,7 +261,7 @@ export function getAllElements(root = document) {
   while (stack.length > 0) {
     const node = stack.pop();
     if (node.nodeType !== Node.ELEMENT_NODE) continue;
-    if (node.tagName === 'SCRIPT' || node.tagName === 'STYLE') continue;
+    if (IGNORED_TAGS.has(node.tagName)) continue;
 
     elements.push(node);
 

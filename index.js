@@ -21,6 +21,7 @@ var ElementFinder = (() => {
   var element_finder_exports = {};
   __export(element_finder_exports, {
     ELEMENT_DEFINITIONS: () => ELEMENT_DEFINITIONS,
+    addIgnoredTags: () => addIgnoredTags,
     findElements: () => findElements,
     findElementsByAttribute: () => findElementsByAttribute,
     findElementsByType: () => findElementsByType,
@@ -30,6 +31,7 @@ var ElementFinder = (() => {
     getBoundingBox: () => getBoundingBox,
     getElementCounts: () => getElementCounts,
     getElementDescriptor: () => getElementDescriptor,
+    getIgnoredTags: () => getIgnoredTags,
     getSearchableAttributeValues: () => getSearchableAttributeValues,
     getSearchableAttributes: () => getSearchableAttributes,
     getValidAttributes: () => getValidAttributes,
@@ -41,7 +43,9 @@ var ElementFinder = (() => {
     parseCondition: () => parseCondition,
     parseXPath: () => parseXPath,
     pauseAnimations: () => pauseAnimations,
+    removeIgnoredTags: () => removeIgnoredTags,
     resumeAnimations: () => resumeAnimations,
+    setIgnoredTags: () => setIgnoredTags,
     setSearchableAttributes: () => setSearchableAttributes,
     splitByOperator: () => splitByOperator,
     unhighlight: () => unhighlight
@@ -108,6 +112,8 @@ var ElementFinder = (() => {
   };
   var MAX_RECURSION_DEPTH = 100;
   var MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
+  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT"];
+  var IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
   for (const [type, expr] of Object.entries(element_definitions_default)) {
     if (expr === "true()") {
@@ -125,6 +131,69 @@ var ElementFinder = (() => {
   }
   function getSearchableAttributes() {
     return [...SEARCHABLE_ATTRIBUTES];
+  }
+  function normalizeTagList(tags) {
+    if (!Array.isArray(tags)) {
+      throw new TypeError("tags must be an array");
+    }
+    const normalizedTags = [];
+    for (let i = 0; i < tags.length; i++) {
+      if (typeof tags[i] === "string" && tags[i].trim() !== "") {
+        normalizedTags.push(tags[i].toUpperCase());
+      }
+    }
+    return normalizedTags;
+  }
+  function setIgnoredTags(tags) {
+    IGNORED_TAGS = new Set(normalizeTagList(tags));
+  }
+  function getIgnoredTags() {
+    return [...IGNORED_TAGS].sort();
+  }
+  function addIgnoredTags(tags) {
+    const normalizedTags = normalizeTagList(tags);
+    for (let i = 0; i < normalizedTags.length; i++) {
+      IGNORED_TAGS.add(normalizedTags[i]);
+    }
+  }
+  function removeIgnoredTags(tags) {
+    const normalizedTags = normalizeTagList(tags);
+    for (let i = 0; i < normalizedTags.length; i++) {
+      IGNORED_TAGS.delete(normalizedTags[i]);
+    }
+  }
+  function isIgnoredTag(tagName) {
+    return IGNORED_TAGS.has(String(tagName).toUpperCase());
+  }
+  function isIgnoredElement(el) {
+    let current = el;
+    while (current) {
+      if (isIgnoredTag(current.tagName)) {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  }
+  function getSearchableTextContent(el) {
+    if (el == null || isIgnoredElement(el)) return "";
+    let text = "";
+    const stack = [el];
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent || "";
+        continue;
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE || isIgnoredElement(node)) {
+        continue;
+      }
+      const children = node.childNodes;
+      for (let i = children.length - 1; i >= 0; i--) {
+        stack.push(children[i]);
+      }
+    }
+    return text;
   }
   function getSearchableAttributeValues(el) {
     if (el == null || el.nodeType !== Node.ELEMENT_NODE) return {};
@@ -207,11 +276,11 @@ var ElementFinder = (() => {
       }
     }
     const directText = shortenDescriptorText(getDirectText(el));
-    if (directText) {
+    if (directText && !isIgnoredElement(el)) {
       return { attributeName: "text", identifiableText: directText };
     }
-    const fullText = shortenDescriptorText(el.textContent);
-    if (fullText) {
+    const fullText = shortenDescriptorText(getSearchableTextContent(el));
+    if (fullText && !isIgnoredElement(el)) {
       return { attributeName: "text", identifiableText: fullText };
     }
     return null;
@@ -411,42 +480,10 @@ var ElementFinder = (() => {
     }
     return text.trim();
   }
-  function isInsideStyleOrScript(el) {
-    if (el.tagName === "STYLE" || el.tagName === "SCRIPT") {
-      return true;
-    }
-    if (el.querySelector("STYLE, SCRIPT")) {
-      return true;
-    }
-    let parent = el.parentElement;
-    while (parent) {
-      if (parent.tagName === "STYLE" || parent.tagName === "SCRIPT") {
-        return true;
-      }
-      parent = parent.parentElement;
-    }
-    return false;
-  }
-  function getAriaLabelledByText(el) {
-    const labelledBy = el.getAttribute("aria-labelledby");
-    if (!labelledBy) return "";
-    const ids = labelledBy.split(/\s+/);
-    let text = "";
-    for (const id of ids) {
-      try {
-        const refEl = document.getElementById(id);
-        if (refEl) {
-          text += refEl.textContent;
-        }
-      } catch (e) {
-      }
-    }
-    return text;
-  }
   function matchesAttribute(el, value, exact = false) {
     if (el == null) return false;
     if (value === void 0 || value === null || value === "") return true;
-    if (isInsideStyleOrScript(el)) return false;
+    if (isIgnoredElement(el)) return false;
     const attrs = SEARCHABLE_ATTRIBUTES;
     for (let i = 0; i < attrs.length; i++) {
       const attr = attrs[i];
@@ -461,7 +498,7 @@ var ElementFinder = (() => {
           if (exact ? attrValue === value : attrValue.includes(value)) {
             return true;
           }
-          const resolvedText = getAriaLabelledByText(el);
+          const resolvedText = getResolvedAriaLabelledByText(el);
           if (resolvedText) {
             if (exact ? resolvedText === value : resolvedText.includes(value)) {
               return true;
@@ -476,7 +513,7 @@ var ElementFinder = (() => {
     if (exact ? directText === value : directText.includes(value)) {
       return true;
     }
-    const textContent = el.textContent;
+    const textContent = getSearchableTextContent(el);
     if (exact ? textContent.trim() === value : textContent.includes(value)) {
       return true;
     }
@@ -484,6 +521,7 @@ var ElementFinder = (() => {
   }
   function matchesType(el, type) {
     if (el == null) return false;
+    if (isIgnoredElement(el)) return false;
     const matcher = TYPE_MATCHERS.get(type);
     return matcher ? matcher(el) : false;
   }
@@ -496,7 +534,7 @@ var ElementFinder = (() => {
     while (stack.length > 0) {
       const node = stack.pop();
       if (node.nodeType !== Node.ELEMENT_NODE) continue;
-      if (node.tagName === "SCRIPT" || node.tagName === "STYLE") continue;
+      if (IGNORED_TAGS.has(node.tagName)) continue;
       elements.push(node);
       const children = node.children;
       for (let i = children.length - 1; i >= 0; i--) {
@@ -727,7 +765,7 @@ var ElementFinder = (() => {
           if (exact ? attrValue === value : attrValue.includes(value)) {
             return true;
           }
-          const resolvedText = getAriaLabelledByText(el);
+          const resolvedText = getResolvedAriaLabelledByText(el);
           if (resolvedText) {
             if (exact ? resolvedText === value : resolvedText.includes(value)) {
               return true;
