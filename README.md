@@ -236,6 +236,10 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `getBoundingBox(element)`                         | Get bounding box for an element                                                              |
 | `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                                        |
 | `getSearchableAttributes()`                       | Get current searchable attributes                                                            |
+| `setIgnoredTags(tags)`                            | Set tags to ignore during traversal                                                          |
+| `getIgnoredTags()`                                | Get current ignored tags                                                                     |
+| `addIgnoredTags(tags)`                            | Add tags to the ignored list                                                                 |
+| `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                            |
 | `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                            |
 | `getElementDescriptor(element)`                   | Get identifiable text, source attribute, occurrence index, type, and tag name for an element |
 | `matchesType(el, type)`                           | Check if element matches a type                                                              |
@@ -245,6 +249,23 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                                            |
 | `splitByOperator(expr, op)`                       | Split XPath by operator                                                                      |
 | `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute)               |
+
+---
+
+### Ignored Tags
+
+Elements under ignored tags are skipped during traversal and are not matched by text search. By default, ignored tags are `SCRIPT`, `STYLE`, `TEMPLATE`, and `NOSCRIPT`.
+
+```javascript
+ElementFinder.getIgnoredTags()
+// ['NOSCRIPT', 'SCRIPT', 'STYLE', 'TEMPLATE']
+
+ElementFinder.addIgnoredTags(['META', 'LINK'])
+ElementFinder.removeIgnoredTags(['TEMPLATE'])
+ElementFinder.setIgnoredTags(['SCRIPT', 'STYLE'])
+```
+
+Tag names are case-insensitive.
 
 ---
 

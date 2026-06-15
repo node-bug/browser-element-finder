@@ -22,6 +22,10 @@ const REGEX_PATTERNS = {
 // Maximum recursion depth for XPath parsing to prevent stack overflow
 const MAX_RECURSION_DEPTH = 100;
 
+const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT'];
+
+let IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
+
 // Pre-compiled type matcher functions for faster type checking
 const TYPE_MATCHERS = new Map();
 
@@ -195,6 +199,85 @@ export function parseCondition(expr, el, depth = 0) {
 export const ELEMENT_DEFINITIONS = Object.freeze(elementDefinitionsData);
 
 /**
+ * Normalizes a tag list for ignored tag configuration.
+ * @param {string[]} tags - Array of tag names
+ * @returns {string[]} Normalized uppercase tag names
+ * @throws {TypeError} If tags is not an array
+ */
+function normalizeTagList(tags) {
+  if (!Array.isArray(tags)) {
+    throw new TypeError('tags must be an array');
+  }
+
+  const normalizedTags = [];
+  for (let i = 0; i < tags.length; i++) {
+    if (typeof tags[i] === 'string' && tags[i].trim() !== '') {
+      normalizedTags.push(tags[i].toUpperCase());
+    }
+  }
+  return normalizedTags;
+}
+
+/**
+ * Sets custom tags to ignore during traversal.
+ * Tag names are case-insensitive. Passing an empty array clears ignored tags.
+ * @param {string[]} tags - Array of tag names to ignore
+ * @throws {TypeError} If tags is not an array
+ */
+export function setIgnoredTags(tags) {
+  IGNORED_TAGS = new Set(normalizeTagList(tags));
+}
+
+/**
+ * Gets the current ignored tags array.
+ * @returns {string[]} Copy of the current ignored tags array
+ */
+export function getIgnoredTags() {
+  return [...IGNORED_TAGS].sort();
+}
+
+/**
+ * Adds tags to the ignored tag list.
+ * @param {string[]} tags - Array of tag names to ignore
+ * @throws {TypeError} If tags is not an array
+ */
+export function addIgnoredTags(tags) {
+  const normalizedTags = normalizeTagList(tags);
+  for (let i = 0; i < normalizedTags.length; i++) {
+    IGNORED_TAGS.add(normalizedTags[i]);
+  }
+}
+
+/**
+ * Removes tags from the ignored tag list.
+ * @param {string[]} tags - Array of tag names to allow
+ * @throws {TypeError} If tags is not an array
+ */
+export function removeIgnoredTags(tags) {
+  const normalizedTags = normalizeTagList(tags);
+  for (let i = 0; i < normalizedTags.length; i++) {
+    IGNORED_TAGS.delete(normalizedTags[i]);
+  }
+}
+
+/**
+ * Checks if an element's tag should be ignored during traversal.
+ * Also returns true for descendants of ignored tags so direct matcher calls are consistent.
+ * @param {Element} el - The DOM element to check
+ * @returns {boolean} True if the element or one of its ancestors is ignored
+ */
+function isIgnoredElement(el) {
+  let current = el;
+  while (current) {
+    if (IGNORED_TAGS.has(current.tagName)) {
+      return true;
+    }
+    current = current.parentElement;
+  }
+  return false;
+}
+
+/**
  * Checks if an element matches the specified type definition.
  * Uses pre-compiled matcher functions for better performance.
  * @param {Element} el - The DOM element to check
@@ -203,6 +286,7 @@ export const ELEMENT_DEFINITIONS = Object.freeze(elementDefinitionsData);
  */
 export function matchesType(el, type) {
   if (el == null) return false;
+  if (isIgnoredElement(el)) return false;
   const matcher = TYPE_MATCHERS.get(type);
   return matcher ? matcher(el) : false;
 }
@@ -221,7 +305,7 @@ export function getAllElements(root = document) {
   while (stack.length > 0) {
     const node = stack.pop();
     if (node.nodeType !== Node.ELEMENT_NODE) continue;
-    if (node.tagName === 'SCRIPT' || node.tagName === 'STYLE') continue;
+    if (IGNORED_TAGS.has(node.tagName)) continue;
 
     elements.push(node);
 

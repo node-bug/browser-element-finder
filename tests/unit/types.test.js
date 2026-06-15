@@ -3,7 +3,7 @@
  * These tests run in Node.js and provide code coverage
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { JSDOM } from 'jsdom';
 import {
   parseXPath,
@@ -19,6 +19,10 @@ import {
   findElementsByType,
   findElements,
   findProbableElements,
+  setIgnoredTags,
+  getIgnoredTags,
+  addIgnoredTags,
+  removeIgnoredTags,
   highlight,
   unhighlight
 } from '../../src/element-finder.js';
@@ -109,6 +113,10 @@ describe('ElementFinderByType Node.js Module Tests', () => {
     delete global.window;
     delete global.document;
     delete global.Node;
+  });
+
+  beforeEach(() => {
+    setIgnoredTags(['SCRIPT', 'STYLE']);
   });
 
   describe('parseXPath', () => {
@@ -344,6 +352,56 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       // Container itself + span child
       expect(elements.length).toBe(2);
       expect(elements.some(el => el.tagName === 'SPAN')).toBe(true);
+    });
+
+    it('should exclude descendants of ignored tags', () => {
+      const script = document.createElement('script');
+      const button = document.createElement('button');
+      button.id = 'script-button';
+      script.appendChild(button);
+      document.body.appendChild(script);
+
+      const elements = getAllElements(document);
+
+      expect(elements.some(el => el.id === 'script-button')).toBe(false);
+
+      document.body.removeChild(script);
+    });
+
+    it('should allow custom ignored tags to be configured', () => {
+      const template = document.createElement('template');
+      const button = document.createElement('button');
+      button.id = 'template-button';
+      template.appendChild(button);
+      document.body.appendChild(template);
+
+      setIgnoredTags(['SCRIPT', 'STYLE', 'TEMPLATE']);
+
+      const elements = getAllElements(document);
+      expect(getIgnoredTags()).toContain('TEMPLATE');
+      expect(elements.some(el => el.id === 'template-button')).toBe(false);
+
+      removeIgnoredTags(['TEMPLATE']);
+      expect(getAllElements(document).some(el => el.id === 'template-button')).toBe(true);
+
+      document.body.removeChild(template);
+    });
+
+    it('should add and remove ignored tags', () => {
+      const noscript = document.createElement('noscript');
+      const button = document.createElement('button');
+      button.id = 'noscript-button';
+      noscript.appendChild(button);
+      document.body.appendChild(noscript);
+
+      addIgnoredTags(['noscript']);
+      expect(getIgnoredTags()).toContain('NOSCRIPT');
+      expect(getAllElements(document).some(el => el.id === 'noscript-button')).toBe(false);
+
+      removeIgnoredTags(['NOSCRIPT']);
+      expect(getAllElements(document).some(el => el.id === 'noscript-button')).toBe(true);
+
+      document.body.removeChild(noscript);
     });
   });
 
