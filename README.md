@@ -381,7 +381,7 @@ Returns the current searchable attributes array.
 
 ### `getElementDescriptor(element)`
 
-Returns identifiable text for a DOM element, plus structured metadata about where it came from, its 1-based occurrence index, its semantic type, and its HTML tag name. Uniqueness can be inferred from `index`: `index === 1` means the identifiable text is unique within the current frame.
+Returns identifiable text for a DOM element, plus structured metadata about where it came from, its 1-based occurrence index, its semantic type, and its HTML tag name. Uniqueness is scoped to the combination of `type` and `identifiableText`, so a button labeled "Save" and a checkbox labeled "Save" each get their own independent index sequence.
 
 ```javascript
 const descriptor = ElementFinder.getElementDescriptor(element)
@@ -393,10 +393,31 @@ const descriptor = ElementFinder.getElementDescriptor(element)
 {
   identifiableText: 'Save', // Plain searchable text only; no CSS/XPath/index syntax
   attributeName: 'title',   // Attribute name, or 'text' for direct/textContent fallback
-  index: 2,                 // 1-based occurrence index; index > 1 means not unique
+  index: 2,                 // 1-based occurrence index within (type, identifiableText); index > 1 means not unique
   type: 'button',           // Semantic element type, or null for non-elements
   tagName: 'button'         // Lowercase HTML tag name, or null for non-elements
 }
+```
+
+**Index semantics**:
+
+- `index` is the 1-based count of elements in the current frame that share the same `type` AND the same `identifiableText`. Two elements with the same descriptor text but different semantic types each get `index: 1`.
+- When an element has no identifiable text (`identifiableText: null`), `index` falls back to the element's 1-based position among elements of the same `type` in the frame.
+
+**Examples**:
+
+```javascript
+// Two buttons with title "Save" -> indices 1, 2 (button type, shared text)
+button1.getElementDescriptor(...) // { index: 1, type: 'button', identifiableText: 'Save', ... }
+button2.getElementDescriptor(...) // { index: 2, type: 'button', identifiableText: 'Save', ... }
+
+// Button and checkbox with same text -> both index 1 (different types)
+button.getElementDescriptor(...)   // { index: 1, type: 'button',   identifiableText: 'Submit', ... }
+checkbox.getElementDescriptor(...) // { index: 1, type: 'checkbox', identifiableText: 'Submit', ... }
+
+// Textless buttons -> indices reflect position among same-type elements
+btn1.getElementDescriptor(...) // { index: 1, type: 'button', identifiableText: null, ... }
+btn2.getElementDescriptor(...) // { index: 2, type: 'button', identifiableText: null, ... }
 ```
 
 Descriptor selection follows the same searchable-attribute priority as text search:
@@ -406,7 +427,7 @@ Descriptor selection follows the same searchable-attribute priority as text sear
 3. `src` values are returned as the image filename without path, query string, fragment, or extension.
 4. If no searchable attribute exists, direct text nodes are used and `attributeName` is set to `'text'`.
 5. If direct text is empty, trimmed full `textContent` is used and `attributeName` is set to `'text'`.
-6. If no text exists, `identifiableText` and `attributeName` are `null`, but `index`, `type`, and `tagName` are still returned.
+6. If no text exists, `identifiableText` and `attributeName` are `null`, and `index` falls back to the element's 1-based position among elements of the same `type` in the frame.
 
 Null or non-element input returns:
 

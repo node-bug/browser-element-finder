@@ -375,13 +375,14 @@ function getElementDescriptorFrame(el) {
  * @param {string} text - Descriptor text to count
  * @returns {{index: number}} 1-based occurrence index
  */
-function getElementDescriptorUniqueness(el, text) {
+function getElementDescriptorUniqueness(el, text, type) {
   const root = getElementDescriptorFrame(el);
   if (!root) {
     return { index: 1 };
   }
 
   const elements = getAllElements(root);
+  const typeCache = new WeakMap();
   let index = 1;
   let count = 0;
 
@@ -396,6 +397,13 @@ function getElementDescriptorUniqueness(el, text) {
 
     if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
 
+    let candidateType = typeCache.get(candidate);
+    if (candidateType === undefined) {
+      candidateType = getElementDescriptorType(candidate);
+      typeCache.set(candidate, candidateType);
+    }
+    if (candidateType !== type) continue;
+
     count++;
     if (candidate === el) {
       index = count;
@@ -403,6 +411,36 @@ function getElementDescriptorUniqueness(el, text) {
   }
 
   return { index };
+}
+
+/**
+ * Gets the 1-based position of an element among elements of the same type in its frame.
+ * Used as a fallback index when an element has no identifiable text.
+ * @param {Element} el - The element to locate
+ * @param {string} type - The semantic type to count against
+ * @returns {number} 1-based position, or 1 if the frame cannot be resolved
+ */
+function getElementPositionAmongType(el, type) {
+  const root = getElementDescriptorFrame(el);
+  if (!root) return 1;
+
+  const elements = getAllElements(root);
+  const typeCache = new WeakMap();
+  let position = 1;
+
+  for (let i = 0; i < elements.length; i++) {
+    const candidate = elements[i];
+    if (candidate === el) break;
+
+    let candidateType = typeCache.get(candidate);
+    if (candidateType === undefined) {
+      candidateType = getElementDescriptorType(candidate);
+      typeCache.set(candidate, candidateType);
+    }
+    if (candidateType === type) position++;
+  }
+
+  return position;
 }
 
 /**
@@ -448,13 +486,13 @@ export function getElementDescriptor(el) {
     return {
       identifiableText: null,
       attributeName: null,
-      index: 1,
+      index: getElementPositionAmongType(el, type),
       type,
       tagName: el.tagName.toLowerCase()
     };
   }
 
-  const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText);
+  const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type);
 
   return {
     identifiableText: descriptorSource.identifiableText,

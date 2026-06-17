@@ -298,12 +298,13 @@ var ElementFinder = (() => {
     }
     return el.ownerDocument;
   }
-  function getElementDescriptorUniqueness(el, text) {
+  function getElementDescriptorUniqueness(el, text, type) {
     const root = getElementDescriptorFrame(el);
     if (!root) {
       return { index: 1 };
     }
     const elements = getAllElements(root);
+    const typeCache = /* @__PURE__ */ new WeakMap();
     let index = 1;
     let count = 0;
     for (let i = 0; i < elements.length; i++) {
@@ -313,12 +314,36 @@ var ElementFinder = (() => {
       }
       const candidateDescriptor = getElementDescriptorText(candidate);
       if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
+      let candidateType = typeCache.get(candidate);
+      if (candidateType === void 0) {
+        candidateType = getElementDescriptorType(candidate);
+        typeCache.set(candidate, candidateType);
+      }
+      if (candidateType !== type) continue;
       count++;
       if (candidate === el) {
         index = count;
       }
     }
     return { index };
+  }
+  function getElementPositionAmongType(el, type) {
+    const root = getElementDescriptorFrame(el);
+    if (!root) return 1;
+    const elements = getAllElements(root);
+    const typeCache = /* @__PURE__ */ new WeakMap();
+    let position = 1;
+    for (let i = 0; i < elements.length; i++) {
+      const candidate = elements[i];
+      if (candidate === el) break;
+      let candidateType = typeCache.get(candidate);
+      if (candidateType === void 0) {
+        candidateType = getElementDescriptorType(candidate);
+        typeCache.set(candidate, candidateType);
+      }
+      if (candidateType === type) position++;
+    }
+    return position;
   }
   function getElementDescriptorType(el) {
     if (el == null || el.nodeType !== Node.ELEMENT_NODE) return null;
@@ -346,12 +371,12 @@ var ElementFinder = (() => {
       return {
         identifiableText: null,
         attributeName: null,
-        index: 1,
+        index: getElementPositionAmongType(el, type),
         type,
         tagName: el.tagName.toLowerCase()
       };
     }
-    const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText);
+    const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type);
     return {
       identifiableText: descriptorSource.identifiableText,
       attributeName: descriptorSource.attributeName,
