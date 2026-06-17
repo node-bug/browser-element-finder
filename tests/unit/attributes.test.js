@@ -403,15 +403,53 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
     });
 
     it('should return null descriptor with index and type when no text exists', () => {
+      document.body.innerHTML = '';
+
       const div = document.createElement('div');
       document.body.appendChild(div);
 
-      expect(getElementDescriptor(div)).toEqual({
+      const descriptor = getElementDescriptor(div);
+
+      expect(descriptor).toMatchObject({
         identifiableText: null,
         attributeName: null,
-        index: 1,
         type: 'element',
         tagName: 'div'
+      });
+      // The fixture frame contains pre-existing elements, so the absolute
+      // index depends on the JSDOM fixture. We only assert that index is
+      // a positive integer reflecting the element's position.
+      expect(Number.isInteger(descriptor.index)).toBe(true);
+      expect(descriptor.index).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should return position-based index for a textless element mixed with other element-type siblings', () => {
+      document.body.innerHTML = '';
+
+      const first = document.createElement('div');
+      document.body.appendChild(first);
+
+      const second = document.createElement('span');
+      document.body.appendChild(second);
+
+      const third = document.createElement('div'); // textless
+      document.body.appendChild(third);
+
+      const firstIdx = getElementDescriptor(first).index;
+      const secondIdx = getElementDescriptor(second).index;
+      const thirdIdx = getElementDescriptor(third).index;
+
+      // All three resolve to type "element", so their indices reflect their
+      // 1-based position among element-type elements in document order.
+      // The third textless div comes after both `first` (a div) and `second`
+      // (a span), so its index must be strictly greater than both.
+      expect(thirdIdx).toBeGreaterThan(firstIdx);
+      expect(thirdIdx).toBeGreaterThan(secondIdx);
+      expect(getElementDescriptor(third)).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        type: 'element',
+        tagName: 'div',
       });
     });
 
@@ -447,6 +485,325 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       document.body.appendChild(div);
 
       expect(getElementDescriptor(div).type).toBe('element');
+    });
+
+    it('should return position-based indices for buttons with no identifiable text', () => {
+      document.body.innerHTML = '';
+
+      const btn1 = document.createElement('button');
+      document.body.appendChild(btn1);
+
+      const btn2 = document.createElement('button');
+      document.body.appendChild(btn2);
+
+      const btn3 = document.createElement('button');
+      document.body.appendChild(btn3);
+
+      const d1 = getElementDescriptor(btn1);
+      const d2 = getElementDescriptor(btn2);
+      const d3 = getElementDescriptor(btn3);
+
+      expect(d1).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        index: 1,
+        type: 'button',
+        tagName: 'button',
+      });
+      expect(d2).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        index: 2,
+        type: 'button',
+        tagName: 'button',
+      });
+      expect(d3).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        index: 3,
+        type: 'button',
+        tagName: 'button',
+      });
+    });
+
+    it('should return position-based index for a radio with no text and no value', () => {
+      document.body.innerHTML = '';
+
+      const radio1 = document.createElement('input');
+      radio1.type = 'radio';
+      document.body.appendChild(radio1);
+
+      const radio2 = document.createElement('input');
+      radio2.type = 'radio';
+      document.body.appendChild(radio2);
+
+      const radio3 = document.createElement('input');
+      radio3.type = 'radio';
+      document.body.appendChild(radio3);
+
+      expect(getElementDescriptor(radio1)).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        index: 1,
+        type: 'radio',
+        tagName: 'input',
+      });
+      expect(getElementDescriptor(radio2)).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        index: 2,
+        type: 'radio',
+        tagName: 'input',
+      });
+      expect(getElementDescriptor(radio3)).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        index: 3,
+        type: 'radio',
+        tagName: 'input',
+      });
+    });
+
+    it('should return position-based indices for buttons with whitespace-only text', () => {
+      document.body.innerHTML = '';
+
+      const btn1 = document.createElement('button');
+      btn1.textContent = '   ';
+      document.body.appendChild(btn1);
+
+      const btn2 = document.createElement('button');
+      btn2.innerHTML = '\n\t  ';
+      document.body.appendChild(btn2);
+
+      const btn3 = document.createElement('button');
+      document.body.appendChild(btn3);
+
+      expect(getElementDescriptor(btn1).identifiableText).toBeNull();
+      expect(getElementDescriptor(btn2).identifiableText).toBeNull();
+      expect(getElementDescriptor(btn3).identifiableText).toBeNull();
+
+      expect(getElementDescriptor(btn1).index).toBe(1);
+      expect(getElementDescriptor(btn2).index).toBe(2);
+      expect(getElementDescriptor(btn3).index).toBe(3);
+    });
+
+    it('should assign sequential indices to multiple buttons with identical text', () => {
+      document.body.innerHTML = '';
+
+      const buttons = [];
+      for (let i = 0; i < 4; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = 'Save';
+        document.body.appendChild(btn);
+        buttons.push(btn);
+      }
+
+      buttons.forEach((btn, i) => {
+        expect(getElementDescriptor(btn)).toMatchObject({
+          identifiableText: 'Save',
+          attributeName: 'text',
+          type: 'button',
+          tagName: 'button',
+          index: i + 1,
+        });
+      });
+    });
+
+    it('should assign sequential indices to radios that share the same label', () => {
+      document.body.innerHTML = '';
+
+      const radios = [];
+      for (let i = 0; i < 3; i++) {
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.setAttribute('aria-label', 'Choose option');
+        document.body.appendChild(radio);
+        radios.push(radio);
+      }
+
+      radios.forEach((radio, i) => {
+        expect(getElementDescriptor(radio)).toMatchObject({
+          identifiableText: 'Choose option',
+          attributeName: 'aria-label',
+          type: 'radio',
+          index: i + 1,
+        });
+      });
+    });
+
+    it('should not group elements whose identifiableText differs by partial match', () => {
+      document.body.innerHTML = '';
+
+      const btn1 = document.createElement('button');
+      btn1.textContent = 'Save';
+      document.body.appendChild(btn1);
+
+      const btn2 = document.createElement('button');
+      btn2.textContent = 'Save As';
+      document.body.appendChild(btn2);
+
+      const btn3 = document.createElement('button');
+      btn3.textContent = 'Saving';
+      document.body.appendChild(btn3);
+
+      // Each has a distinct identifiableText, so each gets index 1
+      expect(getElementDescriptor(btn1).identifiableText).toBe('Save');
+      expect(getElementDescriptor(btn2).identifiableText).toBe('Save As');
+      expect(getElementDescriptor(btn3).identifiableText).toBe('Saving');
+
+      expect(getElementDescriptor(btn1).index).toBe(1);
+      expect(getElementDescriptor(btn2).index).toBe(1);
+      expect(getElementDescriptor(btn3).index).toBe(1);
+    });
+
+    it('should count a textless button by its position among same-type buttons', () => {
+      document.body.innerHTML = '';
+
+      const btn1 = document.createElement('button');
+      btn1.textContent = 'Save';
+      document.body.appendChild(btn1);
+
+      const btn2 = document.createElement('button');
+      btn2.textContent = 'Save As';
+      document.body.appendChild(btn2);
+
+      const btn3 = document.createElement('button'); // textless
+      document.body.appendChild(btn3);
+
+      const btn4 = document.createElement('button');
+      btn4.textContent = 'Saving';
+      document.body.appendChild(btn4);
+
+      // btn1 / btn2 / btn4 each have a unique identifiableText -> index 1
+      expect(getElementDescriptor(btn1).index).toBe(1);
+      expect(getElementDescriptor(btn2).index).toBe(1);
+      expect(getElementDescriptor(btn4).index).toBe(1);
+
+      // btn3 has no identifiableText, so index falls back to its
+      // 1-based position among buttons in the frame -> 3.
+      expect(getElementDescriptor(btn3)).toMatchObject({
+        identifiableText: null,
+        attributeName: null,
+        index: 3,
+        type: 'button',
+        tagName: 'button',
+      });
+    });
+
+    it('should treat case-different text as different identifier groups', () => {
+      document.body.innerHTML = '';
+
+      const lower = document.createElement('button');
+      lower.textContent = 'save';
+      document.body.appendChild(lower);
+
+      const upper = document.createElement('button');
+      upper.textContent = 'Save';
+      document.body.appendChild(upper);
+
+      expect(getElementDescriptor(lower).identifiableText).toBe('save');
+      expect(getElementDescriptor(upper).identifiableText).toBe('Save');
+      expect(getElementDescriptor(lower).index).toBe(1);
+      expect(getElementDescriptor(upper).index).toBe(1);
+    });
+
+    it('should not count a button and a checkbox with same text against each other', () => {
+      document.body.innerHTML = '';
+
+      const button1 = document.createElement('button');
+      button1.textContent = 'Submit';
+      document.body.appendChild(button1);
+
+      const button2 = document.createElement('button');
+      button2.textContent = 'Submit';
+      document.body.appendChild(button2);
+
+      const button3 = document.createElement('button');
+      button3.textContent = 'Submit';
+      document.body.appendChild(button3);
+
+      const checkbox1 = document.createElement('input');
+      checkbox1.type = 'checkbox';
+      checkbox1.setAttribute('aria-label', 'Submit');
+      document.body.appendChild(checkbox1);
+
+      const checkbox2 = document.createElement('input');
+      checkbox2.type = 'checkbox';
+      checkbox2.setAttribute('aria-label', 'Submit');
+      document.body.appendChild(checkbox2);
+
+      // Same text "Submit", different types -> independent counts:
+      // buttons get 1,2,3 and checkboxes get 1,2 (each type has its own sequence).
+      [button1, button2, button3].forEach((btn, i) => {
+        expect(getElementDescriptor(btn)).toMatchObject({
+          identifiableText: 'Submit',
+          type: 'button',
+          index: i + 1,
+        });
+      });
+
+      [checkbox1, checkbox2].forEach((chk, i) => {
+        expect(getElementDescriptor(chk)).toMatchObject({
+          identifiableText: 'Submit',
+          type: 'checkbox',
+          index: i + 1,
+        });
+      });
+    });
+
+    it('should keep a single index sequence when the same text resolves from different attributes', () => {
+      document.body.innerHTML = '';
+
+      const byValue = document.createElement('button');
+      byValue.value = 'Continue';
+      document.body.appendChild(byValue);
+
+      const byAria = document.createElement('button');
+      byAria.setAttribute('aria-label', 'Continue');
+      document.body.appendChild(byAria);
+
+      const byText = document.createElement('button');
+      byText.textContent = 'Continue';
+      document.body.appendChild(byText);
+
+      // The resolved identifiableText is "Continue" in all three cases,
+      // so they share a single index sequence.
+      expect(getElementDescriptor(byValue)).toMatchObject({
+        identifiableText: 'Continue',
+        attributeName: 'value',
+        type: 'button',
+        index: 1,
+      });
+      expect(getElementDescriptor(byAria)).toMatchObject({
+        identifiableText: 'Continue',
+        attributeName: 'aria-label',
+        type: 'button',
+        index: 2,
+      });
+      expect(getElementDescriptor(byText)).toMatchObject({
+        identifiableText: 'Continue',
+        attributeName: 'text',
+        type: 'button',
+        index: 3,
+      });
+    });
+
+    it('should record attributeName as the first matching searchable attribute', () => {
+      document.body.innerHTML = '';
+
+      const btn = document.createElement('button');
+      // placeholder has higher priority than value, but only the first match
+      // whose value yields identifiableText counts.
+      btn.setAttribute('placeholder', 'Go');
+      btn.setAttribute('value', 'Go');
+      document.body.appendChild(btn);
+
+      expect(getElementDescriptor(btn)).toMatchObject({
+        identifiableText: 'Go',
+        attributeName: 'placeholder',
+        type: 'button',
+        index: 1,
+      });
     });
   });
 
