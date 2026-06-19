@@ -199,4 +199,78 @@ describe('ElementFinderByType Integration Tests', () => {
       }).rejects.toThrow();
     });
   });
+
+  describe('inViewport flag for Disabled Field (below the fold)', () => {
+    // The "Disabled Field" lives in Section 5 of forms.html, well below the
+    // initial viewport. We force a small window size so the test is
+    // deterministic regardless of the host's default Chrome dimensions,
+    // scroll back to the top before measuring, then scroll the element into
+    // view and re-measure to confirm inViewport flips to true.
+
+    beforeAll(async () => {
+      await driver.manage().window().setRect({ width: 800, height: 600 });
+      // Make sure we start at the top so the field is below the fold
+      await driver.executeScript('window.scrollTo(0, 0);');
+    });
+
+    it('should report inViewport=false for the Disabled Field when it is below the fold', async () => {
+      const result = await driver.executeScript(`
+        return ElementFinder.findElementsByType('textbox', null, false, null, { failOnUnknownType: false })
+          .elements
+          .find((e) => e.element && e.element.getAttribute('data-test-id') === 'val-disabled');
+      `);
+      expect(result).toBeDefined();
+      expect(result.element).toBeDefined();
+
+      // The field must be present and currently scrolled out of view
+      const rect = await driver.executeScript(`
+        const el = document.querySelector('[data-test-id="val-disabled"]');
+        const r = el.getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, height: window.innerHeight };
+      `);
+      expect(rect.bottom).toBeGreaterThan(rect.height);
+
+      // The library should report inViewport=false because the rect is below the viewport
+      expect(result.inViewport).toBe(false);
+    });
+
+    it('should report inViewport=true after scrolling the Disabled Field into view', async () => {
+      // Scroll the field into view using the native API
+      await driver.executeScript(`
+        document.querySelector('[data-test-id="val-disabled"]')
+          .scrollIntoView({ block: 'center' });
+      `);
+      await driver.sleep(100);
+
+      // Re-run the find so we get fresh flag values for the new scroll position
+      const result = await driver.executeScript(`
+        return ElementFinder.findElementsByType('textbox', null, false, null, { failOnUnknownType: false })
+          .elements
+          .find((e) => e.element && e.element.getAttribute('data-test-id') === 'val-disabled');
+      `);
+      expect(result).toBeDefined();
+      expect(result.element).toBeDefined();
+
+      // Sanity check: confirm the element really is inside the viewport now
+      const rect = await driver.executeScript(`
+        const el = document.querySelector('[data-test-id="val-disabled"]');
+        const r = el.getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, height: window.innerHeight };
+      `);
+      expect(rect.top).toBeLessThan(rect.height);
+      expect(rect.bottom).toBeGreaterThan(0);
+
+      expect(result.inViewport).toBe(true);
+    });
+
+    it('should expose ElementFinder.inViewport helper with the same value for the field', async () => {
+      // After the previous test scrolled the field into view, the helper
+      // function should agree with the flag on the result object.
+      const inViewportFlag = await driver.executeScript(`
+        const el = document.querySelector('[data-test-id="val-disabled"]');
+        return ElementFinder.inViewport(el);
+      `);
+      expect(inViewportFlag).toBe(true);
+    });
+  });
 });

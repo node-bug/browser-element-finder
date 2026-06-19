@@ -1043,6 +1043,7 @@ export function getBoundingBox(element) {
 - `midx`, `midy`: Center coordinates (useful for clicking)
 - `tagName`: HTML tag name
 - `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, or zero dimensions)
+- `inViewport`: `true` if any portion of the element intersects the visual viewport (computed via `getBoundingClientRect()`). Always `false` when `isHidden` is `true` or the element has zero rendered dimensions.
 
 **Usage Example**:
 
@@ -1088,6 +1089,47 @@ const hiddenButtons = result.elements.filter((e) => e.isHidden)
 
 console.log(`Found ${visibleButtons.length} visible buttons`)
 console.log(`Found ${hiddenButtons.length} hidden buttons`)
+```
+
+**inViewport Detection**:
+
+The `inViewport` flag reports whether the element has any visible overlap with the current visual viewport. It is computed synchronously from `getBoundingClientRect()` against `window.visualViewport` (when available) or `window.innerWidth`/`innerHeight`. The flag returns:
+
+- `false` — if the element is `null`, detached, hidden, or has zero rendered dimensions
+- `false` — if the element's rect is fully outside the viewport bounds
+- `true` — if any portion of the element's rect overlaps the viewport
+
+Two helpers are exported for direct viewport checks:
+
+```javascript
+// Synchronous geometry check (returns boolean)
+ElementFinder.inViewport(el)
+
+// Synchronous geometry check requiring full containment (no clipping)
+ElementFinder.inViewport(el, { fullyVisible: true })
+
+// Synchronous geometry check with minimum intersection ratio (0-1)
+ElementFinder.inViewport(el, { threshold: 0.5 })
+
+// Asynchronous, IntersectionObserver-based check (returns Promise<boolean>)
+// More accurate for scrollable overflow ancestors, transformed ancestors,
+// or when considering occluding content. Falls back to the sync check if
+// IntersectionObserver is unavailable.
+const visible = await ElementFinder.inViewportAsync(el, {
+  threshold: 0.25,
+  timeout: 1000,
+})
+```
+
+**Usage Example**:
+
+```javascript
+const result = ElementFinder.findElements('button', null)
+const onScreen = result.elements.filter((e) => e.inViewport)
+const offScreen = result.elements.filter((e) => !e.inViewport)
+
+console.log(`Found ${onScreen.length} buttons currently in viewport`)
+console.log(`Found ${offScreen.length} buttons outside the viewport`)
 ```
 
 ---

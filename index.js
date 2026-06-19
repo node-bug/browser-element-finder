@@ -37,6 +37,8 @@ var ElementFinder = (() => {
     getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
     highlight: () => highlight,
+    inViewport: () => inViewport,
+    inViewportAsync: () => inViewportAsync,
     isHidden: () => isHidden,
     matchesAttribute: () => matchesAttribute,
     matchesType: () => matchesType,
@@ -634,6 +636,95 @@ var ElementFinder = (() => {
     }
     return false;
   }
+  function inViewport(el, options = null) {
+    if (el == null) return false;
+    if (typeof el.getBoundingClientRect !== "function") return false;
+    if (isHidden(el)) return false;
+    let rect;
+    try {
+      rect = el.getBoundingClientRect();
+    } catch (e) {
+      return false;
+    }
+    if (rect.width === 0 || rect.height === 0) return false;
+    const fullyVisible = options != null && options.fullyVisible === true;
+    const threshold = options != null && typeof options.threshold === "number" ? Math.max(0, Math.min(1, options.threshold)) : 0;
+    let viewportWidth;
+    let viewportHeight;
+    try {
+      if (typeof window !== "undefined" && window.visualViewport) {
+        viewportWidth = window.visualViewport.width;
+        viewportHeight = window.visualViewport.height;
+      } else {
+        viewportWidth = window.innerWidth;
+        viewportHeight = window.innerHeight;
+      }
+    } catch (e) {
+      return false;
+    }
+    if (fullyVisible) {
+      return rect.left >= 0 && rect.top >= 0 && rect.right <= viewportWidth && rect.bottom <= viewportHeight;
+    }
+    const intersectionWidth = Math.max(
+      0,
+      Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0)
+    );
+    const intersectionHeight = Math.max(
+      0,
+      Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0)
+    );
+    if (intersectionWidth === 0 || intersectionHeight === 0) return false;
+    const elementArea = rect.width * rect.height;
+    const intersectionArea = intersectionWidth * intersectionHeight;
+    const ratio = intersectionArea / elementArea;
+    return ratio >= threshold;
+  }
+  function inViewportAsync(el, options = null) {
+    if (el == null) return Promise.resolve(false);
+    if (typeof IntersectionObserver === "undefined") {
+      const threshold2 = options != null && typeof options.threshold === "number" ? options.threshold : 0;
+      return Promise.resolve(inViewport(el, { threshold: threshold2 }));
+    }
+    const threshold = options != null && typeof options.threshold === "number" ? Math.max(0, Math.min(1, options.threshold)) : 0;
+    const timeout = options != null && typeof options.timeout === "number" ? Math.max(0, options.timeout) : 1e3;
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (value) => {
+        if (settled) return;
+        settled = true;
+        try {
+          observer.disconnect();
+        } catch (e) {
+        }
+        if (timer !== null) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        resolve(value);
+      };
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries && entries.length > 0) {
+            const entry = entries[0];
+            if (entry.isIntersecting && entry.intersectionRatio >= threshold) {
+              finish(true);
+            }
+          }
+        },
+        { threshold }
+      );
+      let timer = null;
+      if (timeout > 0) {
+        timer = setTimeout(() => finish(false), timeout);
+      }
+      try {
+        observer.observe(el);
+      } catch (e) {
+        finish(false);
+        return;
+      }
+    });
+  }
   function isElementHidden(el) {
     if (el.hasAttribute("hidden") || el.getAttribute("aria-hidden") === "true" || el.inert || el.offsetWidth === 0 && el.offsetHeight === 0) {
       return true;
@@ -706,12 +797,14 @@ var ElementFinder = (() => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       const hidden = isHidden(item.element);
+      const viewportValue = inViewport(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
           frameIndex: item.frame.frameIndex,
-          isHidden: hidden
+          isHidden: hidden,
+          inViewport: viewportValue
         };
       }
       return {
@@ -719,7 +812,8 @@ var ElementFinder = (() => {
         boundingBox,
         tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     });
     return { elements: qualified };
@@ -756,12 +850,14 @@ var ElementFinder = (() => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       const hidden = isHidden(item.element);
+      const viewportValue = inViewport(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
           frameIndex: item.frame.frameIndex,
-          isHidden: hidden
+          isHidden: hidden,
+          inViewport: viewportValue
         };
       }
       return {
@@ -769,7 +865,8 @@ var ElementFinder = (() => {
         boundingBox,
         tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     });
     return { elements: qualified };
@@ -886,12 +983,14 @@ var ElementFinder = (() => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       const hidden = isHidden(item.element);
+      const viewportValue = inViewport(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
           frameIndex: item.frame.frameIndex,
-          isHidden: hidden
+          isHidden: hidden,
+          inViewport: viewportValue
         };
       }
       return {
@@ -899,7 +998,8 @@ var ElementFinder = (() => {
         boundingBox,
         tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     });
     return { elements: qualified };
@@ -1052,12 +1152,14 @@ var ElementFinder = (() => {
       const boundingBox = getBoundingBox(item.element);
       const tagName = item.element.tagName.toLowerCase();
       const hidden = isHidden(item.element);
+      const viewportValue = inViewport(item.element);
       if (!item.frame.isMainFrame) {
         return {
           boundingBox,
           tagName,
           frameIndex: item.frame.frameIndex,
-          isHidden: hidden
+          isHidden: hidden,
+          inViewport: viewportValue
         };
       }
       return {
@@ -1065,7 +1167,8 @@ var ElementFinder = (() => {
         boundingBox,
         tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     });
     return { elements: qualified };
