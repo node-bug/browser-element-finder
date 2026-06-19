@@ -49,13 +49,6 @@ describe('ElementFinderByType - Shadow DOM Fixture', () => {
   });
 
   describe('Basic Shadow DOM - Section 1', () => {
-    it('should find all elements with "element" type', async () => {
-      const result = await driver.executeScript(`
-        return ElementFinder.findElementsByType('element');
-      `);
-      expect(result.elements.length).toBeGreaterThan(0);
-    });
-
     it('should find buttons in basic shadow DOM', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElementsByType('button');

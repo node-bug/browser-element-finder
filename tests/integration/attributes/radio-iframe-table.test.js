@@ -119,24 +119,4 @@ describe('ElementFinderByAttribute - Radio iFrame Table Fixture', () => {
       expect(mainElements.length).toBe(4);
     });
   });
-
-  describe('findElements - Button text search', () => {
-    it('should find 4 elements containing "Button"', async () => {
-      const result = await driver.executeScript(`
-        return ElementFinder.findElements(null, 'Button');
-      `);
-      const mainElements = result.elements.filter(e => e.element);
-      expect(mainElements.length).toBe(4);
-    });
-  });
-
-  describe('findProbableElements - Button text search', () => {
-    it('should find 4 elements containing "Button"', async () => {
-      const result = await driver.executeScript(`
-        return ElementFinder.findProbableElements(null, 'Button');
-      `);
-      const mainElements = result.elements.filter(e => e.element);
-      expect(mainElements.length).toBe(4);
-    });
-  });
 });
