@@ -874,6 +874,156 @@ export function isHidden(el) {
   return false;
 }
 
+/**
+ * Checks if an element is inside the visual viewport.
+ * Uses synchronous geometry (getBoundingClientRect vs window dimensions).
+ * For elements with detached layout, scrollable overflow ancestors, or when async
+ * accuracy is required, use {@link inViewportAsync} (IntersectionObserver-based).
+ * @param {Element} el - The DOM element to check
+ * @param {Object} [options=null] - Optional configuration
+ * @param {boolean} [options.fullyVisible=false] - If true, requires the element to be fully contained within the viewport (no clipping). Default false allows partial overlap.
+ * @param {number} [options.threshold=0] - Minimum intersection ratio (0-1) required to count as in viewport. Ignored when fullyVisible is true.
+ * @returns {boolean} True if the element is in the viewport
+ */
+export function inViewport(el, options = null) {
+  if (el == null) return false;
+
+  // If the element is detached or hidden it cannot be in the viewport
+  if (typeof el.getBoundingClientRect !== 'function') return false;
+  if (isHidden(el)) return false;
+
+  let rect;
+  try {
+    rect = el.getBoundingClientRect();
+  } catch {
+    // Cross-frame / detached element — cannot determine viewport membership
+    return false;
+  }
+
+  // Elements with no rendered size cannot be visually in the viewport
+  if (rect.width === 0 || rect.height === 0) return false;
+
+  const fullyVisible = options != null && options.fullyVisible === true;
+  const threshold = options != null && typeof options.threshold === 'number'
+    ? Math.max(0, Math.min(1, options.threshold))
+    : 0;
+
+  let viewportWidth;
+  let viewportHeight;
+  try {
+    // Prefer the visual viewport when available (handles pinch-zoom on mobile)
+    if (typeof window !== 'undefined' && window.visualViewport) {
+      viewportWidth = window.visualViewport.width;
+      viewportHeight = window.visualViewport.height;
+    } else {
+      viewportWidth = window.innerWidth;
+      viewportHeight = window.innerHeight;
+    }
+  } catch {
+    return false;
+  }
+
+  if (fullyVisible) {
+    return (
+      rect.left >= 0 &&
+      rect.top >= 0 &&
+      rect.right <= viewportWidth &&
+      rect.bottom <= viewportHeight
+    );
+  }
+
+  // Compute intersection ratio relative to element area
+  const intersectionWidth = Math.max(
+    0,
+    Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0)
+  );
+  const intersectionHeight = Math.max(
+    0,
+    Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0)
+  );
+
+  if (intersectionWidth === 0 || intersectionHeight === 0) return false;
+
+  const elementArea = rect.width * rect.height;
+  const intersectionArea = intersectionWidth * intersectionHeight;
+  const ratio = intersectionArea / elementArea;
+
+  return ratio >= threshold;
+}
+
+/**
+ * Asynchronously checks if an element is in the viewport using IntersectionObserver.
+ * This is more accurate than {@link inViewport} for elements inside scrollable
+ * containers, transformed ancestors, or when considering occluding content.
+ * Resolves to true/false based on the observer's intersection state.
+ * @param {Element} el - The DOM element to observe
+ * @param {Object} [options=null] - Optional configuration
+ * @param {number} [options.threshold=0] - A threshold between 0 and 1 indicating what percentage of the element should be visible to resolve true.
+ * @param {number} [options.timeout=1000] - Maximum time to wait (ms) before resolving false.
+ * @returns {Promise<boolean>} Resolves to true if the element meets the threshold within the timeout, false otherwise.
+ */
+export function inViewportAsync(el, options = null) {
+  if (el == null) return Promise.resolve(false);
+
+  if (typeof IntersectionObserver === 'undefined') {
+    // Fall back to synchronous geometry check if observer is unavailable
+    const threshold = options != null && typeof options.threshold === 'number'
+      ? options.threshold
+      : 0;
+    return Promise.resolve(inViewport(el, { threshold }));
+  }
+
+  const threshold = options != null && typeof options.threshold === 'number'
+    ? Math.max(0, Math.min(1, options.threshold))
+    : 0;
+  const timeout = options != null && typeof options.timeout === 'number'
+    ? Math.max(0, options.timeout)
+    : 1000;
+
+  return new Promise((resolve) => {
+    let settled = false;
+
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      try {
+        observer.disconnect();
+      } catch {
+        // Observer may already be disconnected — ignore
+      }
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      resolve(value);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries && entries.length > 0) {
+          const entry = entries[0];
+          if (entry.isIntersecting && entry.intersectionRatio >= threshold) {
+            finish(true);
+          }
+        }
+      },
+      { threshold: threshold }
+    );
+
+    let timer = null;
+    if (timeout > 0) {
+      timer = setTimeout(() => finish(false), timeout);
+    }
+
+    try {
+      observer.observe(el);
+    } catch {
+      finish(false);
+      return;
+    }
+  });
+}
+
 function isElementHidden(el) {
   if (
     el.hasAttribute('hidden') ||
@@ -981,13 +1131,15 @@ export function findElementsByType(type = "element", parent = null, options = nu
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
     const hidden = isHidden(item.element);
+    const viewportValue = inViewport(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     }
 
@@ -996,7 +1148,8 @@ export function findElementsByType(type = "element", parent = null, options = nu
       boundingBox: boundingBox,
       tagName: tagName,
       frameIndex: item.frame.frameIndex,
-      isHidden: hidden
+      isHidden: hidden,
+      inViewport: viewportValue
     };
   });
 
@@ -1056,13 +1209,15 @@ export function findElementsByAttribute(value, exact = false, parent = null) {
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
     const hidden = isHidden(item.element);
+    const viewportValue = inViewport(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     }
 
@@ -1071,7 +1226,8 @@ export function findElementsByAttribute(value, exact = false, parent = null) {
       boundingBox: boundingBox,
       tagName: tagName,
       frameIndex: item.frame.frameIndex,
-      isHidden: hidden
+      isHidden: hidden,
+      inViewport: viewportValue
     };
   });
 
@@ -1260,13 +1416,15 @@ export function findElements(type = null, text = null, exact = false, parent = n
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
     const hidden = isHidden(item.element);
+    const viewportValue = inViewport(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     }
 
@@ -1275,7 +1433,8 @@ export function findElements(type = null, text = null, exact = false, parent = n
       boundingBox: boundingBox,
       tagName: tagName,
       frameIndex: item.frame.frameIndex,
-      isHidden: hidden
+      isHidden: hidden,
+      inViewport: viewportValue
     };
   });
 
@@ -1529,13 +1688,15 @@ export function findProbableElements(elementType, attributeText, exact = false, 
     const boundingBox = getBoundingBox(item.element);
     const tagName = item.element.tagName.toLowerCase();
     const hidden = isHidden(item.element);
+    const viewportValue = inViewport(item.element);
 
     if (!item.frame.isMainFrame) {
       return {
         boundingBox: boundingBox,
         tagName: tagName,
         frameIndex: item.frame.frameIndex,
-        isHidden: hidden
+        isHidden: hidden,
+        inViewport: viewportValue
       };
     }
 
@@ -1544,7 +1705,8 @@ export function findProbableElements(elementType, attributeText, exact = false, 
       boundingBox: boundingBox,
       tagName: tagName,
       frameIndex: item.frame.frameIndex,
-      isHidden: hidden
+      isHidden: hidden,
+      inViewport: viewportValue
     };
   });
 
