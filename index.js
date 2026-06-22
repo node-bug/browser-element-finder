@@ -301,34 +301,14 @@ var ElementFinder = (() => {
     return el.ownerDocument;
   }
   function getElementDescriptorUniqueness(el, text, type) {
-    const root = getElementDescriptorFrame(el);
-    if (!root) {
-      return { index: 1 };
-    }
-    const elements = getAllElements(root);
-    const typeCache = /* @__PURE__ */ new WeakMap();
-    let index = 1;
-    let count = 0;
+    const results = findElements(type, text, true);
+    const elements = results.elements.map((item) => item.element);
     for (let i = 0; i < elements.length; i++) {
-      const candidate = elements[i];
-      if (candidate !== el && (candidate === root.documentElement || candidate.tagName === "BODY")) {
-        continue;
-      }
-      if (isIgnoredElement(candidate)) continue;
-      const candidateDescriptor = getElementDescriptorText(candidate);
-      if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
-      let candidateType = typeCache.get(candidate);
-      if (candidateType === void 0) {
-        candidateType = getElementDescriptorType(candidate);
-        typeCache.set(candidate, candidateType);
-      }
-      if (candidateType !== type) continue;
-      count++;
-      if (candidate === el) {
-        index = count;
+      if (elements[i] === el) {
+        return { index: i + 1 };
       }
     }
-    return { index };
+    return { index: 1 };
   }
   function getElementPositionAmongType(el, type) {
     const root = getElementDescriptorFrame(el);
