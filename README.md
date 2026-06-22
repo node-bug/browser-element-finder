@@ -241,7 +241,7 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `addIgnoredTags(tags)`                            | Add tags to the ignored list                                                                 |
 | `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                            |
 | `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                            |
-| `getElementDescriptor(element)`                   | Get identifiable text, source attribute, occurrence index, type, and tag name for an element |
+| `getElementDescriptor(element, includeHidden)`    | Get identifiable text, source attribute, occurrence index, type, and tag name for an element |
 | `matchesType(el, type)`                           | Check if element matches a type                                                              |
 | `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                      |
 | `getAllElements(root)`                            | Get all elements (with shadow DOM)                                                           |
@@ -379,13 +379,22 @@ Sets custom searchable attributes.
 
 Returns the current searchable attributes array.
 
-### `getElementDescriptor(element)`
+### `getElementDescriptor(element, includeHidden)`
 
 Returns identifiable text for a DOM element, plus structured metadata about where it came from, its 1-based occurrence index, its semantic type, and its HTML tag name. Uniqueness is scoped to the combination of `type` and `identifiableText`, so a button labeled "Save" and a checkbox labeled "Save" each get their own independent index sequence.
 
 ```javascript
+// Default: includes hidden elements in the index count
 const descriptor = ElementFinder.getElementDescriptor(element)
+
+// Exclude hidden elements from the index count
+const descriptor = ElementFinder.getElementDescriptor(element, false)
 ```
+
+| Parameter       | Type      | Default | Description                                                                                                                                                  |
+| --------------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `element`       | `Element` | -       | The DOM element to describe                                                                                                                                  |
+| `includeHidden` | `boolean` | `true`  | Whether to include hidden elements when computing the occurrence index. Default `true` includes all elements. Set to `false` to count only visible elements. |
 
 **Returns**:
 
@@ -403,6 +412,7 @@ const descriptor = ElementFinder.getElementDescriptor(element)
 
 - `index` is the 1-based count of elements in the current frame that share the same `type` AND the same `identifiableText`. Two elements with the same descriptor text but different semantic types each get `index: 1`.
 - When an element has no identifiable text (`identifiableText: null`), `index` falls back to the element's 1-based position among elements of the same `type` in the frame.
+- By default, hidden elements are included in the index count. Use `{ includeHidden: false }` to count only visible elements.
 
 **Examples**:
 
@@ -418,6 +428,9 @@ checkbox.getElementDescriptor(...) // { index: 1, type: 'checkbox', identifiable
 // Textless buttons -> indices reflect position among same-type elements
 btn1.getElementDescriptor(...) // { index: 1, type: 'button', identifiableText: null, ... }
 btn2.getElementDescriptor(...) // { index: 2, type: 'button', identifiableText: null, ... }
+
+// Exclude hidden elements from the count
+descriptor = ElementFinder.getElementDescriptor(element, false)
 ```
 
 Descriptor selection follows the same searchable-attribute priority as text search:

@@ -375,9 +375,11 @@ function getElementDescriptorFrame(el) {
  * and type, applying the same deduplication and parent-filtering as findElements.
  * @param {Element} el - The element to describe
  * @param {string} text - Descriptor text to count
+ * @param {string} type - Semantic type to match
+ * @param {boolean} [includeHidden=true] - Whether to include hidden elements in the count
  * @returns {{index: number}} 1-based occurrence index
  */
-function getElementDescriptorUniqueness(el, text, type) {
+function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
   const root = getElementDescriptorFrame(el);
   if (!root) {
     return { index: 1 };
@@ -398,6 +400,9 @@ function getElementDescriptorUniqueness(el, text, type) {
 
     // Skip ignored elements
     if (isIgnoredElement(candidate)) continue;
+
+    // Skip hidden elements when includeHidden is false
+    if (!includeHidden && isHidden(candidate)) continue;
 
     // Get descriptor text (cached)
     let candidateDescriptor = descriptorCache.get(candidate);
@@ -446,9 +451,10 @@ function getElementDescriptorUniqueness(el, text, type) {
  * Used as a fallback index when an element has no identifiable text.
  * @param {Element} el - The element to locate
  * @param {string} type - The semantic type to count against
+ * @param {boolean} [includeHidden=true] - Whether to include hidden elements in the position count
  * @returns {number} 1-based position, or 1 if the frame cannot be resolved
  */
-function getElementPositionAmongType(el, type) {
+function getElementPositionAmongType(el, type, includeHidden = true) {
   const root = getElementDescriptorFrame(el);
   if (!root) return 1;
 
@@ -461,6 +467,9 @@ function getElementPositionAmongType(el, type) {
     if (candidate === el) break;
 
     if (isIgnoredElement(candidate)) continue;
+
+    // Skip hidden elements when includeHidden is false
+    if (!includeHidden && isHidden(candidate)) continue;
 
     let candidateType = typeCache.get(candidate);
     if (candidateType === undefined) {
@@ -496,9 +505,11 @@ function getElementDescriptorType(el) {
  * Uses the first non-empty searchable attribute value, falls back to element text,
  * reports occurrence index within the current frame, and includes the semantic element type.
  * @param {Element|null|undefined} el - The DOM element to describe
+ * @param {boolean} [includeHidden=true] - Whether to include hidden elements in the index count. Default true.
  * @returns {{identifiableText: string|null, attributeName: string|null, index: number, type: string|null, tagName: string|null}} Element descriptor
  */
-export function getElementDescriptor(el) {
+export function getElementDescriptor(el, includeHidden = true) {
+
   if (el == null || el.nodeType !== Node.ELEMENT_NODE) {
     return {
       identifiableText: null,
@@ -516,13 +527,13 @@ export function getElementDescriptor(el) {
     return {
       identifiableText: null,
       attributeName: null,
-      index: getElementPositionAmongType(el, type),
+      index: getElementPositionAmongType(el, type, includeHidden),
       type,
       tagName: el.tagName.toLowerCase()
     };
   }
 
-  const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type);
+  const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type, includeHidden);
 
   return {
     identifiableText: descriptorSource.identifiableText,

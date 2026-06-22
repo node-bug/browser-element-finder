@@ -300,7 +300,7 @@ var ElementFinder = (() => {
     }
     return el.ownerDocument;
   }
-  function getElementDescriptorUniqueness(el, text, type) {
+  function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
     const root = getElementDescriptorFrame(el);
     if (!root) {
       return { index: 1 };
@@ -315,6 +315,7 @@ var ElementFinder = (() => {
       if (seenElements.has(candidate)) continue;
       seenElements.add(candidate);
       if (isIgnoredElement(candidate)) continue;
+      if (!includeHidden && isHidden(candidate)) continue;
       let candidateDescriptor = descriptorCache.get(candidate);
       if (candidateDescriptor === void 0) {
         candidateDescriptor = getElementDescriptorText(candidate);
@@ -344,7 +345,7 @@ var ElementFinder = (() => {
     }
     return { index: 1 };
   }
-  function getElementPositionAmongType(el, type) {
+  function getElementPositionAmongType(el, type, includeHidden = true) {
     const root = getElementDescriptorFrame(el);
     if (!root) return 1;
     const elements = getAllElements(root);
@@ -354,6 +355,7 @@ var ElementFinder = (() => {
       const candidate = elements[i];
       if (candidate === el) break;
       if (isIgnoredElement(candidate)) continue;
+      if (!includeHidden && isHidden(candidate)) continue;
       let candidateType = typeCache.get(candidate);
       if (candidateType === void 0) {
         candidateType = getElementDescriptorType(candidate);
@@ -373,7 +375,7 @@ var ElementFinder = (() => {
     }
     return "element";
   }
-  function getElementDescriptor(el) {
+  function getElementDescriptor(el, includeHidden = true) {
     if (el == null || el.nodeType !== Node.ELEMENT_NODE) {
       return {
         identifiableText: null,
@@ -389,12 +391,12 @@ var ElementFinder = (() => {
       return {
         identifiableText: null,
         attributeName: null,
-        index: getElementPositionAmongType(el, type),
+        index: getElementPositionAmongType(el, type, includeHidden),
         type,
         tagName: el.tagName.toLowerCase()
       };
     }
-    const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type);
+    const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type, includeHidden);
     return {
       identifiableText: descriptorSource.identifiableText,
       attributeName: descriptorSource.attributeName,
