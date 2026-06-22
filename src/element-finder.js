@@ -371,48 +371,24 @@ function getElementDescriptorFrame(el) {
 
 /**
  * Gets occurrence index for descriptor text within the element's frame.
+ * Delegates to findElements so the count matches what findProbableElements returns.
  * @param {Element} el - The element to describe
  * @param {string} text - Descriptor text to count
  * @returns {{index: number}} 1-based occurrence index
  */
 function getElementDescriptorUniqueness(el, text, type) {
-  const root = getElementDescriptorFrame(el);
-  if (!root) {
-    return { index: 1 };
-  }
-
-  const elements = getAllElements(root);
-  const typeCache = new WeakMap();
-  let index = 1;
-  let count = 0;
+  // Use findElements as the source of truth so that descriptor indices
+  // match the actual result sets returned by findProbableElements / findElements.
+  const results = findElements(type, text, true);
+  const elements = results.elements.map((item) => item.element);
 
   for (let i = 0; i < elements.length; i++) {
-    const candidate = elements[i];
-
-    if (candidate !== el && (candidate === root.documentElement || candidate.tagName === 'BODY')) {
-      continue;
-    }
-
-    if (isIgnoredElement(candidate)) continue;
-
-    const candidateDescriptor = getElementDescriptorText(candidate);
-
-    if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
-
-    let candidateType = typeCache.get(candidate);
-    if (candidateType === undefined) {
-      candidateType = getElementDescriptorType(candidate);
-      typeCache.set(candidate, candidateType);
-    }
-    if (candidateType !== type) continue;
-
-    count++;
-    if (candidate === el) {
-      index = count;
+    if (elements[i] === el) {
+      return { index: i + 1 };
     }
   }
 
-  return { index };
+  return { index: 1 };
 }
 
 /**
