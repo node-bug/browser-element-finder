@@ -314,6 +314,7 @@ var ElementFinder = (() => {
       if (candidate !== el && (candidate === root.documentElement || candidate.tagName === "BODY")) {
         continue;
       }
+      if (isIgnoredElement(candidate)) continue;
       const candidateDescriptor = getElementDescriptorText(candidate);
       if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
       let candidateType = typeCache.get(candidate);
@@ -338,6 +339,7 @@ var ElementFinder = (() => {
     for (let i = 0; i < elements.length; i++) {
       const candidate = elements[i];
       if (candidate === el) break;
+      if (isIgnoredElement(candidate)) continue;
       let candidateType = typeCache.get(candidate);
       if (candidateType === void 0) {
         candidateType = getElementDescriptorType(candidate);
