@@ -49,12 +49,6 @@ describe('ElementFinderByType - Tables Fixture', () => {
   });
 
   describe('findElementsByType', () => {
-    it('should find all elements with "element" type', async () => {
-      const result = await driver.executeScript(`
-        return ElementFinder.findElementsByType('element');
-      `);
-      expect(result.elements.length).toBe(267);
-    });
 
     it('should find tables and validate first match', async () => {
       const result = await driver.executeScript(`

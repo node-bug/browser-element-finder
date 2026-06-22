@@ -393,6 +393,8 @@ function getElementDescriptorUniqueness(el, text, type) {
       continue;
     }
 
+    if (isIgnoredElement(candidate)) continue;
+
     const candidateDescriptor = getElementDescriptorText(candidate);
 
     if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
@@ -431,6 +433,8 @@ function getElementPositionAmongType(el, type) {
   for (let i = 0; i < elements.length; i++) {
     const candidate = elements[i];
     if (candidate === el) break;
+
+    if (isIgnoredElement(candidate)) continue;
 
     let candidateType = typeCache.get(candidate);
     if (candidateType === undefined) {

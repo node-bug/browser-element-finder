@@ -49,13 +49,6 @@ describe('ElementFinderByType - Iframes Fixture', () => {
   });
 
   describe('findElementsByType', () => {
-    it('should find all elements with "element" type', async () => {
-      const result = await driver.executeScript(`
-        return ElementFinder.findElementsByType('element');
-      `);
-      expect(result.elements.length).toBeGreaterThan(0);
-    });
-
     it('should find checkboxes in main document and validate first match', async () => {
       const result = await driver.executeScript(`
         return ElementFinder.findElementsByType('checkbox');

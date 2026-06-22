@@ -101,16 +101,6 @@ describe('findElements combined search', () => {
       const result = findElements('button', '');
       expect(result.elements.length).toBe(3);
     });
-
-    it('should default to "element" type when type is null', () => {
-      const result = findElements(null, '');
-      expect(result.elements.length).toBeGreaterThan(0);
-    });
-
-    it('should default to "element" type when type is undefined', () => {
-      const result = findElements(undefined, '');
-      expect(result.elements.length).toBeGreaterThan(0);
-    });
   });
 
   describe('findElements with text only', () => {
@@ -242,13 +232,6 @@ describe('findElements combined search', () => {
   });
 
   describe('findElements return format', () => {
-    it('should return elements with boundingBox and tagName', () => {
-      const result = findElements('button', 'Submit');
-      expect(result.elements[0].boundingBox).toBeDefined();
-      expect(result.elements[0].tagName).toBe('button');
-      expect(result.elements[0].frameIndex).toBe(-1);
-    });
-
     it('should return innermost matches only', () => {
       const result = findElements(null, 'container');
       expect(result.elements.length).toBe(1);

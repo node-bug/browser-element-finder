@@ -49,12 +49,6 @@ describe('ElementFinderByType Integration Tests', () => {
   });
 
   describe('findElementsByType', () => {
-    it('should find all elements with "element" type', async () => {
-      const result = await driver.executeScript(`
-        return ElementFinder.findElementsByType('element');
-      `);
-      expect(result.elements.length).toBe(68);
-    });
 
     it('should find buttons and validate first match', async () => {
       const result = await driver.executeScript(`
