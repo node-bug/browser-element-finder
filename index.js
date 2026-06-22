@@ -940,13 +940,16 @@ var ElementFinder = (() => {
       throw new TypeError(`text must be a string, got ${typeof text}`);
     }
     const matches = [];
+    const seenElements = /* @__PURE__ */ new Set();
     const frames = getAllFrames(window);
     for (const frame of frames) {
       const allElements = getAllElements(parent || frame.document);
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
+        if (seenElements.has(el)) continue;
         if (type !== null && type !== void 0 && !matchesType(el, type)) continue;
         if (text !== "" && !matchesAttribute(el, text, exact)) continue;
+        seenElements.add(el);
         matches.push({ element: el, frame });
       }
     }
@@ -1088,13 +1091,16 @@ var ElementFinder = (() => {
       }
     }
     const matches = [];
+    const seenElements = /* @__PURE__ */ new Set();
     const frames = getAllFrames(window);
     for (const frame of frames) {
       const allElements = getAllElements(parent || frame.document);
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
+        if (seenElements.has(el)) continue;
         if (hasType && !matchesType(el, elementType)) continue;
         if (hasText && !matchesAttribute(el, attributeText, exact)) continue;
+        seenElements.add(el);
         matches.push({ element: el, frame });
       }
     }

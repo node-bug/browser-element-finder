@@ -1354,6 +1354,7 @@ export function findElements(type = null, text = null, exact = false, parent = n
   }
 
   const matches = [];
+  const seenElements = new Set();
   const frames = getAllFrames(window);
 
   for (const frame of frames) {
@@ -1362,12 +1363,16 @@ export function findElements(type = null, text = null, exact = false, parent = n
     for (let i = 0; i < allElements.length; i++) {
       const el = allElements[i];
 
+      // Skip if we've already seen this element
+      if (seenElements.has(el)) continue;
+
       // Check type match if type is specified
       if (type !== null && type !== undefined && !matchesType(el, type)) continue;
 
       // Check attribute/text match if text is specified (non-empty)
       if (text !== '' && !matchesAttribute(el, text, exact)) continue;
 
+      seenElements.add(el);
       matches.push({ element: el, frame: frame });
     }
   }
@@ -1597,6 +1602,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
   }
 
   const matches = [];
+  const seenElements = new Set();
   const frames = getAllFrames(window);
 
   // First, try to find elements matching both type and attribute text
@@ -1606,12 +1612,16 @@ export function findProbableElements(elementType, attributeText, exact = false, 
     for (let i = 0; i < allElements.length; i++) {
       const el = allElements[i];
 
+      // Skip if we've already seen this element
+      if (seenElements.has(el)) continue;
+
       // Check type match if type is specified
       if (hasType && !matchesType(el, elementType)) continue;
 
       // Check attribute/text match if text is specified
       if (hasText && !matchesAttribute(el, attributeText, exact)) continue;
 
+      seenElements.add(el);
       matches.push({ element: el, frame: frame });
     }
   }
