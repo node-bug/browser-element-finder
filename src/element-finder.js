@@ -371,19 +371,69 @@ function getElementDescriptorFrame(el) {
 
 /**
  * Gets occurrence index for descriptor text within the element's frame.
- * Delegates to findElements so the count matches what findProbableElements returns.
+ * Counts elements whose getElementDescriptorText returns the same identifiableText
+ * and type, applying the same deduplication and parent-filtering as findElements.
  * @param {Element} el - The element to describe
  * @param {string} text - Descriptor text to count
  * @returns {{index: number}} 1-based occurrence index
  */
 function getElementDescriptorUniqueness(el, text, type) {
-  // Use findElements as the source of truth so that descriptor indices
-  // match the actual result sets returned by findProbableElements / findElements.
-  const results = findElements(type, text, true);
-  const elements = results.elements.map((item) => item.element);
+  const root = getElementDescriptorFrame(el);
+  if (!root) {
+    return { index: 1 };
+  }
+
+  const elements = getAllElements(root);
+  const seenElements = new Set();
+  const descriptorCache = new WeakMap();
+  const typeCache = new WeakMap();
+  const matchingDescriptors = [];
 
   for (let i = 0; i < elements.length; i++) {
-    if (elements[i] === el) {
+    const candidate = elements[i];
+
+    // Skip duplicates
+    if (seenElements.has(candidate)) continue;
+    seenElements.add(candidate);
+
+    // Skip ignored elements
+    if (isIgnoredElement(candidate)) continue;
+
+    // Get descriptor text (cached)
+    let candidateDescriptor = descriptorCache.get(candidate);
+    if (candidateDescriptor === undefined) {
+      candidateDescriptor = getElementDescriptorText(candidate);
+      descriptorCache.set(candidate, candidateDescriptor);
+    }
+
+    // Skip if descriptor doesn't match target text
+    if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
+
+    // Get type (cached)
+    let candidateType = typeCache.get(candidate);
+    if (candidateType === undefined) {
+      candidateType = getElementDescriptorType(candidate);
+      typeCache.set(candidate, candidateType);
+    }
+
+    // Skip if type doesn't match
+    if (candidateType !== type) continue;
+
+    matchingDescriptors.push(candidate);
+  }
+
+  // Filter out parent elements that only match because a descendant matches
+  const filtered = matchingDescriptors.filter((item) => {
+    for (const other of matchingDescriptors) {
+      if (other !== item && item.contains(other)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  for (let i = 0; i < filtered.length; i++) {
+    if (filtered[i] === el) {
       return { index: i + 1 };
     }
   }

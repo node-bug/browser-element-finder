@@ -301,10 +301,44 @@ var ElementFinder = (() => {
     return el.ownerDocument;
   }
   function getElementDescriptorUniqueness(el, text, type) {
-    const results = findElements(type, text, true);
-    const elements = results.elements.map((item) => item.element);
+    const root = getElementDescriptorFrame(el);
+    if (!root) {
+      return { index: 1 };
+    }
+    const elements = getAllElements(root);
+    const seenElements = /* @__PURE__ */ new Set();
+    const descriptorCache = /* @__PURE__ */ new WeakMap();
+    const typeCache = /* @__PURE__ */ new WeakMap();
+    const matchingDescriptors = [];
     for (let i = 0; i < elements.length; i++) {
-      if (elements[i] === el) {
+      const candidate = elements[i];
+      if (seenElements.has(candidate)) continue;
+      seenElements.add(candidate);
+      if (isIgnoredElement(candidate)) continue;
+      let candidateDescriptor = descriptorCache.get(candidate);
+      if (candidateDescriptor === void 0) {
+        candidateDescriptor = getElementDescriptorText(candidate);
+        descriptorCache.set(candidate, candidateDescriptor);
+      }
+      if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
+      let candidateType = typeCache.get(candidate);
+      if (candidateType === void 0) {
+        candidateType = getElementDescriptorType(candidate);
+        typeCache.set(candidate, candidateType);
+      }
+      if (candidateType !== type) continue;
+      matchingDescriptors.push(candidate);
+    }
+    const filtered = matchingDescriptors.filter((item) => {
+      for (const other of matchingDescriptors) {
+        if (other !== item && item.contains(other)) {
+          return false;
+        }
+      }
+      return true;
+    });
+    for (let i = 0; i < filtered.length; i++) {
+      if (filtered[i] === el) {
         return { index: i + 1 };
       }
     }
