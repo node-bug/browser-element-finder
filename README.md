@@ -220,35 +220,36 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 
 ## API Summary
 
-| Function                                          | Description                                                                                  |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                                    |
-| `findElementsByType(type, parent)`                | Find elements by type only, returns `{ elements: [...] }`                                    |
-| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                               |
-| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, including generic `element` by default       |
-| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                |
-| `highlight(elements, color, width)`               | Highlight elements with outline                                                              |
-| `unhighlight(elements)`                           | Remove highlight                                                                             |
-| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                               |
-| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                                       |
-| `getValidTypes()`                                 | List all supported element types                                                             |
-| `getValidAttributes()`                            | List all valid searchable attribute names                                                    |
-| `getBoundingBox(element)`                         | Get bounding box for an element                                                              |
-| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                                        |
-| `getSearchableAttributes()`                       | Get current searchable attributes                                                            |
-| `setIgnoredTags(tags)`                            | Set tags to ignore during traversal                                                          |
-| `getIgnoredTags()`                                | Get current ignored tags                                                                     |
-| `addIgnoredTags(tags)`                            | Add tags to the ignored list                                                                 |
-| `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                            |
-| `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                            |
-| `getElementDescriptor(element, includeHidden)`    | Get identifiable text, source attribute, occurrence index, type, and tag name for an element |
-| `matchesType(el, type)`                           | Check if element matches a type                                                              |
-| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                      |
-| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                                           |
-| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                              |
-| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                                            |
-| `splitByOperator(expr, op)`                       | Split XPath by operator                                                                      |
-| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute)               |
+| Function                                          | Description                                                                                        |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `findElements(type, text, exact, parent)`         | Find elements by type/text, returns `{ elements: [...] }`                                          |
+| `findElementsByType(type, parent)`                | Find elements by type only, returns `{ elements: [...] }`                                          |
+| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute, returns `{ elements: [...] }`                                     |
+| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, including generic `element` by default             |
+| `getViewportElementCounts(type, parent)`          | Count visible elements currently in the viewport by semantic type                                  |
+| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                      |
+| `highlight(elements, color, width)`               | Highlight elements with outline                                                                    |
+| `unhighlight(elements)`                           | Remove highlight                                                                                   |
+| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                                     |
+| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                                             |
+| `getValidTypes()`                                 | List all supported element types                                                                   |
+| `getValidAttributes()`                            | List all valid searchable attribute names                                                          |
+| `getBoundingBox(element)`                         | Get bounding box for an element                                                                    |
+| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                                              |
+| `getSearchableAttributes()`                       | Get current searchable attributes                                                                  |
+| `setIgnoredTags(tags)`                            | Set tags to ignore during traversal                                                                |
+| `getIgnoredTags()`                                | Get current ignored tags                                                                           |
+| `addIgnoredTags(tags)`                            | Add tags to the ignored list                                                                       |
+| `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                                  |
+| `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                                  |
+| `getElementDescriptor(element, includeHidden)`    | Get identifiable text, source attribute, occurrence index, type, and tag name for an element       |
+| `matchesType(el, type)`                           | Check if element matches a type                                                                    |
+| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                            |
+| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                                                 |
+| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                                    |
+| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                                                  |
+| `splitByOperator(expr, op)`                       | Split XPath by operator                                                                            |
+| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute, or zero dimensions) |
 
 ---
 
@@ -500,6 +501,36 @@ const inputs = ElementFinder.getElementCounts(
 ```
 
 The generic `element` type is included in the all-types count, so the result contains both the catch-all `element` count and semantic types such as `button`, `textbox`, `link`, and `table`.
+
+### `getViewportElementCounts(type, parent)`
+
+Counts elements by semantic type that are currently visible **within the browser viewport**. This is useful for determining which elements a user can actually see on screen without scrolling. Searches all frames (main document + iframes) by default.
+
+| Parameter | Type      | Default | Description                                                                                  |
+| --------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
+| `type`    | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types. |
+| `parent`  | `Element` | `null`  | Parent element to count within                                                               |
+
+**Returns**: `Object.<string, { visible: number, hidden: number, total: number }>` keyed by semantic element type.
+
+```javascript
+// Count all defined types in the viewport
+const counts = ElementFinder.getViewportElementCounts()
+// { button: { visible: 2, hidden: 0, total: 2 }, textbox: { visible: 1, hidden: 0, total: 1 }, ... }
+
+// Count one type in the viewport
+const buttons = ElementFinder.getViewportElementCounts('button')
+// { button: { visible: 2, hidden: 0, total: 2 } }
+
+// Count within a parent element
+const inputs = ElementFinder.getViewportElementCounts(
+  'textbox',
+  document.querySelector('form'),
+)
+// { textbox: { visible: 1, hidden: 0, total: 1 } }
+```
+
+The `total` count represents all elements within the viewport (visible + hidden). Elements outside the viewport are excluded entirely.
 
 ### `findElementsByAttribute(value, exact, parent)`
 

@@ -36,6 +36,7 @@ var ElementFinder = (() => {
     getSearchableAttributes: () => getSearchableAttributes,
     getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
+    getViewportElementCounts: () => getViewportElementCounts,
     highlight: () => highlight,
     inViewport: () => inViewport,
     inViewportAsync: () => inViewportAsync,
@@ -748,37 +749,31 @@ var ElementFinder = (() => {
       return true;
     }
     if (typeof el.checkVisibility === "function") {
-      if (!el.checkVisibility({
-        checkOpacity: true,
-        checkVisibilityCSS: true,
-        contentVisibilityAuto: true
-      })) {
-        return true;
+      const checkVisible = el.checkVisibility({
+        checkVisibilityCSS: true
+      });
+      if (checkVisible) {
+        return false;
       }
-      return false;
     }
     try {
       const style = window.getComputedStyle(el);
-      if (style.visibility === "hidden" || style.visibility === "collapse" || style.display === "none" || style.opacity === "0") {
+      if (style.visibility === "hidden" || style.visibility === "collapse" || style.display === "none") {
         return true;
       }
     } catch (e) {
     }
     return false;
   }
-  function findElementsByType(type = "element", parent = null, options = null) {
+  function findElementsByType(type = "element", parent = null) {
     if (type === null || type === void 0) {
       type = "element";
     }
     if (typeof type !== "string") {
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
-    const failOnUnknownType = options && options.failOnUnknownType === true;
     if (type && !ELEMENT_DEFINITIONS[type]) {
       const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-      if (failOnUnknownType) {
-        throw new TypeError(`Unknown element type: ${type}`);
-      }
       console.warn(message);
       return { elements: [] };
     }
@@ -922,7 +917,7 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function getElementCounts(type = null, parent = null, options = null) {
+  function getElementCounts(type = null, parent = null) {
     const hasType = type !== null && type !== void 0;
     const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
     if (hasType) {
@@ -930,11 +925,7 @@ var ElementFinder = (() => {
         throw new TypeError(`type must be a string, got ${typeof type}`);
       }
       if (!ELEMENT_DEFINITIONS[type]) {
-        const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-        if (options && options.failOnUnknownType === true) {
-          throw new TypeError(`Unknown element type: ${type}`);
-        }
-        console.warn(message);
+        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
         return { [type]: { visible: 0, hidden: 0, total: 0 } };
       }
     }
@@ -944,7 +935,7 @@ var ElementFinder = (() => {
     }
     for (let i = 0; i < targetTypes.length; i++) {
       const targetType = targetTypes[i];
-      const result = findElements(targetType, null, false, parent, options);
+      const result = findElements(targetType, null, false, parent);
       const typeCounts = counts[targetType];
       for (let j = 0; j < result.elements.length; j++) {
         const item = result.elements[j];
@@ -955,7 +946,37 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function findElements(type = null, text = null, exact = false, parent = null, options = null) {
+  function getViewportElementCounts(type = null, parent = null) {
+    const hasType = type !== null && type !== void 0;
+    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
+    if (hasType) {
+      if (typeof type !== "string") {
+        throw new TypeError(`type must be a string, got ${typeof type}`);
+      }
+      if (!ELEMENT_DEFINITIONS[type]) {
+        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+        return { [type]: { visible: 0, hidden: 0, total: 0 } };
+      }
+    }
+    const counts = {};
+    for (let i = 0; i < targetTypes.length; i++) {
+      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
+    }
+    for (let i = 0; i < targetTypes.length; i++) {
+      const targetType = targetTypes[i];
+      const result = findElements(targetType, null, false, parent);
+      const typeCounts = counts[targetType];
+      for (let j = 0; j < result.elements.length; j++) {
+        const item = result.elements[j];
+        if (!item.element || !inViewport(item.element)) continue;
+        typeCounts.total += 1;
+        const bucket = item.isHidden ? "hidden" : "visible";
+        typeCounts[bucket] += 1;
+      }
+    }
+    return counts;
+  }
+  function findElements(type = null, text = null, exact = false, parent = null) {
     if (text === null || text === void 0) {
       text = "";
     }
@@ -964,11 +985,7 @@ var ElementFinder = (() => {
         throw new TypeError(`type must be a string, got ${typeof type}`);
       }
       if (!ELEMENT_DEFINITIONS[type]) {
-        const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-        if (options && options.failOnUnknownType === true) {
-          throw new TypeError(`Unknown element type: ${type}`);
-        }
-        console.warn(message);
+        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
         return { elements: [] };
       }
     }
@@ -1099,11 +1116,11 @@ var ElementFinder = (() => {
     }
     return null;
   }
-  function findProbableElements(elementType, attributeText, exact = false, parent = null, options = null) {
+  function findProbableElements(elementType, attributeText, exact = false, parent = null) {
     const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
     const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
     if (hasType && !hasText) {
-      return findElements(elementType, null, false, parent, options);
+      return findElements(elementType, null, false, parent);
     }
     if (!hasType && hasText) {
       return findElementsByAttribute(attributeText, exact, parent);
@@ -1113,11 +1130,7 @@ var ElementFinder = (() => {
         throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
       }
       if (!ELEMENT_DEFINITIONS[elementType]) {
-        const message = `Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-        if (options && options.failOnUnknownType === true) {
-          throw new TypeError(`Unknown element type: ${elementType}`);
-        }
-        console.warn(message);
+        console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
         return { elements: [] };
       }
     }

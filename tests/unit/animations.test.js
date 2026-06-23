@@ -4,6 +4,8 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import {
   pauseAnimations,
   resumeAnimations
@@ -14,36 +16,8 @@ describe('Animation Control Functions', () => {
   let document;
 
   beforeAll(() => {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            @keyframes slide {
-              from { transform: translateX(0); }
-              to { transform: translateX(100px); }
-            }
-            @keyframes fade {
-              from { opacity: 0; }
-              to { opacity: 1; }
-            }
-            .animated {
-              animation: slide 2s infinite;
-              transition: all 0.3s ease;
-            }
-            .fade-box {
-              animation: fade 1s ease-in-out;
-            }
-          </style>
-        </head>
-        <body>
-          <div id="box1" class="animated">Animated Box</div>
-          <div id="box2" class="fade-box">Fade Box</div>
-          <div id="box3">Static Box</div>
-          <button id="btn1" class="animated">Animated Button</button>
-        </body>
-      </html>
-    `;
+    const fixturePath = resolve(__dirname, 'fixtures/animations.html');
+    const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {
       url: 'http://localhost',

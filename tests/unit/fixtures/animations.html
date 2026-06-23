@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unit Tests - Animations Fixture</title>
+  <style>
+    @keyframes slide {
+      from { transform: translateX(0); }
+      to { transform: translateX(100px); }
+    }
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .animated {
+      animation: slide 2s infinite;
+      transition: all 0.3s ease;
+    }
+    .fade-box {
+      animation: fade 1s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="box1" class="animated">Animated Box</div>
+  <div id="box2" class="fade-box">Fade Box</div>
+  <div id="box3">Static Box</div>
+  <button id="btn1" class="animated">Animated Button</button>
+</body>
+</html>

@@ -209,7 +209,7 @@ describe('ElementFinderByType Integration Tests', () => {
 
     it('should report inViewport=false for the Disabled Field when it is below the fold', async () => {
       const result = await driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox', null, false, null, { failOnUnknownType: false })
+        return ElementFinder.findElementsByType('textbox')
           .elements
           .find((e) => e.element && e.element.getAttribute('data-test-id') === 'val-disabled');
       `);
@@ -238,7 +238,7 @@ describe('ElementFinderByType Integration Tests', () => {
 
       // Re-run the find so we get fresh flag values for the new scroll position
       const result = await driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox', null, false, null, { failOnUnknownType: false })
+        return ElementFinder.findElementsByType('textbox')
           .elements
           .find((e) => e.element && e.element.getAttribute('data-test-id') === 'val-disabled');
       `);

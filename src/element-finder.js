@@ -896,8 +896,10 @@ export function getBoundingBox(el) {
 
 /**
  * Checks if an element is hidden (not visible on the page).
- * Considers native visibility checks, ancestor visibility, CSS visibility/display/opacity,
+ * Considers native visibility checks, ancestor visibility, CSS visibility/display,
  * hidden/inert/aria-hidden attributes, and offset dimensions.
+ * Note: Elements with zero opacity are considered visible (sites use opacity
+ * transitions for lazy-loaded sections that fade in on scroll).
  * @param {Element} el - The DOM element to check
  * @returns {boolean} True if the element is hidden
  */
@@ -1065,6 +1067,11 @@ export function inViewportAsync(el, options = null) {
   });
 }
 
+/**
+ * Checks if an element is hidden (not visible on the page).
+ * Note: Zero opacity is NOT considered hidden - sites use opacity transitions
+ * for lazy-loaded sections that fade in on scroll.
+ */
 function isElementHidden(el) {
   if (
     el.hasAttribute('hidden') ||
@@ -1076,14 +1083,17 @@ function isElementHidden(el) {
   }
 
   if (typeof el.checkVisibility === 'function') {
-    if (!el.checkVisibility({
-      checkOpacity: true,
-      checkVisibilityCSS: true,
-      contentVisibilityAuto: true
-    })) {
-      return true;
+    const checkVisible = el.checkVisibility({
+      checkVisibilityCSS: true
+    });
+
+    // If checkVisibility says visible, trust it immediately.
+    // If it says hidden, fall through to computed style checks as a fallback
+    // (elements far off-screen may return false from checkVisibility even when
+    // they have real dimensions and visible CSS properties).
+    if (checkVisible) {
+      return false;
     }
-    return false;
   }
 
   try {
@@ -1091,8 +1101,7 @@ function isElementHidden(el) {
     if (
       style.visibility === 'hidden' ||
       style.visibility === 'collapse' ||
-      style.display === 'none' ||
-      style.opacity === '0'
+      style.display === 'none'
     ) {
       return true;
     }
@@ -1108,10 +1117,9 @@ function isElementHidden(el) {
  * Searches all frames (main document + iframes) by default.
  * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
  * @param {Element|null} [parent=null] - Parent element to search within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementsByType(type = "element", parent = null, options = null) {
+export function findElementsByType(type = "element", parent = null) {
   if (type === null || type === undefined) {
     type = "element";
   }
@@ -1120,12 +1128,8 @@ export function findElementsByType(type = "element", parent = null, options = nu
     throw new TypeError(`type must be a string, got ${typeof type}`);
   }
 
-  const failOnUnknownType = options && options.failOnUnknownType === true;
   if (type && !ELEMENT_DEFINITIONS[type]) {
     const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-    if (failOnUnknownType) {
-      throw new TypeError(`Unknown element type: ${type}`);
-    }
     console.warn(message);
     return { elements: [] };
   }
@@ -1333,10 +1337,9 @@ function hasOwnMatch(el, value, exact = false) {
  * Searches all frames (main document + iframes) by default.
  * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined types.
  * @param {Element|null} [parent=null] - Parent element to count within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
- * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type, or `{ [type]: { visible, hidden, total } }` when type is provided
+ * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
  */
-export function getElementCounts(type = null, parent = null, options = null) {
+export function getElementCounts(type = null, parent = null) {
   const hasType = type !== null && type !== undefined;
   const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
 
@@ -1345,11 +1348,7 @@ export function getElementCounts(type = null, parent = null, options = null) {
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
     if (!ELEMENT_DEFINITIONS[type]) {
-      const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-      if (options && options.failOnUnknownType === true) {
-        throw new TypeError(`Unknown element type: ${type}`);
-      }
-      console.warn(message);
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
       return { [type]: { visible: 0, hidden: 0, total: 0 } };
     }
   }
@@ -1363,7 +1362,7 @@ export function getElementCounts(type = null, parent = null, options = null) {
   // element set, including its filtering behavior for each semantic type.
   for (let i = 0; i < targetTypes.length; i++) {
     const targetType = targetTypes[i];
-    const result = findElements(targetType, null, false, parent, options);
+    const result = findElements(targetType, null, false, parent);
     const typeCounts = counts[targetType];
 
     for (let j = 0; j < result.elements.length; j++) {
@@ -1379,16 +1378,62 @@ export function getElementCounts(type = null, parent = null, options = null) {
 }
 
 /**
+ * Gets counts of elements that are currently within the browser viewport, grouped by semantic type.
+ * Unlike `getElementCounts` which counts all rendered elements regardless of position, this only
+ * counts elements whose bounding box intersects with the current viewport.
+ * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined types.
+ * @param {Element|null} [parent=null] - Parent element to search within
+ * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
+ */
+export function getViewportElementCounts(type = null, parent = null) {
+  const hasType = type !== null && type !== undefined;
+  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
+
+  if (hasType) {
+    if (typeof type !== 'string') {
+      throw new TypeError(`type must be a string, got ${typeof type}`);
+    }
+    if (!ELEMENT_DEFINITIONS[type]) {
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+      return { [type]: { visible: 0, hidden: 0, total: 0 } };
+    }
+  }
+
+  const counts = {};
+  for (let i = 0; i < targetTypes.length; i++) {
+    counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
+  }
+
+  for (let i = 0; i < targetTypes.length; i++) {
+    const targetType = targetTypes[i];
+    const result = findElements(targetType, null, false, parent);
+    const typeCounts = counts[targetType];
+
+    for (let j = 0; j < result.elements.length; j++) {
+      const item = result.elements[j];
+
+      // Only count elements that are in the viewport
+      if (!item.element || !inViewport(item.element)) continue;
+
+      typeCounts.total += 1;
+      const bucket = item.isHidden ? 'hidden' : 'visible';
+      typeCounts[bucket] += 1;
+    }
+  }
+
+  return counts;
+}
+
+/**
  * Finds elements matching the specified type and/or attribute value.
  * Combines type and attribute matching in a single call.
  * @param {string|null} [type=null] - Element type (see ELEMENT_DEFINITIONS for valid types), or null for any type
  * @param {string|null} [text=null] - Text/attribute value to search for, or null/undefined/'' for any text
  * @param {boolean} [exact=false] - Exact match vs substring (only used when text is provided)
  * @param {Element|null} [parent=null] - Parent element to search within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElements(type = null, text = null, exact = false, parent = null, options = null) {
+export function findElements(type = null, text = null, exact = false, parent = null) {
   // Normalize text parameter
   if (text === null || text === undefined) {
     text = '';
@@ -1400,11 +1445,7 @@ export function findElements(type = null, text = null, exact = false, parent = n
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
     if (!ELEMENT_DEFINITIONS[type]) {
-      const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-      if (options && options.failOnUnknownType === true) {
-        throw new TypeError(`Unknown element type: ${type}`);
-      }
-      console.warn(message);
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
       return { elements: [] };
     }
   }
@@ -1621,10 +1662,9 @@ function findNearbyElementType(el, targetType) {
  * @param {string|null|undefined} attributeText - Text/attribute value to search for. If null/undefined/blank, matches any text.
  * @param {boolean} [exact=false] - Exact match vs substring
  * @param {Element|null} [parent=null] - Parent element to search within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findProbableElements(elementType, attributeText, exact = false, parent = null, options = null) {
+export function findProbableElements(elementType, attributeText, exact = false, parent = null) {
   // Normalize parameters
   const hasType = elementType !== null && elementType !== undefined && elementType !== '';
   const hasText = attributeText !== null && attributeText !== undefined && attributeText !== '';
@@ -1632,7 +1672,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
   // If only type is provided, delegate to the same type-only search used by
   // findElements(type, '') so counts and result sets match exactly.
   if (hasType && !hasText) {
-    return findElements(elementType, null, false, parent, options);
+    return findElements(elementType, null, false, parent);
   }
 
   // If only text is provided, delegate to findElementsByAttribute
@@ -1646,11 +1686,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
       throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
     }
     if (!ELEMENT_DEFINITIONS[elementType]) {
-      const message = `Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-      if (options && options.failOnUnknownType === true) {
-        throw new TypeError(`Unknown element type: ${elementType}`);
-      }
-      console.warn(message);
+      console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
       return { elements: [] };
     }
   }

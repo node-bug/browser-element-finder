@@ -1042,7 +1042,7 @@ export function getBoundingBox(element) {
 - `top`, `bottom`, `left`, `right`: Aliases for clarity
 - `midx`, `midy`: Center coordinates (useful for clicking)
 - `tagName`: HTML tag name
-- `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, or zero dimensions)
+- `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, aria-hidden, inert, or zero dimensions). Note: Zero opacity is NOT considered hidden.
 - `inViewport`: `true` if any portion of the element intersects the visual viewport (computed via `getBoundingClientRect()`). Always `false` when `isHidden` is `true` or the element has zero rendered dimensions.
 
 **Usage Example**:
@@ -1078,7 +1078,10 @@ The `isHidden` flag is determined by checking:
 1. `offsetWidth === 0 && offsetHeight === 0` - Element has no rendered dimensions
 2. CSS `visibility: hidden` or `visibility: collapse`
 3. CSS `display: none`
-4. Presence of `hidden` attribute
+4. Presence of `hidden` attribute or `aria-hidden="true"`
+5. Element `inert` property
+
+**Note**: Zero opacity is NOT considered hidden. Sites use opacity transitions for lazy-loaded sections that fade in on scroll, and these elements are still laid out and interactable. 4. Presence of `hidden` attribute
 
 **Usage Example**:
 
