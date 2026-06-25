@@ -39,7 +39,6 @@ var ElementFinder = (() => {
     getViewportElementCounts: () => getViewportElementCounts,
     highlight: () => highlight,
     inViewport: () => inViewport,
-    inViewportAsync: () => inViewportAsync,
     isHidden: () => isHidden,
     matchesAttribute: () => matchesAttribute,
     matchesType: () => matchesType,
@@ -697,52 +696,6 @@ var ElementFinder = (() => {
     const intersectionArea = intersectionWidth * intersectionHeight;
     const ratio = intersectionArea / elementArea;
     return ratio >= threshold;
-  }
-  function inViewportAsync(el, options = null) {
-    if (el == null) return Promise.resolve(false);
-    if (typeof IntersectionObserver === "undefined") {
-      const threshold2 = options != null && typeof options.threshold === "number" ? options.threshold : 0;
-      return Promise.resolve(inViewport(el, { threshold: threshold2 }));
-    }
-    const threshold = options != null && typeof options.threshold === "number" ? Math.max(0, Math.min(1, options.threshold)) : 0;
-    const timeout = options != null && typeof options.timeout === "number" ? Math.max(0, options.timeout) : 1e3;
-    return new Promise((resolve) => {
-      let settled = false;
-      const finish = (value) => {
-        if (settled) return;
-        settled = true;
-        try {
-          observer.disconnect();
-        } catch (e) {
-        }
-        if (timer !== null) {
-          clearTimeout(timer);
-          timer = null;
-        }
-        resolve(value);
-      };
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries && entries.length > 0) {
-            const entry = entries[0];
-            if (entry.isIntersecting && entry.intersectionRatio >= threshold) {
-              finish(true);
-            }
-          }
-        },
-        { threshold }
-      );
-      let timer = null;
-      if (timeout > 0) {
-        timer = setTimeout(() => finish(false), timeout);
-      }
-      try {
-        observer.observe(el);
-      } catch (e) {
-        finish(false);
-        return;
-      }
-    });
   }
   function isElementHidden(el) {
     if (el.hasAttribute("hidden") || el.getAttribute("aria-hidden") === "true" || el.inert || el.offsetWidth === 0 && el.offsetHeight === 0) {

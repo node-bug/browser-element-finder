@@ -921,7 +921,7 @@ export function isHidden(el) {
  * Checks if an element is inside the visual viewport.
  * Uses synchronous geometry (getBoundingClientRect vs window dimensions).
  * For elements with detached layout, scrollable overflow ancestors, or when async
- * accuracy is required, use {@link inViewportAsync} (IntersectionObserver-based).
+ * accuracy is required, use IntersectionObserver-based checks.
  * @param {Element} el - The DOM element to check
  * @param {Object} [options=null] - Optional configuration
  * @param {boolean} [options.fullyVisible=false] - If true, requires the element to be fully contained within the viewport (no clipping). Default false allows partial overlap.
@@ -994,78 +994,7 @@ export function inViewport(el, options = null) {
   return ratio >= threshold;
 }
 
-/**
- * Asynchronously checks if an element is in the viewport using IntersectionObserver.
- * This is more accurate than {@link inViewport} for elements inside scrollable
- * containers, transformed ancestors, or when considering occluding content.
- * Resolves to true/false based on the observer's intersection state.
- * @param {Element} el - The DOM element to observe
- * @param {Object} [options=null] - Optional configuration
- * @param {number} [options.threshold=0] - A threshold between 0 and 1 indicating what percentage of the element should be visible to resolve true.
- * @param {number} [options.timeout=1000] - Maximum time to wait (ms) before resolving false.
- * @returns {Promise<boolean>} Resolves to true if the element meets the threshold within the timeout, false otherwise.
- */
-export function inViewportAsync(el, options = null) {
-  if (el == null) return Promise.resolve(false);
 
-  if (typeof IntersectionObserver === 'undefined') {
-    // Fall back to synchronous geometry check if observer is unavailable
-    const threshold = options != null && typeof options.threshold === 'number'
-      ? options.threshold
-      : 0;
-    return Promise.resolve(inViewport(el, { threshold }));
-  }
-
-  const threshold = options != null && typeof options.threshold === 'number'
-    ? Math.max(0, Math.min(1, options.threshold))
-    : 0;
-  const timeout = options != null && typeof options.timeout === 'number'
-    ? Math.max(0, options.timeout)
-    : 1000;
-
-  return new Promise((resolve) => {
-    let settled = false;
-
-    const finish = (value) => {
-      if (settled) return;
-      settled = true;
-      try {
-        observer.disconnect();
-      } catch {
-        // Observer may already be disconnected — ignore
-      }
-      if (timer !== null) {
-        clearTimeout(timer);
-        timer = null;
-      }
-      resolve(value);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries && entries.length > 0) {
-          const entry = entries[0];
-          if (entry.isIntersecting && entry.intersectionRatio >= threshold) {
-            finish(true);
-          }
-        }
-      },
-      { threshold: threshold }
-    );
-
-    let timer = null;
-    if (timeout > 0) {
-      timer = setTimeout(() => finish(false), timeout);
-    }
-
-    try {
-      observer.observe(el);
-    } catch {
-      finish(false);
-      return;
-    }
-  });
-}
 
 /**
  * Checks if an element is hidden (not visible on the page).

@@ -1,5 +1,5 @@
 /**
- * Unit tests for inViewport / inViewportAsync helpers
+ * Unit tests for inViewport helpers
  * Verifies viewport membership checks and the inViewport flag on
  * findElements / findElementsByAttribute / findElementsByType result objects.
  */
@@ -10,7 +10,6 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import {
   inViewport,
-  inViewportAsync,
   findElements,
   findElementsByType,
   findElementsByAttribute,
@@ -166,62 +165,6 @@ describe('ElementFinder Viewport Helpers', () => {
     });
   });
 
-  describe("inViewportAsync (IntersectionObserver fallback)", () => {
-    it('resolves to false when IntersectionObserver is unavailable (JSDOM)', async () => {
-      // JSDOM does not implement IntersectionObserver; the helper must fall back
-      // to the sync geometry check. Ensure no leftover mock from another test.
-      delete global.IntersectionObserver;
-      expect(typeof IntersectionObserver).toBe('undefined');
-      const result = await inViewportAsync(document.getElementById('inside-btn'));
-      expect(result).toBe(true);
-    });
-
-    it('resolves to false for an element outside the viewport (fallback path)', async () => {
-      const result = await inViewportAsync(document.getElementById('offscreen-btn'));
-      expect(result).toBe(false);
-    });
-
-    it('resolves to false for null input', async () => {
-      const result = await inViewportAsync(null);
-      expect(result).toBe(false);
-    });
-
-    it('resolves via stubbed IntersectionObserver when available', async () => {
-      // Provide a mock IntersectionObserver that fires the callback synchronously
-      class MockIntersectionObserver {
-        constructor(callback, opts) {
-          this.opts = opts || {};
-          this._cb = callback;
-        }
-        observe(el) {
-          this._cb([{ isIntersecting: true, intersectionRatio: 1, target: el }]);
-        }
-        disconnect() {}
-      }
-      global.IntersectionObserver = MockIntersectionObserver;
-      try {
-        const result = await inViewportAsync(document.getElementById('inside-btn'), { timeout: 100 });
-        expect(result).toBe(true);
-      } finally {
-        delete global.IntersectionObserver;
-      }
-    });
-
-    it('resolves false on timeout when observer never reports intersection', async () => {
-      class SilentObserver {
-        constructor() {}
-        observe() {}
-        disconnect() {}
-      }
-      global.IntersectionObserver = SilentObserver;
-      try {
-        const result = await inViewportAsync(document.getElementById('inside-btn'), { timeout: 50 });
-        expect(result).toBe(false);
-      } finally {
-        delete global.IntersectionObserver;
-      }
-    });
-  });
 
   describe('inViewport flag on result objects', () => {
     it('includes inViewport alongside isHidden on every result', () => {
