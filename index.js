@@ -698,7 +698,7 @@ var ElementFinder = (() => {
     return ratio >= threshold;
   }
   function isElementHidden(el) {
-    if (el.hasAttribute("hidden") || el.getAttribute("aria-hidden") === "true" || el.inert || el.offsetWidth === 0 && el.offsetHeight === 0) {
+    if (el.hasAttribute("hidden") || el.getAttribute("aria-hidden") === "true" || el.inert) {
       return true;
     }
     if (typeof el.checkVisibility === "function") {
@@ -715,6 +715,11 @@ var ElementFinder = (() => {
         return true;
       }
     } catch (e) {
+    }
+    if (typeof el.checkVisibility !== "function") {
+      if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+        return true;
+      }
     }
     return false;
   }
@@ -921,7 +926,7 @@ var ElementFinder = (() => {
       const typeCounts = counts[targetType];
       for (let j = 0; j < result.elements.length; j++) {
         const item = result.elements[j];
-        if (!item.element || !inViewport(item.element)) continue;
+        if (!item.element || !inViewport(item.element, { threshold: 60 })) continue;
         typeCounts.total += 1;
         const bucket = item.isHidden ? "hidden" : "visible";
         typeCounts[bucket] += 1;

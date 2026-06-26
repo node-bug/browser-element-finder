@@ -1002,27 +1002,29 @@ export function inViewport(el, options = null) {
  * for lazy-loaded sections that fade in on scroll.
  */
 function isElementHidden(el) {
+  // Explicit hide attributes always win
   if (
     el.hasAttribute('hidden') ||
     el.getAttribute('aria-hidden') === 'true' ||
-    el.inert ||
-    (el.offsetWidth === 0 && el.offsetHeight === 0)
+    el.inert
   ) {
     return true;
   }
 
+  // checkVisibility is the most reliable API — it accounts for CSS display,
+  // visibility, opacity, clip, and zero-dimension wrappers that are still part
+  // of a valid layout.  If it says visible, trust it immediately.
   if (typeof el.checkVisibility === 'function') {
     const checkVisible = el.checkVisibility({
       checkVisibilityCSS: true
     });
 
-    // If checkVisibility says visible, trust it immediately.
-    // If it says hidden, fall through to computed style checks as a fallback
-    // (elements far off-screen may return false from checkVisibility even when
-    // they have real dimensions and visible CSS properties).
     if (checkVisible) {
       return false;
     }
+    // If checkVisibility says hidden, fall through to computed style checks as
+    // a fallback (elements far off-screen may return false from checkVisibility
+    // even when they have real dimensions and visible CSS properties).
   }
 
   try {
@@ -1036,6 +1038,15 @@ function isElementHidden(el) {
     }
   } catch {
     // Restricted access - continue with other checks
+  }
+
+  // Fallback: only use offset dimensions when checkVisibility is unavailable.
+  // Many modern layouts (GitHub, etc.) use zero-dimension wrapper divs that are
+  // still part of a valid CSS layout, so this check alone produces false positives.
+  if (typeof el.checkVisibility !== 'function') {
+    if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+      return true;
+    }
   }
 
   return false;
