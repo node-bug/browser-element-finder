@@ -25,6 +25,7 @@ var ElementFinder = (() => {
     findElements: () => findElements,
     findElementsByAttribute: () => findElementsByAttribute,
     findElementsByType: () => findElementsByType,
+    findOverlayElements: () => findOverlayElements,
     findProbableElements: () => findProbableElements,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
@@ -723,6 +724,29 @@ var ElementFinder = (() => {
     }
     return false;
   }
+  function isOverlayElement(el) {
+    if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+    const role = el.getAttribute("role");
+    if (role === "dialog" || role === "alertdialog" || role === "tooltip" || role === "menu" || role === "listbox") {
+      return true;
+    }
+    if (el.getAttribute("aria-modal") === "true") return true;
+    if (el.tagName === "DIALOG" && el.open) return true;
+    if (el.hasAttribute("popover")) return true;
+    try {
+      const style = window.getComputedStyle(el);
+      const zIndexValue = parseInt(style.zIndex, 10);
+      if (!isNaN(zIndexValue) && zIndexValue > 999) {
+        if (style.position === "fixed" || style.position === "sticky") return true;
+      }
+    } catch (e) {
+    }
+    const className = String(el.className || "");
+    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
+      return true;
+    }
+    return false;
+  }
   function findElementsByType(type = "element", parent = null) {
     if (type === null || type === void 0) {
       type = "element";
@@ -1200,6 +1224,45 @@ var ElementFinder = (() => {
         el.classList.remove("elementfinder-highlighted");
       }
     }
+  }
+  function findOverlayElements() {
+    const matches = [];
+    const seenElements = /* @__PURE__ */ new Set();
+    const frames = getAllFrames(window);
+    for (const frame of frames) {
+      const allElements = getAllElements(frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (seenElements.has(el)) continue;
+        if (!isOverlayElement(el)) continue;
+        seenElements.add(el);
+        matches.push({ element: el, frame });
+      }
+    }
+    const qualified = matches.map((item) => {
+      const boundingBox = getBoundingBox(item.element);
+      const tagName = item.element.tagName.toLowerCase();
+      const hidden = isHidden(item.element);
+      const viewportValue = inViewport(item.element);
+      if (!item.frame.isMainFrame) {
+        return {
+          boundingBox,
+          tagName,
+          frameIndex: item.frame.frameIndex,
+          isHidden: hidden,
+          inViewport: viewportValue
+        };
+      }
+      return {
+        element: item.element,
+        boundingBox,
+        tagName,
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden,
+        inViewport: viewportValue
+      };
+    });
+    return { elements: qualified };
   }
   var animationPauseStack = [];
   function pauseAnimations() {

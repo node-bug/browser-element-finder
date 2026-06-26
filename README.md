@@ -35,6 +35,9 @@ const results = ElementFinder.findElements('button')
 const results = ElementFinder.findProbableElements('button', 'Click Me')
 // Returns button even if "Click Me" is in a nearby label
 
+// Find overlay elements (modals, dialogs, cookie banners, popovers)
+const overlays = ElementFinder.findOverlayElements()
+
 // Highlight found elements
 ElementFinder.highlight(results.elements.map((e) => e.element))
 

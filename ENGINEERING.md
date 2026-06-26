@@ -12,7 +12,7 @@
 2. [Architecture & Design Patterns](#2-architecture--design-patterns)
 3. [Element Type System](#3-element-type-system)
 4. [Attribute Matching Strategy](#4-attribute-matching-strategy)
-5. [The Four Search Functions](#5-the-four-search-functions)
+5. [The Five Search Functions](#5-the-five-search-functions)
 6. [Element Counting Functions](#6-element-counting-functions)
 7. [Return Format & Metadata](#7-return-format--metadata)
 8. [Error Handling & Validation](#8-error-handling--validation)
@@ -56,6 +56,9 @@ ElementFinder.findElements('button', 'Submit')
 
 // Case 4: Probabilistic search (find a button, but nearby text "Submit" is OK)
 ElementFinder.findProbableElements('button', 'Submit')
+
+// Case 5: Find overlay/modal/dialog/banner elements
+ElementFinder.findOverlayElements()
 ```
 
 ### 1.3 Project Structure
@@ -666,7 +669,7 @@ Behavior:
 
 ---
 
-## 5. The Four Search Functions
+## 5. The Five Search Functions
 
 ### 5.1 `findElementsByType(type, parent = null)`
 
@@ -954,6 +957,112 @@ const result = ElementFinder.findProbableElements('textbox', 'Username')
 | `findElementsByAttribute` | Just need text/attribute matching (any element with "Submit")  |
 | `findElements`            | Need STRICT matching (must be button WITH "Submit" text in it) |
 | `findProbableElements`    | Need FLEXIBLE matching (button with text nearby is OK)         |
+| `findOverlayElements`     | Need to find modals, dialogs, banners, popups, overlays        |
+
+---
+
+### 5.5 `findOverlayElements()`
+
+**Purpose**: Find all overlay elements on the page (modals, dialogs, banners, popups, tooltips).
+
+**Signature**:
+
+```javascript
+export function findOverlayElements()
+  → { elements: [...] }
+```
+
+**Key Differences from Other Search Functions**:
+
+- **No parameters** — Does not take type, text, or parent arguments
+- **Heuristic-based detection** — Uses 6 priority-ordered heuristics to identify overlay elements
+- **No innermost filtering** — Returns all matching overlays (not just leaf elements)
+
+**Detection Heuristics** (checked in priority order):
+
+1. **ARIA roles** — `role="dialog"`, `role="alertdialog"`, `role="tooltip"`, `role="menu"`, `role="listbox"`
+2. **aria-modal** — `aria-modal="true"`
+3. **Native dialog** — Open `<dialog>` element (has `.open` property or `open` attribute)
+4. **Popover API** — Elements with `[popover]` attribute
+5. **High z-index + fixed/sticky** — `z-index > 999` with `position: fixed` or `position: sticky`
+6. **Class name patterns** — Classes containing cookie, consent, banner, overlay, modal, or popup
+
+**Algorithm**:
+
+```
+1. Iterate all frames (main document + iframes)
+2. For each frame, get all elements via getAllElements()
+3. Filter by isOverlayElement() heuristic check
+4. Map to qualified result format with boundingBox, tagName, frameIndex, isHidden, inViewport
+5. Return combined results from all frames
+```
+
+**Return Format**:
+
+Same as other search functions — array of elements with metadata:
+
+```javascript
+{
+  elements: [
+    {
+      element: Element | undefined,
+      boundingBox: {
+        x,
+        y,
+        width,
+        height,
+        top,
+        bottom,
+        left,
+        right,
+        midx,
+        midy,
+        tagName,
+      },
+      tagName: string,
+      frameIndex: number, // -1 = main frame, 0+ = iframe
+      isHidden: boolean,
+      inViewport: boolean,
+    },
+  ]
+}
+```
+
+**Example Usage**:
+
+```javascript
+// Find all overlay elements on the page
+const overlays = ElementFinder.findOverlayElements()
+// Returns modals, dialogs, banners, popups, tooltips
+
+// Filter to only visible overlays
+const visibleOverlays = overlays.elements.filter(
+  (e) => !e.isHidden && e.inViewport,
+)
+
+// Check if any modal is blocking interaction
+const hasModal = overlays.elements.some(
+  (e) => e.element && e.element.getAttribute('aria-modal') === 'true',
+)
+```
+
+**Why This Matters**:
+
+In browser automation, overlay elements often block interaction with underlying page content. Identifying overlays helps agents:
+
+- Detect when a modal is blocking the UI before attempting clicks
+- Find cookie consent banners that need dismissal
+- Identify toast notifications or popups that may interfere with element targeting
+- Determine if a dialog needs to be closed before continuing automation
+
+**Comparison with `findElementsByType('dialog')`**:
+
+| Aspect           | `findElementsByType('dialog')` | `findOverlayElements()`            |
+| ---------------- | ------------------------------ | ---------------------------------- |
+| Detection method | ARIA `role="dialog"` only      | 6 heuristics (ARIA, z-index, etc.) |
+| Parameters       | Takes type/text/parent         | No parameters                      |
+| Coverage         | Only explicit ARIA dialogs     | Modals, banners, popups, tooltips  |
+| Use case         | Accessibility auditing         | Automation blocking detection      |
 
 ---
 

@@ -1053,6 +1053,62 @@ function isElementHidden(el) {
 }
 
 /**
+ * Checks if an element qualifies as an overlay (modal, dialog, cookie banner, etc.).
+ * Heuristics applied in priority order:
+ *  1. ARIA roles: dialog, alertdialog, tooltip, menu, listbox
+ *  2. aria-modal="true"
+ *  3. <dialog> element with open attribute
+ *  4. [popover] attribute (Popover API)
+ *  5. High z-index (> 999) combined with fixed or sticky positioning
+ *  6. Common class-name patterns (modal, overlay, cookie, consent, banner, popup)
+ * @param {Element} el - The DOM element to check
+ * @returns {boolean} True if the element is an overlay
+ */
+function isOverlayElement(el) {
+  if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+
+  // 1. ARIA roles commonly used for overlays
+  const role = el.getAttribute('role');
+  if (
+    role === 'dialog' ||
+    role === 'alertdialog' ||
+    role === 'tooltip' ||
+    role === 'menu' ||
+    role === 'listbox'
+  ) {
+    return true;
+  }
+
+  // 2. aria-modal attribute
+  if (el.getAttribute('aria-modal') === 'true') return true;
+
+  // 3. <dialog> element that is open
+  if (el.tagName === 'DIALOG' && el.open) return true;
+
+  // 4. Popover API
+  if (el.hasAttribute('popover')) return true;
+
+  // 5. High z-index with fixed or sticky positioning
+  try {
+    const style = window.getComputedStyle(el);
+    const zIndexValue = parseInt(style.zIndex, 10);
+    if (!isNaN(zIndexValue) && zIndexValue > 999) {
+      if (style.position === 'fixed' || style.position === 'sticky') return true;
+    }
+  } catch {
+    // Restricted access — skip computed-style check
+  }
+
+  // 6. Common class-name patterns used by frameworks and cookie-consent libraries
+  const className = String(el.className || '');
+  if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Finds elements matching the specified type.
  * Searches all frames (main document + iframes) by default.
  * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
@@ -1789,6 +1845,63 @@ export function unhighlight(elements) {
       el.classList.remove('elementfinder-highlighted');
     }
   }
+}
+
+/**
+ * Finds all overlay elements (modals, dialogs, cookie banners, popovers, etc.)
+ * visible in the current page and all same-origin iframes.
+ * Returns elements with bounding box, tag name, frame index, visibility, and viewport info.
+ * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number, isHidden: boolean, inViewport: boolean}>}} Found overlay elements with metadata
+ */
+export function findOverlayElements() {
+  const matches = [];
+  const seenElements = new Set();
+  const frames = getAllFrames(window);
+
+  for (const frame of frames) {
+    const allElements = getAllElements(frame.document);
+
+    for (let i = 0; i < allElements.length; i++) {
+      const el = allElements[i];
+
+      // Skip if we've already seen this element
+      if (seenElements.has(el)) continue;
+
+      // Only consider overlay elements
+      if (!isOverlayElement(el)) continue;
+
+      seenElements.add(el);
+      matches.push({ element: el, frame: frame });
+    }
+  }
+
+  const qualified = matches.map(item => {
+    const boundingBox = getBoundingBox(item.element);
+    const tagName = item.element.tagName.toLowerCase();
+    const hidden = isHidden(item.element);
+    const viewportValue = inViewport(item.element);
+
+    if (!item.frame.isMainFrame) {
+      return {
+        boundingBox: boundingBox,
+        tagName: tagName,
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden,
+        inViewport: viewportValue
+      };
+    }
+
+    return {
+      element: item.element,
+      boundingBox: boundingBox,
+      tagName: tagName,
+      frameIndex: item.frame.frameIndex,
+      isHidden: hidden,
+      inViewport: viewportValue
+    };
+  });
+
+  return { elements: qualified };
 }
 
 /**
