@@ -1342,7 +1342,7 @@ export function getViewportElementCounts(type = null, parent = null) {
       const item = result.elements[j];
 
       // Only count elements that are in the viewport
-      if (!item.element || !inViewport(item.element)) continue;
+      if (!item.element || !inViewport(item.element, { threshold: 60 })) continue;
 
       typeCounts.total += 1;
       const bucket = item.isHidden ? 'hidden' : 'visible';
