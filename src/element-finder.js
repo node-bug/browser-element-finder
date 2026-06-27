@@ -523,7 +523,7 @@ export function getElementDescriptor(el, includeHidden = true) {
   const type = getElementDescriptorType(el);
   const descriptorSource = getElementDescriptorText(el);
 
-  if (!descriptorSource) {
+  if (!descriptorSource || !descriptorSource.identifiableText) {
     return {
       identifiableText: null,
       attributeName: null,
@@ -897,7 +897,7 @@ export function getBoundingBox(el) {
 /**
  * Checks if an element is hidden (not visible on the page).
  * Considers native visibility checks, ancestor visibility, CSS visibility/display,
- * hidden/inert/aria-hidden attributes, and offset dimensions.
+ * hidden/inert attributes, and offset dimensions.
  * Note: Elements with zero opacity are considered visible (sites use opacity
  * transitions for lazy-loaded sections that fade in on scroll).
  * @param {Element} el - The DOM element to check
@@ -1005,7 +1005,6 @@ function isElementHidden(el) {
   // Explicit hide attributes always win
   if (
     el.hasAttribute('hidden') ||
-    el.getAttribute('aria-hidden') === 'true' ||
     el.inert
   ) {
     return true;
@@ -1100,7 +1099,7 @@ function isOverlayElement(el) {
   }
 
   // 6. Common class-name patterns used by frameworks and cookie-consent libraries
-  const className = String(el.className || '');
+  const className = el.getAttribute ? (el.getAttribute('class') || '') : '';
   if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
     return true;
   }

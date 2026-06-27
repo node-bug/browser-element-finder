@@ -224,22 +224,5 @@ describe('getElementDescriptor includeHidden Integration Tests', () => {
       expect(result.btn1Index).toBe(1);
       expect(result.btn3Index).toBe(2);
     });
-
-    it('should handle elements with aria-hidden attribute', async () => {
-      const result = await driver.executeScript(`
-        // Add a button with aria-hidden
-        const btn = document.createElement('button');
-        btn.className = 'aria-hidden-btn';
-        btn.textContent = 'Save';
-        btn.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(btn);
-        
-        const descriptor = ElementFinder.getElementDescriptor(document.querySelector('.aria-hidden-btn'), false);
-        return descriptor;
-      `);
-      expect(result.identifiableText).toBe('Save');
-      // With includeHidden=false, aria-hidden elements are excluded from count
-      // so only btn1 and btn3 are counted (indices 1, 2)
-    });
   });
 });

@@ -86,10 +86,6 @@ var ElementFinder = (() => {
   // src/searchable-attributes.json
   var searchable_attributes_default = [
     "placeholder",
-    "value",
-    "data-value",
-    "data-test-id",
-    "data-testid",
     "id",
     "resource-id",
     "name",
@@ -98,8 +94,12 @@ var ElementFinder = (() => {
     "title",
     "tooltip",
     "alt",
+    "data-test-id",
+    "data-testid",
+    "data-value",
+    "aria-labelledby",
     "src",
-    "aria-labelledby"
+    "value",
   ];
 
   // src/element-finder.js
@@ -388,7 +388,7 @@ var ElementFinder = (() => {
     }
     const type = getElementDescriptorType(el);
     const descriptorSource = getElementDescriptorText(el);
-    if (!descriptorSource) {
+    if (!descriptorSource || !descriptorSource.identifiableText) {
       return {
         identifiableText: null,
         attributeName: null,
@@ -699,7 +699,7 @@ var ElementFinder = (() => {
     return ratio >= threshold;
   }
   function isElementHidden(el) {
-    if (el.hasAttribute("hidden") || el.getAttribute("aria-hidden") === "true" || el.inert) {
+    if (el.hasAttribute("hidden") || el.inert) {
       return true;
     }
     if (typeof el.checkVisibility === "function") {
@@ -741,7 +741,7 @@ var ElementFinder = (() => {
       }
     } catch (e) {
     }
-    const className = String(el.className || "");
+    const className = el.getAttribute ? el.getAttribute("class") || "" : "";
     if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
       return true;
     }
