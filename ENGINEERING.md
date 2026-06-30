@@ -1,6 +1,6 @@
 # Engineering Documentation: Browser Element Finder
 
-**Version**: 1.1.7  
+**Version**: 1.3.4  
 **Last Updated**: June 2026  
 **Purpose**: Complete technical reference for developing, maintaining, and extending the browser-element-finder library.
 
@@ -12,17 +12,18 @@
 2. [Architecture & Design Patterns](#2-architecture--design-patterns)
 3. [Element Type System](#3-element-type-system)
 4. [Attribute Matching Strategy](#4-attribute-matching-strategy)
-5. [The Four Search Functions](#5-the-four-search-functions)
-6. [Return Format & Metadata](#6-return-format--metadata)
-7. [Error Handling & Validation](#7-error-handling--validation)
-8. [Testing Strategy](#8-testing-strategy)
-9. [Performance Considerations](#9-performance-considerations)
-10. [Build & Distribution](#10-build--distribution)
-11. [Configuration Files](#11-configuration-files)
-12. [Known Limitations & Edge Cases](#12-known-limitations--edge-cases)
-13. [Common Usage Patterns](#13-common-usage-patterns)
-14. [Development Workflow](#14-development-workflow)
-15. [Troubleshooting Guide](#15-troubleshooting-guide)
+5. [The Five Search Functions](#5-the-five-search-functions)
+6. [Element Counting Functions](#6-element-counting-functions)
+7. [Return Format & Metadata](#7-return-format--metadata)
+8. [Error Handling & Validation](#8-error-handling--validation)
+9. [Testing Strategy](#9-testing-strategy)
+10. [Performance Considerations](#10-performance-considerations)
+11. [Build & Distribution](#11-build--distribution)
+12. [Configuration Files](#12-configuration-files)
+13. [Known Limitations & Edge Cases](#13-known-limitations--edge-cases)
+14. [Common Usage Patterns](#14-common-usage-patterns)
+15. [Development Workflow](#15-development-workflow)
+16. [Troubleshooting Guide](#16-troubleshooting-guide)
 
 ---
 
@@ -55,6 +56,9 @@ ElementFinder.findElements('button', 'Submit')
 
 // Case 4: Probabilistic search (find a button, but nearby text "Submit" is OK)
 ElementFinder.findProbableElements('button', 'Submit')
+
+// Case 5: Find overlay/modal/dialog/banner elements
+ElementFinder.findOverlayElements()
 ```
 
 ### 1.3 Project Structure
@@ -665,7 +669,7 @@ Behavior:
 
 ---
 
-## 5. The Four Search Functions
+## 5. The Five Search Functions
 
 ### 5.1 `findElementsByType(type, parent = null)`
 
@@ -953,12 +957,262 @@ const result = ElementFinder.findProbableElements('textbox', 'Username')
 | `findElementsByAttribute` | Just need text/attribute matching (any element with "Submit")  |
 | `findElements`            | Need STRICT matching (must be button WITH "Submit" text in it) |
 | `findProbableElements`    | Need FLEXIBLE matching (button with text nearby is OK)         |
+| `findOverlayElements`     | Need to find modals, dialogs, banners, popups, overlays        |
 
 ---
 
-## 6. Return Format & Metadata
+### 5.5 `findOverlayElements()`
 
-### 6.1 Return Structure
+**Purpose**: Find all overlay elements on the page (modals, dialogs, banners, popups, tooltips).
+
+**Signature**:
+
+```javascript
+export function findOverlayElements()
+  → { elements: [...] }
+```
+
+**Key Differences from Other Search Functions**:
+
+- **No parameters** — Does not take type, text, or parent arguments
+- **Heuristic-based detection** — Uses 6 priority-ordered heuristics to identify overlay elements
+- **No innermost filtering** — Returns all matching overlays (not just leaf elements)
+
+**Detection Heuristics** (checked in priority order):
+
+1. **ARIA roles** — `role="dialog"`, `role="alertdialog"`, `role="tooltip"`, `role="menu"`, `role="listbox"`
+2. **aria-modal** — `aria-modal="true"`
+3. **Native dialog** — Open `<dialog>` element (has `.open` property or `open` attribute)
+4. **Popover API** — Elements with `[popover]` attribute
+5. **High z-index + fixed/sticky** — `z-index > 999` with `position: fixed` or `position: sticky`
+6. **Class name patterns** — Classes containing cookie, consent, banner, overlay, modal, or popup
+
+**Algorithm**:
+
+```
+1. Iterate all frames (main document + iframes)
+2. For each frame, get all elements via getAllElements()
+3. Filter by isOverlayElement() heuristic check
+4. Map to qualified result format with boundingBox, tagName, frameIndex, isHidden, inViewport
+5. Return combined results from all frames
+```
+
+**Return Format**:
+
+Same as other search functions — array of elements with metadata:
+
+```javascript
+{
+  elements: [
+    {
+      element: Element | undefined,
+      boundingBox: {
+        x,
+        y,
+        width,
+        height,
+        top,
+        bottom,
+        left,
+        right,
+        midx,
+        midy,
+        tagName,
+      },
+      tagName: string,
+      frameIndex: number, // -1 = main frame, 0+ = iframe
+      isHidden: boolean,
+      inViewport: boolean,
+    },
+  ]
+}
+```
+
+**Example Usage**:
+
+```javascript
+// Find all overlay elements on the page
+const overlays = ElementFinder.findOverlayElements()
+// Returns modals, dialogs, banners, popups, tooltips
+
+// Filter to only visible overlays
+const visibleOverlays = overlays.elements.filter(
+  (e) => !e.isHidden && e.inViewport,
+)
+
+// Check if any modal is blocking interaction
+const hasModal = overlays.elements.some(
+  (e) => e.element && e.element.getAttribute('aria-modal') === 'true',
+)
+```
+
+**Why This Matters**:
+
+In browser automation, overlay elements often block interaction with underlying page content. Identifying overlays helps agents:
+
+- Detect when a modal is blocking the UI before attempting clicks
+- Find cookie consent banners that need dismissal
+- Identify toast notifications or popups that may interfere with element targeting
+- Determine if a dialog needs to be closed before continuing automation
+
+**Comparison with `findElementsByType('dialog')`**:
+
+| Aspect           | `findElementsByType('dialog')` | `findOverlayElements()`            |
+| ---------------- | ------------------------------ | ---------------------------------- |
+| Detection method | ARIA `role="dialog"` only      | 6 heuristics (ARIA, z-index, etc.) |
+| Parameters       | Takes type/text/parent         | No parameters                      |
+| Coverage         | Only explicit ARIA dialogs     | Modals, banners, popups, tooltips  |
+| Use case         | Accessibility auditing         | Automation blocking detection      |
+
+---
+
+## 6. Element Counting Functions
+
+### 6.1 `getElementCounts(type = null, parent = null)`
+
+**Purpose**: Count elements by semantic type and visibility across the entire rendered page (all frames).
+
+**Signature**:
+
+```javascript
+export function getElementCounts(type = null, parent = null)
+  → Object.<string, { visible: number, hidden: number, total: number }>
+```
+
+**Parameters**:
+
+| Parameter | Type      | Default | Description                                                              |
+| --------- | --------- | ------- | ------------------------------------------------------------------------ |
+| `type`    | `string`  | `null`  | Specific type to count. If `null`/`undefined`, counts all defined types. |
+| `parent`  | `Element` | `null`  | Parent element to scope the count within.                                |
+
+**Algorithm**:
+
+```
+1. Determine target types (single type or all defined types)
+2. For each target type, call findElements(type) as source of truth
+3. Iterate returned elements, bucketing by isHidden flag
+4. Return counts keyed by semantic type
+```
+
+**Return Format**:
+
+```javascript
+{
+  button: { visible: 3, hidden: 0, total: 3 },
+  textbox: { visible: 2, hidden: 1, total: 3 },
+  link: { visible: 5, hidden: 0, total: 5 },
+  // ... all other defined types
+}
+```
+
+**Key Behaviors**:
+
+- Uses `findElements()` internally as the source of truth — counts match its returned element set including innermost filtering
+- Searches all frames (main document + iframes) by default
+- Returns `{ [type]: { visible: 0, hidden: 0, total: 0 } }` for unknown types (with console warning)
+- Throws `TypeError` if `type` is provided but not a string
+- The generic `element` type is included when counting all types
+
+**Example Usage**:
+
+```javascript
+// Count all defined types
+const counts = ElementFinder.getElementCounts()
+// { button: { visible: 3, hidden: 0, total: 3 }, ... }
+
+// Count a single type
+const buttons = ElementFinder.getElementCounts('button')
+// { button: { visible: 3, hidden: 0, total: 3 } }
+
+// Count within a specific parent
+const formButtons = ElementFinder.getElementCounts(
+  'button',
+  document.querySelector('form'),
+)
+```
+
+### 6.2 `getViewportElementCounts(type = null, parent = null)`
+
+**Purpose**: Count elements by semantic type that are currently visible within the browser viewport. Unlike `getElementCounts`, this excludes elements outside the viewport entirely.
+
+**Signature**:
+
+```javascript
+export function getViewportElementCounts(type = null, parent = null)
+  → Object.<string, { visible: number, hidden: number, total: number }>
+```
+
+**Parameters**:
+
+| Parameter | Type      | Default | Description                                                              |
+| --------- | --------- | ------- | ------------------------------------------------------------------------ |
+| `type`    | `string`  | `null`  | Specific type to count. If `null`/`undefined`, counts all defined types. |
+| `parent`  | `Element` | `null`  | Parent element to scope the count within.                                |
+
+**Algorithm**:
+
+```
+1. Determine target types (single type or all defined types)
+2. For each target type, call findElements(type) as source of truth
+3. For each returned element, check inViewport() — skip if outside viewport
+4. Bucket viewport elements by isHidden flag
+5. Return counts keyed by semantic type
+```
+
+**Return Format**:
+
+```javascript
+{
+  button: { visible: 2, hidden: 0, total: 2 },
+  textbox: { visible: 1, hidden: 0, total: 1 },
+  // ... all other defined types (only viewport elements counted)
+}
+```
+
+**Key Behaviors**:
+
+- Uses `findElements()` internally as the source of truth for element discovery
+- Filters by `inViewport()` — only elements whose bounding box intersects the visual viewport are counted
+- Elements outside the viewport are excluded entirely (not counted in any bucket)
+- The `total` count represents all viewport elements (`visible + hidden`), not all page elements
+- Searches all frames (main document + iframes) by default
+- Returns `{ [type]: { visible: 0, hidden: 0, total: 0 } }` for unknown types (with console warning)
+- Throws `TypeError` if `type` is provided but not a string
+
+**Example Usage**:
+
+```javascript
+// Count all defined types currently in viewport
+const counts = ElementFinder.getViewportElementCounts()
+// { button: { visible: 2, hidden: 0, total: 2 }, ... }
+
+// Count one type in the viewport
+const buttons = ElementFinder.getViewportElementCounts('button')
+// { button: { visible: 2, hidden: 0, total: 2 } }
+
+// Count within a parent element (viewport-scoped)
+const inputs = ElementFinder.getViewportElementCounts(
+  'textbox',
+  document.querySelector('form'),
+)
+```
+
+**Comparison with `getElementCounts`**:
+
+| Aspect              | `getElementCounts`            | `getViewportElementCounts`          |
+| ------------------- | ----------------------------- | ----------------------------------- |
+| Scope               | Entire rendered page          | Current viewport only               |
+| Off-screen elements | Included                      | Excluded                            |
+| Uses `inViewport()` | No                            | Yes                                 |
+| Performance         | Faster (no geometry checks)   | Slightly slower (rect calculations) |
+| Use case            | Page inventory, accessibility | What the user can currently see     |
+
+---
+
+## 7. Return Format & Metadata
+
+### 7.1 Return Structure
 
 All find functions return a standardized object:
 
@@ -988,7 +1242,7 @@ All find functions return a standardized object:
 }
 ```
 
-### 6.2 Element Reference Safety
+### 7.2 Element Reference Safety
 
 ```javascript
 // Main frame elements: include actual DOM reference
@@ -1013,7 +1267,7 @@ All find functions return a standardized object:
 - **Metadata preserved**: Can still use bounding box for visual verification
 - **Agent-friendly**: Agents know they need to switch frames for iframe content
 
-### 6.3 Bounding Box Calculation
+### 7.3 Bounding Box Calculation
 
 ```javascript
 export function getBoundingBox(element) {
@@ -1042,7 +1296,7 @@ export function getBoundingBox(element) {
 - `top`, `bottom`, `left`, `right`: Aliases for clarity
 - `midx`, `midy`: Center coordinates (useful for clicking)
 - `tagName`: HTML tag name
-- `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, or zero dimensions)
+- `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions). Note: Zero opacity is NOT considered hidden.
 - `inViewport`: `true` if any portion of the element intersects the visual viewport (computed via `getBoundingClientRect()`). Always `false` when `isHidden` is `true` or the element has zero rendered dimensions.
 
 **Usage Example**:
@@ -1078,7 +1332,10 @@ The `isHidden` flag is determined by checking:
 1. `offsetWidth === 0 && offsetHeight === 0` - Element has no rendered dimensions
 2. CSS `visibility: hidden` or `visibility: collapse`
 3. CSS `display: none`
-4. Presence of `hidden` attribute
+4. Presence of `hidden` attribute`
+5. Element `inert` property
+
+**Note**: Zero opacity is NOT considered hidden. Sites use opacity transitions for lazy-loaded sections that fade in on scroll, and these elements are still laid out and interactable.
 
 **Usage Example**:
 
@@ -1110,15 +1367,6 @@ ElementFinder.inViewport(el, { fullyVisible: true })
 
 // Synchronous geometry check with minimum intersection ratio (0-1)
 ElementFinder.inViewport(el, { threshold: 0.5 })
-
-// Asynchronous, IntersectionObserver-based check (returns Promise<boolean>)
-// More accurate for scrollable overflow ancestors, transformed ancestors,
-// or when considering occluding content. Falls back to the sync check if
-// IntersectionObserver is unavailable.
-const visible = await ElementFinder.inViewportAsync(el, {
-  threshold: 0.25,
-  timeout: 1000,
-})
 ```
 
 **Usage Example**:
@@ -1134,9 +1382,9 @@ console.log(`Found ${offScreen.length} buttons outside the viewport`)
 
 ---
 
-## 7. Error Handling & Validation
+## 8. Error Handling & Validation
 
-### 7.1 Type Validation
+### 8.1 Type Validation
 
 ```javascript
 export function findElements(
@@ -1175,7 +1423,7 @@ export function findElements(
 - **User errors** (unknown type): Warn and return empty results
 - **None thrown**: Silent defaults for null/undefined
 
-### 7.2 Parameter Normalization
+### 8.2 Parameter Normalization
 
 ```javascript
 // Empty strings treated as "no filter"
@@ -1191,7 +1439,7 @@ if (type === null && text === null) {
 }
 ```
 
-### 7.3 Silent Error Handling
+### 8.3 Silent Error Handling
 
 Certain errors are expected and handled gracefully:
 
@@ -1229,9 +1477,9 @@ try {
 
 ---
 
-## 8. Testing Strategy
+## 9. Testing Strategy
 
-### 8.1 Testing Pyramid
+### 9.1 Testing Pyramid
 
 ```
                  ▲
@@ -1251,7 +1499,7 @@ try {
 - **Unit tests** (90%): Fast, isolated, comprehensive edge cases
 - **Integration tests** (10%): Slow, real browser, confirms real-world scenarios
 
-### 8.2 Unit Tests (tests/unit/)
+### 9.2 Unit Tests (tests/unit/)
 
 **File Organization**:
 
@@ -1317,7 +1565,7 @@ npm test -- find-elements   # Specific file
 npm test -- --run          # Run once, don't watch
 ```
 
-### 8.3 Integration Tests (tests/integration/)
+### 9.3 Integration Tests (tests/integration/)
 
 **File Organization**:
 
@@ -1396,7 +1644,7 @@ npm test -- find-probable-elements # Specific suite
 npm run test:integration           # Integration tests only
 ```
 
-### 8.4 Test Coverage Goals
+### 9.4 Test Coverage Goals
 
 **Current Coverage**:
 
@@ -1412,7 +1660,7 @@ npm run test:integration           # Integration tests only
 - Frame support: Main frame and iframe scenarios
 - Shadow DOM: Restricted and open shadow roots
 
-### 8.5 Writing Tests for New Features
+### 9.5 Writing Tests for New Features
 
 **Checklist**:
 
@@ -1457,9 +1705,9 @@ npm run test:integration           # Integration tests only
 
 ---
 
-## 9. Performance Considerations
+## 10. Performance Considerations
 
-### 9.1 Pre-compiled Type Matchers
+### 10.1 Pre-compiled Type Matchers
 
 ```javascript
 // GOOD: Compile once at module load
@@ -1481,7 +1729,7 @@ function findElementsByType(type) {
 
 **Impact**: ~10-100x faster for searches with repeated types
 
-### 9.2 Stack-Based Traversal (No Recursion)
+### 10.2 Stack-Based Traversal (No Recursion)
 
 ```javascript
 // GOOD: Iterative - no stack depth limit
@@ -1502,7 +1750,7 @@ function traverse(node) {
 
 **Impact**: Handles deeply nested DOMs without crashes
 
-### 9.3 Set-Based Deduplication
+### 10.3 Set-Based Deduplication
 
 ```javascript
 // GOOD: O(1) lookup with Set
@@ -1523,7 +1771,7 @@ for (const match of matches) {
 
 **Impact**: 100x faster for large DOM trees
 
-### 9.4 Early Exit Conditions
+### 10.4 Early Exit Conditions
 
 ```javascript
 // GOOD: Check faster conditions first
@@ -1545,7 +1793,7 @@ for (const el of domElements) {
 
 **Impact**: 2-3x faster on typical DOMs
 
-### 9.5 Parent Parameter for Scoped Searches
+### 10.5 Parent Parameter for Scoped Searches
 
 ```javascript
 // GOOD: Search within a container
@@ -1560,7 +1808,7 @@ const result = findElements('textbox', null, false, document.body)
 
 **Impact**: Proportional to DOM size (10-100x faster for large pages)
 
-### 9.6 Performance Benchmarks
+### 10.6 Performance Benchmarks
 
 Typical performance on modern hardware:
 
@@ -1583,7 +1831,7 @@ Multi-frame search            10-50ms    (depends on iframe count)
 
 ---
 
-## 10. Build & Distribution
+## 11. Build & Distribution
 
 ### 10.1 Build Process
 
@@ -1721,7 +1969,7 @@ import attributes from '@nodebug/browser-element-finder/searchable-attributes.js
 
 ---
 
-## 11. Configuration Files
+## 12. Configuration Files
 
 ### 11.1 element-definitions.json
 
@@ -1899,7 +2147,7 @@ rules: {
 
 ---
 
-## 12. Known Limitations & Edge Cases
+## 13. Known Limitations & Edge Cases
 
 ### 12.1 Iframe Restrictions
 
@@ -2068,7 +2316,7 @@ const expr = "(self::button or @role='button')" // ✅ Fine
 
 ---
 
-## 13. Common Usage Patterns
+## 14. Common Usage Patterns
 
 ### 13.1 Click a Button by Text
 
@@ -2255,7 +2503,7 @@ function processAllResults(result) {
 
 ---
 
-## 14. Development Workflow
+## 15. Development Workflow
 
 ### 14.1 Setting Up Development Environment
 
@@ -2463,7 +2711,7 @@ console.log(`Search took ${measure.duration.toFixed(2)}ms`)
 
 ---
 
-## 15. Troubleshooting Guide
+## 16. Troubleshooting Guide
 
 ### 15.1 Element Not Found
 
@@ -2728,25 +2976,29 @@ allResults.length = 0
 
 ### Quick Reference
 
-| Function                                          | Purpose                                 | Example                                                    |
-| ------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------- |
-| `findElementsByType(type, parent)`                | Find by semantic type                   | `findElementsByType('button')`                             |
-| `findElementsByAttribute(value, exact, parent)`   | Find by text/attributes                 | `findElementsByAttribute('Submit')`                        |
-| `findElements(type, text, exact, parent)`         | Strict combined search                  | `findElements('button', 'Submit')`                         |
-| `findProbableElements(type, text, exact, parent)` | Flexible combined search                | `findProbableElements('button', 'Click')`                  |
-| `matchesType(el, type)`                           | Check if element matches type           | `matchesType(button, 'button')` → true                     |
-| `matchesAttribute(el, value, exact)`              | Check if element matches attribute/text | `matchesAttribute(button, 'OK')` → true                    |
-| `getBoundingBox(element)`                         | Get element position and size           | `getBoundingBox(button)` → { x: 10, y: 20, ... }           |
-| `getAllElements(root)`                            | Get all elements (flat list)            | `getAllElements(document.body)` → [...]                    |
-| `getAllFrames(root)`                              | Get all frames recursively              | `getAllFrames()` → [{ window, document, frameIndex }, ...] |
-| `parseXPath(expr, el)`                            | Parse XPath-like expression             | `parseXPath('self::button', el)` → true                    |
-| `highlight(elements)`                             | Highlight elements red                  | `highlight([button1, button2])`                            |
-| `unhighlight(elements)`                           | Remove highlight                        | `unhighlight([button1, button2])`                          |
-| `getValidTypes()`                                 | List all element types                  | `getValidTypes()` → ['button', 'textbox', ...]             |
-| `getValidAttributes()`                            | List all valid searchable attributes    | `getValidAttributes()` → ['placeholder', 'value', ...]     |
-| `getSearchableAttributes()`                       | List attribute search order             | `getSearchableAttributes()` → ['data-testid', ...]         |
-| `setSearchableAttributes(array)`                  | Set attribute search order              | `setSearchableAttributes(['data-qa', ...])`                |
-| `getSearchableAttributeValues(element)`           | Inspect non-empty searchable attributes | `getSearchableAttributeValues(input)` → { id: 'email' }    |
+| Function                                          | Purpose                                 | Example                                                          |
+| ------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------- |
+| `findElementsByType(type, parent)`                | Find by semantic type                   | `findElementsByType('button')`                                   |
+| `findElementsByAttribute(value, exact, parent)`   | Find by text/attributes                 | `findElementsByAttribute('Submit')`                              |
+| `findElements(type, text, exact, parent)`         | Strict combined search                  | `findElements('button', 'Submit')`                               |
+| `findProbableElements(type, text, exact, parent)` | Flexible combined search                | `findProbableElements('button', 'Click')`                        |
+| `matchesType(el, type)`                           | Check if element matches type           | `matchesType(button, 'button')` → true                           |
+| `matchesAttribute(el, value, exact)`              | Check if element matches attribute/text | `matchesAttribute(button, 'OK')` → true                          |
+| `getBoundingBox(element)`                         | Get element position and size           | `getBoundingBox(button)` → { x: 10, y: 20, ... }                 |
+| `getAllElements(root)`                            | Get all elements (flat list)            | `getAllElements(document.body)` → [...]                          |
+| `getAllFrames(root)`                              | Get all frames recursively              | `getAllFrames()` → [{ window, document, frameIndex }, ...]       |
+| `parseXPath(expr, el)`                            | Parse XPath-like expression             | `parseXPath('self::button', el)` → true                          |
+| `highlight(elements)`                             | Highlight elements red                  | `highlight([button1, button2])`                                  |
+| `unhighlight(elements)`                           | Remove highlight                        | `unhighlight([button1, button2])`                                |
+| `getValidTypes()`                                 | List all element types                  | `getValidTypes()` → ['button', 'textbox', ...]                   |
+| `getValidAttributes()`                            | List all valid searchable attributes    | `getValidAttributes()` → ['placeholder', 'value', ...]           |
+| `getSearchableAttributes()`                       | List attribute search order             | `getSearchableAttributes()` → ['data-testid', ...]               |
+| `setSearchableAttributes(array)`                  | Set attribute search order              | `setSearchableAttributes(['data-qa', ...])`                      |
+| `getSearchableAttributeValues(element)`           | Inspect non-empty searchable attributes | `getSearchableAttributeValues(input)` → { id: 'email' }          |
+| `getElementCounts(type, parent)`                  | Count elements by type and visibility   | `getElementCounts('button')` → `{ button: { visible: 3, ... } }` |
+| `getViewportElementCounts(type, parent)`          | Count viewport-visible elements by type | `getViewportElementCounts()` → `{ button: { visible: 2, ... } }` |
+| `inViewport(el, options)`                         | Check if element is in viewport (sync)  | `inViewport(el)` → true/false                                    |
+| `isHidden(el)`                                    | Check if element is hidden              | `isHidden(el)` → true/false                                      |
 
 ---
 

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unit Tests - Edge Cases Fixture</title>
+</head>
+<body>
+  <div id="root">
+    <div id="level1">
+      <div id="level2">
+        <div id="level3">
+          <div id="level4">
+            <div id="level5">
+              <div id="level6">
+                <div id="level7">
+                  <div id="level8">
+                    <div id="level9">
+                      <button id="deep-btn">Deep Button</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="level que">
+                <button id="special-char-btn" data-test-id="special-char-id">Spezial ✨ Text</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="script-test">
+      <script>
+        const secret = "don't find me";
+        console.log(secret);
+      </script>
+      <style>
+        .hidden-text { content: "don't find me either"; }
+      </style>
+      <button id="valid-btn">Valid Button</button>
+    </div>
+    <div id="priority-test">
+      <button id="prio-btn" placeholder="priority-placeholder" data-test-id="priority-id">Priority Test</button>
+    </div>
+  </div>
+</body>
+</html>

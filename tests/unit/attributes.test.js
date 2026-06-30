@@ -5,6 +5,8 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import {
   setSearchableAttributes,
   getSearchableAttributes,
@@ -44,48 +46,8 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
   let fixtureBodyHTML;
 
   beforeAll(() => {
-    // Create jsdom instance
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <button id="btn1" data-test-id="submit-btn">Submit</button>
-          <button id="btn2" aria-label="Cancel button">Cancel</button>
-          <button id="btn3" title="Click Me">Click Me</button>
-          <input type="text" id="txt1" placeholder="Enter name" />
-          <input type="text" id="txt2" placeholder="Enter email" data-testid="email-input" />
-          <input type="checkbox" id="chk1" name="agree" />
-          <input type="radio" id="radio1" name="group1" />
-          <a href="/page1" id="link1" title="Home Link">Home</a>
-          <a href="/page2" id="link2">About</a>
-          <select id="dropdown1" aria-label="Choose option">
-            <option>Option 1</option>
-            <option>Option 2</option>
-          </select>
-          <textarea id="textarea1" placeholder="Enter description">Some text</textarea>
-          <div class="container" data-test-id="container-div">
-            <span data-testid="nested-span">Nested text</span>
-          </div>
-          <script>console.log('test')</script>
-          <style>.test { color: red; }</style>
-          <!-- Table for testing -->
-          <table id="test-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Age</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Alice</td>
-                <td>30</td>
-              </tr>
-            </tbody>
-          </table>
-        </body>
-      </html>
-    `;
+    const fixturePath = resolve(__dirname, 'fixtures/attributes.html');
+    const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {
       url: 'http://localhost',

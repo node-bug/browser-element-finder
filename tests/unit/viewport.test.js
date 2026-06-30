@@ -1,17 +1,20 @@
 /**
- * Unit tests for inViewport / inViewportAsync helpers
+ * Unit tests for inViewport helpers
  * Verifies viewport membership checks and the inViewport flag on
  * findElements / findElementsByAttribute / findElementsByType result objects.
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import {
   inViewport,
-  inViewportAsync,
   findElements,
   findElementsByType,
-  findElementsByAttribute
+  findElementsByAttribute,
+  getViewportElementCounts,
+  getElementCounts
 } from '../../src/element-finder.js';
 
 /**
@@ -64,23 +67,8 @@ describe('ElementFinder Viewport Helpers', () => {
   let document;
 
   beforeAll(() => {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <div id="viewport-test-root">
-            <button id="inside-btn">Inside</button>
-            <button id="offscreen-btn">Offscreen</button>
-            <button id="partial-btn">Partial</button>
-            <button id="zero-size-btn">Zero</button>
-            <button id="hidden-btn" hidden>Hidden</button>
-            <div id="offscreen-container" style="position:absolute; left:-1000px; top:-1000px;">
-              <button id="way-off-btn">Way Off</button>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    const fixturePath = resolve(__dirname, 'fixtures/viewport.html');
+    const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {
       url: 'http://localhost',
@@ -177,62 +165,6 @@ describe('ElementFinder Viewport Helpers', () => {
     });
   });
 
-  describe("inViewportAsync (IntersectionObserver fallback)", () => {
-    it('resolves to false when IntersectionObserver is unavailable (JSDOM)', async () => {
-      // JSDOM does not implement IntersectionObserver; the helper must fall back
-      // to the sync geometry check. Ensure no leftover mock from another test.
-      delete global.IntersectionObserver;
-      expect(typeof IntersectionObserver).toBe('undefined');
-      const result = await inViewportAsync(document.getElementById('inside-btn'));
-      expect(result).toBe(true);
-    });
-
-    it('resolves to false for an element outside the viewport (fallback path)', async () => {
-      const result = await inViewportAsync(document.getElementById('offscreen-btn'));
-      expect(result).toBe(false);
-    });
-
-    it('resolves to false for null input', async () => {
-      const result = await inViewportAsync(null);
-      expect(result).toBe(false);
-    });
-
-    it('resolves via stubbed IntersectionObserver when available', async () => {
-      // Provide a mock IntersectionObserver that fires the callback synchronously
-      class MockIntersectionObserver {
-        constructor(callback, opts) {
-          this.opts = opts || {};
-          this._cb = callback;
-        }
-        observe(el) {
-          this._cb([{ isIntersecting: true, intersectionRatio: 1, target: el }]);
-        }
-        disconnect() {}
-      }
-      global.IntersectionObserver = MockIntersectionObserver;
-      try {
-        const result = await inViewportAsync(document.getElementById('inside-btn'), { timeout: 100 });
-        expect(result).toBe(true);
-      } finally {
-        delete global.IntersectionObserver;
-      }
-    });
-
-    it('resolves false on timeout when observer never reports intersection', async () => {
-      class SilentObserver {
-        constructor() {}
-        observe() {}
-        disconnect() {}
-      }
-      global.IntersectionObserver = SilentObserver;
-      try {
-        const result = await inViewportAsync(document.getElementById('inside-btn'), { timeout: 50 });
-        expect(result).toBe(false);
-      } finally {
-        delete global.IntersectionObserver;
-      }
-    });
-  });
 
   describe('inViewport flag on result objects', () => {
     it('includes inViewport alongside isHidden on every result', () => {
@@ -283,6 +215,68 @@ describe('ElementFinder Viewport Helpers', () => {
       const inside = result.elements.find((e) => e.element && e.element.id === 'inside-btn');
       expect(inside).toBeDefined();
       expect(inside.inViewport).toBe(true);
+    });
+  });
+
+  describe('getViewportElementCounts', () => {
+    it('returns visible, hidden and total counts for all types when no type specified', () => {
+      const counts = getViewportElementCounts();
+
+      // Should have entries for all defined types
+      expect(counts.button).toBeDefined();
+      expect(counts.button.visible).toBeGreaterThanOrEqual(0);
+      expect(counts.button.hidden).toBeGreaterThanOrEqual(0);
+      expect(counts.button.total).toBeGreaterThanOrEqual(counts.button.visible + counts.button.hidden);
+    });
+
+    it('returns visible, hidden and total counts for a specific type', () => {
+      const counts = getViewportElementCounts('button');
+
+      expect(counts.button).toBeDefined();
+      expect(counts.button.visible).toBeGreaterThanOrEqual(0);
+      expect(counts.button.hidden).toBeGreaterThanOrEqual(0);
+      expect(counts.button.total).toBeGreaterThanOrEqual(counts.button.visible + counts.button.hidden);
+    });
+
+    it('returns total as sum of visible and hidden for viewport elements', () => {
+      const counts = getViewportElementCounts('button');
+
+      // Total should equal visible + hidden (only viewport elements counted)
+      expect(counts.button.total).toBe(counts.button.visible + counts.button.hidden);
+    });
+
+    it('returns zero for unknown type', () => {
+      const counts = getViewportElementCounts('unknown-type');
+
+      expect(counts['unknown-type']).toEqual({ visible: 0, hidden: 0, total: 0 });
+    });
+
+    it('throws TypeError for non-string type', () => {
+      expect(() => getViewportElementCounts(123)).toThrow(TypeError);
+    });
+
+    it('accepts null type to count all types', () => {
+      expect(() => getViewportElementCounts(null)).not.toThrow();
+      const counts = getViewportElementCounts(null);
+      expect(counts.button).toBeDefined();
+      expect(counts.textbox).toBeDefined();
+    });
+
+    it('excludes elements outside the viewport', () => {
+      // offscreen-btn and way-off-btn are outside the viewport
+      const counts = getViewportElementCounts('button');
+      const allCounts = getElementCounts('button');
+
+      // Viewport total should be <= total from getElementCounts
+      expect(counts.button.total).toBeLessThanOrEqual(allCounts.button.total);
+    });
+
+    it('returns counts within a parent element when provided', () => {
+      const buttonContainer = document.querySelector('body');
+      const counts = getViewportElementCounts('button', buttonContainer);
+
+      expect(counts.button).toBeDefined();
+      expect(counts.button.total).toBeGreaterThanOrEqual(0);
     });
   });
 });

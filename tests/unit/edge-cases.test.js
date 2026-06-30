@@ -5,6 +5,8 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import {
   setSearchableAttributes,
   findElements,
@@ -17,50 +19,8 @@ describe('ElementFinder Edge Cases', () => {
   let document;
 
   beforeAll(() => {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <div id="root">
-            <div id="level1">
-              <div id="level2">
-                <div id="level3">
-                  <div id="level4">
-                    <div id="level5">
-                      <div id="level6">
-                        <div id="level7">
-                          <div id="level8">
-                            <div id="level9">
-                              <button id="deep-btn">Deep Button</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div id="level que">
-                        <button id="special-char-btn" data-test-id="special-char-id">Spezial ✨ Text</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div id="script-test">
-              <script>
-                const secret = "don't find me";
-                console.log(secret);
-              </script>
-              <style>
-                .hidden-text { content: "don't find me either"; }
-              </style>
-              <button id="valid-btn">Valid Button</button>
-            </div>
-            <div id="priority-test">
-              <button id="prio-btn" placeholder="priority-placeholder" data-test-id="priority-id">Priority Test</button>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    const fixturePath = resolve(__dirname, 'fixtures/edge-cases.html');
+    const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {
       url: 'http://localhost',

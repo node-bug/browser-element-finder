@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unit Tests - Element Types Fixture</title>
+  <style>
+    .test { color: red; }
+  </style>
+</head>
+<body>
+  <!-- Buttons -->
+  <button id="btn1">Submit</button>
+  <button id="btn2">Cancel</button>
+  <button id="btn3">Click Me</button>
+
+  <!-- Textboxes -->
+  <input type="text" id="txt1" placeholder="Enter name" />
+  <input type="text" id="txt2" placeholder="Enter email" />
+  <textarea id="textarea1">Some text</textarea>
+
+  <!-- Checkbox -->
+  <input type="checkbox" id="chk1" />
+
+  <!-- Radio -->
+  <input type="radio" id="radio1" name="group1" />
+
+  <!-- Slider -->
+  <input type="range" id="slider1" min="0" max="100" />
+
+  <!-- Datepicker -->
+  <input type="date" id="datepicker1" />
+
+  <!-- Colorpicker -->
+  <input type="color" id="colorpicker1" value="#ff0000" />
+
+  <!-- Links -->
+  <a href="/page1" id="link1">Home</a>
+  <a href="/page2" id="link2">About</a>
+
+  <!-- Dropdown -->
+  <select id="dropdown1">
+    <option>Option 1</option>
+    <option>Option 2</option>
+  </select>
+
+  <!-- Container with nested span -->
+  <div class="container">
+    <span>Nested text</span>
+  </div>
+
+  <!-- Script tag (should be ignored) -->
+  <script>console.log('test')</script>
+
+  <!-- Table for column/cell tests -->
+  <table id="test-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>City</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Alice</td>
+        <td>30</td>
+        <td>New York</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

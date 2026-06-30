@@ -16,6 +16,7 @@
 - [x] `findElements(type, text, exact, parent)` - Combined type and attribute search (completed)
 - [x] `isHidden` flag - All returned elements include `isHidden` property for visibility detection
 - [x] `getElementCounts(type, parent)` - Return counts by semantic element type and visibility
+- [x] `findOverlayElements()` - Find overlay/modal/dialog/banner elements on the page
 - [ ] `waitForElement(type, text, timeout, interval, exact, parent)` - Poll until found or timeout
 - [ ] `getElementState(element)` - Get `{ visible, enabled, selected, checked, focused }` state
 

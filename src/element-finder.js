@@ -523,7 +523,7 @@ export function getElementDescriptor(el, includeHidden = true) {
   const type = getElementDescriptorType(el);
   const descriptorSource = getElementDescriptorText(el);
 
-  if (!descriptorSource) {
+  if (!descriptorSource || !descriptorSource.identifiableText) {
     return {
       identifiableText: null,
       attributeName: null,
@@ -896,8 +896,10 @@ export function getBoundingBox(el) {
 
 /**
  * Checks if an element is hidden (not visible on the page).
- * Considers native visibility checks, ancestor visibility, CSS visibility/display/opacity,
- * hidden/inert/aria-hidden attributes, and offset dimensions.
+ * Considers native visibility checks, ancestor visibility, CSS visibility/display,
+ * hidden/inert attributes, and offset dimensions.
+ * Note: Elements with zero opacity are considered visible (sites use opacity
+ * transitions for lazy-loaded sections that fade in on scroll).
  * @param {Element} el - The DOM element to check
  * @returns {boolean} True if the element is hidden
  */
@@ -919,7 +921,7 @@ export function isHidden(el) {
  * Checks if an element is inside the visual viewport.
  * Uses synchronous geometry (getBoundingClientRect vs window dimensions).
  * For elements with detached layout, scrollable overflow ancestors, or when async
- * accuracy is required, use {@link inViewportAsync} (IntersectionObserver-based).
+ * accuracy is required, use IntersectionObserver-based checks.
  * @param {Element} el - The DOM element to check
  * @param {Object} [options=null] - Optional configuration
  * @param {boolean} [options.fullyVisible=false] - If true, requires the element to be fully contained within the viewport (no clipping). Default false allows partial overlap.
@@ -992,98 +994,36 @@ export function inViewport(el, options = null) {
   return ratio >= threshold;
 }
 
+
+
 /**
- * Asynchronously checks if an element is in the viewport using IntersectionObserver.
- * This is more accurate than {@link inViewport} for elements inside scrollable
- * containers, transformed ancestors, or when considering occluding content.
- * Resolves to true/false based on the observer's intersection state.
- * @param {Element} el - The DOM element to observe
- * @param {Object} [options=null] - Optional configuration
- * @param {number} [options.threshold=0] - A threshold between 0 and 1 indicating what percentage of the element should be visible to resolve true.
- * @param {number} [options.timeout=1000] - Maximum time to wait (ms) before resolving false.
- * @returns {Promise<boolean>} Resolves to true if the element meets the threshold within the timeout, false otherwise.
+ * Checks if an element is hidden (not visible on the page).
+ * Note: Zero opacity is NOT considered hidden - sites use opacity transitions
+ * for lazy-loaded sections that fade in on scroll.
  */
-export function inViewportAsync(el, options = null) {
-  if (el == null) return Promise.resolve(false);
-
-  if (typeof IntersectionObserver === 'undefined') {
-    // Fall back to synchronous geometry check if observer is unavailable
-    const threshold = options != null && typeof options.threshold === 'number'
-      ? options.threshold
-      : 0;
-    return Promise.resolve(inViewport(el, { threshold }));
-  }
-
-  const threshold = options != null && typeof options.threshold === 'number'
-    ? Math.max(0, Math.min(1, options.threshold))
-    : 0;
-  const timeout = options != null && typeof options.timeout === 'number'
-    ? Math.max(0, options.timeout)
-    : 1000;
-
-  return new Promise((resolve) => {
-    let settled = false;
-
-    const finish = (value) => {
-      if (settled) return;
-      settled = true;
-      try {
-        observer.disconnect();
-      } catch {
-        // Observer may already be disconnected — ignore
-      }
-      if (timer !== null) {
-        clearTimeout(timer);
-        timer = null;
-      }
-      resolve(value);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries && entries.length > 0) {
-          const entry = entries[0];
-          if (entry.isIntersecting && entry.intersectionRatio >= threshold) {
-            finish(true);
-          }
-        }
-      },
-      { threshold: threshold }
-    );
-
-    let timer = null;
-    if (timeout > 0) {
-      timer = setTimeout(() => finish(false), timeout);
-    }
-
-    try {
-      observer.observe(el);
-    } catch {
-      finish(false);
-      return;
-    }
-  });
-}
-
 function isElementHidden(el) {
+  // Explicit hide attributes always win
   if (
     el.hasAttribute('hidden') ||
-    el.getAttribute('aria-hidden') === 'true' ||
-    el.inert ||
-    (el.offsetWidth === 0 && el.offsetHeight === 0)
+    el.inert
   ) {
     return true;
   }
 
+  // checkVisibility is the most reliable API — it accounts for CSS display,
+  // visibility, opacity, clip, and zero-dimension wrappers that are still part
+  // of a valid layout.  If it says visible, trust it immediately.
   if (typeof el.checkVisibility === 'function') {
-    if (!el.checkVisibility({
-      checkOpacity: true,
-      checkVisibilityCSS: true,
-      contentVisibilityAuto: true
-    })) {
-      return true;
+    const checkVisible = el.checkVisibility({
+      checkVisibilityCSS: true
+    });
+
+    if (checkVisible) {
+      return false;
     }
-    return false;
+    // If checkVisibility says hidden, fall through to computed style checks as
+    // a fallback (elements far off-screen may return false from checkVisibility
+    // even when they have real dimensions and visible CSS properties).
   }
 
   try {
@@ -1091,13 +1031,77 @@ function isElementHidden(el) {
     if (
       style.visibility === 'hidden' ||
       style.visibility === 'collapse' ||
-      style.display === 'none' ||
-      style.opacity === '0'
+      style.display === 'none'
     ) {
       return true;
     }
   } catch {
     // Restricted access - continue with other checks
+  }
+
+  // Fallback: only use offset dimensions when checkVisibility is unavailable.
+  // Many modern layouts (GitHub, etc.) use zero-dimension wrapper divs that are
+  // still part of a valid CSS layout, so this check alone produces false positives.
+  if (typeof el.checkVisibility !== 'function') {
+    if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Checks if an element qualifies as an overlay (modal, dialog, cookie banner, etc.).
+ * Heuristics applied in priority order:
+ *  1. ARIA roles: dialog, alertdialog, tooltip, menu, listbox
+ *  2. aria-modal="true"
+ *  3. <dialog> element with open attribute
+ *  4. [popover] attribute (Popover API)
+ *  5. High z-index (> 999) combined with fixed or sticky positioning
+ *  6. Common class-name patterns (modal, overlay, cookie, consent, banner, popup)
+ * @param {Element} el - The DOM element to check
+ * @returns {boolean} True if the element is an overlay
+ */
+function isOverlayElement(el) {
+  if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+
+  // 1. ARIA roles commonly used for overlays
+  const role = el.getAttribute('role');
+  if (
+    role === 'dialog' ||
+    role === 'alertdialog' ||
+    role === 'tooltip' ||
+    role === 'menu' ||
+    role === 'listbox'
+  ) {
+    return true;
+  }
+
+  // 2. aria-modal attribute
+  if (el.getAttribute('aria-modal') === 'true') return true;
+
+  // 3. <dialog> element that is open
+  if (el.tagName === 'DIALOG' && el.open) return true;
+
+  // 4. Popover API
+  if (el.hasAttribute('popover')) return true;
+
+  // 5. High z-index with fixed or sticky positioning
+  try {
+    const style = window.getComputedStyle(el);
+    const zIndexValue = parseInt(style.zIndex, 10);
+    if (!isNaN(zIndexValue) && zIndexValue > 999) {
+      if (style.position === 'fixed' || style.position === 'sticky') return true;
+    }
+  } catch {
+    // Restricted access — skip computed-style check
+  }
+
+  // 6. Common class-name patterns used by frameworks and cookie-consent libraries
+  const className = el.getAttribute ? (el.getAttribute('class') || '') : '';
+  if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
+    return true;
   }
 
   return false;
@@ -1108,10 +1112,9 @@ function isElementHidden(el) {
  * Searches all frames (main document + iframes) by default.
  * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
  * @param {Element|null} [parent=null] - Parent element to search within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementsByType(type = "element", parent = null, options = null) {
+export function findElementsByType(type = "element", parent = null) {
   if (type === null || type === undefined) {
     type = "element";
   }
@@ -1120,12 +1123,8 @@ export function findElementsByType(type = "element", parent = null, options = nu
     throw new TypeError(`type must be a string, got ${typeof type}`);
   }
 
-  const failOnUnknownType = options && options.failOnUnknownType === true;
   if (type && !ELEMENT_DEFINITIONS[type]) {
     const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-    if (failOnUnknownType) {
-      throw new TypeError(`Unknown element type: ${type}`);
-    }
     console.warn(message);
     return { elements: [] };
   }
@@ -1333,10 +1332,9 @@ function hasOwnMatch(el, value, exact = false) {
  * Searches all frames (main document + iframes) by default.
  * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined types.
  * @param {Element|null} [parent=null] - Parent element to count within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
- * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type, or `{ [type]: { visible, hidden, total } }` when type is provided
+ * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
  */
-export function getElementCounts(type = null, parent = null, options = null) {
+export function getElementCounts(type = null, parent = null) {
   const hasType = type !== null && type !== undefined;
   const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
 
@@ -1345,11 +1343,7 @@ export function getElementCounts(type = null, parent = null, options = null) {
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
     if (!ELEMENT_DEFINITIONS[type]) {
-      const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-      if (options && options.failOnUnknownType === true) {
-        throw new TypeError(`Unknown element type: ${type}`);
-      }
-      console.warn(message);
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
       return { [type]: { visible: 0, hidden: 0, total: 0 } };
     }
   }
@@ -1363,7 +1357,7 @@ export function getElementCounts(type = null, parent = null, options = null) {
   // element set, including its filtering behavior for each semantic type.
   for (let i = 0; i < targetTypes.length; i++) {
     const targetType = targetTypes[i];
-    const result = findElements(targetType, null, false, parent, options);
+    const result = findElements(targetType, null, false, parent);
     const typeCounts = counts[targetType];
 
     for (let j = 0; j < result.elements.length; j++) {
@@ -1379,16 +1373,62 @@ export function getElementCounts(type = null, parent = null, options = null) {
 }
 
 /**
+ * Gets counts of elements that are currently within the browser viewport, grouped by semantic type.
+ * Unlike `getElementCounts` which counts all rendered elements regardless of position, this only
+ * counts elements whose bounding box intersects with the current viewport.
+ * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined types.
+ * @param {Element|null} [parent=null] - Parent element to search within
+ * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
+ */
+export function getViewportElementCounts(type = null, parent = null) {
+  const hasType = type !== null && type !== undefined;
+  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
+
+  if (hasType) {
+    if (typeof type !== 'string') {
+      throw new TypeError(`type must be a string, got ${typeof type}`);
+    }
+    if (!ELEMENT_DEFINITIONS[type]) {
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
+      return { [type]: { visible: 0, hidden: 0, total: 0 } };
+    }
+  }
+
+  const counts = {};
+  for (let i = 0; i < targetTypes.length; i++) {
+    counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
+  }
+
+  for (let i = 0; i < targetTypes.length; i++) {
+    const targetType = targetTypes[i];
+    const result = findElements(targetType, null, false, parent);
+    const typeCounts = counts[targetType];
+
+    for (let j = 0; j < result.elements.length; j++) {
+      const item = result.elements[j];
+
+      // Only count elements that are in the viewport
+      if (!item.element || !inViewport(item.element, { threshold: 60 })) continue;
+
+      typeCounts.total += 1;
+      const bucket = item.isHidden ? 'hidden' : 'visible';
+      typeCounts[bucket] += 1;
+    }
+  }
+
+  return counts;
+}
+
+/**
  * Finds elements matching the specified type and/or attribute value.
  * Combines type and attribute matching in a single call.
  * @param {string|null} [type=null] - Element type (see ELEMENT_DEFINITIONS for valid types), or null for any type
  * @param {string|null} [text=null] - Text/attribute value to search for, or null/undefined/'' for any text
  * @param {boolean} [exact=false] - Exact match vs substring (only used when text is provided)
  * @param {Element|null} [parent=null] - Parent element to search within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElements(type = null, text = null, exact = false, parent = null, options = null) {
+export function findElements(type = null, text = null, exact = false, parent = null) {
   // Normalize text parameter
   if (text === null || text === undefined) {
     text = '';
@@ -1400,11 +1440,7 @@ export function findElements(type = null, text = null, exact = false, parent = n
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
     if (!ELEMENT_DEFINITIONS[type]) {
-      const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-      if (options && options.failOnUnknownType === true) {
-        throw new TypeError(`Unknown element type: ${type}`);
-      }
-      console.warn(message);
+      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
       return { elements: [] };
     }
   }
@@ -1621,10 +1657,9 @@ function findNearbyElementType(el, targetType) {
  * @param {string|null|undefined} attributeText - Text/attribute value to search for. If null/undefined/blank, matches any text.
  * @param {boolean} [exact=false] - Exact match vs substring
  * @param {Element|null} [parent=null] - Parent element to search within
- * @param {{failOnUnknownType?: boolean}} [options=null] - Search options
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findProbableElements(elementType, attributeText, exact = false, parent = null, options = null) {
+export function findProbableElements(elementType, attributeText, exact = false, parent = null) {
   // Normalize parameters
   const hasType = elementType !== null && elementType !== undefined && elementType !== '';
   const hasText = attributeText !== null && attributeText !== undefined && attributeText !== '';
@@ -1632,7 +1667,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
   // If only type is provided, delegate to the same type-only search used by
   // findElements(type, '') so counts and result sets match exactly.
   if (hasType && !hasText) {
-    return findElements(elementType, null, false, parent, options);
+    return findElements(elementType, null, false, parent);
   }
 
   // If only text is provided, delegate to findElementsByAttribute
@@ -1646,11 +1681,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
       throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
     }
     if (!ELEMENT_DEFINITIONS[elementType]) {
-      const message = `Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`;
-      if (options && options.failOnUnknownType === true) {
-        throw new TypeError(`Unknown element type: ${elementType}`);
-      }
-      console.warn(message);
+      console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
       return { elements: [] };
     }
   }
@@ -1813,6 +1844,63 @@ export function unhighlight(elements) {
       el.classList.remove('elementfinder-highlighted');
     }
   }
+}
+
+/**
+ * Finds all overlay elements (modals, dialogs, cookie banners, popovers, etc.)
+ * visible in the current page and all same-origin iframes.
+ * Returns elements with bounding box, tag name, frame index, visibility, and viewport info.
+ * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number, isHidden: boolean, inViewport: boolean}>}} Found overlay elements with metadata
+ */
+export function findOverlayElements() {
+  const matches = [];
+  const seenElements = new Set();
+  const frames = getAllFrames(window);
+
+  for (const frame of frames) {
+    const allElements = getAllElements(frame.document);
+
+    for (let i = 0; i < allElements.length; i++) {
+      const el = allElements[i];
+
+      // Skip if we've already seen this element
+      if (seenElements.has(el)) continue;
+
+      // Only consider overlay elements
+      if (!isOverlayElement(el)) continue;
+
+      seenElements.add(el);
+      matches.push({ element: el, frame: frame });
+    }
+  }
+
+  const qualified = matches.map(item => {
+    const boundingBox = getBoundingBox(item.element);
+    const tagName = item.element.tagName.toLowerCase();
+    const hidden = isHidden(item.element);
+    const viewportValue = inViewport(item.element);
+
+    if (!item.frame.isMainFrame) {
+      return {
+        boundingBox: boundingBox,
+        tagName: tagName,
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden,
+        inViewport: viewportValue
+      };
+    }
+
+    return {
+      element: item.element,
+      boundingBox: boundingBox,
+      tagName: tagName,
+      frameIndex: item.frame.frameIndex,
+      isHidden: hidden,
+      inViewport: viewportValue
+    };
+  });
+
+  return { elements: qualified };
 }
 
 /**

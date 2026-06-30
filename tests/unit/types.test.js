@@ -5,6 +5,8 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import {
   parseXPath,
   splitByOperator,
@@ -32,53 +34,9 @@ describe('ElementFinderByType Node.js Module Tests', () => {
   let document;
 
   beforeAll(() => {
-    // Create jsdom instance
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <button id="btn1">Submit</button>
-          <button id="btn2">Cancel</button>
-          <button id="btn3">Click Me</button>
-          <input type="text" id="txt1" placeholder="Enter name" />
-          <input type="text" id="txt2" placeholder="Enter email" />
-          <input type="checkbox" id="chk1" />
-          <input type="radio" id="radio1" name="group1" />
-          <input type="range" id="slider1" min="0" max="100" />
-          <input type="date" id="datepicker1" />
-          <input type="color" id="colorpicker1" value="#ff0000" />
-          <a href="/page1" id="link1">Home</a>
-          <a href="/page2" id="link2">About</a>
-          <select id="dropdown1">
-            <option>Option 1</option>
-            <option>Option 2</option>
-          </select>
-          <textarea id="textarea1">Some text</textarea>
-          <div class="container">
-            <span>Nested text</span>
-          </div>
-          <script>console.log('test')</script>
-          <style>.test { color: red; }</style>
-          <!-- Table for column tests -->
-          <table id="test-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Age</th>
-                <th>City</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Alice</td>
-                <td>30</td>
-                <td>New York</td>
-              </tr>
-            </tbody>
-          </table>
-        </body>
-      </html>
-    `;
+    // Load HTML fixture file
+    const fixturePath = resolve(__dirname, 'fixtures/element-types.html');
+    const html = readFileSync(fixturePath, 'utf-8');
     
     const dom = new JSDOM(html, { 
       url: 'http://localhost',
@@ -527,7 +485,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       expect(counts.row).toEqual({ visible: 2, hidden: 0, total: 2 });
       expect(counts.column).toEqual({ visible: 6, hidden: 0, total: 6 });
       expect(counts.cell).toEqual({ visible: 3, hidden: 0, total: 3 });
-      expect(counts.element).toEqual({ visible: 31, hidden: 1, total: 32 });
+      expect(counts.element).toEqual({ visible: 31, hidden: 3, total: 34 });
     });
 
     it('should count a specific element type by visibility when provided', () => {
@@ -572,24 +530,6 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       }
     });
 
-    it('should count elements hidden by aria-hidden ancestor', () => {
-      const menu = document.createElement('div');
-      menu.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(menu);
-
-      const link = document.createElement('a');
-      link.href = '/nonprofits';
-      link.textContent = 'Nonprofits';
-      menu.appendChild(link);
-
-      try {
-        expect(isHidden(link)).toBe(true);
-        expect(getElementCounts('link')).toEqual({ link: { visible: 2, hidden: 1, total: 3 } });
-      } finally {
-        menu.remove();
-      }
-    });
-
     it('should count elements hidden by inert ancestor', () => {
       const menu = document.createElement('div');
       menu.inert = true;
@@ -608,7 +548,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       }
     });
 
-    it('should count elements hidden by zero opacity ancestor', () => {
+    it('should not count elements as hidden solely due to zero opacity ancestor', () => {
       const menu = document.createElement('div');
       menu.style.opacity = '0';
       document.body.appendChild(menu);
@@ -619,8 +559,10 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       menu.appendChild(link);
 
       try {
-        expect(isHidden(link)).toBe(true);
-        expect(getElementCounts('link')).toEqual({ link: { visible: 2, hidden: 1, total: 3 } });
+        // Zero opacity alone should not mark as hidden — elements are still laid out and findable
+        // (sites like GitHub use opacity transitions for lazy-loaded sections)
+        expect(isHidden(link)).toBe(false);
+        expect(getElementCounts('link')).toEqual({ link: { visible: 3, hidden: 0, total: 3 } });
       } finally {
         menu.remove();
       }
@@ -644,8 +586,8 @@ describe('ElementFinderByType Node.js Module Tests', () => {
 
       expect(counts.element).toEqual({
         visible: 31,
-        hidden: 1,
-        total: 32
+        hidden: 3,
+        total: 34
       });
       expect(counts.button).toBeUndefined();
     });

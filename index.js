@@ -25,6 +25,7 @@ var ElementFinder = (() => {
     findElements: () => findElements,
     findElementsByAttribute: () => findElementsByAttribute,
     findElementsByType: () => findElementsByType,
+    findOverlayElements: () => findOverlayElements,
     findProbableElements: () => findProbableElements,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
@@ -36,9 +37,9 @@ var ElementFinder = (() => {
     getSearchableAttributes: () => getSearchableAttributes,
     getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
+    getViewportElementCounts: () => getViewportElementCounts,
     highlight: () => highlight,
     inViewport: () => inViewport,
-    inViewportAsync: () => inViewportAsync,
     isHidden: () => isHidden,
     matchesAttribute: () => matchesAttribute,
     matchesType: () => matchesType,
@@ -85,10 +86,6 @@ var ElementFinder = (() => {
   // src/searchable-attributes.json
   var searchable_attributes_default = [
     "placeholder",
-    "value",
-    "data-value",
-    "data-test-id",
-    "data-testid",
     "id",
     "resource-id",
     "name",
@@ -97,8 +94,12 @@ var ElementFinder = (() => {
     "title",
     "tooltip",
     "alt",
+    "data-test-id",
+    "data-testid",
+    "data-value",
+    "aria-labelledby",
     "src",
-    "aria-labelledby"
+    "value",
   ];
 
   // src/element-finder.js
@@ -387,7 +388,7 @@ var ElementFinder = (() => {
     }
     const type = getElementDescriptorType(el);
     const descriptorSource = getElementDescriptorText(el);
-    if (!descriptorSource) {
+    if (!descriptorSource || !descriptorSource.identifiableText) {
       return {
         identifiableText: null,
         attributeName: null,
@@ -697,88 +698,64 @@ var ElementFinder = (() => {
     const ratio = intersectionArea / elementArea;
     return ratio >= threshold;
   }
-  function inViewportAsync(el, options = null) {
-    if (el == null) return Promise.resolve(false);
-    if (typeof IntersectionObserver === "undefined") {
-      const threshold2 = options != null && typeof options.threshold === "number" ? options.threshold : 0;
-      return Promise.resolve(inViewport(el, { threshold: threshold2 }));
-    }
-    const threshold = options != null && typeof options.threshold === "number" ? Math.max(0, Math.min(1, options.threshold)) : 0;
-    const timeout = options != null && typeof options.timeout === "number" ? Math.max(0, options.timeout) : 1e3;
-    return new Promise((resolve) => {
-      let settled = false;
-      const finish = (value) => {
-        if (settled) return;
-        settled = true;
-        try {
-          observer.disconnect();
-        } catch (e) {
-        }
-        if (timer !== null) {
-          clearTimeout(timer);
-          timer = null;
-        }
-        resolve(value);
-      };
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries && entries.length > 0) {
-            const entry = entries[0];
-            if (entry.isIntersecting && entry.intersectionRatio >= threshold) {
-              finish(true);
-            }
-          }
-        },
-        { threshold }
-      );
-      let timer = null;
-      if (timeout > 0) {
-        timer = setTimeout(() => finish(false), timeout);
-      }
-      try {
-        observer.observe(el);
-      } catch (e) {
-        finish(false);
-        return;
-      }
-    });
-  }
   function isElementHidden(el) {
-    if (el.hasAttribute("hidden") || el.getAttribute("aria-hidden") === "true" || el.inert || el.offsetWidth === 0 && el.offsetHeight === 0) {
+    if (el.hasAttribute("hidden") || el.inert) {
       return true;
     }
     if (typeof el.checkVisibility === "function") {
-      if (!el.checkVisibility({
-        checkOpacity: true,
-        checkVisibilityCSS: true,
-        contentVisibilityAuto: true
-      })) {
-        return true;
+      const checkVisible = el.checkVisibility({
+        checkVisibilityCSS: true
+      });
+      if (checkVisible) {
+        return false;
       }
-      return false;
     }
     try {
       const style = window.getComputedStyle(el);
-      if (style.visibility === "hidden" || style.visibility === "collapse" || style.display === "none" || style.opacity === "0") {
+      if (style.visibility === "hidden" || style.visibility === "collapse" || style.display === "none") {
         return true;
       }
     } catch (e) {
     }
+    if (typeof el.checkVisibility !== "function") {
+      if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+        return true;
+      }
+    }
     return false;
   }
-  function findElementsByType(type = "element", parent = null, options = null) {
+  function isOverlayElement(el) {
+    if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+    const role = el.getAttribute("role");
+    if (role === "dialog" || role === "alertdialog" || role === "tooltip" || role === "menu" || role === "listbox") {
+      return true;
+    }
+    if (el.getAttribute("aria-modal") === "true") return true;
+    if (el.tagName === "DIALOG" && el.open) return true;
+    if (el.hasAttribute("popover")) return true;
+    try {
+      const style = window.getComputedStyle(el);
+      const zIndexValue = parseInt(style.zIndex, 10);
+      if (!isNaN(zIndexValue) && zIndexValue > 999) {
+        if (style.position === "fixed" || style.position === "sticky") return true;
+      }
+    } catch (e) {
+    }
+    const className = el.getAttribute ? el.getAttribute("class") || "" : "";
+    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
+      return true;
+    }
+    return false;
+  }
+  function findElementsByType(type = "element", parent = null) {
     if (type === null || type === void 0) {
       type = "element";
     }
     if (typeof type !== "string") {
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
-    const failOnUnknownType = options && options.failOnUnknownType === true;
     if (type && !ELEMENT_DEFINITIONS[type]) {
       const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-      if (failOnUnknownType) {
-        throw new TypeError(`Unknown element type: ${type}`);
-      }
       console.warn(message);
       return { elements: [] };
     }
@@ -922,7 +899,7 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function getElementCounts(type = null, parent = null, options = null) {
+  function getElementCounts(type = null, parent = null) {
     const hasType = type !== null && type !== void 0;
     const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
     if (hasType) {
@@ -930,11 +907,7 @@ var ElementFinder = (() => {
         throw new TypeError(`type must be a string, got ${typeof type}`);
       }
       if (!ELEMENT_DEFINITIONS[type]) {
-        const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-        if (options && options.failOnUnknownType === true) {
-          throw new TypeError(`Unknown element type: ${type}`);
-        }
-        console.warn(message);
+        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
         return { [type]: { visible: 0, hidden: 0, total: 0 } };
       }
     }
@@ -944,7 +917,7 @@ var ElementFinder = (() => {
     }
     for (let i = 0; i < targetTypes.length; i++) {
       const targetType = targetTypes[i];
-      const result = findElements(targetType, null, false, parent, options);
+      const result = findElements(targetType, null, false, parent);
       const typeCounts = counts[targetType];
       for (let j = 0; j < result.elements.length; j++) {
         const item = result.elements[j];
@@ -955,7 +928,37 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function findElements(type = null, text = null, exact = false, parent = null, options = null) {
+  function getViewportElementCounts(type = null, parent = null) {
+    const hasType = type !== null && type !== void 0;
+    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
+    if (hasType) {
+      if (typeof type !== "string") {
+        throw new TypeError(`type must be a string, got ${typeof type}`);
+      }
+      if (!ELEMENT_DEFINITIONS[type]) {
+        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
+        return { [type]: { visible: 0, hidden: 0, total: 0 } };
+      }
+    }
+    const counts = {};
+    for (let i = 0; i < targetTypes.length; i++) {
+      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
+    }
+    for (let i = 0; i < targetTypes.length; i++) {
+      const targetType = targetTypes[i];
+      const result = findElements(targetType, null, false, parent);
+      const typeCounts = counts[targetType];
+      for (let j = 0; j < result.elements.length; j++) {
+        const item = result.elements[j];
+        if (!item.element || !inViewport(item.element, { threshold: 60 })) continue;
+        typeCounts.total += 1;
+        const bucket = item.isHidden ? "hidden" : "visible";
+        typeCounts[bucket] += 1;
+      }
+    }
+    return counts;
+  }
+  function findElements(type = null, text = null, exact = false, parent = null) {
     if (text === null || text === void 0) {
       text = "";
     }
@@ -964,11 +967,7 @@ var ElementFinder = (() => {
         throw new TypeError(`type must be a string, got ${typeof type}`);
       }
       if (!ELEMENT_DEFINITIONS[type]) {
-        const message = `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-        if (options && options.failOnUnknownType === true) {
-          throw new TypeError(`Unknown element type: ${type}`);
-        }
-        console.warn(message);
+        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
         return { elements: [] };
       }
     }
@@ -1099,11 +1098,11 @@ var ElementFinder = (() => {
     }
     return null;
   }
-  function findProbableElements(elementType, attributeText, exact = false, parent = null, options = null) {
+  function findProbableElements(elementType, attributeText, exact = false, parent = null) {
     const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
     const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
     if (hasType && !hasText) {
-      return findElements(elementType, null, false, parent, options);
+      return findElements(elementType, null, false, parent);
     }
     if (!hasType && hasText) {
       return findElementsByAttribute(attributeText, exact, parent);
@@ -1113,11 +1112,7 @@ var ElementFinder = (() => {
         throw new TypeError(`elementType must be a string, got ${typeof elementType}`);
       }
       if (!ELEMENT_DEFINITIONS[elementType]) {
-        const message = `Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`;
-        if (options && options.failOnUnknownType === true) {
-          throw new TypeError(`Unknown element type: ${elementType}`);
-        }
-        console.warn(message);
+        console.warn(`Unknown element type: ${elementType}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
         return { elements: [] };
       }
     }
@@ -1229,6 +1224,45 @@ var ElementFinder = (() => {
         el.classList.remove("elementfinder-highlighted");
       }
     }
+  }
+  function findOverlayElements() {
+    const matches = [];
+    const seenElements = /* @__PURE__ */ new Set();
+    const frames = getAllFrames(window);
+    for (const frame of frames) {
+      const allElements = getAllElements(frame.document);
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+        if (seenElements.has(el)) continue;
+        if (!isOverlayElement(el)) continue;
+        seenElements.add(el);
+        matches.push({ element: el, frame });
+      }
+    }
+    const qualified = matches.map((item) => {
+      const boundingBox = getBoundingBox(item.element);
+      const tagName = item.element.tagName.toLowerCase();
+      const hidden = isHidden(item.element);
+      const viewportValue = inViewport(item.element);
+      if (!item.frame.isMainFrame) {
+        return {
+          boundingBox,
+          tagName,
+          frameIndex: item.frame.frameIndex,
+          isHidden: hidden,
+          inViewport: viewportValue
+        };
+      }
+      return {
+        element: item.element,
+        boundingBox,
+        tagName,
+        frameIndex: item.frame.frameIndex,
+        isHidden: hidden,
+        inViewport: viewportValue
+      };
+    });
+    return { elements: qualified };
   }
   var animationPauseStack = [];
   function pauseAnimations() {
