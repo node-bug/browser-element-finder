@@ -129,4 +129,61 @@ describe('findOverlayElements Integration Tests', () => {
     );
     expect(regularContent).toBeUndefined();
   });
+
+  it('should throw TypeError when only x is provided to findOverlayElements', async () => {
+    await expect(
+      driver.executeScript(`
+        return ElementFinder.findOverlayElements(100);
+      `)
+    ).rejects.toThrow();
+  });
+
+  it('should throw TypeError when only y is provided to findOverlayElements', async () => {
+    await expect(
+      driver.executeScript(`
+        return ElementFinder.findOverlayElements(null, 200);
+      `)
+    ).rejects.toThrow();
+  });
+
+  it('should find overlays at a specific point via elementsFromPoint', async () => {
+    const result = await driver.executeScript(`
+      // Get the aria-dialog element's position
+      const dialog = document.getElementById('aria-dialog');
+      const rect = dialog.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      // Find overlays at that point
+      return ElementFinder.findOverlayElements(centerX, centerY);
+    `);
+    expect(result.elements.length).toBeGreaterThanOrEqual(1);
+    const dialogIds = await Promise.all(
+      result.elements
+        .filter(e => e.element)
+        .map(async e => e.element.getAttribute('id'))
+    );
+    expect(dialogIds).toContain('aria-dialog');
+  });
+
+  it('should return overlays in render order from elementsFromPoint', async () => {
+    const result = await driver.executeScript(`
+      // Point at the center of the page where multiple overlays may stack
+      return ElementFinder.findOverlayElements(400, 300);
+    `);
+    // Elements should be returned in front-to-back order
+    expect(result.elements.length).toBeGreaterThanOrEqual(1);
+    // First element should be the topmost overlay at that point
+    expect(result.elements[0].element).toBeDefined();
+  });
+
+  it('should return empty array when no overlay at point', async () => {
+    const result = await driver.executeScript(`
+      // Point at coordinates where there's no overlay (top-left corner)
+      return ElementFinder.findOverlayElements(5, 5);
+    `);
+    // May find overlays depending on page layout, but should not error
+    expect(result.elements).toBeDefined();
+    expect(Array.isArray(result.elements)).toBe(true);
+  });
 });

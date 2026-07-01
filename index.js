@@ -86,6 +86,10 @@ var ElementFinder = (() => {
   // src/searchable-attributes.json
   var searchable_attributes_default = [
     "placeholder",
+    "value",
+    "data-value",
+    "data-test-id",
+    "data-testid",
     "id",
     "resource-id",
     "name",
@@ -94,12 +98,8 @@ var ElementFinder = (() => {
     "title",
     "tooltip",
     "alt",
-    "data-test-id",
-    "data-testid",
-    "data-value",
-    "aria-labelledby",
     "src",
-    "value",
+    "aria-labelledby"
   ];
 
   // src/element-finder.js
@@ -739,10 +739,14 @@ var ElementFinder = (() => {
       if (!isNaN(zIndexValue) && zIndexValue > 999) {
         if (style.position === "fixed" || style.position === "sticky") return true;
       }
+      if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === "absolute") {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) return true;
+      }
     } catch (e) {
     }
     const className = el.getAttribute ? el.getAttribute("class") || "" : "";
-    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
+    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/.test(className)) {
       return true;
     }
     return false;
@@ -1225,18 +1229,39 @@ var ElementFinder = (() => {
       }
     }
   }
-  function findOverlayElements() {
+  function findOverlayElements(x = null, y = null) {
+    const hasPoint = x !== null && x !== void 0 || y !== null && y !== void 0;
+    if (hasPoint) {
+      if (x === null || x === void 0 || y === null || y === void 0) {
+        throw new TypeError("Both x and y coordinates must be provided together");
+      }
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        throw new TypeError("x and y must be finite numbers");
+      }
+    }
     const matches = [];
     const seenElements = /* @__PURE__ */ new Set();
-    const frames = getAllFrames(window);
-    for (const frame of frames) {
-      const allElements = getAllElements(frame.document);
-      for (let i = 0; i < allElements.length; i++) {
-        const el = allElements[i];
+    if (hasPoint) {
+      const pointStack = document.elementsFromPoint(x, y);
+      const mainFrame = { window, document, isMainFrame: true, frameIndex: -1 };
+      for (let i = 0; i < pointStack.length; i++) {
+        const el = pointStack[i];
         if (seenElements.has(el)) continue;
         if (!isOverlayElement(el)) continue;
         seenElements.add(el);
-        matches.push({ element: el, frame });
+        matches.push({ element: el, frame: mainFrame });
+      }
+    } else {
+      const frames = getAllFrames(window);
+      for (const frame of frames) {
+        const allElements = getAllElements(frame.document);
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          if (seenElements.has(el)) continue;
+          if (!isOverlayElement(el)) continue;
+          seenElements.add(el);
+          matches.push({ element: el, frame });
+        }
       }
     }
     const qualified = matches.map((item) => {

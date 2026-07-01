@@ -89,9 +89,9 @@ browser-element-finder/
 
 ## Core Concepts
 
-### Four Search Functions
+### Five Search Functions
 
-The library exposes four primary search strategies:
+The library exposes five primary search strategies:
 
 ```javascript
 // 1. Type-only: Find all elements of a semantic type
@@ -105,6 +105,10 @@ ElementFinder.findElements('button', 'Submit')
 
 // 4. Probabilistic fallback: Find by type+attribute, but accept nearby matches
 ElementFinder.findProbableElements('button', 'Click Me')
+
+// 5. Overlay detection: Find modals, dialogs, banners, popups (full scan or at a point)
+ElementFinder.findOverlayElements() // Full DOM scan across all frames
+ElementFinder.findOverlayElements(100, 200) // Overlays at specific point via elementsFromPoint()
 ```
 
 ### Element Type System

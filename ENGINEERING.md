@@ -59,6 +59,9 @@ ElementFinder.findProbableElements('button', 'Submit')
 
 // Case 5: Find overlay/modal/dialog/banner elements
 ElementFinder.findOverlayElements()
+
+// Case 6: Find overlays at a specific point (e.g., where a click was intercepted)
+ElementFinder.findOverlayElements(100, 200)
 ```
 
 ### 1.3 Project Structure
@@ -961,22 +964,37 @@ const result = ElementFinder.findProbableElements('textbox', 'Username')
 
 ---
 
-### 5.5 `findOverlayElements()`
+### 5.5 `findOverlayElements(x = null, y = null)`
 
 **Purpose**: Find all overlay elements on the page (modals, dialogs, banners, popups, tooltips).
+When coordinates are provided, uses `document.elementsFromPoint()` to find overlays at that specific point instead of scanning the entire DOM.
 
 **Signature**:
 
 ```javascript
-export function findOverlayElements()
+export function findOverlayElements(x = null, y = null)
   → { elements: [...] }
 ```
 
+**Parameters**:
+
+| Parameter | Type             | Default | Description                                                          |
+| --------- | ---------------- | ------- | -------------------------------------------------------------------- |
+| `x`       | `number \| null` | `null`  | X coordinate in viewport pixels. Must be provided together with `y`. |
+| `y`       | `number \| null` | `null`  | Y coordinate in viewport pixels. Must be provided together with `x`. |
+
+**Validation Rules**:
+
+- If only one of `x` or `y` is provided, throws `TypeError: Both x and y coordinates must be provided together`
+- If either `x` or `y` is not a finite number, throws `TypeError: x and y must be finite numbers`
+- When both are `null` (default), performs full DOM scan across all frames
+
 **Key Differences from Other Search Functions**:
 
-- **No parameters** — Does not take type, text, or parent arguments
+- **Optional point-based search** — Accepts optional `x, y` coordinates for targeted overlay detection
 - **Heuristic-based detection** — Uses 6 priority-ordered heuristics to identify overlay elements
 - **No innermost filtering** — Returns all matching overlays (not just leaf elements)
+- **Main frame only for point search** — When coordinates are provided, only searches the main document via `elementsFromPoint()`
 
 **Detection Heuristics** (checked in priority order):
 
@@ -990,6 +1008,15 @@ export function findOverlayElements()
 **Algorithm**:
 
 ```
+When x and y are provided (point-based search):
+1. Validate both coordinates are finite numbers
+2. Call document.elementsFromPoint(x, y) to get render stack at that point
+3. Filter the stack by isOverlayElement() heuristic check
+4. Deduplicate using a Set
+5. Map to qualified result format with boundingBox, tagName, frameIndex=-1, isHidden, inViewport
+6. Return results (main frame only)
+
+When no coordinates are provided (full scan — default):
 1. Iterate all frames (main document + iframes)
 2. For each frame, get all elements via getAllElements()
 3. Filter by isOverlayElement() heuristic check
@@ -1031,9 +1058,14 @@ Same as other search functions — array of elements with metadata:
 **Example Usage**:
 
 ```javascript
-// Find all overlay elements on the page
+// Find all overlay elements on the page (full DOM scan)
 const overlays = ElementFinder.findOverlayElements()
-// Returns modals, dialogs, banners, popups, tooltips
+// Returns modals, dialogs, banners, popups, tooltips from all frames
+
+// Find overlays at a specific point (e.g., where a click was intercepted)
+const overlaysAtPoint = ElementFinder.findOverlayElements(100, 200)
+// Returns only overlays present in the render stack at (100, 200)
+// Much faster for targeted detection after ElementClickInterceptedError
 
 // Filter to only visible overlays
 const visibleOverlays = overlays.elements.filter(
@@ -1055,12 +1087,23 @@ In browser automation, overlay elements often block interaction with underlying 
 - Identify toast notifications or popups that may interfere with element targeting
 - Determine if a dialog needs to be closed before continuing automation
 
+**Point-based search for click interception**:
+
+When an `ElementClickInterceptedError` occurs, the point-based mode is ideal:
+
+1. Get the target element's center coordinates from `getBoundingBox()`
+2. Call `findOverlayElements(centerX, centerY)` to get overlays at that exact point
+3. The returned elements are already sorted by render order (front-to-back)
+4. Pick the first overlay to dismiss or handle
+
+This is more accurate than a full DOM scan because it identifies the element that actually blocked the attempted click.
+
 **Comparison with `findElementsByType('dialog')`**:
 
 | Aspect           | `findElementsByType('dialog')` | `findOverlayElements()`            |
 | ---------------- | ------------------------------ | ---------------------------------- |
 | Detection method | ARIA `role="dialog"` only      | 6 heuristics (ARIA, z-index, etc.) |
-| Parameters       | Takes type/text/parent         | No parameters                      |
+| Parameters       | Takes type/text/parent         | Optional x, y coordinates          |
 | Coverage         | Only explicit ARIA dialogs     | Modals, banners, popups, tooltips  |
 | Use case         | Accessibility auditing         | Automation blocking detection      |
 

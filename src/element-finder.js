@@ -1059,7 +1059,8 @@ function isElementHidden(el) {
  *  3. <dialog> element with open attribute
  *  4. [popover] attribute (Popover API)
  *  5. High z-index (> 999) combined with fixed or sticky positioning
- *  6. Common class-name patterns (modal, overlay, cookie, consent, banner, popup)
+ *  5b. Moderate z-index (> 100) combined with absolute positioning + visible dimensions
+ *  6. Common class-name patterns (modal, overlay, cookie, consent, banner, popup, dropdown, menu, flyout, sheet)
  * @param {Element} el - The DOM element to check
  * @returns {boolean} True if the element is an overlay
  */
@@ -1087,12 +1088,18 @@ function isOverlayElement(el) {
   // 4. Popover API
   if (el.hasAttribute('popover')) return true;
 
-  // 5. High z-index with fixed or sticky positioning
+  // 5. High z-index with fixed, sticky, or absolute positioning
   try {
     const style = window.getComputedStyle(el);
     const zIndexValue = parseInt(style.zIndex, 10);
     if (!isNaN(zIndexValue) && zIndexValue > 999) {
       if (style.position === 'fixed' || style.position === 'sticky') return true;
+    }
+    // Also catch absolute-positioned overlays with moderate z-index (common for dropdowns, menus, tooltips)
+    if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === 'absolute') {
+      // Only consider elements that are visibly rendered (not collapsed)
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) return true;
     }
   } catch {
     // Restricted access — skip computed-style check
@@ -1100,7 +1107,7 @@ function isOverlayElement(el) {
 
   // 6. Common class-name patterns used by frameworks and cookie-consent libraries
   const className = el.getAttribute ? (el.getAttribute('class') || '') : '';
-  if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
+  if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/.test(className)) {
     return true;
   }
 
@@ -1849,19 +1856,36 @@ export function unhighlight(elements) {
 /**
  * Finds all overlay elements (modals, dialogs, cookie banners, popovers, etc.)
  * visible in the current page and all same-origin iframes.
+ * When x and y coordinates are provided, uses document.elementsFromPoint() to find
+ * overlays at that specific point instead of scanning the entire DOM.
  * Returns elements with bounding box, tag name, frame index, visibility, and viewport info.
+ * @param {number|null} [x=null] - X coordinate in viewport pixels. Must be provided together with y.
+ * @param {number|null} [y=null] - Y coordinate in viewport pixels. Must be provided together with x.
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number, isHidden: boolean, inViewport: boolean}>}} Found overlay elements with metadata
  */
-export function findOverlayElements() {
+export function findOverlayElements(x = null, y = null) {
+  // Validate coordinates - both must be provided together or neither
+  const hasPoint = (x !== null && x !== undefined) || (y !== null && y !== undefined);
+
+  if (hasPoint) {
+    if (x === null || x === undefined || y === null || y === undefined) {
+      throw new TypeError('Both x and y coordinates must be provided together');
+    }
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      throw new TypeError('x and y must be finite numbers');
+    }
+  }
+
   const matches = [];
   const seenElements = new Set();
-  const frames = getAllFrames(window);
 
-  for (const frame of frames) {
-    const allElements = getAllElements(frame.document);
+  // When coordinates are provided, use elementsFromPoint for targeted overlay detection
+  if (hasPoint) {
+    const pointStack = document.elementsFromPoint(x, y);
+    const mainFrame = { window: window, document: document, isMainFrame: true, frameIndex: -1 };
 
-    for (let i = 0; i < allElements.length; i++) {
-      const el = allElements[i];
+    for (let i = 0; i < pointStack.length; i++) {
+      const el = pointStack[i];
 
       // Skip if we've already seen this element
       if (seenElements.has(el)) continue;
@@ -1870,7 +1894,27 @@ export function findOverlayElements() {
       if (!isOverlayElement(el)) continue;
 
       seenElements.add(el);
-      matches.push({ element: el, frame: frame });
+      matches.push({ element: el, frame: mainFrame });
+    }
+  } else {
+    // Full DOM scan across all frames (original behavior)
+    const frames = getAllFrames(window);
+
+    for (const frame of frames) {
+      const allElements = getAllElements(frame.document);
+
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i];
+
+        // Skip if we've already seen this element
+        if (seenElements.has(el)) continue;
+
+        // Only consider overlay elements
+        if (!isOverlayElement(el)) continue;
+
+        seenElements.add(el);
+        matches.push({ element: el, frame: frame });
+      }
     }
   }
 
