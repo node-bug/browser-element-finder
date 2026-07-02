@@ -23,5 +23,6 @@
   "column": "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",
   "cell": "self::td or @role='cell' or @role='gridcell'",
   "image": "self::img or @role='img' or @alt",
+  "iframe": "self::iframe",
   "element": "true()"
 }

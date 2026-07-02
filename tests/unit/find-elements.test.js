@@ -34,7 +34,7 @@ describe('findElements combined search', () => {
   let document;
 
   beforeAll(() => {
-    const fixturePath = resolve(__dirname, 'fixtures/find-elements.html');
+    const fixturePath = resolve(__dirname, '..', 'fixtures/find-elements.html');
     const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {

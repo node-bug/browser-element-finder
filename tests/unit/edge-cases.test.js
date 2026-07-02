@@ -19,7 +19,7 @@ describe('ElementFinder Edge Cases', () => {
   let document;
 
   beforeAll(() => {
-    const fixturePath = resolve(__dirname, 'fixtures/edge-cases.html');
+    const fixturePath = resolve(__dirname, '..', 'fixtures/edge-cases.html');
     const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {

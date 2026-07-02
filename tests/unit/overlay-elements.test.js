@@ -12,7 +12,7 @@ describe('findOverlayElements Unit Tests', () => {
   let document;
 
   beforeAll(() => {
-    const fixturePath = resolve(__dirname, 'fixtures/overlays.html');
+    const fixturePath = resolve(__dirname, '..', 'fixtures/overlays-unit.html');
     const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {

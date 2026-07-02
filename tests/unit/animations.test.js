@@ -16,7 +16,7 @@ describe('Animation Control Functions', () => {
   let document;
 
   beforeAll(() => {
-    const fixturePath = resolve(__dirname, 'fixtures/animations.html');
+    const fixturePath = resolve(__dirname, '..', 'fixtures/animations.html');
     const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {

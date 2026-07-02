@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"></head>
+<body>
+    <button id="show-overlay-btn" style="margin:50px;width:100px;height:40px;">Show Overlay</button>
+    <div id="overlay-container" style="position:fixed;top:50px;left:50px;width:100px;height:40px;z-index:1000;display:none;">
+        <a href="#" id="overlay-link">Overlay Link</a>
+    </div>
+    <script>
+        document.getElementById('show-overlay-btn').addEventListener('click', () => {
+            document.getElementById('overlay-container').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

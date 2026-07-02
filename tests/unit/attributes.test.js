@@ -46,7 +46,7 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
   let fixtureBodyHTML;
 
   beforeAll(() => {
-    const fixturePath = resolve(__dirname, 'fixtures/attributes.html');
+    const fixturePath = resolve(__dirname, '..', 'fixtures/attributes.html');
     const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {
@@ -248,8 +248,8 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       document.body.appendChild(button);
 
       expect(getElementDescriptor(button)).toMatchObject({
-        identifiableText: 'Nested text with spaces',
-        attributeName: 'text',
+        identifiableText: null,
+        attributeName: null,
         type: 'button',
         tagName: 'button'
       });
@@ -356,8 +356,8 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       document.body.appendChild(button);
 
       expect(getElementDescriptor(button)).toEqual({
-        identifiableText: 'Nested Action',
-        attributeName: 'text',
+        identifiableText: null,
+        attributeName: null,
         index: 1,
         type: 'button',
         tagName: 'button'

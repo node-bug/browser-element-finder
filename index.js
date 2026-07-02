@@ -80,6 +80,7 @@ var ElementFinder = (() => {
     column: "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",
     cell: "self::td or @role='cell' or @role='gridcell'",
     image: "self::img or @role='img' or @alt",
+    iframe: "self::iframe",
     element: "true()"
   };
 
@@ -223,17 +224,20 @@ var ElementFinder = (() => {
   function shortenDescriptorText(text) {
     if (text == null) return "";
     const lines = String(text).split(/\r\n|\r|\n/);
-    let normalizedText = "";
+    let resultText = "";
     for (let i = 0; i < lines.length; i++) {
-      normalizedText = normalizeDescriptorText(lines[i]);
-      if (normalizedText) break;
+      const trimmedLine = lines[i].trim();
+      if (trimmedLine) {
+        resultText = trimmedLine;
+        break;
+      }
     }
-    if (!normalizedText || normalizedText.length <= MAX_IDENTIFIABLE_TEXT_LENGTH) {
-      return normalizedText;
+    if (!resultText || resultText.length <= MAX_IDENTIFIABLE_TEXT_LENGTH) {
+      return resultText;
     }
-    const shortened = normalizedText.slice(0, MAX_IDENTIFIABLE_TEXT_LENGTH);
+    const shortened = resultText.slice(0, MAX_IDENTIFIABLE_TEXT_LENGTH);
     const lastSpaceIndex = shortened.lastIndexOf(" ");
-    return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : normalizedText;
+    return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : resultText;
   }
   function getImageFilenameWithoutExtension(src) {
     const normalizedSrc = normalizeDescriptorText(src);
@@ -273,18 +277,13 @@ var ElementFinder = (() => {
       const attr = attrs[i];
       if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
       const rawText = attr === "aria-labelledby" ? getResolvedAriaLabelledByText(el) : attr === "src" ? getImageFilenameWithoutExtension(values[attr]) : values[attr];
-      const identifiableText = normalizeDescriptorText(rawText);
-      if (identifiableText) {
-        return { attributeName: attr, identifiableText };
+      if (rawText) {
+        return { attributeName: attr, identifiableText: rawText };
       }
     }
     const directText = shortenDescriptorText(getDirectText(el));
     if (directText && !isIgnoredElement(el)) {
       return { attributeName: "text", identifiableText: directText };
-    }
-    const fullText = shortenDescriptorText(getSearchableTextContent(el));
-    if (fullText && !isIgnoredElement(el)) {
-      return { attributeName: "text", identifiableText: fullText };
     }
     return null;
   }
