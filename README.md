@@ -38,6 +38,9 @@ const results = ElementFinder.findProbableElements('button', 'Click Me')
 // Find overlay elements (modals, dialogs, cookie banners, popovers)
 const overlays = ElementFinder.findOverlayElements()
 
+// Find overlays at a specific point (e.g., where a click was intercepted)
+const overlaysAtPoint = ElementFinder.findOverlayElements(100, 200)
+
 // Highlight found elements
 ElementFinder.highlight(results.elements.map((e) => e.element))
 

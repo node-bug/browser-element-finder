@@ -1,57 +1,29 @@
 /**
- * Integration tests for ElementFinderByType
- * Tests finding elements by type in browser
+ * Integration tests for ElementFinder
+ * Combined type and attribute search tests for forms fixture
  */
 
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
-import { Builder } from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome.js';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { createDriverFixture, loadFixture } from './helpers/driver-helper.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-describe('ElementFinderByType Integration Tests', () => {
-  let driver;
+describe('ElementFinder - Forms Fixture', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('forms.html'),
+    injectFinder: true,
+    sleep: 500
+  });
 
   beforeAll(async () => {
-    const options = new chrome.Options()
-      .addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
-
-    driver = await new Builder()
-      .forBrowser('chrome')
-      .setChromeOptions(options)
-      .build();
-
-    const htmlPath = join(__dirname, '..', 'fixtures', 'forms.html');
-    const htmlContent = readFileSync(htmlPath, 'utf8');
-    const fileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
-    await driver.get(fileUrl);
-
-    const finderPath = join(__dirname, '..', '..', '..', 'index.js');
-    const finderCode = readFileSync(finderPath, 'utf8');
-    await driver.executeScript(`
-      ${finderCode}
-      window.ElementFinder = ElementFinder;
-    `);
-
-    await driver.sleep(500);
+    await fixture.setup();
   });
 
   afterAll(async () => {
-    try {
-      await driver.quit();
-    } catch (err) {
-      console.warn('Warning: Error quitting driver:', err.message);
-    }
+    await fixture.teardown();
   });
 
   describe('findElementsByType', () => {
-
     it('should find buttons and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('button');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -61,7 +33,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find checkboxes and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('checkbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -71,7 +43,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find textboxes and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('textbox');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -81,7 +53,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find links and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('link');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -89,7 +61,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find dropdowns and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('dropdown');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -97,7 +69,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find sliders and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('slider');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -107,7 +79,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find datepickers and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('datepicker');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -117,7 +89,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find colorpickers and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('colorpicker');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -127,7 +99,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find radios and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('radio');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -137,7 +109,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find headings and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('heading');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -147,7 +119,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find navigation elements and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('navigation');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -155,7 +127,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find images and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('image');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -163,7 +135,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find tables and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('table');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -171,7 +143,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should find lists and validate first match', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('list');
       `);
       const mainElements = result.elements.filter(e => e.element);
@@ -179,7 +151,7 @@ describe('ElementFinderByType Integration Tests', () => {
     });
 
     it('should return empty array for unknown type', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('unknown-type-xyz');
       `);
       expect(result.elements.length).toBe(0);
@@ -187,28 +159,85 @@ describe('ElementFinderByType Integration Tests', () => {
 
     it('should throw TypeError for non-string type', async () => {
       await expect(async () => {
-        await driver.executeScript(`
+        await fixture.driver.executeScript(`
           return ElementFinder.findElementsByType(123);
         `);
       }).rejects.toThrow();
     });
   });
 
-  describe('inViewport flag for Disabled Field (below the fold)', () => {
-    // The "Disabled Field" lives in Section 5 of forms.html, well below the
-    // initial viewport. We force a small window size so the test is
-    // deterministic regardless of the host's default Chrome dimensions,
-    // scroll back to the top before measuring, then scroll the element into
-    // view and re-measure to confirm inViewport flips to true.
+  describe('findElementsByAttribute', () => {
+    it('should find elements matching visible text "Single" and validate first match', async () => {
+      const result = await fixture.driver.executeScript(`
+        return ElementFinder.findElementsByAttribute('Single');
+      `);
+      expect(result.elements.length).toBe(1);
+      const mainElements = result.elements.filter(e => e.element);
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      if (testDataId === 'text-single') {
+        expect(testDataId).toBe('text-single');
+      } else {
+        const forAttr = await mainElements[0].element.getAttribute('for');
+        if (forAttr === 'text-single') {
+          expect(forAttr).toBe('text-single');
+        }
+      }
+    });
 
+    it('should find elements matching "Field" and validate first match', async () => {
+      const result = await fixture.driver.executeScript(`
+        return ElementFinder.findElementsByAttribute('Field');
+      `);
+      expect(result.elements.length).toBe(9);
+      const mainElements = result.elements.filter(e => e.element);
+      const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(firstTestDataId).toBeDefined();
+    });
+
+    it('should find elements by placeholder attribute and validate first match', async () => {
+      const result = await fixture.driver.executeScript(`
+        return ElementFinder.findElementsByAttribute('Enter text here');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+      const id = await mainElements[0].element.getAttribute('id');
+      expect(id).toBe('text-single');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('text-single');
+    });
+
+    it('should find elements by id attribute and validate first match', async () => {
+      const result = await fixture.driver.executeScript(`
+        return ElementFinder.findElementsByAttribute('text-email');
+      `);
+      const mainElements = result.elements.filter(e => e.element);
+      expect(mainElements.length).toBe(1);
+      const id = await mainElements[0].element.getAttribute('id');
+      expect(id).toBe('text-email');
+      const testDataId = await mainElements[0].element.getAttribute('data-test-id');
+      expect(testDataId).toBe('text-email');
+    });
+
+    it('should be case-sensitive for "field" vs "Field"', async () => {
+      const resultLower = await fixture.driver.executeScript(`
+        return ElementFinder.findElementsByAttribute('field');
+      `);
+      expect(resultLower.elements.length).toBe(2);
+      const resultUpper = await fixture.driver.executeScript(`
+        return ElementFinder.findElementsByAttribute('Field');
+      `);
+      expect(resultUpper.elements.length).toBe(9);
+    });
+  });
+
+  describe('inViewport flag for Disabled Field (below the fold)', () => {
     beforeAll(async () => {
-      await driver.manage().window().setRect({ width: 800, height: 600 });
-      // Make sure we start at the top so the field is below the fold
-      await driver.executeScript('window.scrollTo(0, 0);');
+      await fixture.driver.manage().window().setRect({ width: 800, height: 600 });
+      await fixture.driver.executeScript('window.scrollTo(0, 0);');
     });
 
     it('should report inViewport=false for the Disabled Field when it is below the fold', async () => {
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('textbox')
           .elements
           .find((e) => e.element && e.element.getAttribute('data-test-id') === 'val-disabled');
@@ -216,28 +245,23 @@ describe('ElementFinderByType Integration Tests', () => {
       expect(result).toBeDefined();
       expect(result.element).toBeDefined();
 
-      // The field must be present and currently scrolled out of view
-      const rect = await driver.executeScript(`
+      const rect = await fixture.driver.executeScript(`
         const el = document.querySelector('[data-test-id="val-disabled"]');
         const r = el.getBoundingClientRect();
         return { top: r.top, bottom: r.bottom, height: window.innerHeight };
       `);
       expect(rect.bottom).toBeGreaterThan(rect.height);
-
-      // The library should report inViewport=false because the rect is below the viewport
       expect(result.inViewport).toBe(false);
     });
 
     it('should report inViewport=true after scrolling the Disabled Field into view', async () => {
-      // Scroll the field into view using the native API
-      await driver.executeScript(`
+      await fixture.driver.executeScript(`
         document.querySelector('[data-test-id="val-disabled"]')
           .scrollIntoView({ block: 'center' });
       `);
-      await driver.sleep(100);
+      await fixture.driver.sleep(100);
 
-      // Re-run the find so we get fresh flag values for the new scroll position
-      const result = await driver.executeScript(`
+      const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('textbox')
           .elements
           .find((e) => e.element && e.element.getAttribute('data-test-id') === 'val-disabled');
@@ -245,22 +269,18 @@ describe('ElementFinderByType Integration Tests', () => {
       expect(result).toBeDefined();
       expect(result.element).toBeDefined();
 
-      // Sanity check: confirm the element really is inside the viewport now
-      const rect = await driver.executeScript(`
+      const rect = await fixture.driver.executeScript(`
         const el = document.querySelector('[data-test-id="val-disabled"]');
         const r = el.getBoundingClientRect();
         return { top: r.top, bottom: r.bottom, height: window.innerHeight };
       `);
       expect(rect.top).toBeLessThan(rect.height);
       expect(rect.bottom).toBeGreaterThan(0);
-
       expect(result.inViewport).toBe(true);
     });
 
     it('should expose ElementFinder.inViewport helper with the same value for the field', async () => {
-      // After the previous test scrolled the field into view, the helper
-      // function should agree with the flag on the result object.
-      const inViewportFlag = await driver.executeScript(`
+      const inViewportFlag = await fixture.driver.executeScript(`
         const el = document.querySelector('[data-test-id="val-disabled"]');
         return ElementFinder.inViewport(el);
       `);

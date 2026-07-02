@@ -6,11 +6,11 @@
 import { Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = join(fileURLToPath(import.meta.url), '..', '..');
+const __dirname = dirname(__filename);
 
 /**
  * Safely quit a Selenium driver, handling errors gracefully
@@ -42,8 +42,9 @@ async function safeQuit(driver) {
 function createDriverFixture(options = {}) {
   let driver;
 
-  return {
+  const fixture = {
     async setup(setupFn) {
+      console.log('setup() called, options:', Object.keys(options));
       const chromeOptions = new chrome.Options();
       chromeOptions.addArguments(
         '--headless',
@@ -58,18 +59,24 @@ function createDriverFixture(options = {}) {
         .forBrowser('chrome')
         .setChromeOptions(chromeOptions)
         .build();
+      console.log('Driver created:', !!driver);
 
       if (options.url) {
+        console.log('Navigating to URL...');
         await driver.get(options.url);
+        console.log('Navigation complete');
       }
 
       if (options.injectFinder) {
-        const finderPath = join(__dirname, '..', '..', 'index.js');
+        const finderPath = join(__dirname, '..', '..', '..', 'index.js');
+        console.log('Reading finder from:', finderPath);
         const finderCode = readFileSync(finderPath, 'utf8');
+        console.log('Finder code length:', finderCode.length);
         await driver.executeScript(`
           ${finderCode}
           window.ElementFinder = ElementFinder;
         `);
+        console.log('Finder injected');
       }
 
       if (options.sleep) {
@@ -89,6 +96,8 @@ function createDriverFixture(options = {}) {
       return driver;
     },
   };
+
+  return fixture;
 }
 
 /**
@@ -97,8 +106,7 @@ function createDriverFixture(options = {}) {
  * @returns {string} Data URL for the HTML content
  */
 function loadFixture(fixturePath) {
-  const __currentDir = join(__filename, '..');
-  const htmlPath = join(__currentDir, 'fixtures', fixturePath);
+  const htmlPath = join(__dirname, '..', '..', 'fixtures', fixturePath);
   const htmlContent = readFileSync(htmlPath, 'utf8');
   return 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
 }

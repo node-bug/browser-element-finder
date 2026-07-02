@@ -35,7 +35,7 @@ describe('ElementFinderByType Node.js Module Tests', () => {
 
   beforeAll(() => {
     // Load HTML fixture file
-    const fixturePath = resolve(__dirname, 'fixtures/element-types.html');
+    const fixturePath = resolve(__dirname, '..', 'fixtures/element-types-unit.html');
     const html = readFileSync(fixturePath, 'utf-8');
     
     const dom = new JSDOM(html, { 

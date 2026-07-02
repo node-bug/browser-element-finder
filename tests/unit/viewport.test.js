@@ -67,7 +67,7 @@ describe('ElementFinder Viewport Helpers', () => {
   let document;
 
   beforeAll(() => {
-    const fixturePath = resolve(__dirname, 'fixtures/viewport.html');
+    const fixturePath = resolve(__dirname, '..', 'fixtures/viewport.html');
     const html = readFileSync(fixturePath, 'utf-8');
 
     const dom = new JSDOM(html, {

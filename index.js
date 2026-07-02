@@ -80,12 +80,17 @@ var ElementFinder = (() => {
     column: "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",
     cell: "self::td or @role='cell' or @role='gridcell'",
     image: "self::img or @role='img' or @alt",
+    iframe: "self::iframe",
     element: "true()"
   };
 
   // src/searchable-attributes.json
   var searchable_attributes_default = [
     "placeholder",
+    "value",
+    "data-value",
+    "data-test-id",
+    "data-testid",
     "id",
     "resource-id",
     "name",
@@ -94,12 +99,8 @@ var ElementFinder = (() => {
     "title",
     "tooltip",
     "alt",
-    "data-test-id",
-    "data-testid",
-    "data-value",
-    "aria-labelledby",
     "src",
-    "value",
+    "aria-labelledby"
   ];
 
   // src/element-finder.js
@@ -223,17 +224,20 @@ var ElementFinder = (() => {
   function shortenDescriptorText(text) {
     if (text == null) return "";
     const lines = String(text).split(/\r\n|\r|\n/);
-    let normalizedText = "";
+    let resultText = "";
     for (let i = 0; i < lines.length; i++) {
-      normalizedText = normalizeDescriptorText(lines[i]);
-      if (normalizedText) break;
+      const trimmedLine = lines[i].trim();
+      if (trimmedLine) {
+        resultText = trimmedLine;
+        break;
+      }
     }
-    if (!normalizedText || normalizedText.length <= MAX_IDENTIFIABLE_TEXT_LENGTH) {
-      return normalizedText;
+    if (!resultText || resultText.length <= MAX_IDENTIFIABLE_TEXT_LENGTH) {
+      return resultText;
     }
-    const shortened = normalizedText.slice(0, MAX_IDENTIFIABLE_TEXT_LENGTH);
+    const shortened = resultText.slice(0, MAX_IDENTIFIABLE_TEXT_LENGTH);
     const lastSpaceIndex = shortened.lastIndexOf(" ");
-    return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : normalizedText;
+    return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : resultText;
   }
   function getImageFilenameWithoutExtension(src) {
     const normalizedSrc = normalizeDescriptorText(src);
@@ -273,18 +277,13 @@ var ElementFinder = (() => {
       const attr = attrs[i];
       if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
       const rawText = attr === "aria-labelledby" ? getResolvedAriaLabelledByText(el) : attr === "src" ? getImageFilenameWithoutExtension(values[attr]) : values[attr];
-      const identifiableText = normalizeDescriptorText(rawText);
-      if (identifiableText) {
-        return { attributeName: attr, identifiableText };
+      if (rawText) {
+        return { attributeName: attr, identifiableText: rawText };
       }
     }
     const directText = shortenDescriptorText(getDirectText(el));
     if (directText && !isIgnoredElement(el)) {
       return { attributeName: "text", identifiableText: directText };
-    }
-    const fullText = shortenDescriptorText(getSearchableTextContent(el));
-    if (fullText && !isIgnoredElement(el)) {
-      return { attributeName: "text", identifiableText: fullText };
     }
     return null;
   }
@@ -739,10 +738,14 @@ var ElementFinder = (() => {
       if (!isNaN(zIndexValue) && zIndexValue > 999) {
         if (style.position === "fixed" || style.position === "sticky") return true;
       }
+      if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === "absolute") {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) return true;
+      }
     } catch (e) {
     }
     const className = el.getAttribute ? el.getAttribute("class") || "" : "";
-    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup/.test(className)) {
+    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/.test(className)) {
       return true;
     }
     return false;
@@ -1225,18 +1228,39 @@ var ElementFinder = (() => {
       }
     }
   }
-  function findOverlayElements() {
+  function findOverlayElements(x = null, y = null) {
+    const hasPoint = x !== null && x !== void 0 || y !== null && y !== void 0;
+    if (hasPoint) {
+      if (x === null || x === void 0 || y === null || y === void 0) {
+        throw new TypeError("Both x and y coordinates must be provided together");
+      }
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        throw new TypeError("x and y must be finite numbers");
+      }
+    }
     const matches = [];
     const seenElements = /* @__PURE__ */ new Set();
-    const frames = getAllFrames(window);
-    for (const frame of frames) {
-      const allElements = getAllElements(frame.document);
-      for (let i = 0; i < allElements.length; i++) {
-        const el = allElements[i];
+    if (hasPoint) {
+      const pointStack = document.elementsFromPoint(x, y);
+      const mainFrame = { window, document, isMainFrame: true, frameIndex: -1 };
+      for (let i = 0; i < pointStack.length; i++) {
+        const el = pointStack[i];
         if (seenElements.has(el)) continue;
         if (!isOverlayElement(el)) continue;
         seenElements.add(el);
-        matches.push({ element: el, frame });
+        matches.push({ element: el, frame: mainFrame });
+      }
+    } else {
+      const frames = getAllFrames(window);
+      for (const frame of frames) {
+        const allElements = getAllElements(frame.document);
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          if (seenElements.has(el)) continue;
+          if (!isOverlayElement(el)) continue;
+          seenElements.add(el);
+          matches.push({ element: el, frame });
+        }
       }
     }
     const qualified = matches.map((item) => {
