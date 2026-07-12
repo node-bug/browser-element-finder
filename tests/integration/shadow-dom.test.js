@@ -368,6 +368,15 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
   describe('findElementsByAttribute - Dynamic Shadow DOM (Section 7)', () => {
     it('should find elements in dynamically created shadow DOM', async () => {
+      // The fixture attaches this shadow root via setTimeout(..., 500); wait for it
+      // to be ready before querying so the test does not race the delayed attachment.
+      await fixture.driver.wait(
+        () => fixture.driver.executeScript(
+          `return !!document.getElementById('dynamic-shadow-host')?.shadowRoot;`
+        ),
+        5000,
+        'Dynamic shadow root was not attached'
+      );
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Dynamic Button');
       `);

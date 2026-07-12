@@ -441,14 +441,13 @@ btn2.getElementDescriptor(...) // { index: 2, type: 'button', identifiableText: 
 descriptor = ElementFinder.getElementDescriptor(element, false)
 ```
 
-Descriptor selection follows the same searchable-attribute priority as text search:
+Descriptor selection prioritizes an element's own direct text over searchable attributes:
 
-1. First non-empty searchable attribute value is used.
-2. `aria-labelledby` is resolved to referenced element text before returning the identifiable text.
-3. `src` values are returned as the image filename without path, query string, fragment, or extension.
-4. If no searchable attribute exists, direct text nodes are used and `attributeName` is set to `'text'`.
-5. If direct text is empty, trimmed full `textContent` is used and `attributeName` is set to `'text'`.
-6. If no text exists, `identifiableText` and `attributeName` are `null`, and `index` falls back to the element's 1-based position among elements of the same `type` in the frame.
+1. Direct text nodes are used first and `attributeName` is set to `'text'`. (Text is shortened to the first line and capped at `MAX_IDENTIFIABLE_TEXT_LENGTH` characters without cutting words.)
+2. If no direct text exists (or the element is an ignored tag such as `script`/`style`), the first non-empty searchable attribute value is used instead.
+3. `aria-labelledby` is resolved to referenced element text before returning the identifiable text.
+4. `src` values are returned as the image filename without path, query string, fragment, or extension.
+5. If no text and no searchable attribute exists, `identifiableText` and `attributeName` are `null`, and `index` falls back to the element's 1-based position among elements of the same `type` in the frame.
 
 Null or non-element input returns:
 

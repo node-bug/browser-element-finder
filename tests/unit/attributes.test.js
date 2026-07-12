@@ -769,6 +769,300 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
     });
   });
 
+  // These tests encode the desired TEXT-FIRST behavior for getElementDescriptor:
+  // an element's direct text (getDirectText) must be preferred over any searchable
+  // attribute. They will pass once getElementDescriptorText is reordered to check
+  // text before attributes. Until that source change lands, the attribute-first
+  // assertions below are expected to fail.
+  describe('getElementDescriptor text-first priority', () => {
+    beforeEach(() => {
+      document.body.innerHTML = '';
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = fixtureBodyHTML;
+    });
+
+    it('should prefer direct text over a single searchable attribute', () => {
+      const button = document.createElement('button');
+      button.textContent = 'Submit';
+      button.setAttribute('title', 'Save');
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Submit',
+        attributeName: 'text',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should prefer direct text over the highest-priority attribute (placeholder)', () => {
+      const div = document.createElement('div');
+      div.setAttribute('placeholder', 'Enter your name');
+      div.textContent = 'Inline';
+      document.body.appendChild(div);
+
+      expect(getElementDescriptor(div)).toMatchObject({
+        identifiableText: 'Inline',
+        attributeName: 'text',
+        type: 'element'
+      });
+    });
+
+    it('should prefer direct text over id', () => {
+      const div = document.createElement('div');
+      div.id = 'panel-1';
+      div.textContent = 'Dashboard';
+      document.body.appendChild(div);
+
+      expect(getElementDescriptor(div)).toMatchObject({
+        identifiableText: 'Dashboard',
+        attributeName: 'text',
+        type: 'element'
+      });
+    });
+
+    it('should prefer direct text over aria-label', () => {
+      const button = document.createElement('button');
+      button.setAttribute('aria-label', 'Close dialog');
+      button.textContent = 'X';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toMatchObject({
+        identifiableText: 'X',
+        attributeName: 'text',
+        type: 'button'
+      });
+    });
+
+    it('should prefer direct text over aria-labelledby resolved text', () => {
+      const label = document.createElement('label');
+      label.id = 'close-label';
+      label.textContent = 'Close';
+      document.body.appendChild(label);
+
+      const button = document.createElement('button');
+      button.setAttribute('aria-labelledby', 'close-label');
+      button.textContent = 'Dismiss';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Dismiss',
+        attributeName: 'text',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should prefer direct text over multiple searchable attributes at once', () => {
+      const button = document.createElement('button');
+      button.setAttribute('placeholder', 'Go');
+      button.setAttribute('value', 'Go');
+      button.setAttribute('data-testid', 'go-btn');
+      button.setAttribute('id', 'go');
+      button.setAttribute('title', 'Go');
+      button.textContent = 'Proceed';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toMatchObject({
+        identifiableText: 'Proceed',
+        attributeName: 'text',
+        type: 'button'
+      });
+    });
+
+    it('should prefer direct text over data-testid', () => {
+      const link = document.createElement('a');
+      link.setAttribute('data-testid', 'home-link');
+      link.textContent = 'Home';
+      document.body.appendChild(link);
+
+      expect(getElementDescriptor(link)).toMatchObject({
+        identifiableText: 'Home',
+        attributeName: 'text',
+        type: 'link'
+      });
+    });
+
+    it('should prefer direct text over name', () => {
+      const div = document.createElement('div');
+      div.setAttribute('name', 'username');
+      div.textContent = 'User';
+      document.body.appendChild(div);
+
+      expect(getElementDescriptor(div)).toMatchObject({
+        identifiableText: 'User',
+        attributeName: 'text',
+        type: 'element'
+      });
+    });
+
+    it('should prefer direct text over data-testid on a non-image element', () => {
+      const span = document.createElement('span');
+      span.setAttribute('data-testid', 'decorative');
+      span.textContent = 'Caption';
+      document.body.appendChild(span);
+
+      expect(getElementDescriptor(span)).toMatchObject({
+        identifiableText: 'Caption',
+        attributeName: 'text',
+        type: 'element'
+      });
+    });
+
+    it('should fall through to attributes when direct text is whitespace-only', () => {
+      const button = document.createElement('button');
+      button.textContent = '   \n\t  ';
+      button.setAttribute('title', 'Save');
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Save',
+        attributeName: 'title',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should fall through to attributes when text is only in nested descendants (direct text empty)', () => {
+      const button = document.createElement('button');
+      const span = document.createElement('span');
+      span.textContent = 'Nested Action';
+      button.appendChild(span);
+      button.setAttribute('title', 'Fallback Title');
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toEqual({
+        identifiableText: 'Fallback Title',
+        attributeName: 'title',
+        index: 1,
+        type: 'button',
+        tagName: 'button'
+      });
+    });
+
+    it('should skip direct text for ignored elements and use attributes instead', () => {
+      const script = document.createElement('script');
+      script.textContent = 'console.log("ignored text")';
+      script.setAttribute('title', 'Script Title');
+      document.body.appendChild(script);
+
+      const descriptor = getElementDescriptor(script);
+      expect(descriptor).toMatchObject({
+        identifiableText: 'Script Title',
+        attributeName: 'title',
+        type: 'element'
+      });
+      expect(Number.isInteger(descriptor.index)).toBe(true);
+      expect(descriptor.index).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should still shorten long direct text when text wins', () => {
+      const button = document.createElement('button');
+      button.textContent = 'This is a very long button label that exceeds the limit';
+      button.setAttribute('title', 'Short');
+      document.body.appendChild(button);
+
+      const descriptor = getElementDescriptor(button);
+      expect(descriptor.attributeName).toBe('text');
+      // MAX_IDENTIFIABLE_TEXT_LENGTH is 25; shortened without cutting words.
+      expect(descriptor.identifiableText).toBe('This is a very long');
+      expect(descriptor.identifiableText.length).toBeLessThanOrEqual(25);
+    });
+
+    it('should use only the first line of direct text when text wins', () => {
+      const button = document.createElement('button');
+      button.textContent = 'First line label\nSecond line ignored';
+      button.setAttribute('title', 'Title');
+      document.body.appendChild(button);
+
+      const descriptor = getElementDescriptor(button);
+      expect(descriptor.attributeName).toBe('text');
+      expect(descriptor.identifiableText).toBe('First line label');
+    });
+
+    it('should assign a shared index sequence by text when text wins over differing attributes', () => {
+      const b1 = document.createElement('button');
+      b1.textContent = 'Save';
+      b1.setAttribute('title', 'A');
+      document.body.appendChild(b1);
+
+      const b2 = document.createElement('button');
+      b2.textContent = 'Save';
+      b2.setAttribute('title', 'B');
+      document.body.appendChild(b2);
+
+      const b3 = document.createElement('button');
+      b3.textContent = 'Save';
+      b3.setAttribute('aria-label', 'C');
+      document.body.appendChild(b3);
+
+      [b1, b2, b3].forEach((btn, i) => {
+        expect(getElementDescriptor(btn)).toMatchObject({
+          identifiableText: 'Save',
+          attributeName: 'text',
+          type: 'button',
+          index: i + 1
+        });
+      });
+    });
+
+    it('should still resolve to an attribute when no direct text exists (regression)', () => {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'email-input';
+      document.body.appendChild(input);
+
+      expect(getElementDescriptor(input)).toEqual({
+        identifiableText: 'email-input',
+        attributeName: 'id',
+        index: 1,
+        type: 'textbox',
+        tagName: 'input'
+      });
+    });
+
+    it('should prefer text regardless of searchable attribute priority order', () => {
+      setSearchableAttributes(['title', 'id', 'placeholder']);
+
+      const button = document.createElement('button');
+      button.setAttribute('title', 'T');
+      button.setAttribute('id', 'I');
+      button.setAttribute('placeholder', 'P');
+      button.textContent = 'Label';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toMatchObject({
+        identifiableText: 'Label',
+        attributeName: 'text',
+        type: 'button'
+      });
+    });
+
+    it('should prefer text over aria-labelledby even when labelledby is the only attribute', () => {
+      const label = document.createElement('label');
+      label.id = 'lbl';
+      label.textContent = 'Referenced';
+      document.body.appendChild(label);
+
+      const button = document.createElement('button');
+      button.setAttribute('aria-labelledby', 'lbl');
+      button.textContent = 'Direct';
+      document.body.appendChild(button);
+
+      expect(getElementDescriptor(button)).toMatchObject({
+        identifiableText: 'Direct',
+        attributeName: 'text',
+        type: 'button',
+        index: 1
+      });
+    });
+  });
+
   describe('matchesAttribute', () => {
     it('should return false for null element', () => {
       expect(matchesAttribute(null, 'test')).toBe(false);

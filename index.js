@@ -274,6 +274,10 @@ var ElementFinder = (() => {
     return text;
   }
   function getElementDescriptorText(el) {
+    const directText = shortenDescriptorText(getDirectText(el));
+    if (directText && !isIgnoredElement(el)) {
+      return { attributeName: "text", identifiableText: directText };
+    }
     const values = getSearchableAttributeValues(el);
     const attrs = SEARCHABLE_ATTRIBUTES;
     for (let i = 0; i < attrs.length; i++) {
@@ -283,10 +287,6 @@ var ElementFinder = (() => {
       if (rawText) {
         return { attributeName: attr, identifiableText: rawText };
       }
-    }
-    const directText = shortenDescriptorText(getDirectText(el));
-    if (directText && !isIgnoredElement(el)) {
-      return { attributeName: "text", identifiableText: directText };
     }
     return null;
   }

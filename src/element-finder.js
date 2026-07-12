@@ -313,11 +313,20 @@ function getResolvedAriaLabelledByText(el) {
 }
 
 /**
- * Gets the first searchable attribute or text fallback identifiable text for an element.
+ * Gets the first identifiable text for an element, preferring direct text over
+ * searchable attributes. Direct text nodes are checked first; if none exist (or
+ * the element is ignored), the searchable-attribute priority list is used as a
+ * fallback. This keeps human-visible text as the primary descriptor source.
  * @param {Element} el - The DOM element to describe
  * @returns {{attributeName: string|null, identifiableText: string}|null} Descriptor source and identifiable text
  */
 function getElementDescriptorText(el) {
+  // Text-first: prefer direct text nodes over any searchable attribute.
+  const directText = shortenDescriptorText(getDirectText(el));
+  if (directText && !isIgnoredElement(el)) {
+    return { attributeName: 'text', identifiableText: directText };
+  }
+
   const values = getSearchableAttributeValues(el);
   const attrs = SEARCHABLE_ATTRIBUTES;
 
@@ -334,11 +343,6 @@ function getElementDescriptorText(el) {
     if (rawText) {
       return { attributeName: attr, identifiableText: rawText };
     }
-  }
-
-  const directText = shortenDescriptorText(getDirectText(el));
-  if (directText && !isIgnoredElement(el)) {
-    return { attributeName: 'text', identifiableText: directText };
   }
 
   return null;
@@ -499,8 +503,9 @@ function getElementDescriptorType(el) {
 
 /**
  * Gets a plain-text identifier for a DOM element.
- * Uses the first non-empty searchable attribute value, falls back to element text,
- * reports occurrence index within the current frame, and includes the semantic element type.
+ * Prefers an element's direct text over searchable attributes, falling back to the
+ * first non-empty searchable attribute value when no direct text exists, then reports
+ * the occurrence index within the current frame and includes the semantic element type.
  * @param {Element|null|undefined} el - The DOM element to describe
  * @param {boolean} [includeHidden=true] - Whether to include hidden elements in the index count. Default true.
  * @returns {{identifiableText: string|null, attributeName: string|null, index: number, type: string|null, tagName: string|null}} Element descriptor
