@@ -86,21 +86,24 @@ var ElementFinder = (() => {
 
   // src/searchable-attributes.json
   var searchable_attributes_default = [
+    "name",
+    "aria-label",
+    "aria-labelledby",
+    "aria-placeholder",
+    "aria-valuetext",
+    "aria-description",
     "placeholder",
-    "value",
+    "hint",
+    "title",
+    "tooltip",
+    "alt",
     "data-value",
     "data-test-id",
     "data-testid",
     "id",
     "resource-id",
-    "name",
-    "aria-label",
-    "hint",
-    "title",
-    "tooltip",
-    "alt",
     "src",
-    "aria-labelledby"
+    "value"
   ];
 
   // src/element-finder.js
