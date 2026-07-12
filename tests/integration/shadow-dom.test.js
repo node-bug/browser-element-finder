@@ -9,8 +9,7 @@ import { createDriverFixture, loadFixture } from './helpers/driver-helper.js';
 describe('ElementFinder - Shadow DOM Fixture', () => {
   const fixture = createDriverFixture({
     url: loadFixture('shadow-dom.html'),
-    injectFinder: true,
-    sleep: 2000
+    injectFinder: true
   });
 
   beforeAll(async () => {

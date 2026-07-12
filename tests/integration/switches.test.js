@@ -9,8 +9,7 @@ import { createDriverFixture, loadFixture } from './helpers/driver-helper.js';
 describe('ElementFinder - Switches Fixture', () => {
   const fixture = createDriverFixture({
     url: loadFixture('switches.html'),
-    injectFinder: true,
-    sleep: 2000
+    injectFinder: true
   });
 
   beforeAll(async () => {

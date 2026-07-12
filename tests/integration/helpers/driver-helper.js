@@ -79,6 +79,19 @@ function createDriverFixture(options = {}) {
         console.log('Finder injected');
       }
 
+      if (options.injectFinder) {
+        // Wait until the injected finder is actually available instead of
+        // idling for a fixed duration. This removes dead time from every
+        // integration test (the fixture is a synchronous data: URL, so the
+        // finder is normally ready immediately).
+        await driver.wait(
+          () => driver.executeScript('return typeof window.ElementFinder !== "undefined"'),
+          10000,
+          'ElementFinder was not injected into the page',
+        );
+      }
+
+      // Optional extra idle buffer after the finder is ready (rarely needed).
       if (options.sleep) {
         await driver.sleep(options.sleep);
       }
