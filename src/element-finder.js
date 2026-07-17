@@ -531,7 +531,8 @@ export function getElementDescriptor(el, includeHidden = true) {
       attributeName: null,
       index: getElementPositionAmongType(el, type, includeHidden),
       type,
-      tagName: el.tagName.toLowerCase()
+      tagName: el.tagName.toLowerCase(),
+      formState: getFormState(el, type)
     };
   }
 
@@ -542,8 +543,121 @@ export function getElementDescriptor(el, includeHidden = true) {
     attributeName: descriptorSource.attributeName,
     index: uniqueness.index,
     type,
-    tagName: el.tagName.toLowerCase()
+    tagName: el.tagName.toLowerCase(),
+    formState: getFormState(el, type)
   };
+}
+
+/**
+ * Captures the current interactive state of a form control so that form
+ * actions (typing, selecting, toggling) can be replayed faithfully and the
+ * dashboard can display what was entered/selected. Only form semantic types
+ * produce a `formState`; for all other types this returns `undefined`.
+ *
+ * The shape is keyed by semantic type:
+ * - `textbox` / `colorpicker` / `datepicker`: `{ value: string }`
+ * - `checkbox`: `{ checked: boolean }`
+ * - `radio`: `{ set: boolean }`
+ * - `switch`: `{ on: boolean }`
+ * - `dropdown`: `{ selected: string|null, options: string[] }`
+ * - `slider`: `{ value: number }`
+ * - `file`: `{ fileName: string|null }`
+ *
+ * Reads are defensive: a control without a usable value (e.g. a detached
+ * element) yields an empty/neutral state rather than throwing.
+ *
+ * @param {Element} el - The DOM element to inspect
+ * @param {string|null} type - The semantic element type from `getElementDescriptorType`
+ * @returns {Object|undefined} The form state object, or `undefined` for non-form types
+ */
+export function getFormState(el, type) {
+  if (el == null || type == null) return undefined;
+
+  switch (type) {
+    case 'textbox':
+    case 'colorpicker':
+    case 'datepicker': {
+      const read = () => (el.value != null ? String(el.value) : '');
+      return { value: safeRead(read, '') };
+    }
+
+    case 'checkbox': {
+      const read = () => Boolean(el.checked);
+      return { checked: safeRead(read, false) };
+    }
+
+    case 'radio': {
+      const read = () => Boolean(el.checked);
+      return { set: safeRead(read, false) };
+    }
+
+    case 'switch': {
+      // Switches may be a native checkbox (role=switch) or a custom control
+      // whose on/off state is reflected via aria-checked.
+      const read = () => {
+        if (typeof el.checked === 'boolean') {
+          return el.checked;
+        }
+        const ariaChecked = el.getAttribute('aria-checked');
+        return ariaChecked === 'true';
+      };
+      return { on: safeRead(read, false) };
+    }
+
+    case 'dropdown': {
+      const read = () => {
+        const optionEls = Array.from(el.options || el.querySelectorAll('option'));
+        const options = optionEls
+          .map((o) => (o.textContent || o.getAttribute('value') || '').trim())
+          .filter((t) => t !== '');
+        const selectedEl = el.selectedOptions && el.selectedOptions.length > 0
+          ? el.selectedOptions[0]
+          : (el.options ? el.options[el.selectedIndex] : undefined);
+        const selected = selectedEl
+          ? (selectedEl.textContent || selectedEl.getAttribute('value') || '').trim() || null
+          : null;
+        return { selected, options };
+      };
+      const fallback = { selected: null, options: [] };
+      return safeRead(read, fallback);
+    }
+
+    case 'slider': {
+      const read = () => {
+        const raw = el.value != null && el.value !== '' ? Number(el.value) : 0;
+        return Number.isNaN(raw) ? 0 : raw;
+      };
+      return { value: safeRead(read, 0) };
+    }
+
+    case 'file': {
+      const read = () => {
+        if (el.files && el.files.length > 0) {
+          return el.files[0].name || null;
+        }
+        return null;
+      };
+      return { fileName: safeRead(read, null) };
+    }
+
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Reads a form-control value defensively, returning `fallback` when the read
+ * throws (e.g. the element is detached or the property access is blocked).
+ * @param {Function} read - Zero-arg function that returns the resolved value.
+ * @param {*} fallback - Value returned when `read` throws.
+ * @returns {*}
+ */
+function safeRead(read, fallback) {
+  try {
+    return read();
+  } catch {
+    return fallback;
+  }
 }
 
 /**
@@ -1426,6 +1540,42 @@ export function getViewportElementCounts(type = null, parent = null) {
   }
 
   return counts;
+}
+
+/**
+ * Collects all identifiable elements across all same-origin frames and returns
+ * them grouped by frame number. Each element is represented as a compact
+ * `type:identifiableText` string (no objects) to keep overhead minimal.
+ *
+ * Hidden elements are included (no visibility filtering), matching the
+ * Fluens state-capture behavior. Cross-origin iframes are silently skipped by
+ * `getAllFrames()` (it throws on access and is caught internally).
+ *
+ * @param {Window} [win=window] - The top-level window to start from
+ * @returns {Array<{frame: number, elements: string[]}>} Accessibility tree grouped by frame
+ */
+export function getAccessibilityTree(win = window) {
+  const frames = getAllFrames(win);
+  const tree = [];
+
+  for (let fi = 0; fi < frames.length; fi++) {
+    const frameDoc = frames[fi].document;
+    const elements = getAllElements(frameDoc);
+    const entries = [];
+
+    for (let i = 0; i < elements.length; i++) {
+      const el = elements[i];
+      const descriptor = getElementDescriptorText(el);
+      if (!descriptor || !descriptor.identifiableText) continue;
+
+      const type = getElementDescriptorType(el);
+      entries.push(`${type}:${descriptor.identifiableText}`);
+    }
+
+    tree.push({ frame: fi, elements: entries });
+  }
+
+  return tree;
 }
 
 /**

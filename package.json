@@ -53,6 +53,7 @@
     "prepack": "npm run build",
     "lint": "eslint .",
     "test": "npm run build && vitest run",
+    "test:baselines": "npm run build && node scripts/generate-a11y-baselines.js",
     "test:watch": "npm run build && vitest",
     "test:coverage": "npm run build && vitest run --coverage",
     "prepare": "husky && echo 'npx lint-staged' > .husky/pre-commit && chmod +x .husky/pre-commit"

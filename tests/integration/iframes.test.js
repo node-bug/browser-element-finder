@@ -83,11 +83,15 @@ describe('ElementFinder - Iframes Fixture', () => {
   });
 
   describe('findElementsByAttribute', () => {
-    it('should find elements matching visible text "Iframe Checkbox"', async () => {
+    it('should return elements inside same-origin iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Iframe Checkbox');
       `);
-      expect(result.elements.length).toBe(2);
+      // Elements inside iframes are returned but cannot carry an element
+      // reference across the frame boundary, so they have frameIndex !== -1
+      // and no `element` property.
+      const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
+      expect(iframeElements.length).toBe(2);
     });
 
     it('should find elements by id attribute and validate first match', async () => {
@@ -114,14 +118,20 @@ describe('ElementFinder - Iframes Fixture', () => {
       expect(testDataId).toBe('main-checkbox');
     });
 
-    it('should find elements matching "Data URL Button"', async () => {
+    it('should match the data-URL iframe element itself via its src attribute', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Data URL Button');
       `);
+      // The data: URL iframe has an opaque origin, so its inner content is not
+      // traversed. Instead the <iframe> element in the main document matches
+      // because its `src` attribute contains the search text.
       expect(result.elements.length).toBe(1);
+      expect(result.elements[0].frameIndex).toBe(-1);
+      expect(result.elements[0].element).toBeTruthy();
+      expect(result.elements[0].tagName.toLowerCase()).toBe('iframe');
     });
 
-    it('should find elements by id attribute "iframe-checkbox" (in iframe)', async () => {
+    it('should return iframe elements by id attribute "iframe-checkbox" without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('iframe-checkbox');
       `);
@@ -129,7 +139,7 @@ describe('ElementFinder - Iframes Fixture', () => {
       expect(iframeElements.length).toBe(2);
     });
 
-    it('should find elements by name attribute "iframeCheckbox" (in iframe)', async () => {
+    it('should return iframe elements by name attribute "iframeCheckbox" without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('iframeCheckbox');
       `);
@@ -144,8 +154,11 @@ describe('ElementFinder - Iframes Fixture', () => {
       const resultUpper = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Iframe Checkbox');
       `);
+      // "iframe checkbox" (lowercase) matches nothing; "Iframe Checkbox" matches
+      // the two same-origin iframe elements (returned without element refs).
       expect(resultLower.elements.length).toBe(0);
-      expect(resultUpper.elements.length).toBe(2);
+      const upperIframe = resultUpper.elements.filter(e => !e.element && e.frameIndex !== -1);
+      expect(upperIframe.length).toBe(2);
     });
   });
 });

@@ -347,12 +347,15 @@ describe('ElementFinder - Switches Fixture', () => {
   });
 
   describe('findElementsByAttribute - Iframe', () => {
-    it('should find switch inside iframe by label text and validate first match', async () => {
+    it('should return switch inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Document Switch Window Node');
       `);
-      // Iframe elements are found but may not have a direct element reference
-      expect(result.elements.length).toBe(1);
+      // Iframe elements are returned but cannot carry an element reference
+      // across the frame boundary, so they have frameIndex !== -1 and no
+      // `element` property.
+      const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
+      expect(iframeElements.length).toBe(1);
     });
   });
 });

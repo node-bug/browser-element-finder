@@ -173,41 +173,41 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   });
 
   describe('findElementsByType - Shadow DOM in Iframe (Section 5)', () => {
-    it('should find buttons in shadow DOM inside iframe', async () => {
+    it('should return elements inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('button');
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
-      expect(iframeElements.length).toBeGreaterThan(0);
+      expect(iframeElements.length).toBe(4);
     });
 
-    it('should find textboxes in shadow DOM inside iframe', async () => {
+    it('should return textboxes inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('textbox');
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
-      expect(iframeElements.length).toBeGreaterThan(0);
+      expect(iframeElements.length).toBe(3);
     });
 
-    it('should find checkboxes in shadow DOM inside iframe', async () => {
+    it('should return checkboxes inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('checkbox');
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
-      expect(iframeElements.length).toBeGreaterThan(0);
+      expect(iframeElements.length).toBe(1);
     });
 
-    it('should find buttons in nested shadow inside iframe', async () => {
+    it('should return elements in nested shadow inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByType('button');
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
-      expect(iframeElements.length).toBeGreaterThan(0);
+      expect(iframeElements.length).toBe(4);
     });
   });
 
   describe('findElementsByAttribute - Shadow DOM in Iframe (Section 5)', () => {
-    it('should find elements in shadow DOM inside iframe', async () => {
+    it('should return elements in shadow DOM inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Shadow input in frame');
       `);
@@ -215,7 +215,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
       expect(iframeElements.length).toBe(1);
     });
 
-    it('should find buttons in shadow DOM inside iframe', async () => {
+    it('should return buttons in shadow DOM inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Shadow Frame Button');
       `);
@@ -223,7 +223,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
       expect(iframeElements.length).toBe(1);
     });
 
-    it('should find elements in nested shadow inside iframe', async () => {
+    it('should return elements in nested shadow inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Frame Inner Button');
       `);

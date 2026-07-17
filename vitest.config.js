@@ -8,7 +8,7 @@ export default defineConfig({
     testTimeout: 60000,
     hookTimeout: 120000,
     include: ['tests/**/*.js'],
-    exclude: ['tests/integration/helpers/**'],
+    exclude: ['tests/integration/helpers/**', 'tests/helpers/**'],
     // Run integration tests serially to avoid spawning too many Chrome processes
     // and to ensure proper cleanup between test files
     maxWorkers: 2,

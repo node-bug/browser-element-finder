@@ -27,11 +27,13 @@ var ElementFinder = (() => {
     findElementsByType: () => findElementsByType,
     findOverlayElements: () => findOverlayElements,
     findProbableElements: () => findProbableElements,
+    getAccessibilityTree: () => getAccessibilityTree,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
     getElementCounts: () => getElementCounts,
     getElementDescriptor: () => getElementDescriptor,
+    getFormState: () => getFormState,
     getIgnoredTags: () => getIgnoredTags,
     getSearchableAttributeValues: () => getSearchableAttributeValues,
     getSearchableAttributes: () => getSearchableAttributes,
@@ -396,7 +398,8 @@ var ElementFinder = (() => {
         attributeName: null,
         index: getElementPositionAmongType(el, type, includeHidden),
         type,
-        tagName: el.tagName.toLowerCase()
+        tagName: el.tagName.toLowerCase(),
+        formState: getFormState(el, type)
       };
     }
     const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type, includeHidden);
@@ -405,8 +408,74 @@ var ElementFinder = (() => {
       attributeName: descriptorSource.attributeName,
       index: uniqueness.index,
       type,
-      tagName: el.tagName.toLowerCase()
+      tagName: el.tagName.toLowerCase(),
+      formState: getFormState(el, type)
     };
+  }
+  function getFormState(el, type) {
+    if (el == null || type == null) return void 0;
+    switch (type) {
+      case "textbox":
+      case "colorpicker":
+      case "datepicker": {
+        const read = () => el.value != null ? String(el.value) : "";
+        return { value: safeRead(read, "") };
+      }
+      case "checkbox": {
+        const read = () => Boolean(el.checked);
+        return { checked: safeRead(read, false) };
+      }
+      case "radio": {
+        const read = () => Boolean(el.checked);
+        return { set: safeRead(read, false) };
+      }
+      case "switch": {
+        const read = () => {
+          if (typeof el.checked === "boolean") {
+            return el.checked;
+          }
+          const ariaChecked = el.getAttribute("aria-checked");
+          return ariaChecked === "true";
+        };
+        return { on: safeRead(read, false) };
+      }
+      case "dropdown": {
+        const read = () => {
+          const optionEls = Array.from(el.options || el.querySelectorAll("option"));
+          const options = optionEls.map((o) => (o.textContent || o.getAttribute("value") || "").trim()).filter((t) => t !== "");
+          const selectedEl = el.selectedOptions && el.selectedOptions.length > 0 ? el.selectedOptions[0] : el.options ? el.options[el.selectedIndex] : void 0;
+          const selected = selectedEl ? (selectedEl.textContent || selectedEl.getAttribute("value") || "").trim() || null : null;
+          return { selected, options };
+        };
+        const fallback = { selected: null, options: [] };
+        return safeRead(read, fallback);
+      }
+      case "slider": {
+        const read = () => {
+          const raw = el.value != null && el.value !== "" ? Number(el.value) : 0;
+          return Number.isNaN(raw) ? 0 : raw;
+        };
+        return { value: safeRead(read, 0) };
+      }
+      case "file": {
+        const read = () => {
+          if (el.files && el.files.length > 0) {
+            return el.files[0].name || null;
+          }
+          return null;
+        };
+        return { fileName: safeRead(read, null) };
+      }
+      default:
+        return void 0;
+    }
+  }
+  function safeRead(read, fallback) {
+    try {
+      return read();
+    } catch (e) {
+      return fallback;
+    }
   }
   function parseXPath(expr, el, depth = 0) {
     if (expr == null || el == null) return false;
@@ -963,6 +1032,24 @@ var ElementFinder = (() => {
       }
     }
     return counts;
+  }
+  function getAccessibilityTree(win = window) {
+    const frames = getAllFrames(win);
+    const tree = [];
+    for (let fi = 0; fi < frames.length; fi++) {
+      const frameDoc = frames[fi].document;
+      const elements = getAllElements(frameDoc);
+      const entries = [];
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        const descriptor = getElementDescriptorText(el);
+        if (!descriptor || !descriptor.identifiableText) continue;
+        const type = getElementDescriptorType(el);
+        entries.push(`${type}:${descriptor.identifiableText}`);
+      }
+      tree.push({ frame: fi, elements: entries });
+    }
+    return tree;
   }
   function findElements(type = null, text = null, exact = false, parent = null) {
     if (text === null || text === void 0) {
