@@ -156,9 +156,9 @@ If no attribute matches, falls back to direct text nodes, then full `textContent
 ### Shadow DOM & Iframe Support
 
 - **Shadow DOM**: `getAllElements()` uses iterative stack-based traversal with shadow root penetration
-- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`) and `getElementCounts`/`getViewportElementCounts` return data for the **main document only** — elements inside iframes are excluded because their `element` reference cannot be serialized across the frame boundary. `getAccessibilityTree` is the exception: it traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`).
+- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) and `getElementCounts`/`getViewportElementCounts` traverse **all** same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. `getAccessibilityTree(viewportOnly)` also traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`).
 - **Cross-origin iframes**: Gracefully skipped with `SecurityError` handling
-- **Searching iframe contents**: Switch into the iframe context, then run the finder inside that frame.
+- **Searching iframe contents**: Switch into the iframe context, then run the finder inside that frame to get interactable `element` references.
 
 ### Return Format
 
@@ -168,7 +168,7 @@ All search functions return:
 {
   elements: [
     {
-      element: Element, // main document only; iframe elements are excluded
+      element: Element | undefined, // undefined for iframe elements (cross-frame boundary)
       boundingBox: {
         x,
         y,

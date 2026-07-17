@@ -1033,8 +1033,8 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function getAccessibilityTree(win = window, viewportOnly = false) {
-    const frames = getAllFrames(win);
+  function getAccessibilityTree(viewportOnly = false) {
+    const frames = getAllFrames(window);
     const tree = [];
     for (let fi = 0; fi < frames.length; fi++) {
       const frameDoc = frames[fi].document;

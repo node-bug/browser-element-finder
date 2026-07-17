@@ -1,5 +1,5 @@
 /**
- * Integration tests for getAccessibilityTree(window, true)
+ * Integration tests for getAccessibilityTree(viewportOnly)
  * Runs in a real Chrome browser via Selenium WebDriver.
  */
 
@@ -24,7 +24,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should return two frame groups (main document + same-origin iframe)', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, false);
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -37,7 +37,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should include main-document elements in frame -1', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, false);
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     const main = tree.find((g) => g.frame === -1);
@@ -50,7 +50,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should include same-origin iframe elements in frame 0', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, false);
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     // The same-origin iframe is returned as frame 0 with its own elements.
@@ -62,7 +62,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should match the committed baseline for accessibility-tree.html', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, false);
+      return ElementFinder.getAccessibilityTree(false);
     `);
     const baseline = loadA11yBaseline('accessibility-tree.json');
     expect(tree).toEqual(baseline);
@@ -86,7 +86,7 @@ describe('ElementFinder - getAccessibilityTree cross-origin handling', () => {
 
   it('should not throw and should skip the cross-origin iframe but include same-origin iframes', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, false);
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -109,7 +109,7 @@ describe('ElementFinder - getAccessibilityTree cross-origin handling', () => {
 
   it('should match the committed baseline for iframes.html', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, false);
+      return ElementFinder.getAccessibilityTree(false);
     `);
     const baseline = loadA11yBaseline('iframes.json');
     expect(tree).toEqual(baseline);
@@ -117,14 +117,30 @@ describe('ElementFinder - getAccessibilityTree cross-origin handling', () => {
 });
 
 // Validate getAccessibilityTree against the committed baseline for every
-// browser-rendered fixture (those relying on iframes / shadow DOM layout) so
-// regressions are caught in future runs.
+// fixture in the repo that has a baseline (viewportOnly = false returns the
+// complete page). This catches regressions across all available fixtures.
 const BROWSER_FIXTURES = [
+  'accessibility-tree-empty.html',
   'accessibility-tree.html',
+  'animations.html',
+  'attributes.html',
+  'demo-page.html',
+  'dropdowns.html',
+  'edge-cases.html',
+  'element-types-unit.html',
+  'element-types.html',
+  'find-elements.html',
+  'forms.html',
   'iframes.html',
+  'interactive-elements.html',
+  'overlay-link.html',
+  'overlays-unit.html',
+  'overlays.html',
   'radio-iframe-table.html',
   'shadow-dom.html',
   'switches.html',
+  'tables.html',
+  'viewport.html',
 ];
 
 describe('ElementFinder - getAccessibilityTree baseline parity (all browser fixtures)', () => {
@@ -146,7 +162,7 @@ describe('ElementFinder - getAccessibilityTree baseline parity (all browser fixt
 
       it(`should match the committed baseline for ${fixtureName}`, async () => {
         const tree = await fixture.driver.executeScript(`
-          return ElementFinder.getAccessibilityTree(window, false);
+          return ElementFinder.getAccessibilityTree(false);
         `);
         const baseline = loadA11yBaseline(fixtureName.replace(/\.html$/, '.json'));
         expect(tree).toEqual(baseline);
@@ -175,7 +191,7 @@ describe('ElementFinder - getAccessibilityTree viewportOnly parameter', () => {
 
   it('should return only in-viewport elements when viewportOnly is true (default)', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, true);
+      return ElementFinder.getAccessibilityTree(true);
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -197,7 +213,7 @@ describe('ElementFinder - getAccessibilityTree viewportOnly parameter', () => {
 
   it('should return the complete page when viewportOnly is false', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, false);
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -222,7 +238,7 @@ describe('ElementFinder - getAccessibilityTree viewportOnly parameter', () => {
     `);
 
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree(window, true);
+      return ElementFinder.getAccessibilityTree(true);
     `);
 
     const main = tree[0];

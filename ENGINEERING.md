@@ -1,6 +1,6 @@
 # Engineering Documentation: Browser Element Finder
 
-**Version**: 1.3.4  
+**Version**: 1.3.5  
 **Last Updated**: June 2026  
 **Purpose**: Complete technical reference for developing, maintaining, and extending the browser-element-finder library.
 
@@ -78,11 +78,29 @@ browser-element-finder/
 │   ├── unit/                          # Fast JSDOM tests
 │   │   ├── find-elements.test.js
 │   │   ├── attributes.test.js
-│   │   └── types.test.js
-│   └── integration/                   # Real browser Selenium tests
-│       ├── types/
-│       ├── attributes/
-│       └── fixtures/
+│   │   ├── types.test.js
+│   │   ├── accessibility-tree.test.js
+│   │   ├── animations.test.js
+│   │   ├── edge-cases.test.js
+│   │   ├── form-state.test.js
+│   │   ├── overlay-elements.test.js
+│   │   └── viewport.test.js
+│   ├── integration/                   # Real browser Selenium tests
+│   │   ├── element-types.test.js
+│   │   ├── dropdowns.test.js
+│   │   ├── forms.test.js
+│   │   ├── iframes.test.js
+│   │   ├── overlays.test.js
+│   │   ├── radio-iframe-table.test.js
+│   │   ├── shadow-dom.test.js
+│   │   ├── switches.test.js
+│   │   ├── tables.test.js
+│   │   ├── accessibility-tree.test.js
+│   │   ├── helpers/
+│   │   └── fixtures/
+│   └── fixtures/                      # Shared HTML test pages
+├── scripts/
+│   └── build.js                       # esbuild IIFE bundler
 ├── package.json
 ├── vitest.config.js
 ├── eslint.config.js
@@ -248,7 +266,7 @@ export function getAllFrames(root = window) {
 - **Recursive structure**: Handles nested iframes and frames within frames
 - **Metadata tracking**: Each frame includes its index for debugging and context switching
 - **Graceful degradation**: Partial results from accessible frames if some are cross-origin
-- **Main document only for results**: Because an element reference inside an iframe cannot be serialized across the frame boundary, search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`) and `getElementCounts`/`getViewportElementCounts` return data for the main document only. Iframe contents are excluded. To search inside an iframe, switch into the iframe context and run the finder there. `getAccessibilityTree` is the exception: it traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`), so iframe contents are included.
+- **All same-origin frames for results**: Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) and `getElementCounts`/`getViewportElementCounts` traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. To get interactable `element` references for iframe contents, switch into the iframe context and run the finder there. `getAccessibilityTree(viewportOnly)` also traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`).
 
 ### 2.6 Shadow DOM Traversal
 
@@ -405,30 +423,31 @@ function parseCondition(cond, el) {
 
 ```json
 {
-  "button": "self::button or @role='button' or @type='button' or @type='submit'",
-  "textbox": "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email' or @type='number' or @type='tel' or @type='url')) or @role='textbox'",
-  "checkbox": "(self::input and @type='checkbox') or @role='checkbox'",
-  "switch": "(self::input and @type='checkbox') or @role='switch' or (self::button and (contains(@class, 'switch') or @data-state))",
-  "slider": "self::input[@type='range'] or @role='slider'",
-  "datepicker": "self::input and @type='date'",
-  "colorpicker": "self::input and @type='color'",
-  "radio": "(self::input and @type='radio') or @role='radio'",
-  "dropdown": "(self::select[descendant::option] or @role='combobox' or @role='listbox' or contains(@class, 'dropdown') or contains(@class, 'trigger') or ancestor::*[contains(@class, 'dropdown') or @role='combobox'])",
   "link": "self::a or @role='link' or @href",
   "navigation": "@role='navigation' or self::nav",
   "heading": "@role='heading' or self::h1 or self::h2 or self::h3 or self::h4 or self::h5 or self::h6",
+  "button": "self::button or @role='button' or @type='button' or @type='submit'",
+  "checkbox": "(self::input and @type='checkbox') or @role='checkbox'",
+  "switch": "(self::input and @type='checkbox') or @role='switch' or (self::button and (contains(@class, 'switch') or @data-state))",
+  "slider": "self::input[@type='range'] or @role='slider'",
+  "datepicker": "self::input[@type='date'] or @role='date'",
+  "colorpicker": "self::input[@type='color'] or @role='color'",
+  "radio": "(self::input and @type='radio') or @role='radio'",
+  "dropdown": "(self::select[descendant::option] or @role='combobox' or @role='listbox' or contains(@class, 'dropdown') or contains(@class, 'trigger') or ancestor::*[contains(@class, 'dropdown') or @role='combobox'])",
+  "textbox": "self::textarea or (self::input and (@type='text' or @type='password' or @type='search' or @type='email' or @type='number' or @type='tel' or @type='url')) or @role='textbox'",
+  "file": "self::input and @type='file'",
   "list": "self::ul or self::ol or @role='list'",
   "listitem": "self::li or @role='listitem'",
   "menu": "self::menu or @role='menu'",
   "menuitem": "@role='menuitem'",
   "toolbar": "@role='toolbar'",
-  "dialog": "@role='dialog'",
+  "dialog": "@role='dialog' or @role='alertdialog'",
   "table": "self::table or @role='table'",
   "row": "self::tr or @role='row'",
   "column": "self::td or self::th or @role='cell' or @role='gridcell' or @role='columnheader'",
   "cell": "self::td or @role='cell' or @role='gridcell'",
   "image": "self::img or @role='img' or @alt",
-  "file": "self::input and @type='file'",
+  "iframe": "self::iframe",
   "element": "true()"
 }
 ```
@@ -468,12 +487,12 @@ function parseCondition(cond, el) {
    it('should match native range inputs as slider', () => {
      const html = '<input type="range" min="0" max="100" />'
      const doc = new JSDOM(html).window.document
-     const result = findElementsByType('slider', null, doc.body)
+     const result = findElementsByType('slider', doc.body)
      expect(result.elements.length).toBe(1)
    })
    ```
 
-4. **Add integration test** in `tests/integration/types/`:
+4. **Add integration test** in `tests/integration/element-types.test.js`:
 
    ```javascript
    it('should find slider in complex form', async () => {
@@ -499,20 +518,24 @@ Attributes are searched in this order (from `searchable-attributes.json`):
 
 ```json
 [
-  "placeholder", // Form hints
-  "value", // Current form values
-  "data-test-id", // Test framework IDs
-  "data-testid", // Popular test library ID
-  "id", // Element ID
-  "resource-id", // Mobile/framework specific
   "name", // HTML name attribute
   "aria-label", // Accessibility labels
+  "aria-labelledby", // References to label elements
+  "aria-placeholder", // ARIA placeholder text
+  "aria-valuetext", // ARIA value text
+  "aria-description", // ARIA description
+  "placeholder", // Form hints
   "hint", // Framework hints
   "title", // Tooltip titles
   "tooltip", // Explicit tooltips
   "alt", // Image alt text
+  "data-value", // Framework value
+  "data-test-id", // Test framework IDs
+  "data-testid", // Popular test library ID
+  "id", // Element ID
+  "resource-id", // Mobile/framework specific
   "src", // Source attributes
-  "aria-labelledby" // References to label elements
+  "value" // Current form values
 ]
 ```
 
@@ -683,7 +706,7 @@ Behavior:
 
 ```javascript
 export function findElementsByType(type = 'element', parent = null)
-  → { elements: [...], totalCount: number }
+  → { elements: [...] }
 ```
 
 **Algorithm**:
@@ -722,7 +745,7 @@ const result = ElementFinder.findElementsByType('textbox', form)
 {
   elements: [
     {
-      element: Element,
+      element: Element | undefined, // undefined for iframe elements
       boundingBox: {
         x,
         y,
@@ -734,11 +757,14 @@ const result = ElementFinder.findElementsByType('textbox', form)
         right,
         midx,
         midy,
+        tagName,
       },
-      frameIndex: -1,
-      tagName: 'BUTTON',
+      frameIndex: -1, // -1 for main frame, 0+ for iframes
+      tagName: 'button', // lowercase
+      isHidden: false,
+      inViewport: true,
     },
-    // ... more elements (main document only; iframe contents excluded)
+    // ... more elements (all same-origin frames; iframe elements have frameIndex >= 0 and no element reference)
   ]
 }
 ```
@@ -751,7 +777,7 @@ const result = ElementFinder.findElementsByType('textbox', form)
 
 ```javascript
 export function findElementsByAttribute(value, exact = false, parent = null)
-  → { elements: [...], totalCount: number }
+  → { elements: [...] }
 ```
 
 **Algorithm**:
@@ -789,7 +815,7 @@ const result = ElementFinder.findElementsByAttribute('Close', false, dialog)
 
 ```javascript
 export function findElements(type = null, text = null, exact = false, parent = null)
-  → { elements: [...], totalCount: number }
+  → { elements: [...] }
 ```
 
 **Algorithm**:
@@ -839,7 +865,7 @@ const result = ElementFinder.findElements('textbox')
 
 ```javascript
 export function findProbableElements(elementType, attributeText, exact = false, parent = null)
-  → { elements: [...], totalCount: number }
+  → { elements: [...] }
 ```
 
 **Algorithm**:
@@ -988,23 +1014,24 @@ export function findOverlayElements(x = null, y = null)
 
 - If only one of `x` or `y` is provided, throws `TypeError: Both x and y coordinates must be provided together`
 - If either `x` or `y` is not a finite number, throws `TypeError: x and y must be finite numbers`
-- When both are `null` (default), performs full DOM scan of the main document (iframe contents excluded)
+- When both are `null` (default), performs a full DOM scan across all same-origin frames (iframe elements are returned with `frameIndex >= 0` and no `element` reference)
 
 **Key Differences from Other Search Functions**:
 
 - **Optional point-based search** — Accepts optional `x, y` coordinates for targeted overlay detection
-- **Heuristic-based detection** — Uses 6 priority-ordered heuristics to identify overlay elements
+- **Heuristic-based detection** — Uses priority-ordered heuristics to identify overlay elements
 - **No innermost filtering** — Returns all matching overlays (not just leaf elements)
-- **Main frame only for point search** — When coordinates are provided, only searches the main document via `elementsFromPoint()`
+- **Main frame only for point search** — When coordinates are provided, only searches the main document via `elementsFromPoint()` (cross-frame point lookup is not supported)
 
 **Detection Heuristics** (checked in priority order):
 
 1. **ARIA roles** — `role="dialog"`, `role="alertdialog"`, `role="tooltip"`, `role="menu"`, `role="listbox"`
 2. **aria-modal** — `aria-modal="true"`
-3. **Native dialog** — Open `<dialog>` element (has `.open` property or `open` attribute)
+3. **Native dialog** — Open `<dialog>` element (has `open` attribute)
 4. **Popover API** — Elements with `[popover]` attribute
 5. **High z-index + fixed/sticky** — `z-index > 999` with `position: fixed` or `position: sticky`
-6. **Class name patterns** — Classes containing cookie, consent, banner, overlay, modal, or popup
+6. **Moderate z-index + absolute** — `z-index > 100` with `position: absolute` and non-zero rendered dimensions
+7. **Class name patterns** — Classes matching `/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/`
 
 **Algorithm**:
 
@@ -1018,11 +1045,11 @@ When x and y are provided (point-based search):
 6. Return results (main frame only)
 
 When no coordinates are provided (full scan — default):
-1. Iterate the main document only (iframe contents are excluded)
+1. Iterate all same-origin frames (main document + iframes)
 2. Get all elements via getAllElements()
 3. Filter by isOverlayElement() heuristic check
-4. Map to qualified result format with boundingBox, tagName, frameIndex=-1, isHidden, inViewport
-5. Return results from the main document
+4. Map to qualified result format with boundingBox, tagName, frameIndex, isHidden, inViewport
+5. Return results (iframe elements have frameIndex >= 0 and no element reference)
 ```
 
 **Return Format**:
@@ -1059,9 +1086,9 @@ Same as other search functions — array of elements with metadata:
 **Example Usage**:
 
 ```javascript
-// Find all overlay elements on the page (full DOM scan)
+// Find all overlay elements on the page (full DOM scan across all same-origin frames)
 const overlays = ElementFinder.findOverlayElements()
-// Returns modals, dialogs, banners, popups, tooltips from the main document (iframe contents excluded)
+// Returns modals, dialogs, banners, popups, tooltips from all same-origin frames (iframe elements have no element reference)
 
 // Find overlays at a specific point (e.g., where a click was intercepted)
 const overlaysAtPoint = ElementFinder.findOverlayElements(100, 200)
@@ -1114,7 +1141,7 @@ This is more accurate than a full DOM scan because it identifies the element tha
 
 ### 6.1 `getElementCounts(type = null, parent = null)`
 
-**Purpose**: Count elements by semantic type and visibility across the main document (iframe contents excluded).
+**Purpose**: Count elements by semantic type and visibility across all same-origin frames (iframe elements are counted but have no `element` reference).
 
 **Signature**:
 
@@ -1153,7 +1180,7 @@ export function getElementCounts(type = null, parent = null)
 **Key Behaviors**:
 
 - Uses `findElements()` internally as the source of truth — counts match its returned element set including innermost filtering
-- Searches the main document only (iframe contents are excluded) by default
+- Traverses all same-origin frames by default (iframe elements are counted but have no `element` reference)
 - Returns `{ [type]: { visible: 0, hidden: 0, total: 0 } }` for unknown types (with console warning)
 - Throws `TypeError` if `type` is provided but not a string
 - The generic `element` type is included when counting all types
@@ -1220,7 +1247,7 @@ export function getViewportElementCounts(type = null, parent = null)
 - Filters by `inViewport()` — only elements whose bounding box intersects the visual viewport are counted
 - Elements outside the viewport are excluded entirely (not counted in any bucket)
 - The `total` count represents all viewport elements (`visible + hidden`), not all page elements
-- Searches the main document only (iframe contents are excluded) by default
+- Traverses all same-origin frames by default (iframe elements are counted but have no `element` reference)
 - Returns `{ [type]: { visible: 0, hidden: 0, total: 0 } }` for unknown types (with console warning)
 - Throws `TypeError` if `type` is provided but not a string
 
@@ -1264,25 +1291,27 @@ All find functions return a standardized object:
 {
   elements: [
     {
-      element: Element | undefined,
+      element: Element | undefined, // undefined for iframe elements (cross-frame boundary)
       boundingBox: {
-        x: number,           // Left edge relative to viewport
-        y: number,           // Top edge relative to viewport
-        width: number,       // Element width
-        height: number,      // Element height
-        top: number,         // Top edge (same as y)
-        bottom: number,      // Bottom edge (y + height)
-        left: number,        // Left edge (same as x)
-        right: number,       // Right edge (x + width)
-        midx: number,        // Center X coordinate
-        midy: number         // Center Y coordinate
+        x: number, // Left edge relative to viewport
+        y: number, // Top edge relative to viewport
+        width: number, // Element width
+        height: number, // Element height
+        top: number, // Top edge (same as y)
+        bottom: number, // Bottom edge (y + height)
+        left: number, // Left edge (same as x)
+        right: number, // Right edge (x + width)
+        midx: number, // Center X coordinate
+        midy: number, // Center Y coordinate
+        tagName: string, // Lowercase tag name (e.g., 'button')
       },
-      frameIndex: number,    // -1 for main frame, 0+ for iframes
-      tagName: string        // Uppercase tag name (e.g., 'BUTTON')
+      frameIndex: number, // -1 for main frame, 0+ for iframes
+      tagName: string, // Lowercase tag name (e.g., 'button')
+      isHidden: boolean, // true if hidden (display:none, visibility:hidden, hidden attr, inert, or zero dimensions)
+      inViewport: boolean, // true if any portion intersects the visual viewport
     },
     // ... more elements
-  ],
-  totalCount: number        // Total matches found
+  ]
 }
 ```
 
@@ -1318,17 +1347,17 @@ export function getBoundingBox(element) {
   const rect = element.getBoundingClientRect()
 
   return {
-    x: rect.left,
-    y: rect.top,
+    x: rect.x,
+    y: rect.y,
     width: rect.width,
     height: rect.height,
     top: rect.top,
     bottom: rect.bottom,
     left: rect.left,
     right: rect.right,
-    midx: rect.left + rect.width / 2,
-    midy: rect.top + rect.height / 2,
-    tagName: element.tagName,
+    midx: rect.x + rect.width / 2,
+    midy: rect.y + rect.height / 2,
+    tagName: element.tagName.toLowerCase(),
   }
 }
 ```
@@ -1371,13 +1400,12 @@ if (result.elements.length > 0) {
 
 **isHidden Detection**:
 
-The `isHidden` flag is determined by checking:
+The `isHidden` flag is determined by walking up the element's ancestors and checking each with `isElementHidden`, which checks (in priority order):
 
-1. `offsetWidth === 0 && offsetHeight === 0` - Element has no rendered dimensions
-2. CSS `visibility: hidden` or `visibility: collapse`
-3. CSS `display: none`
-4. Presence of `hidden` attribute`
-5. Element `inert` property
+1. `hidden` attribute or `inert` property — always wins
+2. `checkVisibility({ checkVisibilityCSS: true })` — the most reliable API (accounts for CSS display, visibility, opacity, clip, and zero-dimension wrappers). If it reports visible, the element is considered visible.
+3. CSS `visibility: hidden` / `visibility: collapse` or `display: none` (computed style fallback)
+4. When `checkVisibility` is unavailable: `offsetWidth === 0 && offsetHeight === 0` — element has no rendered dimensions
 
 **Note**: Zero opacity is NOT considered hidden. Sites use opacity transitions for lazy-loaded sections that fade in on scroll, and these elements are still laid out and interactable.
 
@@ -1438,23 +1466,26 @@ export function findElements(
   parent = null,
 ) {
   // Validate type parameter
-  if (type !== null && typeof type !== 'string') {
-    throw new TypeError(
-      `type must be null or a string, got ${typeof type} (${String(type).slice(0, 50)})`,
-    )
+  if (type !== null && type !== undefined && typeof type !== 'string') {
+    throw new TypeError(`type must be a string, got ${typeof type}`)
   }
 
   // Warn for unknown types but don't error
-  if (type !== null && !ELEMENT_DEFINITIONS[type]) {
+  if (type !== null && type !== undefined && !ELEMENT_DEFINITIONS[type]) {
     console.warn(
-      `Unknown element type: "${type}". Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`,
+      `Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`,
     )
-    return { elements: [], totalCount: 0 }
+    return { elements: [] }
   }
 
   // Validate text parameter
-  if (text !== null && typeof text !== 'string') {
-    throw new TypeError(`text must be null or a string, got ${typeof text}`)
+  if (
+    text !== '' &&
+    text !== null &&
+    text !== undefined &&
+    typeof text !== 'string'
+  ) {
+    throw new TypeError(`text must be a string, got ${typeof text}`)
   }
 
   // ... rest of function
@@ -1470,17 +1501,17 @@ export function findElements(
 ### 8.2 Parameter Normalization
 
 ```javascript
-// Empty strings treated as "no filter"
-if (text === '') text = null
+// Empty strings treated as "no filter" (kept as '' so the attribute filter is skipped)
+if (text === null || text === undefined) {
+  text = ''
+}
 
-// null/undefined normalized
-parent = parent || window.document.documentElement
-
-// Type defaults
-if (type === null && text === null) {
-  // Find all elements
+// null/undefined type normalized to 'element' (find all types)
+if (type === null || type === undefined) {
   type = 'element'
 }
+
+// parent defaults to null (searches the whole document/frame)
 ```
 
 ### 8.3 Silent Error Handling
@@ -1551,7 +1582,13 @@ try {
 tests/unit/
 ├── find-elements.test.js     # Combined search function tests
 ├── attributes.test.js        # Attribute matching tests
-└── types.test.js             # Type definition tests
+├── types.test.js             # Type definition tests
+├── accessibility-tree.test.js # getAccessibilityTree tests
+├── animations.test.js        # pauseAnimations/resumeAnimations tests
+├── edge-cases.test.js        # Null input, cross-frame, etc.
+├── form-state.test.js        # getFormState tests
+├── overlay-elements.test.js  # findOverlayElements tests
+└── viewport.test.js          # inViewport tests
 ```
 
 **Scope**: Individual function behavior, edge cases, error handling
@@ -1616,16 +1653,18 @@ npm test -- --run          # Run once, don't watch
 ```
 tests/integration/
 ├── helpers/
-│   └── driver-helper.js        # Selenium setup
-├── types/
-│   ├── element-types.test.js   # Type matching tests
-│   ├── find-elements.test.js   # Combined search tests
-│   ├── find-probable-elements.test.js  # Fallback tests
-│   └── ...
-├── attributes/
-│   ├── dropdowns.test.js
-│   ├── forms.test.js
-│   └── ...
+│   ├── driver-helper.js        # Selenium setup/teardown
+│   └── test-helpers.js         # Shared validation utilities
+├── element-types.test.js       # Type matching tests
+├── dropdowns.test.js           # Dropdown/search tests
+├── forms.test.js               # Form element tests
+├── iframes.test.js             # Cross-frame search tests
+├── overlays.test.js            # findOverlayElements tests
+├── radio-iframe-table.test.js  # Radio/table/iframe tests
+├── shadow-dom.test.js          # Shadow DOM traversal tests
+├── switches.test.js            # Switch element tests
+├── tables.test.js              # Table cell tests
+├── accessibility-tree.test.js  # getAccessibilityTree tests
 └── fixtures/
     ├── element-types.html      # Test HTML
     ├── forms.html

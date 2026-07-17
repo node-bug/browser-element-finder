@@ -1551,15 +1551,13 @@ export function getViewportElementCounts(type = null, parent = null) {
  * Fluens state-capture behavior. Cross-origin iframes are silently skipped by
  * `getAllFrames()` (it throws on access and is caught internally).
  *
- * @param {Window} [win=window] - The window (and document) to traverse. Defaults
- *   to the global window. Pass a JSDOM window in unit tests.
  * @param {boolean} [viewportOnly=false] - When true, only elements currently
  *   within the visual viewport are included. When false, elements from the
  *   complete page (including off-screen elements) are returned.
  * @returns {Array<{frame: number, elements: string[]}>} Accessibility tree grouped by frame
  */
-export function getAccessibilityTree(win = window, viewportOnly = false) {
-  const frames = getAllFrames(win);
+export function getAccessibilityTree(viewportOnly = false) {
+  const frames = getAllFrames(window);
   const tree = [];
 
   for (let fi = 0; fi < frames.length; fi++) {
