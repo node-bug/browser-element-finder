@@ -40,7 +40,7 @@ async function jsdomBaseline(fixtureRel, outName) {
   global.Node = dom.window.Node;
   global.window = dom.window;
 
-  const tree = getAccessibilityTree(false);
+  const tree = getAccessibilityTree(dom.window, false);
   writeBaseline(outName, tree);
 
   dom.window.close();
@@ -59,7 +59,7 @@ async function browserBaseline(fixtureRel, outName) {
   try {
     await fixture.setup();
     const tree = await fixture.driver.executeScript(
-      'return ElementFinder.getAccessibilityTree(false);',
+      'return ElementFinder.getAccessibilityTree(window, false);',
     );
     writeBaseline(outName, tree);
   } finally {
