@@ -1,0 +1,12 @@
+[
+  {
+    "frame": -1,
+    "elements": [
+      "element:Unit Tests - Animations",
+      "element:Animated Box",
+      "element:Fade Box",
+      "element:Static Box",
+      "button:Animated Button"
+    ]
+  }
+]

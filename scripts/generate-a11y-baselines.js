@@ -67,9 +67,41 @@ async function browserBaseline(fixtureRel, outName) {
   }
 }
 
-await jsdomBaseline('element-types-unit.html', 'element-types-unit.json');
-await jsdomBaseline('accessibility-tree-empty.html', 'accessibility-tree-empty.json');
-await browserBaseline('accessibility-tree.html', 'accessibility-tree.json');
-await browserBaseline('iframes.html', 'iframes.json');
+// All fixtures, classified by whether they require a real browser (iframes /
+// shadow DOM that needs layout) or can be rendered with JSDOM.
+const JSDOM_FIXTURES = [
+  'accessibility-tree-empty.html',
+  'animations.html',
+  'attributes.html',
+  'demo-page.html',
+  'dropdowns.html',
+  'edge-cases.html',
+  'element-types-unit.html',
+  'element-types.html',
+  'find-elements.html',
+  'forms.html',
+  'interactive-elements.html',
+  'overlay-link.html',
+  'overlays-unit.html',
+  'overlays.html',
+  'tables.html',
+  'viewport.html',
+];
+
+const BROWSER_FIXTURES = [
+  'accessibility-tree.html',
+  'iframes.html',
+  'radio-iframe-table.html',
+  'shadow-dom.html',
+  'switches.html',
+];
+
+for (const fixture of JSDOM_FIXTURES) {
+  await jsdomBaseline(fixture, fixture.replace(/\.html$/, '.json'));
+}
+
+for (const fixture of BROWSER_FIXTURES) {
+  await browserBaseline(fixture, fixture.replace(/\.html$/, '.json'));
+}
 
 console.log('Accessibility-tree baselines generated.');

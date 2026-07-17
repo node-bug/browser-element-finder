@@ -12,7 +12,7 @@
       "element:Some visible text",
       "iframe:tree-iframe"
     ],
-    "frame": 0
+    "frame": -1
   },
   {
     "elements": [
@@ -21,6 +21,6 @@
       "button:Login",
       "textbox:Search"
     ],
-    "frame": 1
+    "frame": 0
   }
 ]

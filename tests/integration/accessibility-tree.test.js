@@ -32,15 +32,15 @@ describe('ElementFinder - getAccessibilityTree', () => {
     expect(tree.length).toBe(2);
 
     const frames = tree.map((g) => g.frame).sort((a, b) => a - b);
-    expect(frames).toEqual([0, 1]);
+    expect(frames).toEqual([-1, 0]);
   });
 
-  it('should include main-document elements in frame 0', async () => {
+  it('should include main-document elements in frame -1', async () => {
     const tree = await fixture.driver.executeScript(`
       return ElementFinder.getAccessibilityTree();
     `);
 
-    const main = tree.find((g) => g.frame === 0);
+    const main = tree.find((g) => g.frame === -1);
     expect(main).toBeDefined();
     expect(main.elements).toContain('heading:Welcome');
     expect(main.elements).toContain('link:Home');
@@ -48,13 +48,13 @@ describe('ElementFinder - getAccessibilityTree', () => {
     expect(main.elements).toContain('textbox:Email');
   });
 
-  it('should include same-origin iframe elements in frame 1', async () => {
+  it('should include same-origin iframe elements in frame 0', async () => {
     const tree = await fixture.driver.executeScript(`
       return ElementFinder.getAccessibilityTree();
     `);
 
-    // The same-origin iframe is returned as frame 1 with its own elements.
-    const iframe = tree.find((g) => g.frame === 1);
+    // The same-origin iframe is returned as frame 0 with its own elements.
+    const iframe = tree.find((g) => g.frame === 0);
     expect(iframe).toBeDefined();
     expect(iframe.elements).toContain('heading:Iframe Heading');
     expect(iframe.elements).toContain('button:Login');
@@ -95,10 +95,10 @@ describe('ElementFinder - getAccessibilityTree cross-origin handling', () => {
     expect(tree.length).toBe(2);
 
     const frames = tree.map((g) => g.frame).sort((a, b) => a - b);
-    expect(frames).toEqual([0, 1]);
+    expect(frames).toEqual([-1, 0]);
 
     // The same-origin iframe IS included (proves same-origin traversal works).
-    const iframe = tree.find((g) => g.frame === 1);
+    const iframe = tree.find((g) => g.frame === 0);
     expect(iframe).toBeDefined();
     expect(iframe.elements).toContain('checkbox:iframeCheckbox');
 
@@ -114,4 +114,43 @@ describe('ElementFinder - getAccessibilityTree cross-origin handling', () => {
     const baseline = loadA11yBaseline('iframes.json');
     expect(tree).toEqual(baseline);
   });
+});
+
+// Validate getAccessibilityTree against the committed baseline for every
+// browser-rendered fixture (those relying on iframes / shadow DOM layout) so
+// regressions are caught in future runs.
+const BROWSER_FIXTURES = [
+  'accessibility-tree.html',
+  'iframes.html',
+  'radio-iframe-table.html',
+  'shadow-dom.html',
+  'switches.html',
+];
+
+describe('ElementFinder - getAccessibilityTree baseline parity (all browser fixtures)', () => {
+  for (const fixtureName of BROWSER_FIXTURES) {
+    describe(fixtureName, () => {
+      const fixture = createDriverFixture({
+        url: loadFixture(fixtureName),
+        injectFinder: true,
+        sleep: 300,
+      });
+
+      beforeAll(async () => {
+        await fixture.setup();
+      });
+
+      afterAll(async () => {
+        await fixture.teardown();
+      });
+
+      it(`should match the committed baseline for ${fixtureName}`, async () => {
+        const tree = await fixture.driver.executeScript(`
+          return ElementFinder.getAccessibilityTree();
+        `);
+        const baseline = loadA11yBaseline(fixtureName.replace(/\.html$/, '.json'));
+        expect(tree).toEqual(baseline);
+      });
+    });
+  }
 });

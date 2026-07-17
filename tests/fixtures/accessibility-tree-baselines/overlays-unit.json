@@ -1,0 +1,18 @@
+[
+  {
+    "frame": -1,
+    "elements": [
+      "element:Regular content",
+      "dialog:ARIA Dialog",
+      "button:Close",
+      "element:Native Dialog",
+      "button:Close",
+      "element:Cookies",
+      "button:Accept",
+      "element:Popover content",
+      "dialog:Alert",
+      "button:Yes",
+      "button:No"
+    ]
+  }
+]

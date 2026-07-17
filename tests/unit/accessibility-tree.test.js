@@ -45,7 +45,8 @@ describe('getAccessibilityTree Unit Tests', () => {
     const tree = getAccessibilityTree(window);
     expect(Array.isArray(tree)).toBe(true);
     expect(tree.length).toBe(1);
-    expect(tree[0].frame).toBe(0);
+    // The main document frame uses frameIndex -1 (consistent with getAllFrames).
+    expect(tree[0].frame).toBe(-1);
     expect(Array.isArray(tree[0].elements)).toBe(true);
     expect(tree[0].elements.length).toBeGreaterThan(0);
   });
@@ -70,7 +71,7 @@ describe('getAccessibilityTree Unit Tests', () => {
 
     const tree = getAccessibilityTree(emptyDom.window);
     expect(tree.length).toBe(1);
-    expect(tree[0].frame).toBe(0);
+    expect(tree[0].frame).toBe(-1);
     expect(tree[0].elements).toEqual([]);
 
     emptyDom.window.close();
@@ -107,5 +108,42 @@ describe('getAccessibilityTree Unit Tests', () => {
     expect(tree).toEqual(baseline);
 
     emptyDom.window.close();
+  });
+
+  // Validate getAccessibilityTree against the committed baseline for every
+  // JSDOM-renderable fixture so regressions are caught in future runs.
+  const JSDOM_FIXTURES = [
+    'accessibility-tree-empty.html',
+    'animations.html',
+    'attributes.html',
+    'demo-page.html',
+    'dropdowns.html',
+    'edge-cases.html',
+    'element-types-unit.html',
+    'element-types.html',
+    'find-elements.html',
+    'forms.html',
+    'interactive-elements.html',
+    'overlay-link.html',
+    'overlays-unit.html',
+    'overlays.html',
+    'tables.html',
+    'viewport.html',
+  ];
+
+  describe('baseline parity for all JSDOM fixtures', () => {
+    for (const fixture of JSDOM_FIXTURES) {
+      it(`should match the committed baseline for ${fixture}`, () => {
+        const fixturePath = resolve(__dirname, '..', 'fixtures', fixture);
+        const html = readFileSync(fixturePath, 'utf-8');
+        const dom = new JSDOM(html, { url: 'http://localhost', pretendToBeVisual: true });
+
+        const tree = getAccessibilityTree(dom.window);
+        const baseline = loadA11yBaseline(fixture.replace(/\.html$/, '.json'));
+        expect(tree).toEqual(baseline);
+
+        dom.window.close();
+      });
+    }
   });
 });

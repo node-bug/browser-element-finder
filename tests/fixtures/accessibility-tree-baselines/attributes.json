@@ -2,31 +2,27 @@
   {
     "frame": -1,
     "elements": [
-      "element:Unit Tests - Element",
+      "element:Unit Tests - Attributes",
       "button:Submit",
       "button:Cancel",
       "button:Click Me",
       "textbox:Enter name",
       "textbox:Enter email",
-      "textbox:Some text",
-      "checkbox:chk1",
+      "checkbox:agree",
       "radio:group1",
-      "slider:slider1",
-      "datepicker:datepicker1",
-      "colorpicker:colorpicker1",
       "link:Home",
       "link:About",
-      "dropdown:dropdown1",
+      "dropdown:Choose option",
       "element:Option 1",
       "element:Option 2",
+      "textbox:Some text",
+      "element:container-div",
       "element:Nested text",
       "table:test-table",
       "column:Name",
       "column:Age",
-      "column:City",
       "column:Alice",
-      "column:30",
-      "column:New York"
+      "column:30"
     ]
   }
 ]

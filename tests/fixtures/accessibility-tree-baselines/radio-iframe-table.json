@@ -1,0 +1,17 @@
+[
+  {
+    "elements": [
+      "element:viewport",
+      "element:Radio and iFrame Table",
+      "heading:Radio and iFrame Table",
+      "element:Image in iFrame:",
+      "iframe:frameName1",
+      "iframe:frameName2",
+      "column:RadioButton 1:",
+      "radio:radioGroup1",
+      "column:RadioButton 2:",
+      "radio:radioGroup1"
+    ],
+    "frame": -1
+  }
+]

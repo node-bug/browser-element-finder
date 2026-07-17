@@ -1,0 +1,23 @@
+[
+  {
+    "frame": -1,
+    "elements": [
+      "element:Unit Tests - Find",
+      "button:Submit",
+      "button:Cancel",
+      "button:Click Me",
+      "textbox:Enter name",
+      "textbox:Enter email",
+      "checkbox:agree",
+      "radio:group1",
+      "link:Home",
+      "link:About",
+      "dropdown:Choose option",
+      "element:Option 1",
+      "element:Option 2",
+      "textbox:Some text",
+      "element:container-div",
+      "element:Nested text"
+    ]
+  }
+]

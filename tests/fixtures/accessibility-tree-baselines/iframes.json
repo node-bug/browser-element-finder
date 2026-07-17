@@ -11,7 +11,7 @@
       "heading:Same-Origin Iframe (data",
       "iframe:same-origin-data-iframe"
     ],
-    "frame": 0
+    "frame": -1
   },
   {
     "elements": [
@@ -20,6 +20,6 @@
       "checkbox:iframeCheckbox2",
       "element:Iframe Checkbox 2"
     ],
-    "frame": 1
+    "frame": 0
   }
 ]
