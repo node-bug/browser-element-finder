@@ -42,7 +42,7 @@ describe('getAccessibilityTree Unit Tests', () => {
   });
 
   it('should return a single frame group for a single-frame page', () => {
-    const tree = getAccessibilityTree(window);
+    const tree = getAccessibilityTree(false);
     expect(Array.isArray(tree)).toBe(true);
     expect(tree.length).toBe(1);
     // The main document frame uses frameIndex -1 (consistent with getAllFrames).
@@ -52,7 +52,7 @@ describe('getAccessibilityTree Unit Tests', () => {
   });
 
   it('should include expected identifiable elements from the main document', () => {
-    const tree = getAccessibilityTree(window);
+    const tree = getAccessibilityTree(false);
     const entries = tree[0].elements;
 
     expect(entries).toContain('button:Submit');
@@ -69,16 +69,24 @@ describe('getAccessibilityTree Unit Tests', () => {
     const emptyHtml = readFileSync(emptyPath, 'utf-8');
     const emptyDom = new JSDOM(emptyHtml, { url: 'http://localhost', pretendToBeVisual: true });
 
-    const tree = getAccessibilityTree(emptyDom.window);
+    global.window = emptyDom.window;
+    global.document = emptyDom.window.document;
+    global.Node = emptyDom.window.Node;
+
+    const tree = getAccessibilityTree(false);
     expect(tree.length).toBe(1);
     expect(tree[0].frame).toBe(-1);
     expect(tree[0].elements).toEqual([]);
 
     emptyDom.window.close();
+    // Restore the main window so later tests still have a valid global.
+    global.window = window;
+    global.document = document;
+    global.Node = window.Node;
   });
 
   it('should format every entry as type:text with a known element type', () => {
-    const tree = getAccessibilityTree(window);
+    const tree = getAccessibilityTree(false);
     const validTypes = new Set(Object.keys(ELEMENT_DEFINITIONS));
     const pattern = /^([a-zA-Z0-9-]+):.+$/;
 
@@ -93,7 +101,7 @@ describe('getAccessibilityTree Unit Tests', () => {
   });
 
   it('should match the committed baseline for element-types-unit.html', () => {
-    const tree = getAccessibilityTree(window);
+    const tree = getAccessibilityTree(false);
     const baseline = loadA11yBaseline('element-types-unit.json');
     expect(tree).toEqual(baseline);
   });
@@ -103,11 +111,19 @@ describe('getAccessibilityTree Unit Tests', () => {
     const emptyHtml = readFileSync(emptyPath, 'utf-8');
     const emptyDom = new JSDOM(emptyHtml, { url: 'http://localhost', pretendToBeVisual: true });
 
-    const tree = getAccessibilityTree(emptyDom.window);
+    global.window = emptyDom.window;
+    global.document = emptyDom.window.document;
+    global.Node = emptyDom.window.Node;
+
+    const tree = getAccessibilityTree(false);
     const baseline = loadA11yBaseline('accessibility-tree-empty.json');
     expect(tree).toEqual(baseline);
 
     emptyDom.window.close();
+    // Restore the main window so later tests still have a valid global.
+    global.window = window;
+    global.document = document;
+    global.Node = window.Node;
   });
 
   // Validate getAccessibilityTree against the committed baseline for every
@@ -138,12 +154,54 @@ describe('getAccessibilityTree Unit Tests', () => {
         const html = readFileSync(fixturePath, 'utf-8');
         const dom = new JSDOM(html, { url: 'http://localhost', pretendToBeVisual: true });
 
-        const tree = getAccessibilityTree(dom.window);
+        global.window = dom.window;
+        global.document = dom.window.document;
+        global.Node = dom.window.Node;
+
+        const tree = getAccessibilityTree(false);
         const baseline = loadA11yBaseline(fixture.replace(/\.html$/, '.json'));
         expect(tree).toEqual(baseline);
 
         dom.window.close();
+        delete global.window;
+        delete global.document;
+        delete global.Node;
       });
     }
+  });
+
+  describe('viewportOnly parameter', () => {
+    beforeAll(() => {
+      // The baseline-parity loop above deletes global.window after each fixture.
+      // Restore the main window so these tests have a valid global to scan.
+      global.window = window;
+      global.document = document;
+      global.Node = window.Node;
+    });
+
+    it('should default to full-page scanning (viewportOnly = false)', () => {
+      // The first argument is the window; viewportOnly defaults to false, so the
+      // full tree is returned (JSDOM has no layout engine for viewport checks).
+      const treeDefault = getAccessibilityTree(window);
+      const treeFull = getAccessibilityTree(window, false);
+
+      expect(treeDefault[0].elements.length).toBeGreaterThan(0);
+      expect(treeFull[0].elements.length).toBeGreaterThan(0);
+      expect(treeDefault).toEqual(treeFull);
+    });
+
+    it('should accept a window and a boolean viewportOnly argument', () => {
+      // getAccessibilityTree(window, false) returns the full page; passing true
+      // restricts to in-viewport elements (empty under JSDOM's lack of layout).
+      const treeFull = getAccessibilityTree(window, false);
+      const treeViewportOnly = getAccessibilityTree(window, true);
+      expect(treeFull[0].elements.length).toBeGreaterThan(0);
+      expect(treeViewportOnly).toEqual([{ frame: -1, elements: [] }]);
+    });
+
+    it('should return only in-viewport elements when viewportOnly is true', () => {
+      const tree = getAccessibilityTree(window, true);
+      expect(tree).toEqual([{ frame: -1, elements: [] }]);
+    });
   });
 });

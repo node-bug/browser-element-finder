@@ -1033,7 +1033,7 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function getAccessibilityTree(win = window) {
+  function getAccessibilityTree(win = window, viewportOnly = false) {
     const frames = getAllFrames(win);
     const tree = [];
     for (let fi = 0; fi < frames.length; fi++) {
@@ -1042,12 +1042,13 @@ var ElementFinder = (() => {
       const entries = [];
       for (let i = 0; i < elements.length; i++) {
         const el = elements[i];
+        if (viewportOnly && !inViewport(el)) continue;
         const descriptor = getElementDescriptorText(el);
         if (!descriptor || !descriptor.identifiableText) continue;
         const type = getElementDescriptorType(el);
         entries.push(`${type}:${descriptor.identifiableText}`);
       }
-      tree.push({ frame: fi, elements: entries });
+      tree.push({ frame: frames[fi].frameIndex, elements: entries });
     }
     return tree;
   }

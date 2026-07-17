@@ -170,7 +170,8 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
         attributeName: 'id',
         index: 1,
         type: 'textbox',
-        tagName: 'input'
+        tagName: 'input',
+        formState: { value: '' }
       });
     });
 
@@ -1022,7 +1023,8 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
         attributeName: 'id',
         index: 1,
         type: 'textbox',
-        tagName: 'input'
+        tagName: 'input',
+        formState: { value: '' }
       });
     });
 

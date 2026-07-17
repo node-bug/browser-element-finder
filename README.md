@@ -2,7 +2,7 @@
 
 **Version**: 1.3.4
 
-**A robust, agent-friendly JavaScript library for identifying DOM elements by type and/or text content, with full support for shadow DOM, iframes, and automation workflows.**
+**A robust, agent-friendly JavaScript library for identifying DOM elements by type and/or text content, with full support for shadow DOM and automation workflows. Search results are scoped to the main document; elements inside iframes are excluded because their element reference cannot be returned.**
 
 ---
 
@@ -28,7 +28,7 @@ const counts = ElementFinder.getElementCounts()
 const buttonCount = ElementFinder.getElementCounts('button')
 // Returns `{ button: { visible: 3, hidden: 0, total: 3 } }`
 
-// Find in all frames (default)
+// Find in the main document (iframe contents are excluded)
 const results = ElementFinder.findElements('button')
 
 // Find with fallback to nearby elements
@@ -55,8 +55,8 @@ results.elements.forEach((e) => {
 
 **Agent/Automation Best Practices**:
 
-- Always check `frameIndex`: `-1` = main frame, `0+` = iframe (see below for iframe handling)
-- For iframe results, switch context before interacting (see Selenium/Playwright docs)
+- Results are scoped to the main document only; elements inside iframes are not returned (their element reference cannot be serialized across the frame boundary)
+- To find elements inside an iframe, switch into the iframe context first, then run the finder inside that frame
 - Use `getValidTypes()` to enumerate all supported semantic types
 - Use `getSearchableAttributes()` to see which attributes are searched for text
 - Use `getSearchableAttributeValues(element)` to inspect which searchable attributes are present on a specific element
@@ -68,7 +68,7 @@ results.elements.forEach((e) => {
 - **Type-based element finding**: Find elements by semantic type (button, textbox, link, dropdown, etc.)
 - **Text content search**: Search within element text, attributes, and placeholders
 - **Shadow DOM support**: Automatically traverses shadow roots to find nested elements
-- **Iframe support**: Automatically searches all frames (main document + iframes) by default
+- **Iframe support**: Searches the main document only; elements inside iframes are excluded because their element reference cannot be returned
 - **Visibility detection**: All elements returned with `isHidden` property (`true`/`false`)
 - **Bounding box data**: Returns position and dimensions for each found element
 - **XPath-like type definitions**: Extensible element type matching using XPath-like expressions
@@ -126,24 +126,25 @@ results.elements.forEach((e) => {
 
 ## Working with Iframes (Agent Pattern)
 
-The library automatically searches all frames (main + iframes). For agent/automation use:
+The library searches the **main document only**. Elements inside iframes are **not** returned, because their `element` reference cannot be serialized across the frame boundary. To find elements inside an iframe, switch into the iframe context first, then run the finder inside that frame.
 
 - **Main frame**: `item.frameIndex === -1` and `item.element` is available for direct interaction.
-- **Iframe**: `item.frameIndex >= 0` and `item.element` is `undefined`. Use `frameIndex` to switch context, then re-run `findElement` inside the iframe to get interactable elements.
+- **Iframe**: iframe elements are excluded from results entirely. Switch context, then re-run the finder inside the iframe to get interactable elements.
 
 **Example**:
 
 ```js
+// Run inside the main document
 const results = ElementFinder.findElements('button')
 for (const item of results.elements) {
   if (item.frameIndex === -1 && item.element) {
     // Interact directly
     item.element.click()
-  } else if (item.frameIndex >= 0) {
-    // Switch to iframe, then re-query
-    // (agent/driver-specific code here)
   }
 }
+
+// To search inside an iframe, switch context first (driver-specific),
+// then run the finder again within that frame.
 ```
 
 ### Customizing Searchable Attributes
@@ -279,7 +280,7 @@ Tag names are case-insensitive.
 
 ### `findElements(type, text, exact, parent)`
 
-Finds elements matching the specified type and/or text. Combines type and attribute matching in a single call. Searches all frames (main document + iframes) by default.
+Finds elements matching the specified type and/or text. Combines type and attribute matching in a single call. Searches the main document only (iframe contents are excluded).
 
 | Parameter | Type      | Default | Description                                                                                                                     |
 | --------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -290,11 +291,11 @@ Finds elements matching the specified type and/or text. Combines type and attrib
 
 **Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden }] }`
 
-- `element`: Raw DOM element (main frame only; for iframes, use `frameIndex` and re-query after switching context)
-- `frameIndex`: `-1` for main frame, `0, 1, 2...` for iframes
+- `element`: Raw DOM element (main document only; elements inside iframes are excluded)
+- `frameIndex`: `-1` for main frame (the only frame returned)
 - `isHidden`: `true` if element is hidden (display:none, visibility:hidden, hidden attribute, or zero dimensions)
 
-**Agent/Automation Note**: Iframe elements cannot be interacted with directly. Use `frameIndex` to switch context, then re-run `findElements` inside the iframe.
+**Agent/Automation Note**: Results are scoped to the main document. Elements inside iframes are not returned because their `element` reference cannot be serialized across the frame boundary. Switch into the iframe context and re-run the finder to search iframe contents.
 
 ### `findProbableElements(type, text, exact, parent)`
 
@@ -351,7 +352,7 @@ const result5 = ElementFinder.findProbableElements('button', 'Menu Item 1')
 
 - Use `findElements` when you need strict matching (element must contain the text)
 - Use `findProbableElements` when text might be in a nearby element (labels, icons, wrappers)
-- Both functions search all frames by default
+- Both functions search the main document only (iframe contents are excluded)
 
 ### `highlight(elements, color, width)`
 
@@ -471,7 +472,7 @@ Checks if an element matches the specified text/attribute value. Safely handles 
 
 ### `findElementsByType(type, parent)`
 
-Finds elements by type only. Searches all frames by default.
+Finds elements by type only. Searches the main document only (iframe contents are excluded).
 
 | Parameter | Type      | Default     | Description                                                                         |
 | --------- | --------- | ----------- | ----------------------------------------------------------------------------------- |
@@ -480,7 +481,7 @@ Finds elements by type only. Searches all frames by default.
 
 ### `getElementCounts(type, parent)`
 
-Counts elements by semantic type and visibility on the current screen. Searches all frames (main document + iframes) by default.
+Counts elements by semantic type and visibility on the current screen. Searches the main document only (iframe contents are excluded).
 
 | Parameter | Type      | Default | Description                                                                                  |
 | --------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
@@ -510,7 +511,7 @@ The generic `element` type is included in the all-types count, so the result con
 
 ### `getViewportElementCounts(type, parent)`
 
-Counts elements by semantic type that are currently visible **within the browser viewport**. This is useful for determining which elements a user can actually see on screen without scrolling. Searches all frames (main document + iframes) by default.
+Counts elements by semantic type that are currently visible **within the browser viewport**. This is useful for determining which elements a user can actually see on screen without scrolling. Searches the main document only (iframe contents are excluded).
 
 | Parameter | Type      | Default | Description                                                                                  |
 | --------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
@@ -540,7 +541,7 @@ The `total` count represents all elements within the viewport (visible + hidden)
 
 ### `findElementsByAttribute(value, exact, parent)`
 
-Finds elements by text/attribute value only. Searches all frames by default.
+Finds elements by text/attribute value only. Searches the main document only (iframe contents are excluded).
 
 | Parameter | Type      | Default | Description                                                                                        |
 | --------- | --------- | ------- | -------------------------------------------------------------------------------------------------- |
@@ -592,23 +593,20 @@ Splits XPath expressions by operator (and/or).
 
 ## Working with Iframes
 
-The library automatically searches all frames (main + iframes) by default. However, there are important limitations when working with iframe elements:
+The library searches the **main document only**. Elements inside iframes are **not** returned, because their `element` reference cannot be serialized across the frame boundary. To find elements inside an iframe, switch into the iframe context first, then run the finder inside that frame.
 
 ### Iframe Element Limitations
 
 ```javascript
 const results = ElementFinder.findElements('button')
 
+// results.elements contains main-document elements only.
+// iframe elements are excluded entirely (no frameIndex >= 0 entries).
 results.elements.forEach((item) => {
   if (item.frameIndex === -1) {
     // Main frame element - can interact directly
     console.log('Main frame element:', item.element)
     item.element.click() // Works
-  } else {
-    // Iframe element - element property is undefined
-    console.log('Iframe element at frameIndex:', item.frameIndex)
-    console.log('Bounding box:', item.boundingBox)
-    // item.element is undefined - cannot interact directly
   }
 })
 ```
@@ -618,23 +616,18 @@ results.elements.forEach((item) => {
 To interact with elements inside an iframe, you must switch the Selenium driver context:
 
 ```javascript
-// Find iframe elements
+// Find elements in the main document
 const results = await driver.executeScript(`
   return ElementFinder.findElements('button');
 `)
 
-// Switch to iframe and interact
-const iframeElements = results.elements.filter((e) => e.frameIndex >= 0)
-if (iframeElements.length > 0) {
-  // Switch to the iframe (frameIndex 0 = first iframe)
-  await driver.switchTo().frame(iframeElements[0].frameIndex)
+// Switch to the iframe, then run the finder again inside that frame
+await driver.switchTo().frame(0) // first iframe
 
-  // Now find and interact with elements in the iframe
-  const iframeResults = await driver.executeScript(`
-    return ElementFinder.findElements('button');
-  `)
-  // These elements will have the element property since we're in the iframe context
-}
+const iframeResults = await driver.executeScript(`
+  return ElementFinder.findElements('button');
+`)
+// These elements will have the element property since we're in the iframe context
 ```
 
 ---

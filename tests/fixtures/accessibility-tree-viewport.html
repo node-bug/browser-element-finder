@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Accessibility Tree Viewport Fixture</title>
+  <style>
+    body { margin: 0; }
+    /* Elements placed far below the fold so they are off-screen at load. */
+    .far-below {
+      position: absolute;
+      top: 10000px;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewport-test-root">
+    <h1 id="in-view-heading">In View Heading</h1>
+    <button id="in-view-btn">In View Button</button>
+    <a id="in-view-link" href="#">In View Link</a>
+
+    <div class="far-below">
+      <h2 id="offscreen-heading">Offscreen Heading</h2>
+      <button id="offscreen-btn">Offscreen Button</button>
+      <a id="offscreen-link" href="#">Offscreen Link</a>
+    </div>
+  </div>
+</body>
+</html>

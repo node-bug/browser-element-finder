@@ -248,6 +248,7 @@ export function getAllFrames(root = window) {
 - **Recursive structure**: Handles nested iframes and frames within frames
 - **Metadata tracking**: Each frame includes its index for debugging and context switching
 - **Graceful degradation**: Partial results from accessible frames if some are cross-origin
+- **Main document only for results**: Because an element reference inside an iframe cannot be serialized across the frame boundary, search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`) and `getElementCounts`/`getViewportElementCounts` return data for the main document only. Iframe contents are excluded. To search inside an iframe, switch into the iframe context and run the finder there. `getAccessibilityTree` is the exception: it traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`), so iframe contents are included.
 
 ### 2.6 Shadow DOM Traversal
 
@@ -737,7 +738,7 @@ const result = ElementFinder.findElementsByType('textbox', form)
       frameIndex: -1,
       tagName: 'BUTTON',
     },
-    // ... more elements
+    // ... more elements (main document only; iframe contents excluded)
   ]
 }
 ```
@@ -987,7 +988,7 @@ export function findOverlayElements(x = null, y = null)
 
 - If only one of `x` or `y` is provided, throws `TypeError: Both x and y coordinates must be provided together`
 - If either `x` or `y` is not a finite number, throws `TypeError: x and y must be finite numbers`
-- When both are `null` (default), performs full DOM scan across all frames
+- When both are `null` (default), performs full DOM scan of the main document (iframe contents excluded)
 
 **Key Differences from Other Search Functions**:
 
@@ -1017,11 +1018,11 @@ When x and y are provided (point-based search):
 6. Return results (main frame only)
 
 When no coordinates are provided (full scan — default):
-1. Iterate all frames (main document + iframes)
-2. For each frame, get all elements via getAllElements()
+1. Iterate the main document only (iframe contents are excluded)
+2. Get all elements via getAllElements()
 3. Filter by isOverlayElement() heuristic check
-4. Map to qualified result format with boundingBox, tagName, frameIndex, isHidden, inViewport
-5. Return combined results from all frames
+4. Map to qualified result format with boundingBox, tagName, frameIndex=-1, isHidden, inViewport
+5. Return results from the main document
 ```
 
 **Return Format**:
@@ -1047,7 +1048,7 @@ Same as other search functions — array of elements with metadata:
         tagName,
       },
       tagName: string,
-      frameIndex: number, // -1 = main frame, 0+ = iframe
+      frameIndex: number, // -1 = main frame (only frame returned; iframe contents excluded)
       isHidden: boolean,
       inViewport: boolean,
     },
@@ -1060,7 +1061,7 @@ Same as other search functions — array of elements with metadata:
 ```javascript
 // Find all overlay elements on the page (full DOM scan)
 const overlays = ElementFinder.findOverlayElements()
-// Returns modals, dialogs, banners, popups, tooltips from all frames
+// Returns modals, dialogs, banners, popups, tooltips from the main document (iframe contents excluded)
 
 // Find overlays at a specific point (e.g., where a click was intercepted)
 const overlaysAtPoint = ElementFinder.findOverlayElements(100, 200)
@@ -1113,7 +1114,7 @@ This is more accurate than a full DOM scan because it identifies the element tha
 
 ### 6.1 `getElementCounts(type = null, parent = null)`
 
-**Purpose**: Count elements by semantic type and visibility across the entire rendered page (all frames).
+**Purpose**: Count elements by semantic type and visibility across the main document (iframe contents excluded).
 
 **Signature**:
 
@@ -1152,7 +1153,7 @@ export function getElementCounts(type = null, parent = null)
 **Key Behaviors**:
 
 - Uses `findElements()` internally as the source of truth — counts match its returned element set including innermost filtering
-- Searches all frames (main document + iframes) by default
+- Searches the main document only (iframe contents are excluded) by default
 - Returns `{ [type]: { visible: 0, hidden: 0, total: 0 } }` for unknown types (with console warning)
 - Throws `TypeError` if `type` is provided but not a string
 - The generic `element` type is included when counting all types
@@ -1219,7 +1220,7 @@ export function getViewportElementCounts(type = null, parent = null)
 - Filters by `inViewport()` — only elements whose bounding box intersects the visual viewport are counted
 - Elements outside the viewport are excluded entirely (not counted in any bucket)
 - The `total` count represents all viewport elements (`visible + hidden`), not all page elements
-- Searches all frames (main document + iframes) by default
+- Searches the main document only (iframe contents are excluded) by default
 - Returns `{ [type]: { visible: 0, hidden: 0, total: 0 } }` for unknown types (with console warning)
 - Throws `TypeError` if `type` is provided but not a string
 

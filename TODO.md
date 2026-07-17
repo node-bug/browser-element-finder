@@ -29,7 +29,7 @@
 ## Phase 3: Advanced Features
 
 - [ ] `findElementByRegex(pattern, flags)` - Regex-based text matching
-- [ ] `getAccessibilityTree(element)` - Computed accessibility properties
+- [x] `getAccessibilityTree(viewportOnly=true)` - Accessibility tree across all same-origin frames (main frame `frame: -1`, iframes `0, 1, …`); `viewportOnly=true` scans only in-viewport elements, `false` returns the complete page
 - [ ] `clickElement(element)` / `typeIntoElement(element, text)` - Direct interaction helpers
 
 Yes. Right now your overlay detection is essentially:

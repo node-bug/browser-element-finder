@@ -24,7 +24,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should return two frame groups (main document + same-origin iframe)', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree();
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -37,7 +37,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should include main-document elements in frame -1', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree();
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     const main = tree.find((g) => g.frame === -1);
@@ -50,7 +50,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should include same-origin iframe elements in frame 0', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree();
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     // The same-origin iframe is returned as frame 0 with its own elements.
@@ -62,7 +62,7 @@ describe('ElementFinder - getAccessibilityTree', () => {
 
   it('should match the committed baseline for accessibility-tree.html', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree();
+      return ElementFinder.getAccessibilityTree(false);
     `);
     const baseline = loadA11yBaseline('accessibility-tree.json');
     expect(tree).toEqual(baseline);
@@ -86,7 +86,7 @@ describe('ElementFinder - getAccessibilityTree cross-origin handling', () => {
 
   it('should not throw and should skip the cross-origin iframe but include same-origin iframes', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree();
+      return ElementFinder.getAccessibilityTree(false);
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -109,7 +109,7 @@ describe('ElementFinder - getAccessibilityTree cross-origin handling', () => {
 
   it('should match the committed baseline for iframes.html', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getAccessibilityTree();
+      return ElementFinder.getAccessibilityTree(false);
     `);
     const baseline = loadA11yBaseline('iframes.json');
     expect(tree).toEqual(baseline);
@@ -146,11 +146,89 @@ describe('ElementFinder - getAccessibilityTree baseline parity (all browser fixt
 
       it(`should match the committed baseline for ${fixtureName}`, async () => {
         const tree = await fixture.driver.executeScript(`
-          return ElementFinder.getAccessibilityTree();
+          return ElementFinder.getAccessibilityTree(false);
         `);
         const baseline = loadA11yBaseline(fixtureName.replace(/\.html$/, '.json'));
         expect(tree).toEqual(baseline);
       });
     });
   }
+});
+
+// Tests for the viewportOnly parameter. Uses a fixture with elements that are
+// in the viewport at load time and others placed far below the fold so they
+// are off-screen. Runs in a real Chrome browser via Selenium WebDriver.
+describe('ElementFinder - getAccessibilityTree viewportOnly parameter', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('accessibility-tree-viewport.html'),
+    injectFinder: true,
+    sleep: 300
+  });
+
+  beforeAll(async () => {
+    await fixture.setup();
+  });
+
+  afterAll(async () => {
+    await fixture.teardown();
+  });
+
+  it('should return only in-viewport elements when viewportOnly is true (default)', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getAccessibilityTree(true);
+    `);
+
+    expect(Array.isArray(tree)).toBe(true);
+    expect(tree.length).toBe(1);
+
+    const main = tree[0];
+    expect(main.frame).toBe(-1);
+
+    // In-viewport elements are present.
+    expect(main.elements).toContain('heading:In View Heading');
+    expect(main.elements).toContain('button:In View Button');
+    expect(main.elements).toContain('link:In View Link');
+
+    // Off-screen elements are excluded.
+    expect(main.elements).not.toContain('heading:Offscreen Heading');
+    expect(main.elements).not.toContain('button:Offscreen Button');
+    expect(main.elements).not.toContain('link:Offscreen Link');
+  });
+
+  it('should return the complete page when viewportOnly is false', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getAccessibilityTree(false);
+    `);
+
+    expect(Array.isArray(tree)).toBe(true);
+    expect(tree.length).toBe(1);
+
+    const main = tree[0];
+    expect(main.frame).toBe(-1);
+
+    // Both in-viewport and off-screen elements are present.
+    expect(main.elements).toContain('heading:In View Heading');
+    expect(main.elements).toContain('button:In View Button');
+    expect(main.elements).toContain('link:In View Link');
+    expect(main.elements).toContain('heading:Offscreen Heading');
+    expect(main.elements).toContain('button:Offscreen Button');
+    expect(main.elements).toContain('link:Offscreen Link');
+  });
+
+  it('should include off-screen elements after scrolling them into view (viewportOnly true)', async () => {
+    // Scroll the off-screen container into the viewport, then re-scan.
+    await fixture.driver.executeScript(`
+      document.querySelector('.far-below').scrollIntoView();
+    `);
+
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getAccessibilityTree(true);
+    `);
+
+    const main = tree[0];
+    // After scrolling, the previously off-screen elements are now in view.
+    expect(main.elements).toContain('heading:Offscreen Heading');
+    expect(main.elements).toContain('button:Offscreen Button');
+    expect(main.elements).toContain('link:Offscreen Link');
+  });
 });
