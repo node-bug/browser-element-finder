@@ -27,12 +27,12 @@ var ElementFinder = (() => {
     findElementsByType: () => findElementsByType,
     findOverlayElements: () => findOverlayElements,
     findProbableElements: () => findProbableElements,
-    getAccessibilityTree: () => getAccessibilityTree,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
     getElementCounts: () => getElementCounts,
     getElementDescriptor: () => getElementDescriptor,
+    getElementInventory: () => getElementInventory,
     getFormState: () => getFormState,
     getIgnoredTags: () => getIgnoredTags,
     getSearchableAttributeValues: () => getSearchableAttributeValues,
@@ -121,6 +121,11 @@ var ElementFinder = (() => {
   };
   var MAX_RECURSION_DEPTH = 100;
   var MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
+  var TEXTLESS_TYPES = new Set(
+    Object.keys(element_definitions_default).filter(
+      (type) => type !== "element" && type !== "iframe"
+    )
+  );
   var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT"];
   var IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
@@ -275,6 +280,35 @@ var ElementFinder = (() => {
     }
     return text;
   }
+  function cssEscapeId(id) {
+    if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
+      return CSS.escape(id);
+    }
+    return id.replace(/[^a-zA-Z0-9_-]/g, (ch) => `\\${ch}`);
+  }
+  function getNearbyLabelText(el) {
+    if (el == null || typeof el.closest !== "function") return "";
+    const parentLabel = el.closest("label");
+    if (parentLabel) {
+      const labelText = shortenDescriptorText(getDirectText(parentLabel));
+      if (labelText) return labelText;
+    }
+    const id = el.getAttribute && el.getAttribute("id");
+    if (id) {
+      const doc = el.ownerDocument || (typeof document !== "undefined" ? document : null);
+      if (doc && typeof doc.querySelector === "function") {
+        try {
+          const forLabel = doc.querySelector(`label[for="${cssEscapeId(id)}"]`);
+          if (forLabel) {
+            const labelText = shortenDescriptorText(getDirectText(forLabel));
+            if (labelText) return labelText;
+          }
+        } catch (e) {
+        }
+      }
+    }
+    return "";
+  }
   function getElementDescriptorText(el) {
     const directText = shortenDescriptorText(getDirectText(el));
     if (directText && !isIgnoredElement(el)) {
@@ -282,13 +316,32 @@ var ElementFinder = (() => {
     }
     const values = getSearchableAttributeValues(el);
     const attrs = SEARCHABLE_ATTRIBUTES;
+    let nearbyLabel = "";
+    const type = getElementDescriptorType(el);
+    if (TEXTLESS_TYPES.has(type)) {
+      nearbyLabel = getNearbyLabelText(el);
+    }
+    const MACHINE_ATTRS = /* @__PURE__ */ new Set([
+      "value",
+      "id",
+      "resource-id",
+      "name",
+      "src",
+      "data-test-id",
+      "data-testid",
+      "data-value"
+    ]);
     for (let i = 0; i < attrs.length; i++) {
       const attr = attrs[i];
       if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
+      if (nearbyLabel && MACHINE_ATTRS.has(attr)) continue;
       const rawText = attr === "aria-labelledby" ? getResolvedAriaLabelledByText(el) : attr === "src" ? getImageFilenameWithoutExtension(values[attr]) : values[attr];
       if (rawText) {
         return { attributeName: attr, identifiableText: rawText };
       }
+    }
+    if (nearbyLabel) {
+      return { attributeName: "label", identifiableText: nearbyLabel };
     }
     return null;
   }
@@ -1033,7 +1086,22 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function getAccessibilityTree(viewportOnly = false) {
+  function formatFormState(formState) {
+    if (formState == null) return "";
+    const parts = [];
+    for (const key of Object.keys(formState)) {
+      const value = formState[key];
+      if (Array.isArray(value)) {
+        parts.push(`${key}:[${value.map((v) => JSON.stringify(v)).join(",")}]`);
+      } else if (typeof value === "string") {
+        parts.push(`${key}:${JSON.stringify(value)}`);
+      } else {
+        parts.push(`${key}:${String(value)}`);
+      }
+    }
+    return parts.length > 0 ? `{${parts.join(",")}}` : "";
+  }
+  function getElementInventory(viewportOnly = true) {
     const frames = getAllFrames(window);
     const tree = [];
     for (let fi = 0; fi < frames.length; fi++) {
@@ -1043,10 +1111,17 @@ var ElementFinder = (() => {
       for (let i = 0; i < elements.length; i++) {
         const el = elements[i];
         if (viewportOnly && !inViewport(el)) continue;
-        const descriptor = getElementDescriptorText(el);
-        if (!descriptor || !descriptor.identifiableText) continue;
-        const type = getElementDescriptorType(el);
-        entries.push(`${type}:${descriptor.identifiableText}`);
+        const descriptor = getElementDescriptor(el, true);
+        const type = descriptor.type || "element";
+        if (!descriptor.identifiableText) {
+          if (!TEXTLESS_TYPES.has(type)) continue;
+          const text = `#${descriptor.index}`;
+          const suffix2 = descriptor.formState ? ` ${formatFormState(descriptor.formState)}` : "";
+          entries.push(`${type}:${text}${suffix2}`);
+          continue;
+        }
+        const suffix = descriptor.formState ? ` ${formatFormState(descriptor.formState)}` : "";
+        entries.push(`${type}:${descriptor.identifiableText}${suffix}`);
       }
       tree.push({ frame: frames[fi].frameIndex, elements: entries });
     }

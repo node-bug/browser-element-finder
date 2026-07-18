@@ -1,0 +1,11 @@
+[
+  {
+    "frame": -1,
+    "elements": [
+      "button:#1",
+      "button:#2",
+      "textbox:#1 {value:\"\"}",
+      "image:#1"
+    ]
+  }
+]

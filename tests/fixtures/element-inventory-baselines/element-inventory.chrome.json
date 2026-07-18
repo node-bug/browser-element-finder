@@ -1,0 +1,26 @@
+[
+  {
+    "elements": [
+      "element:Accessibility Tree",
+      "heading:Welcome",
+      "link:Home",
+      "link:Docs",
+      "button:Submit",
+      "button:Cancel",
+      "textbox:Email {value:\"\"}",
+      "textbox:Full name {value:\"\"}",
+      "element:Some visible text",
+      "iframe:tree-iframe"
+    ],
+    "frame": -1
+  },
+  {
+    "elements": [
+      "heading:Iframe Heading",
+      "link:Iframe Home",
+      "button:Login",
+      "textbox:Search {value:\"\"}"
+    ],
+    "frame": 0
+  }
+]

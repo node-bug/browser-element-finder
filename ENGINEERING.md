@@ -79,7 +79,7 @@ browser-element-finder/
 │   │   ├── find-elements.test.js
 │   │   ├── attributes.test.js
 │   │   ├── types.test.js
-│   │   ├── accessibility-tree.test.js
+│   │   ├── element-inventory.test.js
 │   │   ├── animations.test.js
 │   │   ├── edge-cases.test.js
 │   │   ├── form-state.test.js
@@ -95,7 +95,7 @@ browser-element-finder/
 │   │   ├── shadow-dom.test.js
 │   │   ├── switches.test.js
 │   │   ├── tables.test.js
-│   │   ├── accessibility-tree.test.js
+│   │   ├── element-inventory.test.js
 │   │   ├── helpers/
 │   │   └── fixtures/
 │   └── fixtures/                      # Shared HTML test pages
@@ -266,7 +266,7 @@ export function getAllFrames(root = window) {
 - **Recursive structure**: Handles nested iframes and frames within frames
 - **Metadata tracking**: Each frame includes its index for debugging and context switching
 - **Graceful degradation**: Partial results from accessible frames if some are cross-origin
-- **All same-origin frames for results**: Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) and `getElementCounts`/`getViewportElementCounts` traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. To get interactable `element` references for iframe contents, switch into the iframe context and run the finder there. `getAccessibilityTree(viewportOnly)` also traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`).
+- **All same-origin frames for results**: Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) and `getElementCounts`/`getViewportElementCounts` traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. To get interactable `element` references for iframe contents, switch into the iframe context and run the finder there. `getElementInventory(viewportOnly)` also traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`).
 
 ### 2.6 Shadow DOM Traversal
 
@@ -1281,6 +1281,95 @@ const inputs = ElementFinder.getViewportElementCounts(
 
 ---
 
+## 6.3 `getElementInventory(viewportOnly = true, options = {})`
+
+**Purpose**: Capture a compact, frame-grouped snapshot of identifiable elements for
+state capture / guided interaction. Each element is a `type:identifiableText`
+string. Hidden elements are included (no visibility filtering). Cross-origin
+iframes are silently skipped by `getAllFrames()`.
+
+**Signature**:
+
+```javascript
+export function getElementInventory(
+  viewportOnly = true,
+  options = {}
+) → Array<{ frame: number, elements: string[] }>
+```
+
+**Parameters**:
+
+| Parameter                  | Type      | Default | Description                                                                                                                                                                      |
+| -------------------------- | --------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `viewportOnly`             | `boolean` | `true`  | When true (default), only elements currently within the visual viewport are included. Pass `false` to return the complete page (including off-screen elements).                  |
+| `options.includeTextless`  | `boolean` | `false` | Include form controls that still have no text, using a positional `#N` identifier (N = 1-based position among same-type elements in the frame, matching `findElements()` order). |
+| `options.includeFormState` | `boolean` | `false` | Append the control's interactive state as a `{…}` suffix (e.g. `{checked:true}`, `{value:"abc"}`, `{selected:"A",options:["A","B"]}`).                                           |
+
+**Default behavior (no options)**: Only elements with their own identifiable text
+are included — identical to prior versions. The text-less and form-state
+enrichments are opt-in so existing baselines and callers are unaffected.
+
+**Nearby-label resolution** (always on): Many behavior-rich form
+controls (checkbox, radio, select, text input) carry no own text. When the
+element is a form type, a nearby `<label>` is used to override machine-generated
+attributes (`value`/`id`/`resource-id`/`name`/`src`/`data-test-id`/`data-testid`/`data-value`),
+while still yielding to explicit a11y/semantic text (`aria-label` /
+`aria-labelledby`, `placeholder`, `data-*`). Two association patterns are supported:
+
+1. **Wrapping label** — the control is a descendant of a `<label>`; the label's own
+   direct text nodes are used (excluding any control descendant text).
+2. **`for`-associated label** — a `<label for="id">` referencing the control's id.
+
+**Text-less fallback** (`includeTextless`): Controls with no own text and no nearby
+label are included with a positional `#N` identifier. Only form types are eligible,
+so generic containers are never promoted. `#N` is session-stable (capture → act in
+the same page state) but not durable across DOM mutations; for durable references
+use `generateSelector()` (roadmap).
+
+**Form-state suffix** (`includeFormState`): Mirrors `getFormState()` output, making
+the inventory actionable for replay:
+
+| type                                     | suffix                                 |
+| ---------------------------------------- | -------------------------------------- |
+| `checkbox`                               | `{checked:true}`                       |
+| `radio`                                  | `{set:false}`                          |
+| `switch`                                 | `{on:true}`                            |
+| `textbox` / `colorpicker` / `datepicker` | `{value:"abc"}`                        |
+| `dropdown`                               | `{selected:"A",options:["A","B","C"]}` |
+| `slider`                                 | `{value:42}`                           |
+| `file`                                   | `{fileName:"x.png"}`                   |
+
+**Example Usage**:
+
+```javascript
+// Default: only in-viewport elements with own text
+ElementFinder.getElementInventory()
+// [ { frame: -1, elements: [ "button:Submit", "textbox:email", ... ] } ]
+
+// Full-page tree: text-less controls + form state (nearby labels always on)
+ElementFinder.getElementInventory(false, {
+  includeTextless: true,
+  includeFormState: true,
+})
+// [ { frame: -1, elements: [
+//   "checkbox:CheckBox in iFrame {checked:false}",
+//   "radio:RadioButton 1 {set:false}",
+//   "dropdown:Select Dropdown {selected:"Please choose...",options:[...]}",
+//   "textbox:#2 {value:""}"   // anonymous control, positional id
+// ] } ]
+```
+
+**Key Behaviors**:
+
+- Traverses all same-origin frames; main document is `frame: -1`, iframes `0, 1, …`
+- Default output is viewport-only (only elements currently in the visual viewport)
+- `getElementDescriptor(el, includeHidden)` produces the same descriptor the
+  inventory uses, so the descriptor and inventory stay consistent
+- The `index` used for `#N` comes from `getElementPositionAmongType`, the same
+  document-order traversal `findElements(type, null)` returns
+
+---
+
 ## 7. Return Format & Metadata
 
 ### 7.1 Return Structure
@@ -1583,7 +1672,7 @@ tests/unit/
 ├── find-elements.test.js     # Combined search function tests
 ├── attributes.test.js        # Attribute matching tests
 ├── types.test.js             # Type definition tests
-├── accessibility-tree.test.js # getAccessibilityTree tests
+├── element-inventory.test.js # getElementInventory tests
 ├── animations.test.js        # pauseAnimations/resumeAnimations tests
 ├── edge-cases.test.js        # Null input, cross-frame, etc.
 ├── form-state.test.js        # getFormState tests
@@ -1594,6 +1683,13 @@ tests/unit/
 **Scope**: Individual function behavior, edge cases, error handling
 
 **Test Environment**: JSDOM (simulated DOM in Node.js)
+
+**Element-inventory baselines**: `getElementInventory()` output is validated against committed baselines in `tests/fixtures/element-inventory-baselines/`. Because a real browser traverses tables, shadow DOM, and iframes more completely than JSDOM, two baseline variants are committed per fixture:
+
+- `<name>.json` — generated from JSDOM (the deterministic source of truth for the unit suite).
+- `<name>.chrome.json` — generated from real Chrome (used by the integration suite, which runs in a browser).
+
+`scripts/generate-element-inventory-baselines.js` regenerates both sets (`npm run test:baselines`). The unit suite loads the JSDOM variant; the integration suite passes `{ engine: 'chrome' }` to `loadElementInventoryBaseline`.
 
 **Example**:
 
@@ -1664,7 +1760,7 @@ tests/integration/
 ├── shadow-dom.test.js          # Shadow DOM traversal tests
 ├── switches.test.js            # Switch element tests
 ├── tables.test.js              # Table cell tests
-├── accessibility-tree.test.js  # getAccessibilityTree tests
+├── element-inventory.test.js  # getElementInventory tests
 └── fixtures/
     ├── element-types.html      # Test HTML
     ├── forms.html
@@ -3059,29 +3155,30 @@ allResults.length = 0
 
 ### Quick Reference
 
-| Function                                          | Purpose                                 | Example                                                          |
-| ------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------- |
-| `findElementsByType(type, parent)`                | Find by semantic type                   | `findElementsByType('button')`                                   |
-| `findElementsByAttribute(value, exact, parent)`   | Find by text/attributes                 | `findElementsByAttribute('Submit')`                              |
-| `findElements(type, text, exact, parent)`         | Strict combined search                  | `findElements('button', 'Submit')`                               |
-| `findProbableElements(type, text, exact, parent)` | Flexible combined search                | `findProbableElements('button', 'Click')`                        |
-| `matchesType(el, type)`                           | Check if element matches type           | `matchesType(button, 'button')` → true                           |
-| `matchesAttribute(el, value, exact)`              | Check if element matches attribute/text | `matchesAttribute(button, 'OK')` → true                          |
-| `getBoundingBox(element)`                         | Get element position and size           | `getBoundingBox(button)` → { x: 10, y: 20, ... }                 |
-| `getAllElements(root)`                            | Get all elements (flat list)            | `getAllElements(document.body)` → [...]                          |
-| `getAllFrames(root)`                              | Get all frames recursively              | `getAllFrames()` → [{ window, document, frameIndex }, ...]       |
-| `parseXPath(expr, el)`                            | Parse XPath-like expression             | `parseXPath('self::button', el)` → true                          |
-| `highlight(elements)`                             | Highlight elements red                  | `highlight([button1, button2])`                                  |
-| `unhighlight(elements)`                           | Remove highlight                        | `unhighlight([button1, button2])`                                |
-| `getValidTypes()`                                 | List all element types                  | `getValidTypes()` → ['button', 'textbox', ...]                   |
-| `getValidAttributes()`                            | List all valid searchable attributes    | `getValidAttributes()` → ['placeholder', 'value', ...]           |
-| `getSearchableAttributes()`                       | List attribute search order             | `getSearchableAttributes()` → ['data-testid', ...]               |
-| `setSearchableAttributes(array)`                  | Set attribute search order              | `setSearchableAttributes(['data-qa', ...])`                      |
-| `getSearchableAttributeValues(element)`           | Inspect non-empty searchable attributes | `getSearchableAttributeValues(input)` → { id: 'email' }          |
-| `getElementCounts(type, parent)`                  | Count elements by type and visibility   | `getElementCounts('button')` → `{ button: { visible: 3, ... } }` |
-| `getViewportElementCounts(type, parent)`          | Count viewport-visible elements by type | `getViewportElementCounts()` → `{ button: { visible: 2, ... } }` |
-| `inViewport(el, options)`                         | Check if element is in viewport (sync)  | `inViewport(el)` → true/false                                    |
-| `isHidden(el)`                                    | Check if element is hidden              | `isHidden(el)` → true/false                                      |
+| Function                                          | Purpose                                                                              | Example                                                                                            |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `findElementsByType(type, parent)`                | Find by semantic type                                                                | `findElementsByType('button')`                                                                     |
+| `findElementsByAttribute(value, exact, parent)`   | Find by text/attributes                                                              | `findElementsByAttribute('Submit')`                                                                |
+| `findElements(type, text, exact, parent)`         | Strict combined search                                                               | `findElements('button', 'Submit')`                                                                 |
+| `findProbableElements(type, text, exact, parent)` | Flexible combined search                                                             | `findProbableElements('button', 'Click')`                                                          |
+| `matchesType(el, type)`                           | Check if element matches type                                                        | `matchesType(button, 'button')` → true                                                             |
+| `matchesAttribute(el, value, exact)`              | Check if element matches attribute/text                                              | `matchesAttribute(button, 'OK')` → true                                                            |
+| `getBoundingBox(element)`                         | Get element position and size                                                        | `getBoundingBox(button)` → { x: 10, y: 20, ... }                                                   |
+| `getAllElements(root)`                            | Get all elements (flat list)                                                         | `getAllElements(document.body)` → [...]                                                            |
+| `getAllFrames(root)`                              | Get all frames recursively                                                           | `getAllFrames()` → [{ window, document, frameIndex }, ...]                                         |
+| `parseXPath(expr, el)`                            | Parse XPath-like expression                                                          | `parseXPath('self::button', el)` → true                                                            |
+| `highlight(elements)`                             | Highlight elements red                                                               | `highlight([button1, button2])`                                                                    |
+| `unhighlight(elements)`                           | Remove highlight                                                                     | `unhighlight([button1, button2])`                                                                  |
+| `getValidTypes()`                                 | List all element types                                                               | `getValidTypes()` → ['button', 'textbox', ...]                                                     |
+| `getValidAttributes()`                            | List all valid searchable attributes                                                 | `getValidAttributes()` → ['placeholder', 'value', ...]                                             |
+| `getSearchableAttributes()`                       | List attribute search order                                                          | `getSearchableAttributes()` → ['data-testid', ...]                                                 |
+| `setSearchableAttributes(array)`                  | Set attribute search order                                                           | `setSearchableAttributes(['data-qa', ...])`                                                        |
+| `getSearchableAttributeValues(element)`           | Inspect non-empty searchable attributes                                              | `getSearchableAttributeValues(input)` → { id: 'email' }                                            |
+| `getElementCounts(type, parent)`                  | Count elements by type and visibility                                                | `getElementCounts('button')` → `{ button: { visible: 3, ... } }`                                   |
+| `getViewportElementCounts(type, parent)`          | Count viewport-visible elements by type                                              | `getViewportElementCounts()` → `{ button: { visible: 2, ... } }`                                   |
+| `getElementInventory(viewportOnly, options)`      | Frame-grouped `type:text` snapshot; opt-in nearby labels, text-less `#N`, form state | `getElementInventory(false, { includeNearbyLabels: true })` → `[ { frame: -1, elements: [...] } ]` |
+| `inViewport(el, options)`                         | Check if element is in viewport (sync)                                               | `inViewport(el)` → true/false                                                                      |
+| `isHidden(el)`                                    | Check if element is hidden                                                           | `isHidden(el)` → true/false                                                                        |
 
 ---
 

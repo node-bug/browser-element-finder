@@ -259,6 +259,7 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                                               |
 | `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                                               |
 | `getElementDescriptor(element, includeHidden)`    | Get identifiable text, source attribute, occurrence index, type, tag name, and form state for an element        |
+| `getElementInventory(viewportOnly)`               | Frame-grouped `type:text` snapshot; always-on text-less `#N` + form state + nearby-label rescue                 |
 | `getFormState(el, type)`                          | Get the interactive state of a form control (value/checked/selected/on, etc.) for form semantic types           |
 | `matchesType(el, type)`                           | Check if element matches a type                                                                                 |
 | `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                                         |
@@ -496,6 +497,48 @@ const state = ElementFinder.getFormState(inputEl, 'textbox')
 const checkboxState = ElementFinder.getFormState(checkboxEl, 'checkbox')
 // { checked: true }
 ```
+
+### `getElementInventory(viewportOnly, options)`
+
+Captures a compact, frame-grouped snapshot of identifiable elements for state capture and guided interaction. Each element is a `type:identifiableText` string. Hidden elements are included (no visibility filtering), and cross-origin iframes are silently skipped.
+
+Text-less form controls and form state are **always** included:
+
+- A form control with no identifiable text is emitted as `type:#N` (N = 1-based position among same-type elements in the frame).
+- A `{…}` form-state suffix is appended to every form control (see `getFormState`).
+
+```javascript
+// Default: in-viewport identifiable elements, plus text-less form controls (#N) and form state
+const tree = ElementFinder.getElementInventory()
+// [ { frame: -1, elements: [
+//   'button:Submit',
+//   'textbox:email {value:""}',
+//   'checkbox:pref {checked:false}',
+//   'textbox:#2 {value:""}'    // anonymous control, positional id
+// ] } ]
+
+// Full-page scan (pass false to include off-screen elements)
+const full = ElementFinder.getElementInventory(false)
+
+// Nearby-label rescue (always on): text from a nearby <label> overrides machine attrs
+const rich = ElementFinder.getElementInventory(false)
+// [ { frame: -1, elements: [
+//   'checkbox:CheckBox in iFrame {checked:false}',
+//   'radio:RadioButton 1 {set:false}',
+//   'dropdown:Select Dropdown {selected:"Please choose...",options:[...]}',
+// ] } ]
+```
+
+| Parameter      | Type      | Default | Description                                                                                                                 |
+| -------------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `viewportOnly` | `boolean` | `true`  | When `true` (default), only elements currently within the visual viewport are included. Pass `false` for the complete page. |
+
+**Key behaviors**:
+
+- Text-less form controls (`type:#N`) and form-state `{…}` suffixes are always emitted — they are not opt-in.
+- Nearby-label rescue is always on: text from a nearby `<label>` overrides machine attributes (`value`/`id`/`resource-id`/`name`/`src`/`data-test-id`/`data-testid`/`data-value`) for form controls, but yields to explicit a11y/semantic text (`aria-label`/`aria-labelledby`, `placeholder`, `data-*`).
+- Text-less promotion only applies to form types (everything except `iframe` and `element`); generic containers are never promoted. `#N` is session-stable but not durable across DOM mutations.
+- The `index` used for `#N` matches the document-order traversal of `findElements(type, null)`, so `#N` maps directly to `findElements(type, null).elements[N-1]`.
 
 ### `matchesType(el, type)`
 

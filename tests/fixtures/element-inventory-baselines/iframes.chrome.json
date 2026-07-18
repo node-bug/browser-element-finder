@@ -3,7 +3,7 @@
     "elements": [
       "element:Iframe Test Fixture",
       "heading:Iframe Test Page",
-      "checkbox:mainCheckbox",
+      "checkbox:mainCheckbox {checked:false}",
       "iframe:test-iframe",
       "heading:Cross-Origin Iframe",
       "element:This iframe points to an",
@@ -15,9 +15,9 @@
   },
   {
     "elements": [
-      "checkbox:iframeCheckbox",
+      "checkbox:Iframe Checkbox {checked:false}",
       "element:Iframe Checkbox",
-      "checkbox:iframeCheckbox2",
+      "checkbox:Iframe Checkbox 2 {checked:false}",
       "element:Iframe Checkbox 2"
     ],
     "frame": 0

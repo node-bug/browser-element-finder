@@ -1,0 +1,34 @@
+[
+  {
+    "frame": -1,
+    "elements": [
+      "element:Unit Tests - Element",
+      "button:Submit",
+      "button:Cancel",
+      "button:Click Me",
+      "textbox:Enter name {value:\"\"}",
+      "textbox:Enter email {value:\"\"}",
+      "textbox:Some text {value:\"Some text\"}",
+      "checkbox:chk1 {checked:false}",
+      "radio:group1 {set:false}",
+      "slider:slider1 {value:50}",
+      "datepicker:datepicker1 {value:\"\"}",
+      "colorpicker:colorpicker1 {value:\"#ff0000\"}",
+      "link:Home",
+      "link:About",
+      "dropdown:dropdown1 {selected:\"Option 1\",options:[\"Option 1\",\"Option 2\"]}",
+      "element:Option 1",
+      "element:Option 2",
+      "element:Nested text",
+      "table:test-table",
+      "row:#1",
+      "column:Name",
+      "column:Age",
+      "column:City",
+      "row:#2",
+      "column:Alice",
+      "column:30",
+      "column:New York"
+    ]
+  }
+]

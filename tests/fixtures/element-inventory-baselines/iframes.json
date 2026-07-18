@@ -1,0 +1,28 @@
+[
+  {
+    "frame": -1,
+    "elements": [
+      "element:Iframe Test Fixture",
+      "heading:Iframe Test Page",
+      "checkbox:mainCheckbox {checked:false}",
+      "iframe:test-iframe",
+      "heading:Cross-Origin Iframe",
+      "element:This iframe points to an",
+      "iframe:<p>Your browser does not",
+      "heading:Same-Origin Iframe (data",
+      "iframe:same-origin-data-iframe"
+    ]
+  },
+  {
+    "frame": 0,
+    "elements": []
+  },
+  {
+    "frame": 1,
+    "elements": []
+  },
+  {
+    "frame": 2,
+    "elements": []
+  }
+]

@@ -1,6 +1,5 @@
 [
   {
-    "frame": -1,
     "elements": [
       "element:viewport",
       "element:SeleniumBase Demo Page",
@@ -12,25 +11,25 @@
       "element:text-inputs-section",
       "heading:2. Text-based Inputs",
       "element:Text Input Field",
-      "textbox:Enter text here...",
+      "textbox:Enter text here... {value:\"\"}",
       "element:Textarea",
-      "textbox:Enter long text...",
+      "textbox:Enter long text... {value:\"\"}",
       "element:checkboxes-section",
       "heading:3. Checkboxes",
-      "checkbox:pref",
+      "checkbox:CheckBox in iFrame {checked:false}",
       "element:CheckBox in iFrame",
-      "checkbox:pref",
+      "checkbox:CheckBox {checked:false}",
       "element:CheckBox",
       "element:radios-section",
       "heading:4. Radio Buttons",
-      "radio:radio",
+      "radio:RadioButton 1 {set:false}",
       "element:RadioButton 1",
-      "radio:radio",
+      "radio:RadioButton 2 {set:false}",
       "element:RadioButton 2",
       "element:dropdown-section",
       "heading:5. Dropdown",
       "element:Select Dropdown",
-      "dropdown:select-dropdown",
+      "dropdown:Select Dropdown {selected:\"Please choose...\",options:[\"Please choose...\",\"Set to 25%\",\"Set to 50%\",\"Set to 75%\"]}",
       "element:Please choose...",
       "element:Set to 25%",
       "element:Set to 50%",
@@ -40,6 +39,7 @@
       "button:Hover Dropdown",
       "button:Submit Form",
       "element:form-status"
-    ]
+    ],
+    "frame": -1
   }
 ]

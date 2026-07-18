@@ -1,0 +1,44 @@
+[
+  {
+    "frame": -1,
+    "elements": [
+      "element:viewport",
+      "element:Ultimate Switch Testing",
+      "heading:Ultimate Switch Testing",
+      "element:A single-page HTML suite",
+      "element:browser.switch('target').on()",
+      "element:Standard Switch",
+      "element:Standard Checkbox Switch",
+      "element:The real checkbox is",
+      "element:.slider",
+      "checkbox:Standard Checkbox Switch {checked:false}",
+      "element:ARIA Div Switch",
+      "element:No native form controls.",
+      "element:aria-checked",
+      "switch:ARIA Div Switch {on:false}",
+      "element:Native Button Switch",
+      "element:Standard HTML button",
+      "button:OFF",
+      "element:Bare Native Checkbox",
+      "element:Unstyled baseline",
+      "element:.click()",
+      "element:.check()",
+      "checkbox:Bare Native Checkbox {checked:false}",
+      "element:Advanced Contexts &",
+      "element:Disabled Control Switch",
+      "element:Validates if the",
+      "checkbox:Disabled Control Switch {checked:false}",
+      "element:Switch inside Shadow DOM",
+      "element:Playwright pierces this",
+      "element:shadow-host",
+      "element:Switch inside an iFrame",
+      "element:Requires driving a",
+      "element:driver.switchTo().frame()",
+      "iframe:Iframe Switch Environment"
+    ]
+  },
+  {
+    "frame": 0,
+    "elements": []
+  }
+]

@@ -10,11 +10,11 @@
       "element:Standard Checkbox Switch",
       "element:The real checkbox is",
       "element:.slider",
-      "checkbox:checkbox-switch",
+      "checkbox:Standard Checkbox Switch {checked:false}",
       "element:ARIA Div Switch",
       "element:No native form controls.",
       "element:aria-checked",
-      "switch:ARIA Div Switch",
+      "switch:ARIA Div Switch {on:false}",
       "element:Native Button Switch",
       "element:Standard HTML button",
       "button:OFF",
@@ -22,15 +22,15 @@
       "element:Unstyled baseline",
       "element:.click()",
       "element:.check()",
-      "checkbox:native-checkbox",
+      "checkbox:Bare Native Checkbox {checked:false}",
       "element:Advanced Contexts &",
       "element:Disabled Control Switch",
       "element:Validates if the",
-      "checkbox:disabled-switch",
+      "checkbox:Disabled Control Switch {checked:false}",
       "element:Switch inside Shadow DOM",
       "element:Playwright pierces this",
       "element:shadow-host",
-      "checkbox:shadow-switch",
+      "checkbox:shadow-switch {checked:false}",
       "element:Switch inside an iFrame",
       "element:Requires driving a",
       "element:driver.switchTo().frame()",
@@ -39,7 +39,10 @@
     "frame": -1
   },
   {
-    "elements": ["element:Document Switch Window", "checkbox:iframe-switch"],
+    "elements": [
+      "element:Document Switch Window",
+      "checkbox:iframe-switch {checked:false}"
+    ],
     "frame": 0
   }
 ]

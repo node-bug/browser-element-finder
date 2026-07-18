@@ -1,0 +1,33 @@
+[
+  {
+    "elements": [
+      "element:Overlay Elements Test",
+      "heading:Overlay Test Page",
+      "element:This is regular page",
+      "button:Open Modal",
+      "dialog:aria-dialog",
+      "heading:Aria Dialog",
+      "element:This is an ARIA modal",
+      "button:Close",
+      "element:native-dialog",
+      "heading:Native Dialog",
+      "element:This is a native HTML",
+      "button:Close",
+      "element:cookie-banner",
+      "element:We use cookies.",
+      "button:Accept All",
+      "element:toast",
+      "element:Action completed",
+      "element:popover-element",
+      "heading:Popover Content",
+      "element:This uses the Popover",
+      "dialog:alert-dialog",
+      "heading:Alert Dialog",
+      "element:Are you sure?",
+      "button:Yes",
+      "button:No",
+      "element:backdrop"
+    ],
+    "frame": -1
+  }
+]

@@ -1,5 +1,5 @@
 /**
- * Unit tests for getAccessibilityTree()
+ * Unit tests for getElementInventory()
  * Runs in Node.js with JSDOM for fast DOM simulation (no browser automation).
  */
 
@@ -8,12 +8,12 @@ import { JSDOM } from 'jsdom';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import {
-  getAccessibilityTree,
+  getElementInventory,
   ELEMENT_DEFINITIONS,
 } from '../../src/element-finder.js';
-import { loadA11yBaseline } from '../helpers/a11y-baseline.js';
+import { loadElementInventoryBaseline } from '../helpers/element-inventory-baseline.js';
 
-describe('getAccessibilityTree Unit Tests', () => {
+describe('getElementInventory Unit Tests', () => {
   let window;
   let document;
 
@@ -42,7 +42,7 @@ describe('getAccessibilityTree Unit Tests', () => {
   });
 
   it('should return a single frame group for a single-frame page', () => {
-    const tree = getAccessibilityTree();
+    const tree = getElementInventory(false);
     expect(Array.isArray(tree)).toBe(true);
     expect(tree.length).toBe(1);
     // The main document frame uses frameIndex -1 (consistent with getAllFrames).
@@ -52,20 +52,20 @@ describe('getAccessibilityTree Unit Tests', () => {
   });
 
   it('should include expected identifiable elements from the main document', () => {
-    const tree = getAccessibilityTree();
+    const tree = getElementInventory(false);
     const entries = tree[0].elements;
 
     expect(entries).toContain('button:Submit');
     expect(entries).toContain('button:Cancel');
     expect(entries).toContain('button:Click Me');
-    expect(entries).toContain('textbox:Enter name');
-    expect(entries).toContain('textbox:Enter email');
+    expect(entries).toContain('textbox:Enter name {value:""}');
+    expect(entries).toContain('textbox:Enter email {value:""}');
     expect(entries).toContain('link:Home');
     expect(entries).toContain('link:About');
   });
 
-  it('should return an empty elements array when no element has identifiable text', () => {
-    const emptyPath = resolve(__dirname, '..', 'fixtures/accessibility-tree-empty.html');
+  it('should include text-less elements (always-on) when no element has identifiable text', () => {
+    const emptyPath = resolve(__dirname, '..', 'fixtures/element-inventory-empty.html');
     const emptyHtml = readFileSync(emptyPath, 'utf-8');
     const emptyDom = new JSDOM(emptyHtml, { url: 'http://localhost', pretendToBeVisual: true });
 
@@ -73,10 +73,17 @@ describe('getAccessibilityTree Unit Tests', () => {
     global.document = emptyDom.window.document;
     global.Node = emptyDom.window.Node;
 
-    const tree = getAccessibilityTree();
+    const tree = getElementInventory(false);
     expect(tree.length).toBe(1);
     expect(tree[0].frame).toBe(-1);
-    expect(tree[0].elements).toEqual([]);
+    // Text-less elements are always included, identified by their positional
+    // index (#N) and any form-state suffix.
+    expect(tree[0].elements).toEqual([
+      'button:#1',
+      'button:#2',
+      'textbox:#1 {value:""}',
+      'image:#1',
+    ]);
 
     emptyDom.window.close();
     // Restore the main window so later tests still have a valid global.
@@ -86,7 +93,7 @@ describe('getAccessibilityTree Unit Tests', () => {
   });
 
   it('should format every entry as type:text with a known element type', () => {
-    const tree = getAccessibilityTree();
+    const tree = getElementInventory(false);
     const validTypes = new Set(Object.keys(ELEMENT_DEFINITIONS));
     const pattern = /^([a-zA-Z0-9-]+):.+$/;
 
@@ -101,13 +108,13 @@ describe('getAccessibilityTree Unit Tests', () => {
   });
 
   it('should match the committed baseline for element-types-unit.html', () => {
-    const tree = getAccessibilityTree();
-    const baseline = loadA11yBaseline('element-types-unit.json');
+    const tree = getElementInventory(false);
+    const baseline = loadElementInventoryBaseline('element-types-unit.json');
     expect(tree).toEqual(baseline);
   });
 
-  it('should match the committed baseline for accessibility-tree-empty.html', () => {
-    const emptyPath = resolve(__dirname, '..', 'fixtures/accessibility-tree-empty.html');
+  it('should match the committed baseline for element-inventory-empty.html', () => {
+    const emptyPath = resolve(__dirname, '..', 'fixtures/element-inventory-empty.html');
     const emptyHtml = readFileSync(emptyPath, 'utf-8');
     const emptyDom = new JSDOM(emptyHtml, { url: 'http://localhost', pretendToBeVisual: true });
 
@@ -115,8 +122,8 @@ describe('getAccessibilityTree Unit Tests', () => {
     global.document = emptyDom.window.document;
     global.Node = emptyDom.window.Node;
 
-    const tree = getAccessibilityTree();
-    const baseline = loadA11yBaseline('accessibility-tree-empty.json');
+    const tree = getElementInventory(false);
+    const baseline = loadElementInventoryBaseline('element-inventory-empty.json');
     expect(tree).toEqual(baseline);
 
     emptyDom.window.close();
@@ -126,10 +133,10 @@ describe('getAccessibilityTree Unit Tests', () => {
     global.Node = window.Node;
   });
 
-  // Validate getAccessibilityTree against the committed baseline for every
+  // Validate getElementInventory against the committed baseline for every
   // JSDOM-renderable fixture so regressions are caught in future runs.
   const JSDOM_FIXTURES = [
-    'accessibility-tree-empty.html',
+    'element-inventory-empty.html',
     'animations.html',
     'attributes.html',
     'demo-page.html',
@@ -158,8 +165,8 @@ describe('getAccessibilityTree Unit Tests', () => {
         global.document = dom.window.document;
         global.Node = dom.window.Node;
 
-        const tree = getAccessibilityTree();
-        const baseline = loadA11yBaseline(fixture.replace(/\.html$/, '.json'));
+        const tree = getElementInventory(false);
+        const baseline = loadElementInventoryBaseline(fixture.replace(/\.html$/, '.json'));
         expect(tree).toEqual(baseline);
 
         dom.window.close();
@@ -179,28 +186,28 @@ describe('getAccessibilityTree Unit Tests', () => {
       global.Node = window.Node;
     });
 
-    it('should default to full-page scanning (viewportOnly = false)', () => {
-      // viewportOnly defaults to false, so the full tree is returned
-      // (JSDOM has no layout engine for viewport checks).
-      const treeDefault = getAccessibilityTree();
-      const treeFull = getAccessibilityTree();
+    it('should default to viewport-only scanning (viewportOnly = true)', () => {
+      // viewportOnly defaults to true, so only in-viewport elements are
+      // returned. JSDOM has no layout engine, so nothing is in the viewport
+      // and the tree is empty by default.
+      const treeDefault = getElementInventory();
+      const treeViewportOnly = getElementInventory(true);
 
-      expect(treeDefault[0].elements.length).toBeGreaterThan(0);
-      expect(treeFull[0].elements.length).toBeGreaterThan(0);
-      expect(treeDefault).toEqual(treeFull);
+      expect(treeDefault).toEqual([{ frame: -1, elements: [] }]);
+      expect(treeViewportOnly).toEqual(treeDefault);
     });
 
     it('should accept a boolean viewportOnly argument', () => {
-      // getAccessibilityTree() returns the full page; passing true
-      // restricts to in-viewport elements (empty under JSDOM's lack of layout).
-      const treeFull = getAccessibilityTree();
-      const treeViewportOnly = getAccessibilityTree(true);
+      // Passing false returns the full page (JSDOM has no layout engine, so
+      // every element is treated as off-screen unless viewportOnly is false).
+      const treeFull = getElementInventory(false);
+      const treeViewportOnly = getElementInventory(true);
       expect(treeFull[0].elements.length).toBeGreaterThan(0);
       expect(treeViewportOnly).toEqual([{ frame: -1, elements: [] }]);
     });
 
     it('should return only in-viewport elements when viewportOnly is true', () => {
-      const tree = getAccessibilityTree(true);
+      const tree = getElementInventory(true);
       expect(tree).toEqual([{ frame: -1, elements: [] }]);
     });
   });

@@ -26,6 +26,17 @@ const MAX_RECURSION_DEPTH = 100;
 // Maximum length for text/textContent fallback descriptors
 const MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
 
+// Semantic types eligible for the element inventory's text-less fallback and
+// nearby-label rescue. This is every defined type EXCEPT the generic `element`
+// (which would otherwise promote every bare container) and `iframe` (which is a
+// frame container, not a leaf control). In other words: all real element types
+// — form controls and content/structure elements alike.
+const TEXTLESS_TYPES = new Set(
+  Object.keys(elementDefinitionsData).filter(
+    (type) => type !== 'element' && type !== 'iframe',
+  ),
+);
+
 const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT'];
 
 let IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
@@ -313,10 +324,70 @@ function getResolvedAriaLabelledByText(el) {
 }
 
 /**
+ * Escapes an element id for safe use inside a querySelector attribute selector.
+ * Uses the platform CSS.escape when available, falling back to a minimal escape
+ * for characters outside the safe id set.
+ * @param {string} id - The element id to escape
+ * @returns {string} A selector-safe id
+ */
+function cssEscapeId(id) {
+  if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+    return CSS.escape(id);
+  }
+  return id.replace(/[^a-zA-Z0-9_-]/g, (ch) => `\\${ch}`);
+}
+
+/**
+ * Resolves human-readable text for a form control from a nearby <label>, since
+ * many controls (checkbox, radio, select, text input) carry no own text. Two
+ * association patterns are supported:
+ *   1. Wrapping label — the control is a descendant of a <label>; the label's
+ *      own direct text nodes are used (excluding any control descendant text).
+ *   2. for-associated label — a <label for="id"> referencing the control's id.
+ * Returns '' when no usable nearby label text is found.
+ * @param {Element} el - The form control to inspect
+ * @returns {string} Nearby label text, or '' if none
+ */
+function getNearbyLabelText(el) {
+  if (el == null || typeof el.closest !== 'function') return '';
+
+  // 1. Wrapping <label>: use the label's own direct text nodes, which excludes
+  //    any control descendant's text (e.g. a <select>'s option labels).
+  const parentLabel = el.closest('label');
+  if (parentLabel) {
+    const labelText = shortenDescriptorText(getDirectText(parentLabel));
+    if (labelText) return labelText;
+  }
+
+  // 2. <label for="id"> associated by the control's own id.
+  const id = el.getAttribute && el.getAttribute('id');
+  if (id) {
+    const doc = el.ownerDocument || (typeof document !== 'undefined' ? document : null);
+    if (doc && typeof doc.querySelector === 'function') {
+      try {
+        const forLabel = doc.querySelector(`label[for="${cssEscapeId(id)}"]`);
+        if (forLabel) {
+          const labelText = shortenDescriptorText(getDirectText(forLabel));
+          if (labelText) return labelText;
+        }
+      } catch {
+        // Invalid selector or access denied — skip nearby label
+      }
+    }
+  }
+
+  return '';
+}
+
+/**
  * Gets the first identifiable text for an element, preferring direct text over
  * searchable attributes. Direct text nodes are checked first; if none exist (or
  * the element is ignored), the searchable-attribute priority list is used as a
  * fallback. This keeps human-visible text as the primary descriptor source.
+ *
+ * A nearby <label> (wrapping or for-associated) is used to override
+ * machine-generated attributes (value/id/name/src) while still yielding to
+ * explicit a11y/semantic text (aria-label/labelledby, placeholder, data-*).
  * @param {Element} el - The DOM element to describe
  * @returns {{attributeName: string|null, identifiableText: string}|null} Descriptor source and identifiable text
  */
@@ -330,9 +401,30 @@ function getElementDescriptorText(el) {
   const values = getSearchableAttributeValues(el);
   const attrs = SEARCHABLE_ATTRIBUTES;
 
+  // Nearby-label resolution for eligible element types. A nearby <label> should
+  // win over machine-generated attributes (value/id/name/src) but still yield to
+  // explicit a11y/semantic text (aria-label/labelledby, placeholder, data-*).
+  // Computed once up front so the loop can skip machine attributes in its favor.
+  let nearbyLabel = '';
+  const type = getElementDescriptorType(el);
+  if (TEXTLESS_TYPES.has(type)) {
+    nearbyLabel = getNearbyLabelText(el);
+  }
+
+  // Machine attributes a nearby <label> should override (they are not
+  // human-meaningful identifiers for a control). Test-id attributes are also
+  // machine-generated and must not outrank a real user-facing <label>.
+  const MACHINE_ATTRS = new Set([
+    'value', 'id', 'resource-id', 'name', 'src',
+    'data-test-id', 'data-testid', 'data-value'
+  ]);
+
   for (let i = 0; i < attrs.length; i++) {
     const attr = attrs[i];
     if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
+
+    // Prefer a nearby label over machine-generated attributes.
+    if (nearbyLabel && MACHINE_ATTRS.has(attr)) continue;
 
     const rawText = attr === 'aria-labelledby'
       ? getResolvedAriaLabelledByText(el)
@@ -343,6 +435,10 @@ function getElementDescriptorText(el) {
     if (rawText) {
       return { attributeName: attr, identifiableText: rawText };
     }
+  }
+
+  if (nearbyLabel) {
+    return { attributeName: 'label', identifiableText: nearbyLabel };
   }
 
   return null;
@@ -1543,6 +1639,30 @@ export function getViewportElementCounts(type = null, parent = null) {
 }
 
 /**
+ * Formats a form-control state object into a compact, parseable suffix string
+ * for the element inventory. Mirrors the shape produced by `getFormState`.
+ * @param {Object} formState - The form state object from `getFormState`
+ * @returns {string} A `{...}`-wrapped string, or '' when formState is empty
+ */
+function formatFormState(formState) {
+  if (formState == null) return '';
+
+  const parts = [];
+  for (const key of Object.keys(formState)) {
+    const value = formState[key];
+    if (Array.isArray(value)) {
+      parts.push(`${key}:[${value.map((v) => JSON.stringify(v)).join(',')}]`);
+    } else if (typeof value === 'string') {
+      parts.push(`${key}:${JSON.stringify(value)}`);
+    } else {
+      parts.push(`${key}:${String(value)}`);
+    }
+  }
+
+  return parts.length > 0 ? `{${parts.join(',')}}` : '';
+}
+
+/**
  * Collects all identifiable elements across all same-origin frames and returns
  * them grouped by frame number. Each element is represented as a compact
  * `type:identifiableText` string (no objects) to keep overhead minimal.
@@ -1551,12 +1671,24 @@ export function getViewportElementCounts(type = null, parent = null) {
  * Fluens state-capture behavior. Cross-origin iframes are silently skipped by
  * `getAllFrames()` (it throws on access and is caught internally).
  *
- * @param {boolean} [viewportOnly=false] - When true, only elements currently
- *   within the visual viewport are included. When false, elements from the
- *   complete page (including off-screen elements) are returned.
- * @returns {Array<{frame: number, elements: string[]}>} Accessibility tree grouped by frame
+ * Two enrichments are always on, because the tree is meant to drive guided
+ * interaction with behavior-rich elements that frequently lack their own text:
+ *   - Text-less elements (any type except `element`/`iframe`) are included
+ *     using a positional `#N` identifier (N = 1-based position among same-type
+ *     elements in the frame, matching findElements() order).
+ *   - Form-control state is appended as a `{...}` suffix (e.g. `{checked:true}`,
+ *     `{value:"abc"}`) for every element that has a `formState`.
+ *   - Nearby-label rescue: text from a nearby <label> (wrapping or
+ *     for-associated) is used for eligible element types, overriding machine
+ *     attributes (value/id/name/src) while still yielding to explicit a11y/
+ *     semantic text (aria-label/labelledby, placeholder, data-*).
+ *
+ * @param {boolean} [viewportOnly=true] - When true (default), only elements
+ *   currently within the visual viewport are included. When false, elements
+ *   from the complete page (including off-screen elements) are returned.
+ * @returns {Array<{frame: number, elements: string[]}>} Element inventory grouped by frame
  */
-export function getAccessibilityTree(viewportOnly = false) {
+export function getElementInventory(viewportOnly = true) {
   const frames = getAllFrames(window);
   const tree = [];
 
@@ -1571,11 +1703,24 @@ export function getAccessibilityTree(viewportOnly = false) {
       // When viewport-scoped, skip elements that are not in the viewport.
       if (viewportOnly && !inViewport(el)) continue;
 
-      const descriptor = getElementDescriptorText(el);
-      if (!descriptor || !descriptor.identifiableText) continue;
+      const descriptor = getElementDescriptor(el, true);
+      const type = descriptor.type || 'element';
 
-      const type = getElementDescriptorType(el);
-      entries.push(`${type}:${descriptor.identifiableText}`);
+      // Text-less elements: always included for every real element type
+      // (everything except the generic `element` and `iframe` containers),
+      // using a positional #N identifier so they remain actionable.
+      if (!descriptor.identifiableText) {
+        if (!TEXTLESS_TYPES.has(type)) continue;
+        const text = `#${descriptor.index}`;
+        const suffix = descriptor.formState
+          ? ` ${formatFormState(descriptor.formState)}` : '';
+        entries.push(`${type}:${text}${suffix}`);
+        continue;
+      }
+
+      const suffix = descriptor.formState
+        ? ` ${formatFormState(descriptor.formState)}` : '';
+      entries.push(`${type}:${descriptor.identifiableText}${suffix}`);
     }
 
     tree.push({ frame: frames[fi].frameIndex, elements: entries });

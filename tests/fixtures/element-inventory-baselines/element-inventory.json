@@ -1,5 +1,6 @@
 [
   {
+    "frame": -1,
     "elements": [
       "element:Accessibility Tree",
       "heading:Welcome",
@@ -7,20 +8,14 @@
       "link:Docs",
       "button:Submit",
       "button:Cancel",
-      "textbox:Email",
-      "textbox:Full name",
+      "textbox:Email {value:\"\"}",
+      "textbox:Full name {value:\"\"}",
       "element:Some visible text",
       "iframe:tree-iframe"
-    ],
-    "frame": -1
+    ]
   },
   {
-    "elements": [
-      "heading:Iframe Heading",
-      "link:Iframe Home",
-      "button:Login",
-      "textbox:Search"
-    ],
-    "frame": 0
+    "frame": 0,
+    "elements": []
   }
 ]
