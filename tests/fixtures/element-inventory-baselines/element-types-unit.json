@@ -2,33 +2,187 @@
   {
     "frame": -1,
     "elements": [
-      "element:Unit Tests - Element",
-      "button:Submit",
-      "button:Cancel",
-      "button:Click Me",
-      "textbox:Enter name {value:\"\"}",
-      "textbox:Enter email {value:\"\"}",
-      "textbox:Some text {value:\"Some text\"}",
-      "checkbox:chk1 {checked:false}",
-      "radio:group1 {set:false}",
-      "slider:slider1 {value:50}",
-      "datepicker:datepicker1 {value:\"\"}",
-      "colorpicker:colorpicker1 {value:\"#ff0000\"}",
-      "link:Home",
-      "link:About",
-      "dropdown:dropdown1 {selected:\"Option 1\",options:[\"Option 1\",\"Option 2\"]}",
-      "element:Option 1",
-      "element:Option 2",
-      "element:Nested text",
-      "table:test-table",
-      "row:#1",
-      "column:Name",
-      "column:Age",
-      "column:City",
-      "row:#2",
-      "column:Alice",
-      "column:30",
-      "column:New York"
+      {
+        "type": "element",
+        "description": "Unit Tests - Element",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Submit",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Cancel",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Click Me",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "textbox",
+        "description": "Enter name",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "textbox",
+        "description": "Enter email",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "textbox",
+        "description": "Some text",
+        "inViewport": false,
+        "formState": {
+          "value": "Some text"
+        }
+      },
+      {
+        "type": "checkbox",
+        "description": "chk1",
+        "inViewport": false,
+        "formState": {
+          "checked": false
+        }
+      },
+      {
+        "type": "radio",
+        "description": "group1",
+        "inViewport": false,
+        "formState": {
+          "set": false
+        }
+      },
+      {
+        "type": "slider",
+        "description": "slider1",
+        "inViewport": false,
+        "formState": {
+          "value": 50
+        }
+      },
+      {
+        "type": "datepicker",
+        "description": "datepicker1",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "colorpicker",
+        "description": "colorpicker1",
+        "inViewport": false,
+        "formState": {
+          "value": "#ff0000"
+        }
+      },
+      {
+        "type": "link",
+        "description": "Home",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "link",
+        "description": "About",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "dropdown1",
+        "inViewport": false,
+        "formState": {
+          "selected": "Option 1",
+          "options": ["Option 1", "Option 2"]
+        }
+      },
+      {
+        "type": "element",
+        "description": "Option 1",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Option 2",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Nested text",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "table",
+        "description": "test-table",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "row",
+        "description": "#1",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "column",
+        "description": "Name",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "column",
+        "description": "Age",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "column",
+        "description": "City",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "row",
+        "description": "#2",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "column",
+        "description": "Alice",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "column",
+        "description": "30",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "column",
+        "description": "New York",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

@@ -1,68 +1,388 @@
 [
   {
     "elements": [
-      "element:viewport",
-      "element:Interactive Elements",
-      "heading:Interactive Elements",
-      "element:links-section",
-      "heading:1. Links",
-      "link:Enabled Link",
-      "link:Disabled Link (Simulated)",
-      "element:buttons-section",
-      "heading:2. Buttons",
-      "button:Enabled Button",
-      "button:Disabled Button",
-      "button:Hidden Button",
-      "button:ARIA Enabled Button",
-      "button:ARIA Disabled Button",
-      "element:sliders-section",
-      "heading:3. Sliders",
-      "element:Enabled Slider",
-      "slider:Enabled Slider {value:50}",
-      "element:Disabled Slider",
-      "slider:Disabled Slider {value:30}",
-      "element:Hidden Slider",
-      "slider:Hidden Slider {value:20}",
-      "element:file-section",
-      "heading:4. File Inputs",
-      "file:file-enabled {fileName:null}",
-      "file:file-disabled {fileName:null}",
-      "element:lists-section",
-      "heading:5. Lists & ListItems",
-      "list:list-enabled",
-      "listitem:Item 1 (Enabled)",
-      "listitem:Item 2 (Enabled)",
-      "list:list-disabled",
-      "listitem:Item 1 (Disabled)",
-      "listitem:Item 2 (Disabled)",
-      "element:menus-section",
-      "heading:6. Menus & MenuItems",
-      "menu:menu-enabled",
-      "menuitem:Menu Item 1 (Enabled)",
-      "menuitem:Menu Item 2 (Enabled)",
-      "menu:menu-disabled",
-      "menuitem:Menu Item 1 (Disabled)",
-      "menuitem:Menu Item 2 (Disabled)",
-      "element:toolbars-section",
-      "heading:7. Toolbars",
-      "toolbar:toolbar-enabled",
-      "button:Tool 1",
-      "button:Tool 2",
-      "toolbar:toolbar-disabled",
-      "button:Tool 1 (Disabled)",
-      "button:Tool 2 (Disabled)",
-      "element:images-section",
-      "heading:8. Images",
-      "image:Enabled Image",
-      "image:Disabled Image",
-      "element:dialogs-section",
-      "heading:9. Dialogs",
-      "button:Open Dialog",
-      "element:overlay",
-      "dialog:Test Dialog",
-      "heading:Test Dialog",
-      "element:This is a modal dialog.",
-      "button:Close"
+      {
+        "description": "viewport",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Interactive Elements",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Interactive Elements",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "links-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "1. Links",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Enabled Link",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "Disabled Link (Simulated)",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "buttons-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "2. Buttons",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Enabled Button",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "Disabled Button",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "Hidden Button",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "ARIA Enabled Button",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "ARIA Disabled Button",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "sliders-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "3. Sliders",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Enabled Slider",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Enabled Slider",
+        "formState": {
+          "value": 50
+        },
+        "inViewport": false,
+        "type": "slider"
+      },
+      {
+        "description": "Disabled Slider",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Disabled Slider",
+        "formState": {
+          "value": 30
+        },
+        "inViewport": false,
+        "type": "slider"
+      },
+      {
+        "description": "Hidden Slider",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Hidden Slider",
+        "formState": {
+          "value": 20
+        },
+        "inViewport": false,
+        "type": "slider"
+      },
+      {
+        "description": "file-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "4. File Inputs",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "file-enabled",
+        "formState": {
+          "fileName": null
+        },
+        "inViewport": false,
+        "type": "file"
+      },
+      {
+        "description": "file-disabled",
+        "formState": {
+          "fileName": null
+        },
+        "inViewport": false,
+        "type": "file"
+      },
+      {
+        "description": "lists-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "5. Lists & ListItems",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "list-enabled",
+        "formState": null,
+        "inViewport": false,
+        "type": "list"
+      },
+      {
+        "description": "Item 1 (Enabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "Item 2 (Enabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "list-disabled",
+        "formState": null,
+        "inViewport": false,
+        "type": "list"
+      },
+      {
+        "description": "Item 1 (Disabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "Item 2 (Disabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "menus-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "6. Menus & MenuItems",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "menu-enabled",
+        "formState": null,
+        "inViewport": false,
+        "type": "menu"
+      },
+      {
+        "description": "Menu Item 1 (Enabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "menuitem"
+      },
+      {
+        "description": "Menu Item 2 (Enabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "menuitem"
+      },
+      {
+        "description": "menu-disabled",
+        "formState": null,
+        "inViewport": false,
+        "type": "menu"
+      },
+      {
+        "description": "Menu Item 1 (Disabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "menuitem"
+      },
+      {
+        "description": "Menu Item 2 (Disabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "menuitem"
+      },
+      {
+        "description": "toolbars-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "7. Toolbars",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "toolbar-enabled",
+        "formState": null,
+        "inViewport": false,
+        "type": "toolbar"
+      },
+      {
+        "description": "Tool 1",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "Tool 2",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "toolbar-disabled",
+        "formState": null,
+        "inViewport": false,
+        "type": "toolbar"
+      },
+      {
+        "description": "Tool 1 (Disabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "Tool 2 (Disabled)",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "images-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "8. Images",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Enabled Image",
+        "formState": null,
+        "inViewport": false,
+        "type": "image"
+      },
+      {
+        "description": "Disabled Image",
+        "formState": null,
+        "inViewport": false,
+        "type": "image"
+      },
+      {
+        "description": "dialogs-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "9. Dialogs",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Open Dialog",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "overlay",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Test Dialog",
+        "formState": null,
+        "inViewport": false,
+        "type": "dialog"
+      },
+      {
+        "description": "Test Dialog",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "This is a modal dialog.",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Close",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      }
     ],
     "frame": -1
   }

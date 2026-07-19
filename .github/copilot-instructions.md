@@ -5,7 +5,7 @@
 A robust, agent-friendly JavaScript library for identifying DOM elements by semantic type and/or text content, with full support for shadow DOM, iframes, and browser automation workflows (Selenium, Playwright, Puppeteer).
 
 **Repository**: `@nodebug/browser-element-finder` on npm
-**Version**: 1.1.9
+**Version**: 1.3.5
 **Node**: >= 24
 **Module System**: ESM-only (`"type": "module"`)
 
@@ -156,9 +156,10 @@ If no attribute matches, falls back to direct text nodes, then full `textContent
 ### Shadow DOM & Iframe Support
 
 - **Shadow DOM**: `getAllElements()` uses iterative stack-based traversal with shadow root penetration
-- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) and `getElementCounts`/`getViewportElementCounts` traverse **all** same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. `getElementInventory(viewportOnly)` also traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`).
+- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) and `getElementCounts`/`getViewportElementCounts` traverse **all** same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. `getElementInventory()` also traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`), where each element is an object `{ type, description, inViewport, formState }`.
 - **Cross-origin iframes**: Gracefully skipped with `SecurityError` handling
 - **Searching iframe contents**: Switch into the iframe context, then run the finder inside that frame to get interactable `element` references.
+- **`getElementInventory()` text-less `#N` fallback**: Text-less elements of any real semantic type (all types except `element` and `iframe`, per `TEXTLESS_TYPES`) are included with a positional `#N` description (N = 1-based position among same-type elements in the frame, matching `findElements()` order). Generic `element`/`iframe` typed nodes with no text are excluded. This makes icon-only buttons, unlabeled checkboxes, images, etc. actionable in the inventory.
 
 ### Return Format
 

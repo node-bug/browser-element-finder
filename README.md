@@ -235,40 +235,40 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 
 ## API Summary
 
-| Function                                          | Description                                                                                                     |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `findElements(type, text, exact, parent)`         | Find elements by type/text across all same-origin frames, returns `{ elements: [...] }`                         |
-| `findElementsByType(type, parent)`                | Find elements by type only across all same-origin frames, returns `{ elements: [...] }`                         |
-| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute across all same-origin frames, returns `{ elements: [...] }`                    |
-| `findOverlayElements(x, y)`                       | Find overlay/modal/dialog/banner elements across all same-origin frames (or at a point via `elementsFromPoint`) |
-| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, including generic `element` by default                          |
-| `getViewportElementCounts(type, parent)`          | Count visible elements currently in the viewport by semantic type                                               |
-| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                                   |
-| `highlight(elements, color, width)`               | Highlight elements with outline                                                                                 |
-| `unhighlight(elements)`                           | Remove highlight                                                                                                |
-| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                                                  |
-| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                                                          |
-| `getValidTypes()`                                 | List all supported element types                                                                                |
-| `getValidAttributes()`                            | List all valid searchable attribute names                                                                       |
-| `getBoundingBox(element)`                         | Get bounding box for an element                                                                                 |
-| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                                                           |
-| `getSearchableAttributes()`                       | Get current searchable attributes                                                                               |
-| `setIgnoredTags(tags)`                            | Set tags to ignore during traversal                                                                             |
-| `getIgnoredTags()`                                | Get current ignored tags                                                                                        |
-| `addIgnoredTags(tags)`                            | Add tags to the ignored list                                                                                    |
-| `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                                               |
-| `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                                               |
-| `getElementDescriptor(element, includeHidden)`    | Get identifiable text, source attribute, occurrence index, type, tag name, and form state for an element        |
-| `getElementInventory(viewportOnly)`               | Frame-grouped `type:text` snapshot; always-on text-less `#N` + form state + nearby-label rescue                 |
-| `getFormState(el, type)`                          | Get the interactive state of a form control (value/checked/selected/on, etc.) for form semantic types           |
-| `matchesType(el, type)`                           | Check if element matches a type                                                                                 |
-| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                                         |
-| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                                                              |
-| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                                                 |
-| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                                                               |
-| `splitByOperator(expr, op)`                       | Split XPath by operator                                                                                         |
-| `inViewport(el, options)`                         | Check if element intersects the visual viewport (sync)                                                          |
-| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions)       |
+| Function                                          | Description                                                                                                                             |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `findElements(type, text, exact, parent)`         | Find elements by type/text across all same-origin frames, returns `{ elements: [...] }`                                                 |
+| `findElementsByType(type, parent)`                | Find elements by type only across all same-origin frames, returns `{ elements: [...] }`                                                 |
+| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute across all same-origin frames, returns `{ elements: [...] }`                                            |
+| `findOverlayElements(x, y)`                       | Find overlay/modal/dialog/banner elements across all same-origin frames (or at a point via `elementsFromPoint`)                         |
+| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, including generic `element` by default                                                  |
+| `getViewportElementCounts(type, parent)`          | Count visible elements currently in the viewport by semantic type                                                                       |
+| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                                                           |
+| `highlight(elements, color, width)`               | Highlight elements with outline                                                                                                         |
+| `unhighlight(elements)`                           | Remove highlight                                                                                                                        |
+| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                                                                          |
+| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                                                                                  |
+| `getValidTypes()`                                 | List all supported element types                                                                                                        |
+| `getValidAttributes()`                            | List all valid searchable attribute names                                                                                               |
+| `getBoundingBox(element)`                         | Get bounding box for an element                                                                                                         |
+| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                                                                                   |
+| `getSearchableAttributes()`                       | Get current searchable attributes                                                                                                       |
+| `setIgnoredTags(tags)`                            | Set tags to ignore during traversal                                                                                                     |
+| `getIgnoredTags()`                                | Get current ignored tags                                                                                                                |
+| `addIgnoredTags(tags)`                            | Add tags to the ignored list                                                                                                            |
+| `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                                                                       |
+| `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                                                                       |
+| `getElementDescriptor(element, includeHidden)`    | Get identifiable text, source attribute, occurrence index, type, tag name, and form state for an element                                |
+| `getElementInventory()`                           | Frame-grouped object snapshot `{type, description, inViewport, formState}`; always-on text-less `#N` + form state + nearby-label rescue |
+| `getFormState(el, type)`                          | Get the interactive state of a form control (value/checked/selected/on, etc.) for form semantic types                                   |
+| `matchesType(el, type)`                           | Check if element matches a type                                                                                                         |
+| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                                                                 |
+| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                                                                                      |
+| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                                                                         |
+| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                                                                                       |
+| `splitByOperator(expr, op)`                       | Split XPath by operator                                                                                                                 |
+| `inViewport(el, options)`                         | Check if element intersects the visual viewport (sync)                                                                                  |
+| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions)                               |
 
 ---
 
@@ -322,13 +322,13 @@ Finds elements matching the specified type with intelligent fallback to nearby e
 | `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                   |
 | `parent`  | `Element` | `null`  | Parent element to search within                                                                                                   |
 
-**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden }] }`
+**Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden, inViewport }] }`
 
 **Behavior**:
 
 - If only `type` is provided: delegates to `findElementsByType(type, parent)`
 - If only `text` is provided: delegates to `findElementsByAttribute(text, exact, parent)`
-- If both are provided: attempts direct match, then falls back to nearby elements
+- If both are provided: strict combined match — the element must satisfy BOTH the type and the text/attribute. There is no nearby-element fallback (use `findProbableElements` for that).
 
 **Fallback Strategy**: When no element matches both type and text directly, searches for nearby elements in this order:
 
@@ -498,46 +498,38 @@ const checkboxState = ElementFinder.getFormState(checkboxEl, 'checkbox')
 // { checked: true }
 ```
 
-### `getElementInventory(viewportOnly, options)`
+### `getElementInventory()`
 
-Captures a compact, frame-grouped snapshot of identifiable elements for state capture and guided interaction. Each element is a `type:identifiableText` string. Hidden elements are included (no visibility filtering), and cross-origin iframes are silently skipped.
+Captures a compact, frame-grouped snapshot of identifiable elements for state capture and guided interaction. Each element is an object with its semantic `type`, an identifiable `description` (or a positional `#N` for text-less elements), an `inViewport` flag, and its `formState` (or `null`). The complete page is returned (no viewport filtering) — every element carries an `inViewport` boolean so callers can filter if they wish. Hidden elements are included (no visibility filtering), and cross-origin iframes are silently skipped.
 
-Text-less form controls and form state are **always** included:
+Text-less elements and form state are **always** included:
 
-- A form control with no identifiable text is emitted as `type:#N` (N = 1-based position among same-type elements in the frame).
-- A `{…}` form-state suffix is appended to every form control (see `getFormState`).
+- A text-less element of any real semantic type (all types except `element`/`iframe`) with no identifiable text is emitted as `type:#N` (N = 1-based position among same-type elements in the frame).
+- A `formState` object is attached to every form control (see `getFormState`).
 
 ```javascript
-// Default: in-viewport identifiable elements, plus text-less form controls (#N) and form state
+// Full-page tree: each element is an object with an inViewport flag
 const tree = ElementFinder.getElementInventory()
 // [ { frame: -1, elements: [
-//   'button:Submit',
-//   'textbox:email {value:""}',
-//   'checkbox:pref {checked:false}',
-//   'textbox:#2 {value:""}'    // anonymous control, positional id
-// ] } ]
-
-// Full-page scan (pass false to include off-screen elements)
-const full = ElementFinder.getElementInventory(false)
-
-// Nearby-label rescue (always on): text from a nearby <label> overrides machine attrs
-const rich = ElementFinder.getElementInventory(false)
-// [ { frame: -1, elements: [
-//   'checkbox:CheckBox in iFrame {checked:false}',
-//   'radio:RadioButton 1 {set:false}',
-//   'dropdown:Select Dropdown {selected:"Please choose...",options:[...]}',
+//   { type: 'button',   description: 'Submit', inViewport: true,  formState: null },
+//   { type: 'textbox',  description: 'email',  inViewport: true,  formState: { value: '' } },
+//   { type: 'checkbox', description: 'pref',   inViewport: false, formState: { checked: false } },
+//   { type: 'textbox',  description: '#2',     inViewport: false, formState: { value: '' } }  // anonymous control, positional id
 // ] } ]
 ```
 
-| Parameter      | Type      | Default | Description                                                                                                                 |
-| -------------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `viewportOnly` | `boolean` | `true`  | When `true` (default), only elements currently within the visual viewport are included. Pass `false` for the complete page. |
+**Key behaviors**:
+
+- Takes no arguments; always returns the complete page across all same-origin frames.
+- Main document is `frame: -1`, iframes `0, 1, …`.
+- Nearby-label rescue is always on: text from a nearby `<label>` overrides machine attributes (`value`/`id`/`resource-id`/`name`/`src`/`data-test-id`/`data-testid`/`data-value`) for form controls, but yields to explicit a11y/semantic text (`aria-label`/`aria-labelledby`, `placeholder`, `data-*`).
+- Text-less promotion applies to all real semantic types (everything except `iframe` and `element`, per `TEXTLESS_TYPES`) — not just form controls; generic containers are never promoted. `#N` is session-stable but not durable across DOM mutations.
 
 **Key behaviors**:
 
 - Text-less form controls (`type:#N`) and form-state `{…}` suffixes are always emitted — they are not opt-in.
 - Nearby-label rescue is always on: text from a nearby `<label>` overrides machine attributes (`value`/`id`/`resource-id`/`name`/`src`/`data-test-id`/`data-testid`/`data-value`) for form controls, but yields to explicit a11y/semantic text (`aria-label`/`aria-labelledby`, `placeholder`, `data-*`).
-- Text-less promotion only applies to form types (everything except `iframe` and `element`); generic containers are never promoted. `#N` is session-stable but not durable across DOM mutations.
+- Text-less promotion applies to all real semantic types (everything except `iframe` and `element`, per `TEXTLESS_TYPES`) — not just form controls; generic containers are never promoted. `#N` is session-stable but not durable across DOM mutations.
 - The `index` used for `#N` matches the document-order traversal of `findElements(type, null)`, so `#N` maps directly to `findElements(type, null).elements[N-1]`.
 
 ### `matchesType(el, type)`
@@ -780,9 +772,9 @@ const headerCell = ElementFinder.findElements('cell', 'City')
 
 By default, the library searches these attributes (in priority order):
 
-- `placeholder`, `value`, `data-value`, `data-test-id`, `data-testid`, `id`
-- `resource-id`, `name`, `aria-label`, `hint`
-- `title`, `tooltip`, `alt`, `src`, `aria-labelledby`
+- `name`, `aria-label`, `aria-labelledby`, `aria-placeholder`, `aria-valuetext`, `aria-description`
+- `placeholder`, `hint`, `title`, `tooltip`, `alt`, `data-value`, `data-test-id`, `data-testid`
+- `id`, `resource-id`, `src`, `value`
 
 ---
 

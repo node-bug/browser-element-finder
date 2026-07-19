@@ -2,15 +2,60 @@
   {
     "frame": -1,
     "elements": [
-      "element:Unit Tests - Viewport",
-      "element:viewport-test-root",
-      "button:Inside",
-      "button:Offscreen",
-      "button:Partial",
-      "button:Zero",
-      "button:Hidden",
-      "element:offscreen-container",
-      "button:Way Off"
+      {
+        "type": "element",
+        "description": "Unit Tests - Viewport",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "viewport-test-root",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Inside",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Offscreen",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Partial",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Zero",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Hidden",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "offscreen-container",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Way Off",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

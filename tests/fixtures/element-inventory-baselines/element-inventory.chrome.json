@@ -1,25 +1,101 @@
 [
   {
     "elements": [
-      "element:Accessibility Tree",
-      "heading:Welcome",
-      "link:Home",
-      "link:Docs",
-      "button:Submit",
-      "button:Cancel",
-      "textbox:Email {value:\"\"}",
-      "textbox:Full name {value:\"\"}",
-      "element:Some visible text",
-      "iframe:tree-iframe"
+      {
+        "description": "Accessibility Tree",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Welcome",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Home",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "Docs",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "Submit",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "Cancel",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "Email",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": true,
+        "type": "textbox"
+      },
+      {
+        "description": "Full name",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": true,
+        "type": "textbox"
+      },
+      {
+        "description": "Some visible text",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "tree-iframe",
+        "formState": null,
+        "inViewport": true,
+        "type": "iframe"
+      }
     ],
     "frame": -1
   },
   {
     "elements": [
-      "heading:Iframe Heading",
-      "link:Iframe Home",
-      "button:Login",
-      "textbox:Search {value:\"\"}"
+      {
+        "description": "Iframe Heading",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Iframe Home",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "Login",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "Search",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": true,
+        "type": "textbox"
+      }
     ],
     "frame": 0
   }

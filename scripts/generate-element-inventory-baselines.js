@@ -72,7 +72,7 @@ async function main() {
     global.window = dom.window;
     global.document = dom.window.document;
     global.Node = dom.window.Node;
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     writeBaseline(fixtureName.replace(/\.html$/, '.json'), tree);
     dom.window.close();
   }
@@ -88,7 +88,7 @@ async function main() {
     try {
       await fixture.setup();
       const tree = await fixture.driver.executeScript(`
-        return ElementFinder.getElementInventory(false);
+        return ElementFinder.getElementInventory();
       `);
       writeBaseline(fixtureName.replace(/\.html$/, '.chrome.json'), tree);
     } catch (err) {

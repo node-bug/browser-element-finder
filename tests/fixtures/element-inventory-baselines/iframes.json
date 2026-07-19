@@ -2,15 +2,62 @@
   {
     "frame": -1,
     "elements": [
-      "element:Iframe Test Fixture",
-      "heading:Iframe Test Page",
-      "checkbox:mainCheckbox {checked:false}",
-      "iframe:test-iframe",
-      "heading:Cross-Origin Iframe",
-      "element:This iframe points to an",
-      "iframe:<p>Your browser does not",
-      "heading:Same-Origin Iframe (data",
-      "iframe:same-origin-data-iframe"
+      {
+        "type": "element",
+        "description": "Iframe Test Fixture",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Iframe Test Page",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "checkbox",
+        "description": "mainCheckbox",
+        "inViewport": false,
+        "formState": {
+          "checked": false
+        }
+      },
+      {
+        "type": "iframe",
+        "description": "test-iframe",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Cross-Origin Iframe",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "This iframe points to an",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "iframe",
+        "description": "<p>Your browser does not",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Same-Origin Iframe (data",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "iframe",
+        "description": "same-origin-data-iframe",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   },
   {

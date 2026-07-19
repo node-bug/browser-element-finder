@@ -2,9 +2,24 @@
   {
     "frame": -1,
     "elements": [
-      "button:Show Overlay",
-      "element:overlay-container",
-      "link:Overlay Link"
+      {
+        "type": "button",
+        "description": "Show Overlay",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "overlay-container",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "link",
+        "description": "Overlay Link",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

@@ -2,32 +2,162 @@
   {
     "frame": -1,
     "elements": [
-      "element:Overlay Elements Test",
-      "heading:Overlay Test Page",
-      "element:This is regular page",
-      "button:Open Modal",
-      "dialog:aria-dialog",
-      "heading:Aria Dialog",
-      "element:This is an ARIA modal",
-      "button:Close",
-      "element:native-dialog",
-      "heading:Native Dialog",
-      "element:This is a native HTML",
-      "button:Close",
-      "element:cookie-banner",
-      "element:We use cookies.",
-      "button:Accept All",
-      "element:toast",
-      "element:Action completed",
-      "element:popover-element",
-      "heading:Popover Content",
-      "element:This uses the Popover",
-      "dialog:alert-dialog",
-      "heading:Alert Dialog",
-      "element:Are you sure?",
-      "button:Yes",
-      "button:No",
-      "element:backdrop"
+      {
+        "type": "element",
+        "description": "Overlay Elements Test",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Overlay Test Page",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "This is regular page",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Open Modal",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dialog",
+        "description": "aria-dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Aria Dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "This is an ARIA modal",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Close",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "native-dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Native Dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "This is a native HTML",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Close",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "cookie-banner",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "We use cookies.",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Accept All",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "toast",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Action completed",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "popover-element",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Popover Content",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "This uses the Popover",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dialog",
+        "description": "alert-dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Alert Dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Are you sure?",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Yes",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "No",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "backdrop",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

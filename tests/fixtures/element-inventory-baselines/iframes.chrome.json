@@ -1,24 +1,95 @@
 [
   {
     "elements": [
-      "element:Iframe Test Fixture",
-      "heading:Iframe Test Page",
-      "checkbox:mainCheckbox {checked:false}",
-      "iframe:test-iframe",
-      "heading:Cross-Origin Iframe",
-      "element:This iframe points to an",
-      "iframe:<p>Your browser does not",
-      "heading:Same-Origin Iframe (data",
-      "iframe:same-origin-data-iframe"
+      {
+        "description": "Iframe Test Fixture",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Iframe Test Page",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "mainCheckbox",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": true,
+        "type": "checkbox"
+      },
+      {
+        "description": "test-iframe",
+        "formState": null,
+        "inViewport": true,
+        "type": "iframe"
+      },
+      {
+        "description": "Cross-Origin Iframe",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "This iframe points to an",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "<p>Your browser does not",
+        "formState": null,
+        "inViewport": true,
+        "type": "iframe"
+      },
+      {
+        "description": "Same-Origin Iframe (data",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "same-origin-data-iframe",
+        "formState": null,
+        "inViewport": false,
+        "type": "iframe"
+      }
     ],
     "frame": -1
   },
   {
     "elements": [
-      "checkbox:Iframe Checkbox {checked:false}",
-      "element:Iframe Checkbox",
-      "checkbox:Iframe Checkbox 2 {checked:false}",
-      "element:Iframe Checkbox 2"
+      {
+        "description": "Iframe Checkbox",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": true,
+        "type": "checkbox"
+      },
+      {
+        "description": "Iframe Checkbox",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Iframe Checkbox 2",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": true,
+        "type": "checkbox"
+      },
+      {
+        "description": "Iframe Checkbox 2",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      }
     ],
     "frame": 0
   }

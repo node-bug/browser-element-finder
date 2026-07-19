@@ -2,11 +2,36 @@
   {
     "frame": -1,
     "elements": [
-      "element:Unit Tests - Animations",
-      "element:Animated Box",
-      "element:Fade Box",
-      "element:Static Box",
-      "button:Animated Button"
+      {
+        "type": "element",
+        "description": "Unit Tests - Animations",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Animated Box",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Fade Box",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Static Box",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Animated Button",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

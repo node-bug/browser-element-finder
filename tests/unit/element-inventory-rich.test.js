@@ -75,81 +75,81 @@ describe('getElementInventory enrichment options', () => {
   });
 
   it('default tree includes text-less form controls with nearby labels and form state', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
     // Nearby-label rescue is always on, so for-associated controls resolve to
     // their label text (which wins over machine attributes) with form state
-    // appended.
-    expect(entries).toContain('checkbox:CheckBox in iFrame {checked:false}');
-    expect(entries).toContain('radio:RadioButton 1 {set:false}');
-    expect(entries).toContain('dropdown:Select Dropdown {selected:"Please choose...",options:["Please choose...","Set to 25%"]}');
+    // exposed as an object.
+    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
+    expect(entries).toContainEqual({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } });
+    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
     // The truly anonymous control (no id/name/value) is included via #N.
-    expect(entries.some((e) => e.startsWith('textbox:#'))).toBe(true);
+    expect(entries.some((e) => e.type === 'textbox' && e.description.startsWith('#'))).toBe(true);
   });
 
   it('nearby labels rescue text from for-associated labels', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContain('checkbox:CheckBox in iFrame {checked:false}');
-    expect(entries).toContain('checkbox:CheckBox {checked:false}');
-    expect(entries).toContain('radio:RadioButton 1 {set:false}');
-    expect(entries).toContain('dropdown:Select Dropdown {selected:"Please choose...",options:["Please choose...","Set to 25%"]}');
+    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
+    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox', inViewport: false, formState: { checked: false } });
+    expect(entries).toContainEqual({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } });
+    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
   });
 
   it('nearby labels rescue text from wrapping labels', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContain('textbox:Search {value:""}');
+    expect(entries).toContainEqual({ type: 'textbox', description: 'Search', inViewport: false, formState: { value: '' } });
   });
 
   it('explicit aria-label wins over a nearby label', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContain('checkbox:Explicit Aria {checked:false}');
-    expect(entries).not.toContain('checkbox:Nearby Label');
+    expect(entries).toContainEqual({ type: 'checkbox', description: 'Explicit Aria', inViewport: false, formState: { checked: false } });
+    expect(entries.some((e) => e.type === 'checkbox' && e.description === 'Nearby Label')).toBe(false);
   });
 
   it('placeholder wins over a nearby label', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContain('textbox:Type here {value:""}');
-    expect(entries).not.toContain('textbox:Nearby Placeholder Label');
+    expect(entries).toContainEqual({ type: 'textbox', description: 'Type here', inViewport: false, formState: { value: '' } });
+    expect(entries.some((e) => e.type === 'textbox' && e.description === 'Nearby Placeholder Label')).toBe(false);
   });
 
   it('text-less controls get a positional #N when no text is available', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
     // The bare <input type="text"> has no label and no own attributes →
     // positional identifier. It is #2 because the wrapping-label textbox
     // (Search) precedes it in document order among textboxes.
-    expect(entries.some((e) => e.startsWith('textbox:#2'))).toBe(true);
+    expect(entries.some((e) => e.type === 'textbox' && e.description === '#2')).toBe(true);
   });
 
   it('non-form text-less elements stay excluded', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
     // Generic <h1> has text, but a bare <div> with no text must stay excluded.
-    const divs = entries.filter((e) => e.startsWith('element:'));
-    expect(divs.every((e) => !e.startsWith('element:#'))).toBe(true);
+    const divs = entries.filter((e) => e.type === 'element');
+    expect(divs.every((e) => !e.description.startsWith('#'))).toBe(true);
   });
 
   it('form state is appended to form controls by default', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
     // cb1 is unchecked by default.
-    expect(entries).toContain('checkbox:CheckBox in iFrame {checked:false}');
+    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
     // sel1's first option has text, so it is the selected value.
-    expect(entries).toContain('dropdown:Select Dropdown {selected:"Please choose...",options:["Please choose...","Set to 25%"]}');
+    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
   });
 
   it('nearby labels + text-less + form state produce readable, stateful, complete entries', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContain('checkbox:CheckBox in iFrame {checked:false}');
-    expect(entries).toContain('radio:RadioButton 1 {set:false}');
-    expect(entries).toContain('dropdown:Select Dropdown {selected:"Please choose...",options:["Please choose...","Set to 25%"]}');
-    expect(entries).toContain('textbox:Search {value:""}');
-    expect(entries.some((e) => e.startsWith('textbox:#2'))).toBe(true);
+    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
+    expect(entries).toContainEqual({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } });
+    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
+    expect(entries).toContainEqual({ type: 'textbox', description: 'Search', inViewport: false, formState: { value: '' } });
+    expect(entries.some((e) => e.type === 'textbox' && e.description === '#2')).toBe(true);
   });
 
   it('getElementDescriptor exposes nearby label', () => {

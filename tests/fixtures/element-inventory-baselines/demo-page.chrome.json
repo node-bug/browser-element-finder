@@ -1,44 +1,254 @@
 [
   {
     "elements": [
-      "element:viewport",
-      "element:SeleniumBase Demo Page",
-      "heading:SeleniumBase Demo Page",
-      "element:buttons-section",
-      "heading:1. Buttons",
-      "button:Click Me (Green)",
-      "button:Click Me (Blue)",
-      "element:text-inputs-section",
-      "heading:2. Text-based Inputs",
-      "element:Text Input Field",
-      "textbox:Enter text here... {value:\"\"}",
-      "element:Textarea",
-      "textbox:Enter long text... {value:\"\"}",
-      "element:checkboxes-section",
-      "heading:3. Checkboxes",
-      "checkbox:CheckBox in iFrame {checked:false}",
-      "element:CheckBox in iFrame",
-      "checkbox:CheckBox {checked:false}",
-      "element:CheckBox",
-      "element:radios-section",
-      "heading:4. Radio Buttons",
-      "radio:RadioButton 1 {set:false}",
-      "element:RadioButton 1",
-      "radio:RadioButton 2 {set:false}",
-      "element:RadioButton 2",
-      "element:dropdown-section",
-      "heading:5. Dropdown",
-      "element:Select Dropdown",
-      "dropdown:Select Dropdown {selected:\"Please choose...\",options:[\"Please choose...\",\"Set to 25%\",\"Set to 50%\",\"Set to 75%\"]}",
-      "element:Please choose...",
-      "element:Set to 25%",
-      "element:Set to 50%",
-      "element:Set to 75%",
-      "element:hover-section",
-      "heading:6. Hover Elements",
-      "button:Hover Dropdown",
-      "button:Submit Form",
-      "element:form-status"
+      {
+        "description": "viewport",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "SeleniumBase Demo Page",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "SeleniumBase Demo Page",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "buttons-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "1. Buttons",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Click Me (Green)",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "Click Me (Blue)",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "text-inputs-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "2. Text-based Inputs",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Text Input Field",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Enter text here...",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": true,
+        "type": "textbox"
+      },
+      {
+        "description": "Textarea",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Enter long text...",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "checkboxes-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "3. Checkboxes",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "CheckBox in iFrame",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "CheckBox in iFrame",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "CheckBox",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "CheckBox",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "radios-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "4. Radio Buttons",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "RadioButton 1",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "RadioButton 1",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "RadioButton 2",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "RadioButton 2",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "dropdown-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "5. Dropdown",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Select Dropdown",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Select Dropdown",
+        "formState": {
+          "options": [
+            "Please choose...",
+            "Set to 25%",
+            "Set to 50%",
+            "Set to 75%"
+          ],
+          "selected": "Please choose..."
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "Please choose...",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Set to 25%",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Set to 50%",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Set to 75%",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "hover-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "6. Hover Elements",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Hover Dropdown",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "Submit Form",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "form-status",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      }
     ],
     "frame": -1
   }

@@ -1,78 +1,490 @@
 [
   {
     "elements": [
-      "element:viewport",
-      "element:Form Elements",
-      "heading:Form Elements",
-      "element:text-inputs-section",
-      "heading:1. Text-based Inputs",
-      "element:Single-line Text",
-      "textbox:Enter text here... {value:\"\"}",
-      "element:Password Field",
-      "textbox:Enter password... {value:\"\"}",
-      "element:Email Field",
-      "textbox:email@example.com {value:\"\"}",
-      "element:Number Field",
-      "textbox:Number Field {value:\"10\"}",
-      "element:Telephone Field",
-      "textbox:+1 234 567 890 {value:\"\"}",
-      "element:URL Field",
-      "textbox:https://example.com {value:\"\"}",
-      "element:Multi-line Text",
-      "textbox:Enter long text... {value:\"\"}",
-      "element:Search Field",
-      "textbox:Search... {value:\"\"}",
-      "element:checkboxes-section",
-      "heading:2. Checkboxes",
-      "element:Preferences",
-      "checkbox:Subscribe to newsletter {checked:false}",
-      "element:Subscribe to newsletter",
-      "checkbox:Accept terms and {checked:false}",
-      "element:Accept terms and",
-      "checkbox:Hidden Checkbox (should {checked:false}",
-      "element:Hidden Checkbox (should",
-      "checkbox:Disabled Checkbox {checked:false}",
-      "element:Disabled Checkbox",
-      "element:radios-section",
-      "heading:3. Radio Buttons",
-      "element:Payment Method",
-      "radio:Credit Card {set:false}",
-      "element:Credit Card",
-      "radio:PayPal {set:false}",
-      "element:PayPal",
-      "radio:Bank Transfer {set:false}",
-      "element:Bank Transfer",
-      "element:Gender",
-      "radio:Male {set:false}",
-      "element:Male",
-      "radio:Female {set:false}",
-      "element:Female",
-      "radio:Other {set:false}",
-      "element:Other",
-      "radio:Disabled Radio {set:false}",
-      "element:Disabled Radio",
-      "element:special-inputs-section",
-      "heading:4. Special Inputs",
-      "element:Date Picker",
-      "datepicker:Date Picker {value:\"\"}",
-      "element:Color Picker",
-      "colorpicker:Color Picker {value:\"#ff0000\"}",
-      "element:Range Slider",
-      "slider:Range Slider {value:50}",
-      "element:validation-section",
-      "heading:5. Form Validation &",
-      "element:Required Field (HTML5)",
-      "textbox:This field is required {value:\"\"}",
-      "element:This field is required!",
-      "element:Email Validation (HTML5)",
-      "textbox:Enter a valid email {value:\"\"}",
-      "element:Please enter a valid",
-      "element:Disabled Field",
-      "textbox:Disabled Field {value:\"Cannot edit this\"}",
-      "element:Read-only Field",
-      "textbox:Read-only Field {value:\"Read only content\"}",
-      "button:Submit Form",
-      "element:form-status"
+      {
+        "description": "viewport",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Form Elements",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Form Elements",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "text-inputs-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "1. Text-based Inputs",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Single-line Text",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Enter text here...",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": true,
+        "type": "textbox"
+      },
+      {
+        "description": "Password Field",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Enter password...",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": true,
+        "type": "textbox"
+      },
+      {
+        "description": "Email Field",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "email@example.com",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": true,
+        "type": "textbox"
+      },
+      {
+        "description": "Number Field",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Number Field",
+        "formState": {
+          "value": "10"
+        },
+        "inViewport": true,
+        "type": "textbox"
+      },
+      {
+        "description": "Telephone Field",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "+1 234 567 890",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "URL Field",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "https://example.com",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "Multi-line Text",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Enter long text...",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "Search Field",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Search...",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "checkboxes-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "2. Checkboxes",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Preferences",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Subscribe to newsletter",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Subscribe to newsletter",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Accept terms and",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Accept terms and",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Hidden Checkbox (should",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Hidden Checkbox (should",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Disabled Checkbox",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Disabled Checkbox",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "radios-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "3. Radio Buttons",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Payment Method",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Credit Card",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "Credit Card",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "PayPal",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "PayPal",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Bank Transfer",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "Bank Transfer",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Gender",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Male",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "Male",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Female",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "Female",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Other",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "Other",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Disabled Radio",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "Disabled Radio",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "special-inputs-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "4. Special Inputs",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Date Picker",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Date Picker",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "datepicker"
+      },
+      {
+        "description": "Color Picker",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Color Picker",
+        "formState": {
+          "value": "#ff0000"
+        },
+        "inViewport": false,
+        "type": "colorpicker"
+      },
+      {
+        "description": "Range Slider",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Range Slider",
+        "formState": {
+          "value": 50
+        },
+        "inViewport": false,
+        "type": "slider"
+      },
+      {
+        "description": "validation-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "5. Form Validation &",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Required Field (HTML5)",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "This field is required",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "This field is required!",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Email Validation (HTML5)",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Enter a valid email",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "Please enter a valid",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Disabled Field",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Disabled Field",
+        "formState": {
+          "value": "Cannot edit this"
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "Read-only Field",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Read-only Field",
+        "formState": {
+          "value": "Read only content"
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "Submit Form",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "form-status",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      }
     ],
     "frame": -1
   }

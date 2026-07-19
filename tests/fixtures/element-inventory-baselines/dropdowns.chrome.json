@@ -1,45 +1,267 @@
 [
   {
     "elements": [
-      "element:viewport",
-      "element:Dropdown Capabilities",
-      "heading:Dropdown Capabilities",
-      "element:standard-select-section",
-      "heading:1. Standard HTML Select",
-      "element:Single Select",
-      "dropdown:Single Select {selected:\"Please choose...\",options:[\"Please choose...\",\"Apple\",\"Banana\",\"Cherry\"]}",
-      "element:Please choose...",
-      "element:Apple",
-      "element:Banana",
-      "element:Cherry",
-      "element:Multiple Select",
-      "dropdown:Multiple Select {selected:null,options:[\"Option 1\",\"Option 2\",\"Option 3\",\"Option 4\",\"Option 5\"]}",
-      "element:Option 1",
-      "element:Option 2",
-      "element:Option 3",
-      "element:Option 4",
-      "element:Option 5",
-      "element:custom-dropdown-section",
-      "heading:2. Custom Div-based",
-      "element:Custom UI Dropdown",
-      "dropdown:Custom UI {selected:null,options:[]}",
-      "dropdown:#4 {selected:null,options:[]}",
-      "element:Select an option",
-      "element:▼",
-      "dropdown:#5 {selected:null,options:[]}",
-      "listitem:Option A",
-      "listitem:Option B",
-      "listitem:Option C",
-      "element:cascading-dropdown-section",
-      "heading:3. Cascading Dropdowns",
-      "element:Category",
-      "dropdown:Category {selected:\"Select Category\",options:[\"Select Category\",\"Fruits\",\"Vehicles\"]}",
-      "element:Select Category",
-      "element:Fruits",
-      "element:Vehicles",
-      "element:Subcategory",
-      "dropdown:Subcategory {selected:\"First select category\",options:[\"First select category\"]}",
-      "element:First select category"
+      {
+        "description": "viewport",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Dropdown Capabilities",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Dropdown Capabilities",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "standard-select-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "1. Standard HTML Select",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Single Select",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Single Select",
+        "formState": {
+          "options": ["Please choose...", "Apple", "Banana", "Cherry"],
+          "selected": "Please choose..."
+        },
+        "inViewport": true,
+        "type": "dropdown"
+      },
+      {
+        "description": "Please choose...",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Apple",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Banana",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Cherry",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Multiple Select",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Multiple Select",
+        "formState": {
+          "options": [
+            "Option 1",
+            "Option 2",
+            "Option 3",
+            "Option 4",
+            "Option 5"
+          ],
+          "selected": null
+        },
+        "inViewport": true,
+        "type": "dropdown"
+      },
+      {
+        "description": "Option 1",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Option 2",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Option 3",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Option 4",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Option 5",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "custom-dropdown-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "2. Custom Div-based",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Custom UI Dropdown",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Custom UI",
+        "formState": {
+          "options": [],
+          "selected": null
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "#4",
+        "formState": {
+          "options": [],
+          "selected": null
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "Select an option",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "▼",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "#5",
+        "formState": {
+          "options": [],
+          "selected": null
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "Option A",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "Option B",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "Option C",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "cascading-dropdown-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "3. Cascading Dropdowns",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Category",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Category",
+        "formState": {
+          "options": ["Select Category", "Fruits", "Vehicles"],
+          "selected": "Select Category"
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "Select Category",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Fruits",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Vehicles",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Subcategory",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Subcategory",
+        "formState": {
+          "options": ["First select category"],
+          "selected": "First select category"
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "First select category",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      }
     ],
     "frame": -1
   }

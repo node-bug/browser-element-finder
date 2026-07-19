@@ -2,10 +2,32 @@
   {
     "frame": -1,
     "elements": [
-      "button:#1",
-      "button:#2",
-      "textbox:#1 {value:\"\"}",
-      "image:#1"
+      {
+        "type": "button",
+        "description": "#1",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "#2",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "textbox",
+        "description": "#1",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "image",
+        "description": "#1",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

@@ -1,105 +1,642 @@
 [
   {
     "elements": [
-      "element:viewport",
-      "element:Element Types Test",
-      "heading:Element Types Test",
-      "element:navigation-section",
-      "heading:Navigation",
-      "navigation:main-nav",
-      "link:Home",
-      "link:About",
-      "navigation:role-nav",
-      "link:Page 1",
-      "element:headings-section",
-      "heading:Headings",
-      "heading:Heading 1",
-      "heading:Heading 2",
-      "heading:Heading 3",
-      "heading:Heading 4",
-      "heading:Heading 5",
-      "heading:Heading 6",
-      "heading:Role Heading",
-      "element:buttons-section",
-      "heading:Buttons",
-      "button:Standard Button",
-      "button:Submit Button",
-      "button:Role Button",
-      "button:btn-input",
-      "element:checkboxes-section",
-      "heading:Checkboxes",
-      "checkbox:checkbox-standard {checked:false}",
-      "checkbox:Role Checkbox {checked:false}",
-      "element:switches-section",
-      "heading:Switches",
-      "checkbox:switch-standard {checked:false}",
-      "switch:Role Switch {on:false}",
-      "button:Switch Class",
-      "element:sliders-section",
-      "heading:Sliders",
-      "slider:slider-standard {value:50}",
-      "slider:Role Slider {value:0}",
-      "element:radios-section",
-      "heading:Radio Buttons",
-      "radio:radio-group {set:false}",
-      "radio:Role Radio {set:false}",
-      "element:dropdowns-section",
-      "heading:Dropdowns",
-      "dropdown:dropdown-standard {selected:\"Option 1\",options:[\"Option 1\",\"Option 2\"]}",
-      "element:Option 1",
-      "element:Option 2",
-      "dropdown:Combobox {selected:null,options:[]}",
-      "dropdown:Listbox {selected:null,options:[]}",
-      "dropdown:Dropdown Class {selected:null,options:[]}",
-      "element:textboxes-section",
-      "heading:Textboxes",
-      "textbox:Textarea content {value:\"Textarea content\"}",
-      "textbox:textbox-text {value:\"\"}",
-      "textbox:textbox-password {value:\"\"}",
-      "textbox:textbox-email {value:\"\"}",
-      "textbox:textbox-search {value:\"\"}",
-      "textbox:Role Textbox {value:\"\"}",
-      "element:files-section",
-      "heading:File Inputs",
-      "file:file-standard {fileName:null}",
-      "element:lists-section",
-      "heading:Lists",
-      "list:list-ul",
-      "listitem:Item 1",
-      "listitem:Item 2",
-      "list:list-ol",
-      "listitem:Item A",
-      "listitem:Item B",
-      "list:list-role",
-      "listitem:Role List Item",
-      "element:menu-section",
-      "heading:Menu",
-      "menu:menu-standard",
-      "button:Menu Item 1",
-      "menu:menu-role",
-      "menuitem:Role Menu Item",
-      "element:toolbar-section",
-      "heading:Toolbar",
-      "toolbar:toolbar-role",
-      "button:Toolbar Button",
-      "element:dialog-section",
-      "heading:Dialog",
-      "dialog:dialog-role",
-      "element:Dialog content",
-      "element:images-section",
-      "heading:Images",
-      "image:Test Image",
-      "image:Role Image",
-      "image:Alt Image",
-      "element:tables-section",
-      "heading:Tables",
-      "table:table-standard",
-      "row:#1",
-      "column:Header",
-      "column:Data",
-      "table:table-role",
-      "row:table-role-row",
-      "column:Role Cell"
+      {
+        "description": "viewport",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Element Types Test",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Element Types Test",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "navigation-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Navigation",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "main-nav",
+        "formState": null,
+        "inViewport": true,
+        "type": "navigation"
+      },
+      {
+        "description": "Home",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "About",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "role-nav",
+        "formState": null,
+        "inViewport": true,
+        "type": "navigation"
+      },
+      {
+        "description": "Page 1",
+        "formState": null,
+        "inViewport": true,
+        "type": "link"
+      },
+      {
+        "description": "headings-section",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Headings",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Heading 1",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Heading 2",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "Heading 3",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Heading 4",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Heading 5",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Heading 6",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Role Heading",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "buttons-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Buttons",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Standard Button",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "Submit Button",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "Role Button",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "btn-input",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "checkboxes-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Checkboxes",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "checkbox-standard",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Role Checkbox",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "switches-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Switches",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "switch-standard",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Role Switch",
+        "formState": {
+          "on": false
+        },
+        "inViewport": false,
+        "type": "switch"
+      },
+      {
+        "description": "Switch Class",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "sliders-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Sliders",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "slider-standard",
+        "formState": {
+          "value": 50
+        },
+        "inViewport": false,
+        "type": "slider"
+      },
+      {
+        "description": "Role Slider",
+        "formState": {
+          "value": 0
+        },
+        "inViewport": false,
+        "type": "slider"
+      },
+      {
+        "description": "radios-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Radio Buttons",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "radio-group",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "Role Radio",
+        "formState": {
+          "set": false
+        },
+        "inViewport": false,
+        "type": "radio"
+      },
+      {
+        "description": "dropdowns-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Dropdowns",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "dropdown-standard",
+        "formState": {
+          "options": ["Option 1", "Option 2"],
+          "selected": "Option 1"
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "Option 1",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Option 2",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Combobox",
+        "formState": {
+          "options": [],
+          "selected": null
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "Listbox",
+        "formState": {
+          "options": [],
+          "selected": null
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "Dropdown Class",
+        "formState": {
+          "options": [],
+          "selected": null
+        },
+        "inViewport": false,
+        "type": "dropdown"
+      },
+      {
+        "description": "textboxes-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Textboxes",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Textarea content",
+        "formState": {
+          "value": "Textarea content"
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "textbox-text",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "textbox-password",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "textbox-email",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "textbox-search",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "Role Textbox",
+        "formState": {
+          "value": ""
+        },
+        "inViewport": false,
+        "type": "textbox"
+      },
+      {
+        "description": "files-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "File Inputs",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "file-standard",
+        "formState": {
+          "fileName": null
+        },
+        "inViewport": false,
+        "type": "file"
+      },
+      {
+        "description": "lists-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Lists",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "list-ul",
+        "formState": null,
+        "inViewport": false,
+        "type": "list"
+      },
+      {
+        "description": "Item 1",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "Item 2",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "list-ol",
+        "formState": null,
+        "inViewport": false,
+        "type": "list"
+      },
+      {
+        "description": "Item A",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "Item B",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "list-role",
+        "formState": null,
+        "inViewport": false,
+        "type": "list"
+      },
+      {
+        "description": "Role List Item",
+        "formState": null,
+        "inViewport": false,
+        "type": "listitem"
+      },
+      {
+        "description": "menu-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Menu",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "menu-standard",
+        "formState": null,
+        "inViewport": false,
+        "type": "menu"
+      },
+      {
+        "description": "Menu Item 1",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "menu-role",
+        "formState": null,
+        "inViewport": false,
+        "type": "menu"
+      },
+      {
+        "description": "Role Menu Item",
+        "formState": null,
+        "inViewport": false,
+        "type": "menuitem"
+      },
+      {
+        "description": "toolbar-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Toolbar",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "toolbar-role",
+        "formState": null,
+        "inViewport": false,
+        "type": "toolbar"
+      },
+      {
+        "description": "Toolbar Button",
+        "formState": null,
+        "inViewport": false,
+        "type": "button"
+      },
+      {
+        "description": "dialog-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Dialog",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "dialog-role",
+        "formState": null,
+        "inViewport": false,
+        "type": "dialog"
+      },
+      {
+        "description": "Dialog content",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "images-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Images",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "Test Image",
+        "formState": null,
+        "inViewport": false,
+        "type": "image"
+      },
+      {
+        "description": "Role Image",
+        "formState": null,
+        "inViewport": false,
+        "type": "image"
+      },
+      {
+        "description": "Alt Image",
+        "formState": null,
+        "inViewport": false,
+        "type": "image"
+      },
+      {
+        "description": "tables-section",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Tables",
+        "formState": null,
+        "inViewport": false,
+        "type": "heading"
+      },
+      {
+        "description": "table-standard",
+        "formState": null,
+        "inViewport": false,
+        "type": "table"
+      },
+      {
+        "description": "#1",
+        "formState": null,
+        "inViewport": false,
+        "type": "row"
+      },
+      {
+        "description": "Header",
+        "formState": null,
+        "inViewport": false,
+        "type": "column"
+      },
+      {
+        "description": "Data",
+        "formState": null,
+        "inViewport": false,
+        "type": "column"
+      },
+      {
+        "description": "table-role",
+        "formState": null,
+        "inViewport": false,
+        "type": "table"
+      },
+      {
+        "description": "table-role-row",
+        "formState": null,
+        "inViewport": false,
+        "type": "row"
+      },
+      {
+        "description": "Role Cell",
+        "formState": null,
+        "inViewport": false,
+        "type": "column"
+      }
     ],
     "frame": -1
   }

@@ -54,7 +54,7 @@ async function main() {
     const measure = async () =>
       driver.executeScript(`
         const start = performance.now();
-        const tree = ElementFinder.getElementInventory(false);
+        const tree = ElementFinder.getElementInventory();
         const end = performance.now();
         let count = 0;
         let frames = 0;
@@ -86,7 +86,7 @@ async function main() {
     console.log(`Average: ${avg.toFixed(2)} ms`);
     console.log(`Min:     ${min.toFixed(2)} ms`);
     console.log(`Max:     ${max.toFixed(2)} ms`);
-    console.log(`Elements inventoried: ${timings.length ? '' : ''}${await driver.executeScript('let c=0; for (const g of ElementFinder.getElementInventory(false)) c+=g.elements.length; return c;')}`);
+    console.log(`Elements inventoried: ${timings.length ? '' : ''}${await driver.executeScript('let c=0; for (const g of ElementFinder.getElementInventory()) c+=g.elements.length; return c;')}`);
   } finally {
     await driver.quit();
   }

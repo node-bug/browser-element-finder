@@ -42,7 +42,7 @@ describe('getElementInventory Unit Tests', () => {
   });
 
   it('should return a single frame group for a single-frame page', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     expect(Array.isArray(tree)).toBe(true);
     expect(tree.length).toBe(1);
     // The main document frame uses frameIndex -1 (consistent with getAllFrames).
@@ -52,16 +52,16 @@ describe('getElementInventory Unit Tests', () => {
   });
 
   it('should include expected identifiable elements from the main document', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const entries = tree[0].elements;
 
-    expect(entries).toContain('button:Submit');
-    expect(entries).toContain('button:Cancel');
-    expect(entries).toContain('button:Click Me');
-    expect(entries).toContain('textbox:Enter name {value:""}');
-    expect(entries).toContain('textbox:Enter email {value:""}');
-    expect(entries).toContain('link:Home');
-    expect(entries).toContain('link:About');
+    expect(entries).toContainEqual({ type: 'button', description: 'Submit', inViewport: false, formState: null });
+    expect(entries).toContainEqual({ type: 'button', description: 'Cancel', inViewport: false, formState: null });
+    expect(entries).toContainEqual({ type: 'button', description: 'Click Me', inViewport: false, formState: null });
+    expect(entries).toContainEqual({ type: 'textbox', description: 'Enter name', inViewport: false, formState: { value: '' } });
+    expect(entries).toContainEqual({ type: 'textbox', description: 'Enter email', inViewport: false, formState: { value: '' } });
+    expect(entries).toContainEqual({ type: 'link', description: 'Home', inViewport: false, formState: null });
+    expect(entries).toContainEqual({ type: 'link', description: 'About', inViewport: false, formState: null });
   });
 
   it('should include text-less elements (always-on) when no element has identifiable text', () => {
@@ -73,16 +73,16 @@ describe('getElementInventory Unit Tests', () => {
     global.document = emptyDom.window.document;
     global.Node = emptyDom.window.Node;
 
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     expect(tree.length).toBe(1);
     expect(tree[0].frame).toBe(-1);
     // Text-less elements are always included, identified by their positional
-    // index (#N) and any form-state suffix.
+    // index (#N) and any form-state object.
     expect(tree[0].elements).toEqual([
-      'button:#1',
-      'button:#2',
-      'textbox:#1 {value:""}',
-      'image:#1',
+      { type: 'button', description: '#1', inViewport: false, formState: null },
+      { type: 'button', description: '#2', inViewport: false, formState: null },
+      { type: 'textbox', description: '#1', inViewport: false, formState: { value: '' } },
+      { type: 'image', description: '#1', inViewport: false, formState: null },
     ]);
 
     emptyDom.window.close();
@@ -92,23 +92,34 @@ describe('getElementInventory Unit Tests', () => {
     global.Node = window.Node;
   });
 
-  it('should format every entry as type:text with a known element type', () => {
-    const tree = getElementInventory(false);
+  it('should format every entry as an object with a known element type', () => {
+    const tree = getElementInventory();
     const validTypes = new Set(Object.keys(ELEMENT_DEFINITIONS));
-    const pattern = /^([a-zA-Z0-9-]+):.+$/;
 
     for (const group of tree) {
       for (const entry of group.elements) {
-        const match = pattern.exec(entry);
-        expect(match).not.toBeNull();
-        const type = match[1];
-        expect(validTypes.has(type)).toBe(true);
+        expect(entry).toHaveProperty('type');
+        expect(entry).toHaveProperty('description');
+        expect(entry).toHaveProperty('inViewport');
+        expect(entry).toHaveProperty('formState');
+        expect(typeof entry.description).toBe('string');
+        expect(typeof entry.inViewport).toBe('boolean');
+        expect(validTypes.has(entry.type)).toBe(true);
+      }
+    }
+  });
+
+  it('should expose an inViewport boolean on every element', () => {
+    const tree = getElementInventory();
+    for (const group of tree) {
+      for (const entry of group.elements) {
+        expect(typeof entry.inViewport).toBe('boolean');
       }
     }
   });
 
   it('should match the committed baseline for element-types-unit.html', () => {
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const baseline = loadElementInventoryBaseline('element-types-unit.json');
     expect(tree).toEqual(baseline);
   });
@@ -122,7 +133,7 @@ describe('getElementInventory Unit Tests', () => {
     global.document = emptyDom.window.document;
     global.Node = emptyDom.window.Node;
 
-    const tree = getElementInventory(false);
+    const tree = getElementInventory();
     const baseline = loadElementInventoryBaseline('element-inventory-empty.json');
     expect(tree).toEqual(baseline);
 
@@ -165,7 +176,7 @@ describe('getElementInventory Unit Tests', () => {
         global.document = dom.window.document;
         global.Node = dom.window.Node;
 
-        const tree = getElementInventory(false);
+        const tree = getElementInventory();
         const baseline = loadElementInventoryBaseline(fixture.replace(/\.html$/, '.json'));
         expect(tree).toEqual(baseline);
 
@@ -175,40 +186,5 @@ describe('getElementInventory Unit Tests', () => {
         delete global.Node;
       });
     }
-  });
-
-  describe('viewportOnly parameter', () => {
-    beforeAll(() => {
-      // The baseline-parity loop above deletes global.window after each fixture.
-      // Restore the main window so these tests have a valid global to scan.
-      global.window = window;
-      global.document = document;
-      global.Node = window.Node;
-    });
-
-    it('should default to viewport-only scanning (viewportOnly = true)', () => {
-      // viewportOnly defaults to true, so only in-viewport elements are
-      // returned. JSDOM has no layout engine, so nothing is in the viewport
-      // and the tree is empty by default.
-      const treeDefault = getElementInventory();
-      const treeViewportOnly = getElementInventory(true);
-
-      expect(treeDefault).toEqual([{ frame: -1, elements: [] }]);
-      expect(treeViewportOnly).toEqual(treeDefault);
-    });
-
-    it('should accept a boolean viewportOnly argument', () => {
-      // Passing false returns the full page (JSDOM has no layout engine, so
-      // every element is treated as off-screen unless viewportOnly is false).
-      const treeFull = getElementInventory(false);
-      const treeViewportOnly = getElementInventory(true);
-      expect(treeFull[0].elements.length).toBeGreaterThan(0);
-      expect(treeViewportOnly).toEqual([{ frame: -1, elements: [] }]);
-    });
-
-    it('should return only in-viewport elements when viewportOnly is true', () => {
-      const tree = getElementInventory(true);
-      expect(tree).toEqual([{ frame: -1, elements: [] }]);
-    });
   });
 });

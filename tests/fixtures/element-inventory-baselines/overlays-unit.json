@@ -2,17 +2,72 @@
   {
     "frame": -1,
     "elements": [
-      "element:Regular content",
-      "dialog:ARIA Dialog",
-      "button:Close",
-      "element:Native Dialog",
-      "button:Close",
-      "element:Cookies",
-      "button:Accept",
-      "element:Popover content",
-      "dialog:Alert",
-      "button:Yes",
-      "button:No"
+      {
+        "type": "element",
+        "description": "Regular content",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dialog",
+        "description": "ARIA Dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Close",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Native Dialog",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Close",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Cookies",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Accept",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Popover content",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dialog",
+        "description": "Alert",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Yes",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "No",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

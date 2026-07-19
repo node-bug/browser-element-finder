@@ -1,20 +1,94 @@
 [
   {
     "elements": [
-      "element:viewport",
-      "element:Radio and iFrame Table",
-      "heading:Radio and iFrame Table",
-      "table:#1",
-      "row:#1",
-      "column:#1",
-      "element:Image in iFrame:",
-      "column:#2",
-      "iframe:frameName1",
-      "iframe:frameName2",
-      "column:RadioButton 1:",
-      "radio:radioGroup1 {set:true}",
-      "column:RadioButton 2:",
-      "radio:radioGroup1 {set:false}"
+      {
+        "description": "viewport",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Radio and iFrame Table",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Radio and iFrame Table",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "#1",
+        "formState": null,
+        "inViewport": true,
+        "type": "table"
+      },
+      {
+        "description": "#1",
+        "formState": null,
+        "inViewport": true,
+        "type": "row"
+      },
+      {
+        "description": "#1",
+        "formState": null,
+        "inViewport": true,
+        "type": "column"
+      },
+      {
+        "description": "Image in iFrame:",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "#2",
+        "formState": null,
+        "inViewport": true,
+        "type": "column"
+      },
+      {
+        "description": "frameName1",
+        "formState": null,
+        "inViewport": true,
+        "type": "iframe"
+      },
+      {
+        "description": "frameName2",
+        "formState": null,
+        "inViewport": true,
+        "type": "iframe"
+      },
+      {
+        "description": "RadioButton 1:",
+        "formState": null,
+        "inViewport": true,
+        "type": "column"
+      },
+      {
+        "description": "radioGroup1",
+        "formState": {
+          "set": true
+        },
+        "inViewport": true,
+        "type": "radio"
+      },
+      {
+        "description": "RadioButton 2:",
+        "formState": null,
+        "inViewport": true,
+        "type": "column"
+      },
+      {
+        "description": "radioGroup1",
+        "formState": {
+          "set": false
+        },
+        "inViewport": true,
+        "type": "radio"
+      }
     ],
     "frame": -1
   }

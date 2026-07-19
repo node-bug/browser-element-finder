@@ -2,16 +2,70 @@
   {
     "frame": -1,
     "elements": [
-      "element:Accessibility Tree",
-      "heading:Welcome",
-      "link:Home",
-      "link:Docs",
-      "button:Submit",
-      "button:Cancel",
-      "textbox:Email {value:\"\"}",
-      "textbox:Full name {value:\"\"}",
-      "element:Some visible text",
-      "iframe:tree-iframe"
+      {
+        "type": "element",
+        "description": "Accessibility Tree",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Welcome",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "link",
+        "description": "Home",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "link",
+        "description": "Docs",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Submit",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Cancel",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "textbox",
+        "description": "Email",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "textbox",
+        "description": "Full name",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "element",
+        "description": "Some visible text",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "iframe",
+        "description": "tree-iframe",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   },
   {

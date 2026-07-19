@@ -445,28 +445,6 @@ function getElementDescriptorText(el) {
 }
 
 /**
- * Gets the root document to use for descriptor uniqueness checks.
- * @param {Element} el - The DOM element to describe
- * @returns {Document|null} The element's frame document, if available
- */
-function getElementDescriptorFrame(el) {
-  if (!el || !el.ownerDocument) return null;
-
-  try {
-    const frames = getAllFrames(window);
-    for (let i = 0; i < frames.length; i++) {
-      if (frames[i].document === el.ownerDocument) {
-        return frames[i].document;
-      }
-    }
-  } catch {
-    // Fall back to the element's owner document below
-  }
-
-  return el.ownerDocument;
-}
-
-/**
  * Gets occurrence index for descriptor text within the element's frame.
  * Counts elements whose getElementDescriptorText returns the same identifiableText
  * and type, applying the same deduplication and parent-filtering as findElements.
@@ -477,7 +455,7 @@ function getElementDescriptorFrame(el) {
  * @returns {{index: number}} 1-based occurrence index
  */
 function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
-  const root = getElementDescriptorFrame(el);
+  const root = el.ownerDocument;
   if (!root) {
     return { index: 1 };
   }
@@ -552,7 +530,7 @@ function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
  * @returns {number} 1-based position, or 1 if the frame cannot be resolved
  */
 function getElementPositionAmongType(el, type, includeHidden = true) {
-  const root = getElementDescriptorFrame(el);
+  const root = el.ownerDocument;
   if (!root) return 1;
 
   const elements = getAllElements(root);
@@ -1644,51 +1622,34 @@ export function getViewportElementCounts(type = null, parent = null) {
  * @param {Object} formState - The form state object from `getFormState`
  * @returns {string} A `{...}`-wrapped string, or '' when formState is empty
  */
-function formatFormState(formState) {
-  if (formState == null) return '';
-
-  const parts = [];
-  for (const key of Object.keys(formState)) {
-    const value = formState[key];
-    if (Array.isArray(value)) {
-      parts.push(`${key}:[${value.map((v) => JSON.stringify(v)).join(',')}]`);
-    } else if (typeof value === 'string') {
-      parts.push(`${key}:${JSON.stringify(value)}`);
-    } else {
-      parts.push(`${key}:${String(value)}`);
-    }
-  }
-
-  return parts.length > 0 ? `{${parts.join(',')}}` : '';
-}
-
 /**
  * Collects all identifiable elements across all same-origin frames and returns
- * them grouped by frame number. Each element is represented as a compact
- * `type:identifiableText` string (no objects) to keep overhead minimal.
+ * them grouped by frame number. Each element is represented as an object with
+ * its semantic `type`, an identifiable `description` (or a positional `#N` for
+ * text-less elements), an `inViewport` flag, and its `formState` (or `null`).
  *
- * Hidden elements are included (no visibility filtering), matching the
- * Fluens state-capture behavior. Cross-origin iframes are silently skipped by
- * `getAllFrames()` (it throws on access and is caught internally).
+ * The complete page is returned (no viewport filtering) — every element carries
+ * an `inViewport` boolean so callers can filter if they wish. Hidden elements
+ * are included (no visibility filtering), matching the Fluens state-capture
+ * behavior. Cross-origin iframes are silently skipped by `getAllFrames()` (it
+ * throws on access and is caught internally).
  *
  * Two enrichments are always on, because the tree is meant to drive guided
  * interaction with behavior-rich elements that frequently lack their own text:
  *   - Text-less elements (any type except `element`/`iframe`) are included
  *     using a positional `#N` identifier (N = 1-based position among same-type
  *     elements in the frame, matching findElements() order).
- *   - Form-control state is appended as a `{...}` suffix (e.g. `{checked:true}`,
- *     `{value:"abc"}`) for every element that has a `formState`.
+ *   - Form-control state is exposed as a `formState` object (e.g.
+ *     `{checked:true}`, `{value:"abc"}`) for every element that has one, and
+ *     `null` otherwise.
  *   - Nearby-label rescue: text from a nearby <label> (wrapping or
  *     for-associated) is used for eligible element types, overriding machine
  *     attributes (value/id/name/src) while still yielding to explicit a11y/
  *     semantic text (aria-label/labelledby, placeholder, data-*).
  *
- * @param {boolean} [viewportOnly=true] - When true (default), only elements
- *   currently within the visual viewport are included. When false, elements
- *   from the complete page (including off-screen elements) are returned.
- * @returns {Array<{frame: number, elements: string[]}>} Element inventory grouped by frame
+ * @returns {Array<{frame: number, elements: Array<{type: string, description: string, inViewport: boolean, formState: Object|null}>}>} Element inventory grouped by frame
  */
-export function getElementInventory(viewportOnly = true) {
+export function getElementInventory() {
   const frames = getAllFrames(window);
   const tree = [];
 
@@ -1697,30 +1658,47 @@ export function getElementInventory(viewportOnly = true) {
     const elements = getAllElements(frameDoc);
     const entries = [];
 
+    // Single pass over all frame elements. Previously this function called
+    // getElementDescriptor() for every element, which internally re-walked the
+    // entire DOM (via getElementDescriptorUniqueness / getElementPositionAmongType)
+    // — O(N^2) on large pages. The output only needs each element's type, its
+    // identifiable text (or a positional #N for text-less elements), its
+    // viewport membership, and its form state, so we compute those once here
+    // and track the running 1-based position per type for the #N fallback.
+    const typePos = new Map(); // type -> running count (for #N fallback)
+
     for (let i = 0; i < elements.length; i++) {
       const el = elements[i];
 
-      // When viewport-scoped, skip elements that are not in the viewport.
-      if (viewportOnly && !inViewport(el)) continue;
+      const type = getElementDescriptorType(el) || 'element';
 
-      const descriptor = getElementDescriptor(el, true);
-      const type = descriptor.type || 'element';
+      // Running position among same-type elements (matches
+      // getElementPositionAmongType order). getAllElements already excludes
+      // ignored-tag descendants, so no extra ignored check is needed here.
+      const pos = (typePos.get(type) || 0) + 1;
+      typePos.set(type, pos);
 
-      // Text-less elements: always included for every real element type
-      // (everything except the generic `element` and `iframe` containers),
-      // using a positional #N identifier so they remain actionable.
-      if (!descriptor.identifiableText) {
+      const textSource = getElementDescriptorText(el);
+      const identifiableText = textSource ? textSource.identifiableText : null;
+
+      let text;
+      if (!identifiableText) {
+        // Text-less elements: only real element types (not `element`/`iframe`)
+        // are included, using the positional #N identifier so they remain
+        // actionable.
         if (!TEXTLESS_TYPES.has(type)) continue;
-        const text = `#${descriptor.index}`;
-        const suffix = descriptor.formState
-          ? ` ${formatFormState(descriptor.formState)}` : '';
-        entries.push(`${type}:${text}${suffix}`);
-        continue;
+        text = `#${pos}`;
+      } else {
+        text = identifiableText;
       }
 
-      const suffix = descriptor.formState
-        ? ` ${formatFormState(descriptor.formState)}` : '';
-      entries.push(`${type}:${descriptor.identifiableText}${suffix}`);
+      const formState = getFormState(el, type);
+      entries.push({
+        type,
+        description: text,
+        inViewport: inViewport(el),
+        formState: formState || null,
+      });
     }
 
     tree.push({ frame: frames[fi].frameIndex, elements: entries });

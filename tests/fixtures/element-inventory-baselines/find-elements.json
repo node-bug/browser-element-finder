@@ -2,22 +2,115 @@
   {
     "frame": -1,
     "elements": [
-      "element:Unit Tests - Find",
-      "button:Submit",
-      "button:Cancel",
-      "button:Click Me",
-      "textbox:Enter name {value:\"\"}",
-      "textbox:Enter email {value:\"\"}",
-      "checkbox:agree {checked:false}",
-      "radio:group1 {set:false}",
-      "link:Home",
-      "link:About",
-      "dropdown:Choose option {selected:\"Option 1\",options:[\"Option 1\",\"Option 2\"]}",
-      "element:Option 1",
-      "element:Option 2",
-      "textbox:Some text {value:\"Some text\"}",
-      "element:container-div",
-      "element:Nested text"
+      {
+        "type": "element",
+        "description": "Unit Tests - Find",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Submit",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Cancel",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Click Me",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "textbox",
+        "description": "Enter name",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "textbox",
+        "description": "Enter email",
+        "inViewport": false,
+        "formState": {
+          "value": ""
+        }
+      },
+      {
+        "type": "checkbox",
+        "description": "agree",
+        "inViewport": false,
+        "formState": {
+          "checked": false
+        }
+      },
+      {
+        "type": "radio",
+        "description": "group1",
+        "inViewport": false,
+        "formState": {
+          "set": false
+        }
+      },
+      {
+        "type": "link",
+        "description": "Home",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "link",
+        "description": "About",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "Choose option",
+        "inViewport": false,
+        "formState": {
+          "selected": "Option 1",
+          "options": ["Option 1", "Option 2"]
+        }
+      },
+      {
+        "type": "element",
+        "description": "Option 1",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Option 2",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "textbox",
+        "description": "Some text",
+        "inViewport": false,
+        "formState": {
+          "value": "Some text"
+        }
+      },
+      {
+        "type": "element",
+        "description": "container-div",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Nested text",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

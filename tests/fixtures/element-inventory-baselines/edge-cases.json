@@ -2,24 +2,114 @@
   {
     "frame": -1,
     "elements": [
-      "element:Unit Tests - Edge Cases",
-      "element:root",
-      "element:level1",
-      "element:level2",
-      "element:level3",
-      "element:level4",
-      "element:level5",
-      "element:level6",
-      "element:level7",
-      "element:level8",
-      "element:level9",
-      "button:Deep Button",
-      "element:level que",
-      "button:Spezial ✨ Text",
-      "element:script-test",
-      "button:Valid Button",
-      "element:priority-test",
-      "button:Priority Test"
+      {
+        "type": "element",
+        "description": "Unit Tests - Edge Cases",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "root",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level1",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level2",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level3",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level4",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level5",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level6",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level7",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level8",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level9",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Deep Button",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "level que",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Spezial ✨ Text",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "script-test",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Valid Button",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "priority-test",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "button",
+        "description": "Priority Test",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

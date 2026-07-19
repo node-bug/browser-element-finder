@@ -2,45 +2,267 @@
   {
     "frame": -1,
     "elements": [
-      "element:viewport",
-      "element:Dropdown Capabilities",
-      "heading:Dropdown Capabilities",
-      "element:standard-select-section",
-      "heading:1. Standard HTML Select",
-      "element:Single Select",
-      "dropdown:Single Select {selected:\"Please choose...\",options:[\"Please choose...\",\"Apple\",\"Banana\",\"Cherry\"]}",
-      "element:Please choose...",
-      "element:Apple",
-      "element:Banana",
-      "element:Cherry",
-      "element:Multiple Select",
-      "dropdown:Multiple Select {selected:null,options:[\"Option 1\",\"Option 2\",\"Option 3\",\"Option 4\",\"Option 5\"]}",
-      "element:Option 1",
-      "element:Option 2",
-      "element:Option 3",
-      "element:Option 4",
-      "element:Option 5",
-      "element:custom-dropdown-section",
-      "heading:2. Custom Div-based",
-      "element:Custom UI Dropdown",
-      "dropdown:Custom UI {selected:null,options:[]}",
-      "dropdown:#4 {selected:null,options:[]}",
-      "element:Select an option",
-      "element:▼",
-      "dropdown:#5 {selected:null,options:[]}",
-      "listitem:Option A",
-      "listitem:Option B",
-      "listitem:Option C",
-      "element:cascading-dropdown-section",
-      "heading:3. Cascading Dropdowns",
-      "element:Category",
-      "dropdown:Category {selected:\"Select Category\",options:[\"Select Category\",\"Fruits\",\"Vehicles\"]}",
-      "element:Select Category",
-      "element:Fruits",
-      "element:Vehicles",
-      "element:Subcategory",
-      "dropdown:Subcategory {selected:\"First select category\",options:[\"First select category\"]}",
-      "element:First select category"
+      {
+        "type": "element",
+        "description": "viewport",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Dropdown Capabilities",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "Dropdown Capabilities",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "standard-select-section",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "1. Standard HTML Select",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Single Select",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "Single Select",
+        "inViewport": false,
+        "formState": {
+          "selected": "Please choose...",
+          "options": ["Please choose...", "Apple", "Banana", "Cherry"]
+        }
+      },
+      {
+        "type": "element",
+        "description": "Please choose...",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Apple",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Banana",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Cherry",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Multiple Select",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "Multiple Select",
+        "inViewport": false,
+        "formState": {
+          "selected": null,
+          "options": [
+            "Option 1",
+            "Option 2",
+            "Option 3",
+            "Option 4",
+            "Option 5"
+          ]
+        }
+      },
+      {
+        "type": "element",
+        "description": "Option 1",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Option 2",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Option 3",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Option 4",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Option 5",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "custom-dropdown-section",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "2. Custom Div-based",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Custom UI Dropdown",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "Custom UI",
+        "inViewport": false,
+        "formState": {
+          "selected": null,
+          "options": []
+        }
+      },
+      {
+        "type": "dropdown",
+        "description": "#4",
+        "inViewport": false,
+        "formState": {
+          "selected": null,
+          "options": []
+        }
+      },
+      {
+        "type": "element",
+        "description": "Select an option",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "▼",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "#5",
+        "inViewport": false,
+        "formState": {
+          "selected": null,
+          "options": []
+        }
+      },
+      {
+        "type": "listitem",
+        "description": "Option A",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "listitem",
+        "description": "Option B",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "listitem",
+        "description": "Option C",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "cascading-dropdown-section",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "heading",
+        "description": "3. Cascading Dropdowns",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Category",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "Category",
+        "inViewport": false,
+        "formState": {
+          "selected": "Select Category",
+          "options": ["Select Category", "Fruits", "Vehicles"]
+        }
+      },
+      {
+        "type": "element",
+        "description": "Select Category",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Fruits",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Vehicles",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Subcategory",
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "dropdown",
+        "description": "Subcategory",
+        "inViewport": false,
+        "formState": {
+          "selected": "First select category",
+          "options": ["First select category"]
+        }
+      },
+      {
+        "type": "element",
+        "description": "First select category",
+        "inViewport": false,
+        "formState": null
+      }
     ]
   }
 ]

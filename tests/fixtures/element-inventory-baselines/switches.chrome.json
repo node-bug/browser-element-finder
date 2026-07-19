@@ -1,47 +1,239 @@
 [
   {
     "elements": [
-      "element:viewport",
-      "element:Ultimate Switch Testing",
-      "heading:Ultimate Switch Testing",
-      "element:A single-page HTML suite",
-      "element:browser.switch('target').on()",
-      "element:Standard Switch",
-      "element:Standard Checkbox Switch",
-      "element:The real checkbox is",
-      "element:.slider",
-      "checkbox:Standard Checkbox Switch {checked:false}",
-      "element:ARIA Div Switch",
-      "element:No native form controls.",
-      "element:aria-checked",
-      "switch:ARIA Div Switch {on:false}",
-      "element:Native Button Switch",
-      "element:Standard HTML button",
-      "button:OFF",
-      "element:Bare Native Checkbox",
-      "element:Unstyled baseline",
-      "element:.click()",
-      "element:.check()",
-      "checkbox:Bare Native Checkbox {checked:false}",
-      "element:Advanced Contexts &",
-      "element:Disabled Control Switch",
-      "element:Validates if the",
-      "checkbox:Disabled Control Switch {checked:false}",
-      "element:Switch inside Shadow DOM",
-      "element:Playwright pierces this",
-      "element:shadow-host",
-      "checkbox:shadow-switch {checked:false}",
-      "element:Switch inside an iFrame",
-      "element:Requires driving a",
-      "element:driver.switchTo().frame()",
-      "iframe:Iframe Switch Environment"
+      {
+        "description": "viewport",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Ultimate Switch Testing",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Ultimate Switch Testing",
+        "formState": null,
+        "inViewport": true,
+        "type": "heading"
+      },
+      {
+        "description": "A single-page HTML suite",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "browser.switch('target').on()",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Standard Switch",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Standard Checkbox Switch",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "The real checkbox is",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": ".slider",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Standard Checkbox Switch",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "ARIA Div Switch",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "No native form controls.",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "aria-checked",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "ARIA Div Switch",
+        "formState": {
+          "on": false
+        },
+        "inViewport": true,
+        "type": "switch"
+      },
+      {
+        "description": "Native Button Switch",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "Standard HTML button",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "OFF",
+        "formState": null,
+        "inViewport": true,
+        "type": "button"
+      },
+      {
+        "description": "Bare Native Checkbox",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Unstyled baseline",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": ".click()",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": ".check()",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Bare Native Checkbox",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Advanced Contexts &",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Disabled Control Switch",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Validates if the",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Disabled Control Switch",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Switch inside Shadow DOM",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Playwright pierces this",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "shadow-host",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "shadow-switch",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      },
+      {
+        "description": "Switch inside an iFrame",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Requires driving a",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "driver.switchTo().frame()",
+        "formState": null,
+        "inViewport": false,
+        "type": "element"
+      },
+      {
+        "description": "Iframe Switch Environment",
+        "formState": null,
+        "inViewport": false,
+        "type": "iframe"
+      }
     ],
     "frame": -1
   },
   {
     "elements": [
-      "element:Document Switch Window",
-      "checkbox:iframe-switch {checked:false}"
+      {
+        "description": "Document Switch Window",
+        "formState": null,
+        "inViewport": true,
+        "type": "element"
+      },
+      {
+        "description": "iframe-switch",
+        "formState": {
+          "checked": false
+        },
+        "inViewport": false,
+        "type": "checkbox"
+      }
     ],
     "frame": 0
   }

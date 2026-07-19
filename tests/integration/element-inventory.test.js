@@ -1,5 +1,5 @@
 /**
- * Integration tests for getElementInventory(viewportOnly)
+ * Integration tests for getElementInventory()
  * Runs in a real Chrome browser via Selenium WebDriver.
  */
 
@@ -24,7 +24,7 @@ describe('ElementFinder - getElementInventory', () => {
 
   it('should return two frame groups (main document + same-origin iframe)', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(false);
+      return ElementFinder.getElementInventory();
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -37,32 +37,32 @@ describe('ElementFinder - getElementInventory', () => {
 
   it('should include main-document elements in frame -1', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(false);
+      return ElementFinder.getElementInventory();
     `);
 
     const main = tree.find((g) => g.frame === -1);
     expect(main).toBeDefined();
-    expect(main.elements).toContain('heading:Welcome');
-    expect(main.elements).toContain('link:Home');
-    expect(main.elements).toContain('button:Submit');
-    expect(main.elements).toContain('textbox:Email {value:""}');
+    expect(main.elements).toContainEqual({ type: 'heading', description: 'Welcome', inViewport: true, formState: null });
+    expect(main.elements).toContainEqual({ type: 'link', description: 'Home', inViewport: true, formState: null });
+    expect(main.elements).toContainEqual({ type: 'button', description: 'Submit', inViewport: true, formState: null });
+    expect(main.elements).toContainEqual({ type: 'textbox', description: 'Email', inViewport: true, formState: { value: '' } });
   });
 
   it('should include same-origin iframe elements in frame 0', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(false);
+      return ElementFinder.getElementInventory();
     `);
 
     // The same-origin iframe is returned as frame 0 with its own elements.
     const iframe = tree.find((g) => g.frame === 0);
     expect(iframe).toBeDefined();
-    expect(iframe.elements).toContain('heading:Iframe Heading');
-    expect(iframe.elements).toContain('button:Login');
+    expect(iframe.elements).toContainEqual({ type: 'heading', description: 'Iframe Heading', inViewport: true, formState: null });
+    expect(iframe.elements).toContainEqual({ type: 'button', description: 'Login', inViewport: true, formState: null });
   });
 
   it('should match the committed baseline for element-inventory.html', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(false);
+      return ElementFinder.getElementInventory();
     `);
     const baseline = loadElementInventoryBaseline('element-inventory.json', { engine: 'chrome' });
     expect(tree).toEqual(baseline);
@@ -86,7 +86,7 @@ describe('ElementFinder - getElementInventory cross-origin handling', () => {
 
   it('should not throw and should skip the cross-origin iframe but include same-origin iframes', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(false);
+      return ElementFinder.getElementInventory();
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -101,16 +101,16 @@ describe('ElementFinder - getElementInventory cross-origin handling', () => {
     // The same-origin iframe IS included (proves same-origin traversal works).
     const iframe = tree.find((g) => g.frame === 0);
     expect(iframe).toBeDefined();
-    expect(iframe.elements).toContain('checkbox:Iframe Checkbox {checked:false}');
+    expect(iframe.elements).toContainEqual({ type: 'checkbox', description: 'Iframe Checkbox', inViewport: true, formState: { checked: false } });
 
     // No frame references the cross-origin iframe's content (example.com).
     const allEntries = tree.flatMap((g) => g.elements);
-    expect(allEntries.some((e) => e.toLowerCase().includes('example.com'))).toBe(false);
+    expect(allEntries.some((e) => e.description && e.description.toLowerCase().includes('example.com'))).toBe(false);
   });
 
   it('should match the committed baseline for iframes.html', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(false);
+      return ElementFinder.getElementInventory();
     `);
     const baseline = loadElementInventoryBaseline('iframes.json', { engine: 'chrome' });
     expect(tree).toEqual(baseline);
@@ -118,8 +118,9 @@ describe('ElementFinder - getElementInventory cross-origin handling', () => {
 });
 
 // Validate getElementInventory against the committed baseline for every
-// fixture in the repo that has a baseline (viewportOnly = false returns the
-// complete page). This catches regressions across all available fixtures.
+// fixture in the repo that has a baseline (the complete page is returned, with
+// an inViewport flag per element). This catches regressions across all
+// available fixtures.
 const BROWSER_FIXTURES = [
   'element-inventory-empty.html',
   'element-inventory.html',
@@ -163,7 +164,7 @@ describe('ElementFinder - getElementInventory baseline parity (all browser fixtu
 
       it(`should match the committed baseline for ${fixtureName}`, async () => {
         const tree = await fixture.driver.executeScript(`
-          return ElementFinder.getElementInventory(false);
+          return ElementFinder.getElementInventory();
         `);
         // The integration suite runs in a real browser, so it uses the
         // Chrome-specific baseline (tables, shadow DOM and iframes are
@@ -175,10 +176,10 @@ describe('ElementFinder - getElementInventory baseline parity (all browser fixtu
   }
 });
 
-// Tests for the viewportOnly parameter. Uses a fixture with elements that are
-// in the viewport at load time and others placed far below the fold so they
-// are off-screen. Runs in a real Chrome browser via Selenium WebDriver.
-describe('ElementFinder - getElementInventory viewportOnly parameter', () => {
+// Tests for the inViewport flag. Uses a fixture with elements that are in the
+// viewport at load time and others placed far below the fold so they are
+// off-screen. Runs in a real Chrome browser via Selenium WebDriver.
+describe('ElementFinder - getElementInventory inViewport flag', () => {
   const fixture = createDriverFixture({
     url: loadFixture('element-inventory-viewport.html'),
     injectFinder: true,
@@ -193,9 +194,9 @@ describe('ElementFinder - getElementInventory viewportOnly parameter', () => {
     await fixture.teardown();
   });
 
-  it('should return only in-viewport elements when viewportOnly is true (default)', async () => {
+  it('should mark in-viewport elements with inViewport: true and off-screen elements with inViewport: false', async () => {
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(true);
+      return ElementFinder.getElementInventory();
     `);
 
     expect(Array.isArray(tree)).toBe(true);
@@ -203,52 +204,35 @@ describe('ElementFinder - getElementInventory viewportOnly parameter', () => {
 
     const main = tree[0];
     expect(main.frame).toBe(-1);
+
+    const inView = main.elements.filter((e) => e.inViewport);
+    const offScreen = main.elements.filter((e) => !e.inViewport);
 
     // In-viewport elements are present.
-    expect(main.elements).toContain('heading:In View Heading');
-    expect(main.elements).toContain('button:In View Button');
-    expect(main.elements).toContain('link:In View Link');
+    expect(inView).toContainEqual({ type: 'heading', description: 'In View Heading', inViewport: true, formState: null });
+    expect(inView).toContainEqual({ type: 'button', description: 'In View Button', inViewport: true, formState: null });
+    expect(inView).toContainEqual({ type: 'link', description: 'In View Link', inViewport: true, formState: null });
 
-    // Off-screen elements are excluded.
-    expect(main.elements).not.toContain('heading:Offscreen Heading');
-    expect(main.elements).not.toContain('button:Offscreen Button');
-    expect(main.elements).not.toContain('link:Offscreen Link');
+    // Off-screen elements are present but flagged inViewport: false.
+    expect(offScreen).toContainEqual({ type: 'heading', description: 'Offscreen Heading', inViewport: false, formState: null });
+    expect(offScreen).toContainEqual({ type: 'button', description: 'Offscreen Button', inViewport: false, formState: null });
+    expect(offScreen).toContainEqual({ type: 'link', description: 'Offscreen Link', inViewport: false, formState: null });
   });
 
-  it('should return the complete page when viewportOnly is false', async () => {
-    const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(false);
-    `);
-
-    expect(Array.isArray(tree)).toBe(true);
-    expect(tree.length).toBe(1);
-
-    const main = tree[0];
-    expect(main.frame).toBe(-1);
-
-    // Both in-viewport and off-screen elements are present.
-    expect(main.elements).toContain('heading:In View Heading');
-    expect(main.elements).toContain('button:In View Button');
-    expect(main.elements).toContain('link:In View Link');
-    expect(main.elements).toContain('heading:Offscreen Heading');
-    expect(main.elements).toContain('button:Offscreen Button');
-    expect(main.elements).toContain('link:Offscreen Link');
-  });
-
-  it('should include off-screen elements after scrolling them into view (viewportOnly true)', async () => {
+  it('should flip inViewport to true for off-screen elements after scrolling them into view', async () => {
     // Scroll the off-screen container into the viewport, then re-scan.
     await fixture.driver.executeScript(`
       document.querySelector('.far-below').scrollIntoView();
     `);
 
     const tree = await fixture.driver.executeScript(`
-      return ElementFinder.getElementInventory(true);
+      return ElementFinder.getElementInventory();
     `);
 
     const main = tree[0];
     // After scrolling, the previously off-screen elements are now in view.
-    expect(main.elements).toContain('heading:Offscreen Heading');
-    expect(main.elements).toContain('button:Offscreen Button');
-    expect(main.elements).toContain('link:Offscreen Link');
+    expect(main.elements).toContainEqual({ type: 'heading', description: 'Offscreen Heading', inViewport: true, formState: null });
+    expect(main.elements).toContainEqual({ type: 'button', description: 'Offscreen Button', inViewport: true, formState: null });
+    expect(main.elements).toContainEqual({ type: 'link', description: 'Offscreen Link', inViewport: true, formState: null });
   });
 });

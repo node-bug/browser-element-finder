@@ -345,21 +345,8 @@ var ElementFinder = (() => {
     }
     return null;
   }
-  function getElementDescriptorFrame(el) {
-    if (!el || !el.ownerDocument) return null;
-    try {
-      const frames = getAllFrames(window);
-      for (let i = 0; i < frames.length; i++) {
-        if (frames[i].document === el.ownerDocument) {
-          return frames[i].document;
-        }
-      }
-    } catch (e) {
-    }
-    return el.ownerDocument;
-  }
   function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
-    const root = getElementDescriptorFrame(el);
+    const root = el.ownerDocument;
     if (!root) {
       return { index: 1 };
     }
@@ -404,7 +391,7 @@ var ElementFinder = (() => {
     return { index: 1 };
   }
   function getElementPositionAmongType(el, type, includeHidden = true) {
-    const root = getElementDescriptorFrame(el);
+    const root = el.ownerDocument;
     if (!root) return 1;
     const elements = getAllElements(root);
     const typeCache = /* @__PURE__ */ new WeakMap();
@@ -1086,42 +1073,35 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function formatFormState(formState) {
-    if (formState == null) return "";
-    const parts = [];
-    for (const key of Object.keys(formState)) {
-      const value = formState[key];
-      if (Array.isArray(value)) {
-        parts.push(`${key}:[${value.map((v) => JSON.stringify(v)).join(",")}]`);
-      } else if (typeof value === "string") {
-        parts.push(`${key}:${JSON.stringify(value)}`);
-      } else {
-        parts.push(`${key}:${String(value)}`);
-      }
-    }
-    return parts.length > 0 ? `{${parts.join(",")}}` : "";
-  }
-  function getElementInventory(viewportOnly = true) {
+  function getElementInventory() {
     const frames = getAllFrames(window);
     const tree = [];
     for (let fi = 0; fi < frames.length; fi++) {
       const frameDoc = frames[fi].document;
       const elements = getAllElements(frameDoc);
       const entries = [];
+      const typePos = /* @__PURE__ */ new Map();
       for (let i = 0; i < elements.length; i++) {
         const el = elements[i];
-        if (viewportOnly && !inViewport(el)) continue;
-        const descriptor = getElementDescriptor(el, true);
-        const type = descriptor.type || "element";
-        if (!descriptor.identifiableText) {
+        const type = getElementDescriptorType(el) || "element";
+        const pos = (typePos.get(type) || 0) + 1;
+        typePos.set(type, pos);
+        const textSource = getElementDescriptorText(el);
+        const identifiableText = textSource ? textSource.identifiableText : null;
+        let text;
+        if (!identifiableText) {
           if (!TEXTLESS_TYPES.has(type)) continue;
-          const text = `#${descriptor.index}`;
-          const suffix2 = descriptor.formState ? ` ${formatFormState(descriptor.formState)}` : "";
-          entries.push(`${type}:${text}${suffix2}`);
-          continue;
+          text = `#${pos}`;
+        } else {
+          text = identifiableText;
         }
-        const suffix = descriptor.formState ? ` ${formatFormState(descriptor.formState)}` : "";
-        entries.push(`${type}:${descriptor.identifiableText}${suffix}`);
+        const formState = getFormState(el, type);
+        entries.push({
+          type,
+          description: text,
+          inViewport: inViewport(el),
+          formState: formState || null
+        });
       }
       tree.push({ frame: frames[fi].frameIndex, elements: entries });
     }
