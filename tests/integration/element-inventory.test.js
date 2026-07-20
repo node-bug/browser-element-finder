@@ -111,6 +111,17 @@ describe('ElementFinder - getElementInventory(parent) scoping', () => {
     // text, so if it leaked in it would appear as a text-less `element` entry
     // (description null). Assert no such entry exists.
     expect(entries.some((e) => e.type === 'element' && e.description === null)).toBe(false);
+
+    // The overlay field should be present and either null or a properly-shaped entry.
+    expect(tree[0]).toHaveProperty('overlay');
+    const overlay = tree[0].overlay;
+    if (overlay !== null) {
+      expect(overlay).toHaveProperty('type');
+      expect(overlay).toHaveProperty('description');
+      expect(overlay).toHaveProperty('index');
+      expect(overlay).toHaveProperty('inViewport');
+      expect(overlay).toHaveProperty('formState');
+    }
   });
 });
 
@@ -279,5 +290,72 @@ describe('ElementFinder - getElementInventory inViewport flag', () => {
     expect(main.elements).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Offscreen Heading', inViewport: true, formState: null }));
     expect(main.elements).toContainEqual(expect.objectContaining({ type: 'button', description: 'Offscreen Button', inViewport: true, formState: null }));
     expect(main.elements).toContainEqual(expect.objectContaining({ type: 'link', description: 'Offscreen Link', inViewport: true, formState: null }));
+  });
+});
+
+describe('ElementFinder - getElementInventory overlay detection for text-less containers', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('element-inventory-textless-overlay.html'),
+    injectFinder: true,
+    sleep: 300,
+  });
+
+  beforeAll(async () => {
+    await fixture.setup();
+  });
+
+  afterAll(async () => {
+    await fixture.teardown();
+  });
+
+  it('should detect a pure-container overlay (no id, no aria-label, no own text) as the dominant overlay', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    expect(Array.isArray(tree)).toBe(true);
+    expect(tree.length).toBe(1);
+
+    // The overlay should be detected even though the outer .modal-backdrop div
+    // has no id, no aria-label, and no own text (it's a pure container).
+    const overlay = tree[0].overlay;
+    expect(overlay).not.toBeNull();
+    // The dominant overlay is the one with the most descendants — the outer
+    // .modal-backdrop div (type 'element') wraps everything.
+    expect(overlay.type).toBe('element');
+    expect(overlay.description).toBeNull();
+    expect(overlay.inViewport).toBe(true);
+  });
+
+  it('should prefer the overlay with the most inventory descendants when multiple overlays exist', async () => {
+    // Navigate to a page with nested overlays.
+    await fixture.driver.executeScript(`
+      document.open();
+      document.write(\`<!DOCTYPE html><html><head><style>
+        .overlay-a { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
+        .overlay-b { position: fixed; top: 50%; left: 50%; z-index: 2000; }
+      </style></head><body>
+        <div class="overlay-a">
+          <button>A-1</button>
+          <button>A-2</button>
+          <button>A-3</button>
+          <div class="overlay-b">
+            <button>B-1</button>
+          </div>
+        </div>
+      </body></html>\`);
+      document.close();
+    `);
+    await fixture.driver.sleep(200);
+
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const overlay = tree[0].overlay;
+    expect(overlay).not.toBeNull();
+    // overlay-a wraps 4 buttons (A-1, A-2, A-3, B-1), overlay-b wraps 1 (B-1).
+    // The outer overlay should win.
+    expect(overlay.type).toBe('element');
   });
 });

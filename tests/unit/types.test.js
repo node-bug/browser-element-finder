@@ -378,8 +378,6 @@ describe('ElementFinderByType Node.js Module Tests', () => {
       expect(box).toHaveProperty('right');
       expect(box).toHaveProperty('midx');
       expect(box).toHaveProperty('midy');
-      expect(box).toHaveProperty('tagName');
-      expect(box.tagName).toBe('button');
     });
   });
 

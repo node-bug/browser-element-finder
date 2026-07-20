@@ -1164,7 +1164,6 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       document.body.appendChild(el);
 
       const box = getBoundingBox(el);
-      expect(box.tagName).toBe('div');
       expect(box.x).toBeDefined();
       expect(box.y).toBeDefined();
       expect(box.width).toBeDefined();

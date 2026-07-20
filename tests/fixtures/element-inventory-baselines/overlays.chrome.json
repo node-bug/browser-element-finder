@@ -186,7 +186,10 @@
     ],
     "frame": -1,
     "overlay": {
-      "index": 2,
+      "description": "alert-dialog",
+      "formState": null,
+      "inViewport": true,
+      "index": 1,
       "type": "dialog"
     }
   }

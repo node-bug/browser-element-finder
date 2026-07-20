@@ -382,8 +382,7 @@ export function getBoundingBox(el) {
     left: rect.left,
     right: rect.right,
     midx: rect.x + rect.width / 2,
-    midy: rect.y + rect.height / 2,
-    tagName: el.tagName.toLowerCase()
+    midy: rect.y + rect.height / 2
   };
 }
 

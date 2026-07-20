@@ -751,8 +751,7 @@ var ElementFinder = (() => {
       left: rect.left,
       right: rect.right,
       midx: rect.x + rect.width / 2,
-      midy: rect.y + rect.height / 2,
-      tagName: el.tagName.toLowerCase()
+      midy: rect.y + rect.height / 2
     };
   }
   function isHidden(el) {
@@ -1100,6 +1099,16 @@ var ElementFinder = (() => {
           return frames[i].frameIndex;
         }
       }
+      let node = el;
+      while (node) {
+        const parentDoc = node.ownerDocument;
+        for (let i = 0; i < frames.length; i++) {
+          if (frames[i].document === parentDoc) {
+            return frames[i].frameIndex;
+          }
+        }
+        node = node.parentElement || node.getRootNode && node.getRootNode().host;
+      }
     } catch (e) {
     }
     return -1;
@@ -1110,6 +1119,7 @@ var ElementFinder = (() => {
     const typeTextPos = /* @__PURE__ */ new Map();
     const overlayCandidates = [];
     const overlayCount = /* @__PURE__ */ new Map();
+    const overlayCandidateSet = /* @__PURE__ */ new Set();
     for (let i = 0; i < elements.length; i++) {
       const el = elements[i];
       const type = getElementDescriptorType(el) || "element";
@@ -1120,7 +1130,22 @@ var ElementFinder = (() => {
       let text;
       let index;
       if (!identifiableText) {
-        if (!TEXTLESS_TYPES.has(type)) continue;
+        if (!TEXTLESS_TYPES.has(type)) {
+          const vp2 = inViewport(el);
+          if (vp2 && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
+            overlayCandidates.push({
+              el,
+              type,
+              description: null,
+              inViewport: vp2,
+              formState: null,
+              index: pos
+            });
+            overlayCount.set(el, 0);
+            overlayCandidateSet.add(el);
+          }
+          continue;
+        }
         text = null;
         index = pos;
       } else {
@@ -1139,8 +1164,16 @@ var ElementFinder = (() => {
         formState: formState || null
       });
       if (vp && isOverlayElement(el)) {
-        overlayCandidates.push({ el, type, index: pos });
+        overlayCandidates.push({
+          el,
+          type,
+          description: text,
+          inViewport: vp,
+          formState: formState || null,
+          index
+        });
         overlayCount.set(el, 0);
+        overlayCandidateSet.add(el);
       }
     }
     let overlay = null;
@@ -1163,7 +1196,15 @@ var ElementFinder = (() => {
           best = cand;
         }
       }
-      if (best) overlay = { type: best.type, index: best.index };
+      if (best) {
+        overlay = {
+          type: best.type,
+          description: best.description,
+          inViewport: best.inViewport,
+          formState: best.formState,
+          index: best.index
+        };
+      }
     }
     return { entries, overlay };
   }

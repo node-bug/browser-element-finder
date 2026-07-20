@@ -1079,8 +1079,7 @@ export function getBoundingBox(el) {
     left: rect.left,
     right: rect.right,
     midx: rect.x + rect.width / 2,
-    midy: rect.y + rect.height / 2,
-    tagName: el.tagName.toLowerCase()
+    midy: rect.y + rect.height / 2
   };
 }
 
@@ -1655,7 +1654,7 @@ export function getViewportElementCounts(type = null, parent = null) {
  * call), matching `findElements()` ordering within the scope.
  *
  * @param {Element|null} [parent=null] - Parent element to scope the inventory to. When null/undefined, the full page across all same-origin frames is returned.
- * @returns {Array<{frame: number, elements: Array<{type: string, description: string, inViewport: boolean, formState: Object|null}>}>} Element inventory grouped by frame
+ * @returns {Array<{frame: number, elements: Array<{type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}|null}>} Element inventory grouped by frame
  */
 export function getElementInventory(parent = null) {
   // Scoped mode: only the parent's descendants, in a single frame group.
@@ -1699,6 +1698,21 @@ function findFrameIndexForElement(el) {
         return frames[i].frameIndex;
       }
     }
+    // Fallback: walk up the ancestor chain (including shadow-DOM hosts)
+    // to find an element whose owner document is in the collected frames.
+    // This handles nested iframes where getAllFrames only collects immediate
+    // children of the main document.
+    let node = el;
+    while (node) {
+      const parentDoc = node.ownerDocument;
+      for (let i = 0; i < frames.length; i++) {
+        if (frames[i].document === parentDoc) {
+          return frames[i].frameIndex;
+        }
+      }
+      // Walk up through light-DOM parent or shadow-DOM host.
+      node = node.parentElement || (node.getRootNode && node.getRootNode().host);
+    }
   } catch {
     // Restricted access — fall through to the default below.
   }
@@ -1716,7 +1730,7 @@ function findFrameIndexForElement(el) {
  * position per type for the #N fallback.
  *
  * @param {Element[]} elements - Elements to inventory (already filtered to the desired scope)
- * @returns {{entries: Array<{type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}>, overlay: {type: string, index: number}|null}} Inventory entries plus the dominant visible overlay
+ * @returns {{entries: Array<{type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, inViewport: boolean, formState: Object|null, index: number}|null}} Inventory entries plus the dominant visible overlay
  */
 function collectInventoryEntries(elements) {
   const entries = [];
@@ -1726,6 +1740,8 @@ function collectInventoryEntries(elements) {
   // type + index we can report). Keyed by element for O(1) ancestor lookup.
   const overlayCandidates = [];
   const overlayCount = new Map(); // overlay element -> descendant inventory count
+  // Set of elements already added as overlay candidates to avoid duplicates.
+  const overlayCandidateSet = new Set();
 
   for (let i = 0; i < elements.length; i++) {
     const el = elements[i];
@@ -1748,7 +1764,25 @@ function collectInventoryEntries(elements) {
       // are included, using a null description and a separate index field
       // so they remain actionable. Their index is the running position among
       // same-type elements (the #N fallback).
-      if (!TEXTLESS_TYPES.has(type)) continue;
+      if (!TEXTLESS_TYPES.has(type)) {
+        // Even though this element won't be an inventory entry, it can still
+        // be a visible overlay container (e.g., <div class="modal"> with no
+        // id/aria-label). Check for overlay candidacy before skipping.
+        const vp = inViewport(el);
+        if (vp && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
+          overlayCandidates.push({
+            el,
+            type,
+            description: null,
+            inViewport: vp,
+            formState: null,
+            index: pos,
+          });
+          overlayCount.set(el, 0);
+          overlayCandidateSet.add(el);
+        }
+        continue;
+      }
       text = null;
       index = pos;
     } else {
@@ -1772,10 +1806,21 @@ function collectInventoryEntries(elements) {
     });
 
     // Track visible overlays (reusing the viewport result already computed
-    // above) for the dominant-overlay computation below.
+    // above) for the dominant-overlay computation below. Capture the same
+    // fields a regular inventory entry carries so the reported overlay object
+    // is structurally identical to an entry (its `index` mirrors this element's
+    // own entry index, not the raw type-position `pos`).
     if (vp && isOverlayElement(el)) {
-      overlayCandidates.push({ el, type, index: pos });
+      overlayCandidates.push({
+        el,
+        type,
+        description: text,
+        inViewport: vp,
+        formState: formState || null,
+        index,
+      });
       overlayCount.set(el, 0);
+      overlayCandidateSet.add(el);
     }
   }
 
@@ -1805,7 +1850,15 @@ function collectInventoryEntries(elements) {
         best = cand;
       }
     }
-    if (best) overlay = { type: best.type, index: best.index };
+    if (best) {
+      overlay = {
+        type: best.type,
+        description: best.description,
+        inViewport: best.inViewport,
+        formState: best.formState,
+        index: best.index,
+      };
+    }
   }
 
   return { entries, overlay };
