@@ -5,42 +5,49 @@
       {
         "type": "element",
         "description": "Accessibility Tree",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Welcome",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "link",
         "description": "Home",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "link",
         "description": "Docs",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Submit",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Cancel",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "textbox",
         "description": "Email",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "value": ""
@@ -49,6 +56,7 @@
       {
         "type": "textbox",
         "description": "Full name",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "value": ""
@@ -57,19 +65,23 @@
       {
         "type": "element",
         "description": "Some visible text",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "iframe",
         "description": "tree-iframe",
+        "index": 1,
         "inViewport": false,
         "formState": null
       }
-    ]
+    ],
+    "overlay": null
   },
   {
     "frame": 0,
-    "elements": []
+    "elements": [],
+    "overlay": null
   }
 ]

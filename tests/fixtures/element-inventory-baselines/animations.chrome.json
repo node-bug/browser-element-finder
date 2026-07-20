@@ -5,33 +5,39 @@
         "description": "Unit Tests - Animations",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Animated Box",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Fade Box",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Static Box",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Animated Button",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   }
 ]

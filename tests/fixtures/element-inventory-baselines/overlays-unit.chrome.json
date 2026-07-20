@@ -5,69 +5,84 @@
         "description": "Regular content",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "ARIA Dialog",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "dialog"
       },
       {
         "description": "Close",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Native Dialog",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Close",
         "formState": null,
         "inViewport": true,
+        "index": 2,
         "type": "button"
       },
       {
         "description": "Cookies",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Accept",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Popover content",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Alert",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "dialog"
       },
       {
         "description": "Yes",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "No",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": {
+      "index": 2,
+      "type": "dialog"
+    }
   }
 ]

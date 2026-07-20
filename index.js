@@ -1073,39 +1073,99 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function getElementInventory() {
+  function getElementInventory(parent = null) {
+    if (parent != null) {
+      const frameIndex = findFrameIndexForElement(parent);
+      const allInParent = getAllElements(parent);
+      const descendants = allInParent.filter((el) => el !== parent);
+      const { entries, overlay } = collectInventoryEntries(descendants);
+      return [{ frame: frameIndex, elements: entries, overlay }];
+    }
     const frames = getAllFrames(window);
     const tree = [];
     for (let fi = 0; fi < frames.length; fi++) {
       const frameDoc = frames[fi].document;
       const elements = getAllElements(frameDoc);
-      const entries = [];
-      const typePos = /* @__PURE__ */ new Map();
-      for (let i = 0; i < elements.length; i++) {
-        const el = elements[i];
-        const type = getElementDescriptorType(el) || "element";
-        const pos = (typePos.get(type) || 0) + 1;
-        typePos.set(type, pos);
-        const textSource = getElementDescriptorText(el);
-        const identifiableText = textSource ? textSource.identifiableText : null;
-        let text;
-        if (!identifiableText) {
-          if (!TEXTLESS_TYPES.has(type)) continue;
-          text = `#${pos}`;
-        } else {
-          text = identifiableText;
-        }
-        const formState = getFormState(el, type);
-        entries.push({
-          type,
-          description: text,
-          inViewport: inViewport(el),
-          formState: formState || null
-        });
-      }
-      tree.push({ frame: frames[fi].frameIndex, elements: entries });
+      const { entries, overlay } = collectInventoryEntries(elements);
+      tree.push({ frame: frames[fi].frameIndex, elements: entries, overlay });
     }
     return tree;
+  }
+  function findFrameIndexForElement(el) {
+    try {
+      const ownerDoc = el.ownerDocument;
+      const frames = getAllFrames(window);
+      for (let i = 0; i < frames.length; i++) {
+        if (frames[i].document === ownerDoc) {
+          return frames[i].frameIndex;
+        }
+      }
+    } catch (e) {
+    }
+    return -1;
+  }
+  function collectInventoryEntries(elements) {
+    const entries = [];
+    const typePos = /* @__PURE__ */ new Map();
+    const typeTextPos = /* @__PURE__ */ new Map();
+    const overlayCandidates = [];
+    const overlayCount = /* @__PURE__ */ new Map();
+    for (let i = 0; i < elements.length; i++) {
+      const el = elements[i];
+      const type = getElementDescriptorType(el) || "element";
+      const pos = (typePos.get(type) || 0) + 1;
+      typePos.set(type, pos);
+      const textSource = getElementDescriptorText(el);
+      const identifiableText = textSource ? textSource.identifiableText : null;
+      let text;
+      let index;
+      if (!identifiableText) {
+        if (!TEXTLESS_TYPES.has(type)) continue;
+        text = null;
+        index = pos;
+      } else {
+        text = identifiableText;
+        const key = type + "\0" + identifiableText;
+        index = (typeTextPos.get(key) || 0) + 1;
+        typeTextPos.set(key, index);
+      }
+      const formState = getFormState(el, type);
+      const vp = inViewport(el);
+      entries.push({
+        type,
+        description: text,
+        index,
+        inViewport: vp,
+        formState: formState || null
+      });
+      if (vp && isOverlayElement(el)) {
+        overlayCandidates.push({ el, type, index: pos });
+        overlayCount.set(el, 0);
+      }
+    }
+    let overlay = null;
+    if (overlayCandidates.length > 0) {
+      for (let i = 0; i < elements.length; i++) {
+        let anc = elements[i].parentElement;
+        while (anc) {
+          const c = overlayCount.get(anc);
+          if (c !== void 0) overlayCount.set(anc, c + 1);
+          anc = anc.parentElement;
+        }
+      }
+      let best = null;
+      let bestCount = 0;
+      for (let i = 0; i < overlayCandidates.length; i++) {
+        const cand = overlayCandidates[i];
+        const cnt = overlayCount.get(cand.el);
+        if (cnt > bestCount) {
+          bestCount = cnt;
+          best = cand;
+        }
+      }
+      if (best) overlay = { type: best.type, index: best.index };
+    }
+    return { entries, overlay };
   }
   function findElements(type = null, text = null, exact = false, parent = null) {
     if (text === null || text === void 0) {

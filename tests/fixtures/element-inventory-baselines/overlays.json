@@ -5,159 +5,186 @@
       {
         "type": "element",
         "description": "Overlay Elements Test",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Overlay Test Page",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "This is regular page",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Open Modal",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dialog",
         "description": "aria-dialog",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Aria Dialog",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "This is an ARIA modal",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Close",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "native-dialog",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Native Dialog",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "This is a native HTML",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Close",
+        "index": 2,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "cookie-banner",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "We use cookies.",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Accept All",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "toast",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Action completed",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "popover-element",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Popover Content",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "This uses the Popover",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dialog",
         "description": "alert-dialog",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Alert Dialog",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Are you sure?",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Yes",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "No",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "backdrop",
+        "index": 1,
         "inViewport": false,
         "formState": null
       }
-    ]
+    ],
+    "overlay": null
   }
 ]

@@ -5,24 +5,28 @@
         "description": "Unit Tests - Element",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Submit",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Cancel",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Click Me",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
@@ -31,6 +35,7 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -39,6 +44,7 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -47,6 +53,7 @@
           "value": "Some text"
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -55,6 +62,7 @@
           "checked": false
         },
         "inViewport": true,
+        "index": 1,
         "type": "checkbox"
       },
       {
@@ -63,6 +71,7 @@
           "set": false
         },
         "inViewport": true,
+        "index": 1,
         "type": "radio"
       },
       {
@@ -71,6 +80,7 @@
           "value": 50
         },
         "inViewport": true,
+        "index": 1,
         "type": "slider"
       },
       {
@@ -79,6 +89,7 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "datepicker"
       },
       {
@@ -87,18 +98,21 @@
           "value": "#ff0000"
         },
         "inViewport": true,
+        "index": 1,
         "type": "colorpicker"
       },
       {
         "description": "Home",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "About",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
@@ -108,81 +122,95 @@
           "selected": "Option 1"
         },
         "inViewport": true,
+        "index": 1,
         "type": "dropdown"
       },
       {
         "description": "Option 1",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Option 2",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Nested text",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "test-table",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "table"
       },
       {
-        "description": "#1",
+        "description": null,
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "row"
       },
       {
         "description": "Name",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "column"
       },
       {
         "description": "Age",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "column"
       },
       {
         "description": "City",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "column"
       },
       {
-        "description": "#2",
+        "description": null,
         "formState": null,
         "inViewport": true,
+        "index": 2,
         "type": "row"
       },
       {
         "description": "Alice",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "column"
       },
       {
         "description": "30",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "column"
       },
       {
         "description": "New York",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "column"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   }
 ]

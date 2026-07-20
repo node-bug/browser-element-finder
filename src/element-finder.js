@@ -1647,64 +1647,168 @@ export function getViewportElementCounts(type = null, parent = null) {
  *     attributes (value/id/name/src) while still yielding to explicit a11y/
  *     semantic text (aria-label/labelledby, placeholder, data-*).
  *
+ * When a `parent` element is provided, only that parent's descendants (its
+ * subtree, excluding the parent itself) are returned, grouped into a single
+ * frame group for the frame the parent lives in. This mirrors how
+ * `findElements(type, text, exact, parent)` treats `parent` as a search root.
+ * The `#N` positional index is computed relative to that subtree (reset per
+ * call), matching `findElements()` ordering within the scope.
+ *
+ * @param {Element|null} [parent=null] - Parent element to scope the inventory to. When null/undefined, the full page across all same-origin frames is returned.
  * @returns {Array<{frame: number, elements: Array<{type: string, description: string, inViewport: boolean, formState: Object|null}>}>} Element inventory grouped by frame
  */
-export function getElementInventory() {
+export function getElementInventory(parent = null) {
+  // Scoped mode: only the parent's descendants, in a single frame group.
+  if (parent != null) {
+    const frameIndex = findFrameIndexForElement(parent);
+    const allInParent = getAllElements(parent);
+    // Exclude the parent itself — callers asked for its children.
+    const descendants = allInParent.filter((el) => el !== parent);
+    const { entries, overlay } = collectInventoryEntries(descendants);
+    return [{ frame: frameIndex, elements: entries, overlay }];
+  }
+
+  // Full-page mode (default): every same-origin frame, each as its own group.
   const frames = getAllFrames(window);
   const tree = [];
 
   for (let fi = 0; fi < frames.length; fi++) {
     const frameDoc = frames[fi].document;
     const elements = getAllElements(frameDoc);
-    const entries = [];
-
-    // Single pass over all frame elements. Previously this function called
-    // getElementDescriptor() for every element, which internally re-walked the
-    // entire DOM (via getElementDescriptorUniqueness / getElementPositionAmongType)
-    // — O(N^2) on large pages. The output only needs each element's type, its
-    // identifiable text (or a positional #N for text-less elements), its
-    // viewport membership, and its form state, so we compute those once here
-    // and track the running 1-based position per type for the #N fallback.
-    const typePos = new Map(); // type -> running count (for #N fallback)
-
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i];
-
-      const type = getElementDescriptorType(el) || 'element';
-
-      // Running position among same-type elements (matches
-      // getElementPositionAmongType order). getAllElements already excludes
-      // ignored-tag descendants, so no extra ignored check is needed here.
-      const pos = (typePos.get(type) || 0) + 1;
-      typePos.set(type, pos);
-
-      const textSource = getElementDescriptorText(el);
-      const identifiableText = textSource ? textSource.identifiableText : null;
-
-      let text;
-      if (!identifiableText) {
-        // Text-less elements: only real element types (not `element`/`iframe`)
-        // are included, using the positional #N identifier so they remain
-        // actionable.
-        if (!TEXTLESS_TYPES.has(type)) continue;
-        text = `#${pos}`;
-      } else {
-        text = identifiableText;
-      }
-
-      const formState = getFormState(el, type);
-      entries.push({
-        type,
-        description: text,
-        inViewport: inViewport(el),
-        formState: formState || null,
-      });
-    }
-
-    tree.push({ frame: frames[fi].frameIndex, elements: entries });
+    const { entries, overlay } = collectInventoryEntries(elements);
+    tree.push({ frame: frames[fi].frameIndex, elements: entries, overlay });
   }
 
   return tree;
+}
+
+/**
+ * Resolves the frame index that an element belongs to, by matching its owner
+ * document against the documents of all same-origin frames. Falls back to -1
+ * (main frame) when the element's frame is not among the collected frames
+ * (e.g. a cross-origin iframe, which `getAllFrames` silently skips).
+ * @param {Element} el - The element to locate
+ * @returns {number} The frame index of the element's frame, or -1
+ */
+function findFrameIndexForElement(el) {
+  try {
+    const ownerDoc = el.ownerDocument;
+    const frames = getAllFrames(window);
+    for (let i = 0; i < frames.length; i++) {
+      if (frames[i].document === ownerDoc) {
+        return frames[i].frameIndex;
+      }
+    }
+  } catch {
+    // Restricted access — fall through to the default below.
+  }
+  return -1;
+}
+
+/**
+ * Single pass over a list of elements, building the inventory entry objects.
+ * Previously `getElementInventory()` called `getElementDescriptor()` for every
+ * element, which internally re-walked the entire DOM (via
+ * getElementDescriptorUniqueness / getElementPositionAmongType) — O(N^2) on
+ * large pages. The output only needs each element's type, its identifiable text
+ * (or a positional #N for text-less elements), its viewport membership, and its
+ * form state, so we compute those once here and track the running 1-based
+ * position per type for the #N fallback.
+ *
+ * @param {Element[]} elements - Elements to inventory (already filtered to the desired scope)
+ * @returns {{entries: Array<{type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}>, overlay: {type: string, index: number}|null}} Inventory entries plus the dominant visible overlay
+ */
+function collectInventoryEntries(elements) {
+  const entries = [];
+  const typePos = new Map(); // type -> running count (for #N fallback)
+  const typeTextPos = new Map(); // "type\u0000text" -> running count (occurrence index for identified elements)
+  // Visible overlays that are themselves inventory entries (so they carry a
+  // type + index we can report). Keyed by element for O(1) ancestor lookup.
+  const overlayCandidates = [];
+  const overlayCount = new Map(); // overlay element -> descendant inventory count
+
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+
+    const type = getElementDescriptorType(el) || 'element';
+
+    // Running position among same-type elements (matches
+    // getElementPositionAmongType order). getAllElements already excludes
+    // ignored-tag descendants, so no extra ignored check is needed here.
+    const pos = (typePos.get(type) || 0) + 1;
+    typePos.set(type, pos);
+
+    const textSource = getElementDescriptorText(el);
+    const identifiableText = textSource ? textSource.identifiableText : null;
+
+    let text;
+    let index;
+    if (!identifiableText) {
+      // Text-less elements: only real element types (not `element`/`iframe`)
+      // are included, using a null description and a separate index field
+      // so they remain actionable. Their index is the running position among
+      // same-type elements (the #N fallback).
+      if (!TEXTLESS_TYPES.has(type)) continue;
+      text = null;
+      index = pos;
+    } else {
+      text = identifiableText;
+      // Identified elements get an occurrence index within their (type, text)
+      // group, consistent with getElementDescriptor(). The first occurrence is
+      // 1, the second 2, and so on; unique text resets to 1.
+      const key = type + '\u0000' + identifiableText;
+      index = (typeTextPos.get(key) || 0) + 1;
+      typeTextPos.set(key, index);
+    }
+
+    const formState = getFormState(el, type);
+    const vp = inViewport(el);
+    entries.push({
+      type,
+      description: text,
+      index,
+      inViewport: vp,
+      formState: formState || null,
+    });
+
+    // Track visible overlays (reusing the viewport result already computed
+    // above) for the dominant-overlay computation below.
+    if (vp && isOverlayElement(el)) {
+      overlayCandidates.push({ el, type, index: pos });
+      overlayCount.set(el, 0);
+    }
+  }
+
+  // Determine the visible overlay containing the most inventory descendants.
+  // For each inventory element we walk up its ancestors once; any overlay
+  // candidate encountered is credited with one descendant. O(n * depth) with
+  // O(1) Map lookups — depth is tiny in practice. The outermost overlay
+  // naturally accumulates the highest count when overlays are nested.
+  let overlay = null;
+  if (overlayCandidates.length > 0) {
+    for (let i = 0; i < elements.length; i++) {
+      let anc = elements[i].parentElement;
+      while (anc) {
+        const c = overlayCount.get(anc);
+        if (c !== undefined) overlayCount.set(anc, c + 1);
+        anc = anc.parentElement;
+      }
+    }
+
+    let best = null;
+    let bestCount = 0;
+    for (let i = 0; i < overlayCandidates.length; i++) {
+      const cand = overlayCandidates[i];
+      const cnt = overlayCount.get(cand.el);
+      if (cnt > bestCount) {
+        bestCount = cnt;
+        best = cand;
+      }
+    }
+    if (best) overlay = { type: best.type, index: best.index };
+  }
+
+  return { entries, overlay };
 }
 
 /**

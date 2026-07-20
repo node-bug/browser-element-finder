@@ -4,19 +4,22 @@
     "elements": [
       {
         "type": "button",
-        "description": "#1",
+        "description": null,
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
-        "description": "#2",
+        "description": null,
+        "index": 2,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "textbox",
-        "description": "#1",
+        "description": null,
+        "index": 1,
         "inViewport": false,
         "formState": {
           "value": ""
@@ -24,10 +27,12 @@
       },
       {
         "type": "image",
-        "description": "#1",
+        "description": null,
+        "index": 1,
         "inViewport": false,
         "formState": null
       }
-    ]
+    ],
+    "overlay": null
   }
 ]

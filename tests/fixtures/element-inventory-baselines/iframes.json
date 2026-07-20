@@ -5,18 +5,21 @@
       {
         "type": "element",
         "description": "Iframe Test Fixture",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Iframe Test Page",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "checkbox",
         "description": "mainCheckbox",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "checked": false
@@ -25,51 +28,61 @@
       {
         "type": "iframe",
         "description": "test-iframe",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Cross-Origin Iframe",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "This iframe points to an",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "iframe",
         "description": "<p>Your browser does not",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Same-Origin Iframe (data",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "iframe",
         "description": "same-origin-data-iframe",
+        "index": 1,
         "inViewport": false,
         "formState": null
       }
-    ]
+    ],
+    "overlay": null
   },
   {
     "frame": 0,
-    "elements": []
+    "elements": [],
+    "overlay": null
   },
   {
     "frame": 1,
-    "elements": []
+    "elements": [],
+    "overlay": null
   },
   {
     "frame": 2,
-    "elements": []
+    "elements": [],
+    "overlay": null
   }
 ]

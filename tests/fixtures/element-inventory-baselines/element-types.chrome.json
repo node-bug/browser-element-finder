@@ -5,162 +5,189 @@
         "description": "viewport",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Element Types Test",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Element Types Test",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "navigation-section",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Navigation",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "main-nav",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "navigation"
       },
       {
         "description": "Home",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "About",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "role-nav",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "navigation"
       },
       {
         "description": "Page 1",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "headings-section",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Headings",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Heading 1",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Heading 2",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Heading 3",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Heading 4",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Heading 5",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Heading 6",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Role Heading",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "buttons-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Buttons",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Standard Button",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Submit Button",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Role Button",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "btn-input",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "checkboxes-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Checkboxes",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -169,6 +196,7 @@
           "checked": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "checkbox"
       },
       {
@@ -177,18 +205,21 @@
           "checked": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "checkbox"
       },
       {
         "description": "switches-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Switches",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -197,6 +228,7 @@
           "checked": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "checkbox"
       },
       {
@@ -205,24 +237,28 @@
           "on": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "switch"
       },
       {
         "description": "Switch Class",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "sliders-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Sliders",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -231,6 +267,7 @@
           "value": 50
         },
         "inViewport": false,
+        "index": 1,
         "type": "slider"
       },
       {
@@ -239,18 +276,21 @@
           "value": 0
         },
         "inViewport": false,
+        "index": 1,
         "type": "slider"
       },
       {
         "description": "radios-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Radio Buttons",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -259,6 +299,7 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
@@ -267,18 +308,21 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "dropdowns-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Dropdowns",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -288,18 +332,21 @@
           "selected": "Option 1"
         },
         "inViewport": false,
+        "index": 1,
         "type": "dropdown"
       },
       {
         "description": "Option 1",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Option 2",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -309,6 +356,7 @@
           "selected": null
         },
         "inViewport": false,
+        "index": 1,
         "type": "dropdown"
       },
       {
@@ -318,6 +366,7 @@
           "selected": null
         },
         "inViewport": false,
+        "index": 1,
         "type": "dropdown"
       },
       {
@@ -327,18 +376,21 @@
           "selected": null
         },
         "inViewport": false,
+        "index": 1,
         "type": "dropdown"
       },
       {
         "description": "textboxes-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Textboxes",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -347,6 +399,7 @@
           "value": "Textarea content"
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -355,6 +408,7 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -363,6 +417,7 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -371,6 +426,7 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -379,6 +435,7 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -387,18 +444,21 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "files-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "File Inputs",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -407,237 +467,277 @@
           "fileName": null
         },
         "inViewport": false,
+        "index": 1,
         "type": "file"
       },
       {
         "description": "lists-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Lists",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "list-ul",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "list"
       },
       {
         "description": "Item 1",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "Item 2",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "list-ol",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "list"
       },
       {
         "description": "Item A",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "Item B",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "list-role",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "list"
       },
       {
         "description": "Role List Item",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "menu-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Menu",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "menu-standard",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menu"
       },
       {
         "description": "Menu Item 1",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "menu-role",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menu"
       },
       {
         "description": "Role Menu Item",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menuitem"
       },
       {
         "description": "toolbar-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Toolbar",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "toolbar-role",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "toolbar"
       },
       {
         "description": "Toolbar Button",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "dialog-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Dialog",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "dialog-role",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "dialog"
       },
       {
         "description": "Dialog content",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "images-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Images",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Test Image",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "image"
       },
       {
         "description": "Role Image",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "image"
       },
       {
         "description": "Alt Image",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "image"
       },
       {
         "description": "tables-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Tables",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "table-standard",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "table"
       },
       {
-        "description": "#1",
+        "description": null,
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "row"
       },
       {
         "description": "Header",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "column"
       },
       {
         "description": "Data",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "column"
       },
       {
         "description": "table-role",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "table"
       },
       {
         "description": "table-role-row",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "row"
       },
       {
         "description": "Role Cell",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "column"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   }
 ]

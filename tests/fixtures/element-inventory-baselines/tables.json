@@ -5,639 +5,746 @@
       {
         "type": "element",
         "description": "viewport",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Table Capabilities Test",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Table Capabilities Test",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "simple-table-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "1. Simple Standard Table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "simple-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#1",
+        "description": null,
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Name",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Age",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "City",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#2",
+        "description": null,
+        "index": 2,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Alice",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "30",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "New York",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#3",
+        "description": null,
+        "index": 3,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Bob",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "25",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "London",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#4",
+        "description": null,
+        "index": 4,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Charlie",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "35",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Paris",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "complex-span-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "2. Table with Colspan",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "span-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#5",
+        "description": null,
+        "index": 5,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Category",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Item",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Details",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Price",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#6",
+        "description": null,
+        "index": 6,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Electronics",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Laptop",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "16GB RAM",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "$1200",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#7",
+        "description": null,
+        "index": 7,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Mouse",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Wireless",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "$25",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#8",
+        "description": null,
+        "index": 8,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Books",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Novel",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Hardcover",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "$20",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#9",
+        "description": null,
+        "index": 9,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Textbook",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Academic",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "$80",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#10",
+        "description": null,
+        "index": 10,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "td-total",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Total",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "td-total-value",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "$1325",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "nested-table-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "3. Nested Tables",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "outer-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#11",
+        "description": null,
+        "index": 11,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Outer Col 1",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Outer Col 2",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#12",
+        "description": null,
+        "index": 12,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Row 1 Col 1",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "td-outer-row1-col2",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "inner-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#13",
+        "description": null,
+        "index": 13,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Inner 1.1",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Inner 1.2",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#14",
+        "description": null,
+        "index": 14,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Inner 2.1",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Inner 2.2",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "dynamic-table-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "4. Table with Hidden",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "dynamic-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#15",
+        "description": null,
+        "index": 15,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Status",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Message",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Action",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#16",
+        "description": null,
+        "index": 16,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Active",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "System is running",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
-        "description": "#46",
+        "description": null,
+        "index": 46,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "View",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#17",
+        "description": null,
+        "index": 17,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Inactive",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "This is a hidden message",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
-        "description": "#49",
+        "description": null,
+        "index": 49,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Activate",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Toggle Hidden Cell",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "large-table-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "5. Large Table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "large-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#18",
+        "description": null,
+        "index": 18,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "ID",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Data",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "large-table-body",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "aria-table-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "6. Table with ARIA Roles",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "aria-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#19",
+        "description": null,
+        "index": 19,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Feature",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Support",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#20",
+        "description": null,
+        "index": 20,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Web-API",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Yes",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#21",
+        "description": null,
+        "index": 21,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Native-API",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "No",
+        "index": 1,
         "inViewport": false,
         "formState": null
       }
-    ]
+    ],
+    "overlay": null
   }
 ]

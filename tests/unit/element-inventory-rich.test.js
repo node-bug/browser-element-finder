@@ -80,49 +80,49 @@ describe('getElementInventory enrichment options', () => {
     // Nearby-label rescue is always on, so for-associated controls resolve to
     // their label text (which wins over machine attributes) with form state
     // exposed as an object.
-    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
-    expect(entries).toContainEqual({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } });
-    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
-    // The truly anonymous control (no id/name/value) is included via #N.
-    expect(entries.some((e) => e.type === 'textbox' && e.description.startsWith('#'))).toBe(true);
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } }));
+    // The truly anonymous control (no id/name/value) is included via index.
+    expect(entries.some((e) => e.type === 'textbox' && e.description === null)).toBe(true);
   });
 
   it('nearby labels rescue text from for-associated labels', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
-    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox', inViewport: false, formState: { checked: false } });
-    expect(entries).toContainEqual({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } });
-    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox', inViewport: false, formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } }));
   });
 
   it('nearby labels rescue text from wrapping labels', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContainEqual({ type: 'textbox', description: 'Search', inViewport: false, formState: { value: '' } });
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Search', inViewport: false, formState: { value: '' } }));
   });
 
   it('explicit aria-label wins over a nearby label', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContainEqual({ type: 'checkbox', description: 'Explicit Aria', inViewport: false, formState: { checked: false } });
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'Explicit Aria', inViewport: false, formState: { checked: false } }));
     expect(entries.some((e) => e.type === 'checkbox' && e.description === 'Nearby Label')).toBe(false);
   });
 
   it('placeholder wins over a nearby label', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContainEqual({ type: 'textbox', description: 'Type here', inViewport: false, formState: { value: '' } });
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Type here', inViewport: false, formState: { value: '' } }));
     expect(entries.some((e) => e.type === 'textbox' && e.description === 'Nearby Placeholder Label')).toBe(false);
   });
 
-  it('text-less controls get a positional #N when no text is available', () => {
+  it('text-less controls get a positional index when no text is available', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
     // The bare <input type="text"> has no label and no own attributes →
-    // positional identifier. It is #2 because the wrapping-label textbox
+    // empty description with an index. It is #2 because the wrapping-label textbox
     // (Search) precedes it in document order among textboxes.
-    expect(entries.some((e) => e.type === 'textbox' && e.description === '#2')).toBe(true);
+    expect(entries.some((e) => e.type === 'textbox' && e.description === null && e.index === 2)).toBe(true);
   });
 
   it('non-form text-less elements stay excluded', () => {
@@ -137,19 +137,19 @@ describe('getElementInventory enrichment options', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
     // cb1 is unchecked by default.
-    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } }));
     // sel1's first option has text, so it is the selected value.
-    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } }));
   });
 
   it('nearby labels + text-less + form state produce readable, stateful, complete entries', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
-    expect(entries).toContainEqual({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } });
-    expect(entries).toContainEqual({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } });
-    expect(entries).toContainEqual({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } });
-    expect(entries).toContainEqual({ type: 'textbox', description: 'Search', inViewport: false, formState: { value: '' } });
-    expect(entries.some((e) => e.type === 'textbox' && e.description === '#2')).toBe(true);
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', inViewport: false, formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'radio', description: 'RadioButton 1', inViewport: false, formState: { set: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'dropdown', description: 'Select Dropdown', inViewport: false, formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%'] } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Search', inViewport: false, formState: { value: '' } }));
+    expect(entries.some((e) => e.type === 'textbox' && e.description === null && e.index === 2)).toBe(true);
   });
 
   it('getElementDescriptor exposes nearby label', () => {
@@ -157,5 +157,49 @@ describe('getElementInventory enrichment options', () => {
     const d = getElementDescriptor(cb, true);
     expect(d.identifiableText).toBe('CheckBox in iFrame');
     expect(d.attributeName).toBe('label');
+  });
+
+  it('identified elements get an occurrence index within their (type, text) group', () => {
+    // Two buttons with the same text ("Submit") and one with unique text
+    // ("Cancel") must be indexed by (type, text) occurrence, not by type-only
+    // position. The first "Submit" is #1, the second "Submit" is #2, and the
+    // unique "Cancel" resets to #1.
+    const scope = document.createElement('div');
+    scope.innerHTML = `
+      <button>Submit</button>
+      <button>Cancel</button>
+      <button>Submit</button>
+    `;
+    document.body.appendChild(scope);
+
+    const tree = getElementInventory(scope);
+    const entries = tree[0].elements.filter((e) => e.type === 'button');
+
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', index: 1 }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', index: 2 }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Cancel', index: 1 }));
+
+    document.body.removeChild(scope);
+  });
+
+  it('text-less controls keep the type-only positional #N index', () => {
+    // A text-less button among identified buttons must still use the running
+    // position among same-type elements (the #N fallback), not a (type, text)
+    // occurrence index.
+    const scope = document.createElement('div');
+    scope.innerHTML = `
+      <button>Submit</button>
+      <button></button>
+      <button>Cancel</button>
+    `;
+    document.body.appendChild(scope);
+
+    const tree = getElementInventory(scope);
+    const entries = tree[0].elements.filter((e) => e.type === 'button');
+
+    // The text-less button is the 2nd button in document order → #N = 2.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: null, index: 2 }));
+
+    document.body.removeChild(scope);
   });
 });

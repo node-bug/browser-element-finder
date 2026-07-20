@@ -5,102 +5,119 @@
         "description": "viewport",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Interactive Elements",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Interactive Elements",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "links-section",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "1. Links",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Enabled Link",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "Disabled Link (Simulated)",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "buttons-section",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "2. Buttons",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Enabled Button",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Disabled Button",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Hidden Button",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "ARIA Enabled Button",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "ARIA Disabled Button",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "sliders-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "3. Sliders",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Enabled Slider",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -109,12 +126,14 @@
           "value": 50
         },
         "inViewport": false,
+        "index": 1,
         "type": "slider"
       },
       {
         "description": "Disabled Slider",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -123,12 +142,14 @@
           "value": 30
         },
         "inViewport": false,
+        "index": 1,
         "type": "slider"
       },
       {
         "description": "Hidden Slider",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -137,18 +158,21 @@
           "value": 20
         },
         "inViewport": false,
+        "index": 1,
         "type": "slider"
       },
       {
         "description": "file-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "4. File Inputs",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
@@ -157,6 +181,7 @@
           "fileName": null
         },
         "inViewport": false,
+        "index": 1,
         "type": "file"
       },
       {
@@ -165,225 +190,263 @@
           "fileName": null
         },
         "inViewport": false,
+        "index": 1,
         "type": "file"
       },
       {
         "description": "lists-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "5. Lists & ListItems",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "list-enabled",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "list"
       },
       {
         "description": "Item 1 (Enabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "Item 2 (Enabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "list-disabled",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "list"
       },
       {
         "description": "Item 1 (Disabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "Item 2 (Disabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "listitem"
       },
       {
         "description": "menus-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "6. Menus & MenuItems",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "menu-enabled",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menu"
       },
       {
         "description": "Menu Item 1 (Enabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menuitem"
       },
       {
         "description": "Menu Item 2 (Enabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menuitem"
       },
       {
         "description": "menu-disabled",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menu"
       },
       {
         "description": "Menu Item 1 (Disabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menuitem"
       },
       {
         "description": "Menu Item 2 (Disabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "menuitem"
       },
       {
         "description": "toolbars-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "7. Toolbars",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "toolbar-enabled",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "toolbar"
       },
       {
         "description": "Tool 1",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Tool 2",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "toolbar-disabled",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "toolbar"
       },
       {
         "description": "Tool 1 (Disabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Tool 2 (Disabled)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "images-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "8. Images",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Enabled Image",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "image"
       },
       {
         "description": "Disabled Image",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "image"
       },
       {
         "description": "dialogs-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "9. Dialogs",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Open Dialog",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "overlay",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Test Dialog",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "dialog"
       },
       {
         "description": "Test Dialog",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "This is a modal dialog.",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Close",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   }
 ]

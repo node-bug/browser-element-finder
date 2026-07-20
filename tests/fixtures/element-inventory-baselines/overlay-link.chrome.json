@@ -5,21 +5,25 @@
         "description": "Show Overlay",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "overlay-container",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Overlay Link",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "link"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   }
 ]

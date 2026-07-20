@@ -42,10 +42,10 @@ describe('ElementFinder - getElementInventory', () => {
 
     const main = tree.find((g) => g.frame === -1);
     expect(main).toBeDefined();
-    expect(main.elements).toContainEqual({ type: 'heading', description: 'Welcome', inViewport: true, formState: null });
-    expect(main.elements).toContainEqual({ type: 'link', description: 'Home', inViewport: true, formState: null });
-    expect(main.elements).toContainEqual({ type: 'button', description: 'Submit', inViewport: true, formState: null });
-    expect(main.elements).toContainEqual({ type: 'textbox', description: 'Email', inViewport: true, formState: { value: '' } });
+    expect(main.elements).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Welcome', inViewport: true, formState: null }));
+    expect(main.elements).toContainEqual(expect.objectContaining({ type: 'link', description: 'Home', inViewport: true, formState: null }));
+    expect(main.elements).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', inViewport: true, formState: null }));
+    expect(main.elements).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Email', inViewport: true, formState: { value: '' } }));
   });
 
   it('should include same-origin iframe elements in frame 0', async () => {
@@ -56,8 +56,8 @@ describe('ElementFinder - getElementInventory', () => {
     // The same-origin iframe is returned as frame 0 with its own elements.
     const iframe = tree.find((g) => g.frame === 0);
     expect(iframe).toBeDefined();
-    expect(iframe.elements).toContainEqual({ type: 'heading', description: 'Iframe Heading', inViewport: true, formState: null });
-    expect(iframe.elements).toContainEqual({ type: 'button', description: 'Login', inViewport: true, formState: null });
+    expect(iframe.elements).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Iframe Heading', inViewport: true, formState: null }));
+    expect(iframe.elements).toContainEqual(expect.objectContaining({ type: 'button', description: 'Login', inViewport: true, formState: null }));
   });
 
   it('should match the committed baseline for element-inventory.html', async () => {
@@ -66,6 +66,51 @@ describe('ElementFinder - getElementInventory', () => {
     `);
     const baseline = loadElementInventoryBaseline('element-inventory.json', { engine: 'chrome' });
     expect(tree).toEqual(baseline);
+  });
+});
+
+describe('ElementFinder - getElementInventory(parent) scoping', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('element-inventory-scope.html'),
+    injectFinder: true,
+    sleep: 300
+  });
+
+  beforeAll(async () => {
+    await fixture.setup();
+  });
+
+  afterAll(async () => {
+    await fixture.teardown();
+  });
+
+  it('should return only the parent subtree (descendants, excluding the parent) in a single frame group', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory(document.getElementById('scope-container'));
+    `);
+
+    // Single frame group for the (single-frame) page.
+    expect(Array.isArray(tree)).toBe(true);
+    expect(tree.length).toBe(1);
+    expect(tree[0].frame).toBe(-1);
+
+    const entries = tree[0].elements;
+
+    // Descendants of the scope container are present.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Scoped Heading' }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Scoped Submit' }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Scoped Email' }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'link', description: 'Scoped Link' }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'element', description: 'Scoped text' }));
+
+    // Elements outside the scope container are excluded.
+    expect(entries).not.toContainEqual(expect.objectContaining({ description: 'Outside Button' }));
+    expect(entries).not.toContainEqual(expect.objectContaining({ description: 'Outside Link' }));
+
+    // The parent container itself is excluded. The container div has no own
+    // text, so if it leaked in it would appear as a text-less `element` entry
+    // (description null). Assert no such entry exists.
+    expect(entries.some((e) => e.type === 'element' && e.description === null)).toBe(false);
   });
 });
 
@@ -101,7 +146,7 @@ describe('ElementFinder - getElementInventory cross-origin handling', () => {
     // The same-origin iframe IS included (proves same-origin traversal works).
     const iframe = tree.find((g) => g.frame === 0);
     expect(iframe).toBeDefined();
-    expect(iframe.elements).toContainEqual({ type: 'checkbox', description: 'Iframe Checkbox', inViewport: true, formState: { checked: false } });
+    expect(iframe.elements).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'Iframe Checkbox', inViewport: true, formState: { checked: false } }));
 
     // No frame references the cross-origin iframe's content (example.com).
     const allEntries = tree.flatMap((g) => g.elements);
@@ -209,14 +254,14 @@ describe('ElementFinder - getElementInventory inViewport flag', () => {
     const offScreen = main.elements.filter((e) => !e.inViewport);
 
     // In-viewport elements are present.
-    expect(inView).toContainEqual({ type: 'heading', description: 'In View Heading', inViewport: true, formState: null });
-    expect(inView).toContainEqual({ type: 'button', description: 'In View Button', inViewport: true, formState: null });
-    expect(inView).toContainEqual({ type: 'link', description: 'In View Link', inViewport: true, formState: null });
+    expect(inView).toContainEqual(expect.objectContaining({ type: 'heading', description: 'In View Heading', inViewport: true, formState: null }));
+    expect(inView).toContainEqual(expect.objectContaining({ type: 'button', description: 'In View Button', inViewport: true, formState: null }));
+    expect(inView).toContainEqual(expect.objectContaining({ type: 'link', description: 'In View Link', inViewport: true, formState: null }));
 
     // Off-screen elements are present but flagged inViewport: false.
-    expect(offScreen).toContainEqual({ type: 'heading', description: 'Offscreen Heading', inViewport: false, formState: null });
-    expect(offScreen).toContainEqual({ type: 'button', description: 'Offscreen Button', inViewport: false, formState: null });
-    expect(offScreen).toContainEqual({ type: 'link', description: 'Offscreen Link', inViewport: false, formState: null });
+    expect(offScreen).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Offscreen Heading', inViewport: false, formState: null }));
+    expect(offScreen).toContainEqual(expect.objectContaining({ type: 'button', description: 'Offscreen Button', inViewport: false, formState: null }));
+    expect(offScreen).toContainEqual(expect.objectContaining({ type: 'link', description: 'Offscreen Link', inViewport: false, formState: null }));
   });
 
   it('should flip inViewport to true for off-screen elements after scrolling them into view', async () => {
@@ -231,8 +276,8 @@ describe('ElementFinder - getElementInventory inViewport flag', () => {
 
     const main = tree[0];
     // After scrolling, the previously off-screen elements are now in view.
-    expect(main.elements).toContainEqual({ type: 'heading', description: 'Offscreen Heading', inViewport: true, formState: null });
-    expect(main.elements).toContainEqual({ type: 'button', description: 'Offscreen Button', inViewport: true, formState: null });
-    expect(main.elements).toContainEqual({ type: 'link', description: 'Offscreen Link', inViewport: true, formState: null });
+    expect(main.elements).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Offscreen Heading', inViewport: true, formState: null }));
+    expect(main.elements).toContainEqual(expect.objectContaining({ type: 'button', description: 'Offscreen Button', inViewport: true, formState: null }));
+    expect(main.elements).toContainEqual(expect.objectContaining({ type: 'link', description: 'Offscreen Link', inViewport: true, formState: null }));
   });
 });

@@ -5,42 +5,49 @@
       {
         "type": "element",
         "description": "viewport",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Dropdown Capabilities",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Dropdown Capabilities",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "standard-select-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "1. Standard HTML Select",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Single Select",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dropdown",
         "description": "Single Select",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "selected": "Please choose...",
@@ -50,36 +57,42 @@
       {
         "type": "element",
         "description": "Please choose...",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Apple",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Banana",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Cherry",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Multiple Select",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dropdown",
         "description": "Multiple Select",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "selected": null,
@@ -95,54 +108,63 @@
       {
         "type": "element",
         "description": "Option 1",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Option 2",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Option 3",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Option 4",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Option 5",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "custom-dropdown-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "2. Custom Div-based",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Custom UI Dropdown",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dropdown",
         "description": "Custom UI",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "selected": null,
@@ -151,7 +173,8 @@
       },
       {
         "type": "dropdown",
-        "description": "#4",
+        "description": null,
+        "index": 4,
         "inViewport": false,
         "formState": {
           "selected": null,
@@ -161,18 +184,21 @@
       {
         "type": "element",
         "description": "Select an option",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "▼",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dropdown",
-        "description": "#5",
+        "description": null,
+        "index": 5,
         "inViewport": false,
         "formState": {
           "selected": null,
@@ -182,42 +208,49 @@
       {
         "type": "listitem",
         "description": "Option A",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "listitem",
         "description": "Option B",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "listitem",
         "description": "Option C",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "cascading-dropdown-section",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "3. Cascading Dropdowns",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Category",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dropdown",
         "description": "Category",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "selected": "Select Category",
@@ -227,30 +260,35 @@
       {
         "type": "element",
         "description": "Select Category",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Fruits",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Vehicles",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Subcategory",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dropdown",
         "description": "Subcategory",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "selected": "First select category",
@@ -260,9 +298,11 @@
       {
         "type": "element",
         "description": "First select category",
+        "index": 1,
         "inViewport": false,
         "formState": null
       }
-    ]
+    ],
+    "overlay": null
   }
 ]

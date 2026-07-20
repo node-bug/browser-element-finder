@@ -5,36 +5,42 @@
         "description": "viewport",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Form Elements",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Form Elements",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "text-inputs-section",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "1. Text-based Inputs",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Single-line Text",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
@@ -43,12 +49,14 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Password Field",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
@@ -57,12 +65,14 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Email Field",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
@@ -71,12 +81,14 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Number Field",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
@@ -85,12 +97,14 @@
           "value": "10"
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Telephone Field",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -99,12 +113,14 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "URL Field",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -113,12 +129,14 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Multi-line Text",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -127,12 +145,14 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Search Field",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -141,24 +161,28 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "checkboxes-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "2. Checkboxes",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Preferences",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -167,12 +191,14 @@
           "checked": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "checkbox"
       },
       {
         "description": "Subscribe to newsletter",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -181,12 +207,14 @@
           "checked": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "checkbox"
       },
       {
         "description": "Accept terms and",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -195,12 +223,14 @@
           "checked": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "checkbox"
       },
       {
         "description": "Hidden Checkbox (should",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -209,30 +239,35 @@
           "checked": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "checkbox"
       },
       {
         "description": "Disabled Checkbox",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "radios-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "3. Radio Buttons",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Payment Method",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -241,12 +276,14 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "Credit Card",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -255,12 +292,14 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "PayPal",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -269,18 +308,21 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "Bank Transfer",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Gender",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -289,12 +331,14 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "Male",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -303,12 +347,14 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "Female",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -317,12 +363,14 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "Other",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -331,30 +379,35 @@
           "set": false
         },
         "inViewport": false,
+        "index": 1,
         "type": "radio"
       },
       {
         "description": "Disabled Radio",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "special-inputs-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "4. Special Inputs",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Date Picker",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -363,12 +416,14 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "datepicker"
       },
       {
         "description": "Color Picker",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -377,12 +432,14 @@
           "value": "#ff0000"
         },
         "inViewport": false,
+        "index": 1,
         "type": "colorpicker"
       },
       {
         "description": "Range Slider",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -391,24 +448,28 @@
           "value": 50
         },
         "inViewport": false,
+        "index": 1,
         "type": "slider"
       },
       {
         "description": "validation-section",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "5. Form Validation &",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Required Field (HTML5)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -417,18 +478,21 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "This field is required!",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Email Validation (HTML5)",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -437,18 +501,21 @@
           "value": ""
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Please enter a valid",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Disabled Field",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -457,12 +524,14 @@
           "value": "Cannot edit this"
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Read-only Field",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
@@ -471,21 +540,25 @@
           "value": "Read only content"
         },
         "inViewport": false,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Submit Form",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "form-status",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   }
 ]

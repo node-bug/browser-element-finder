@@ -5,30 +5,35 @@
       {
         "type": "element",
         "description": "Unit Tests - Attributes",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Submit",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Cancel",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "button",
         "description": "Click Me",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "textbox",
         "description": "Enter name",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "value": ""
@@ -37,6 +42,7 @@
       {
         "type": "textbox",
         "description": "Enter email",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "value": ""
@@ -45,6 +51,7 @@
       {
         "type": "checkbox",
         "description": "agree",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "checked": false
@@ -53,6 +60,7 @@
       {
         "type": "radio",
         "description": "group1",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "set": false
@@ -61,18 +69,21 @@
       {
         "type": "link",
         "description": "Home",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "link",
         "description": "About",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "dropdown",
         "description": "Choose option",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "selected": "Option 1",
@@ -82,18 +93,21 @@
       {
         "type": "element",
         "description": "Option 1",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Option 2",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "textbox",
         "description": "Some text",
+        "index": 1,
         "inViewport": false,
         "formState": {
           "value": "Some text"
@@ -102,57 +116,67 @@
       {
         "type": "element",
         "description": "container-div",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "element",
         "description": "Nested text",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "table",
         "description": "test-table",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#1",
+        "description": null,
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Name",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Age",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "row",
-        "description": "#2",
+        "description": null,
+        "index": 2,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "Alice",
+        "index": 1,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "column",
         "description": "30",
+        "index": 1,
         "inViewport": false,
         "formState": null
       }
-    ]
+    ],
+    "overlay": null
   }
 ]

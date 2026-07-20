@@ -5,57 +5,67 @@
         "description": "Unit Tests - Viewport",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "viewport-test-root",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Inside",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Offscreen",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Partial",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Zero",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Hidden",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "offscreen-container",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Way Off",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "button"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   }
 ]

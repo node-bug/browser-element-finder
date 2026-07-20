@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Element Inventory Scope Fixture</title>
+</head>
+<body>
+  <!-- Element outside the scope container; must NOT appear in a scoped inventory. -->
+  <button id="outside-btn">Outside Button</button>
+  <a href="/outside" id="outside-link">Outside Link</a>
+
+  <!-- Scoped container: getElementInventory(parent) must return only this
+       subtree (descendants, excluding the container itself). -->
+  <div id="scope-container">
+    <h2 id="scope-heading">Scoped Heading</h2>
+    <button id="scope-submit">Scoped Submit</button>
+    <input type="text" id="scope-email" placeholder="Scoped Email" />
+    <a href="/scoped" id="scope-link">Scoped Link</a>
+    <span id="scope-span">Scoped text</span>
+  </div>
+</body>
+</html>

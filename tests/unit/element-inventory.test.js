@@ -55,13 +55,54 @@ describe('getElementInventory Unit Tests', () => {
     const tree = getElementInventory();
     const entries = tree[0].elements;
 
-    expect(entries).toContainEqual({ type: 'button', description: 'Submit', inViewport: false, formState: null });
-    expect(entries).toContainEqual({ type: 'button', description: 'Cancel', inViewport: false, formState: null });
-    expect(entries).toContainEqual({ type: 'button', description: 'Click Me', inViewport: false, formState: null });
-    expect(entries).toContainEqual({ type: 'textbox', description: 'Enter name', inViewport: false, formState: { value: '' } });
-    expect(entries).toContainEqual({ type: 'textbox', description: 'Enter email', inViewport: false, formState: { value: '' } });
-    expect(entries).toContainEqual({ type: 'link', description: 'Home', inViewport: false, formState: null });
-    expect(entries).toContainEqual({ type: 'link', description: 'About', inViewport: false, formState: null });
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', inViewport: false, formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Cancel', inViewport: false, formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Click Me', inViewport: false, formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Enter name', inViewport: false, formState: { value: '' } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Enter email', inViewport: false, formState: { value: '' } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'link', description: 'Home', inViewport: false, formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'link', description: 'About', inViewport: false, formState: null }));
+  });
+
+  it('should return only the parent subtree when a parent is provided', () => {
+    // Build a scoped container with its own identifiable descendants, plus a
+    // sibling element outside the scope that must NOT appear in the result.
+    const scope = document.createElement('div');
+    scope.id = 'scope';
+    scope.innerHTML = `
+      <button id="scope-btn">Scoped Submit</button>
+      <input type="text" id="scope-input" placeholder="Scoped Input">
+      <span id="scope-span">Scoped text</span>
+    `;
+    document.body.appendChild(scope);
+
+    const outside = document.createElement('button');
+    outside.id = 'outside-btn';
+    outside.textContent = 'Outside Button';
+    document.body.appendChild(outside);
+
+    const tree = getElementInventory(scope);
+
+    // Single frame group for the (single-frame) page.
+    expect(Array.isArray(tree)).toBe(true);
+    expect(tree.length).toBe(1);
+    expect(tree[0].frame).toBe(-1);
+
+    const entries = tree[0].elements;
+    // Only descendants of the scope container are returned.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Scoped Submit' }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Scoped Input' }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'element', description: 'Scoped text' }));
+
+    // The element outside the scope is excluded.
+    expect(entries).not.toContainEqual(expect.objectContaining({ description: 'Outside Button' }));
+
+    // The parent container itself is excluded (it has no own text here, but
+    // even if it did, it must not appear).
+    expect(entries).not.toContainEqual(expect.objectContaining({ type: 'element', description: null, index: 1 }));
+
+    document.body.removeChild(scope);
+    document.body.removeChild(outside);
   });
 
   it('should include text-less elements (always-on) when no element has identifiable text', () => {
@@ -77,12 +118,12 @@ describe('getElementInventory Unit Tests', () => {
     expect(tree.length).toBe(1);
     expect(tree[0].frame).toBe(-1);
     // Text-less elements are always included, identified by their positional
-    // index (#N) and any form-state object.
+    // index field and any form-state object.
     expect(tree[0].elements).toEqual([
-      { type: 'button', description: '#1', inViewport: false, formState: null },
-      { type: 'button', description: '#2', inViewport: false, formState: null },
-      { type: 'textbox', description: '#1', inViewport: false, formState: { value: '' } },
-      { type: 'image', description: '#1', inViewport: false, formState: null },
+      { type: 'button', description: null, index: 1, inViewport: false, formState: null },
+      { type: 'button', description: null, index: 2, inViewport: false, formState: null },
+      { type: 'textbox', description: null, index: 1, inViewport: false, formState: { value: '' } },
+      { type: 'image', description: null, index: 1, inViewport: false, formState: null },
     ]);
 
     emptyDom.window.close();
@@ -100,9 +141,11 @@ describe('getElementInventory Unit Tests', () => {
       for (const entry of group.elements) {
         expect(entry).toHaveProperty('type');
         expect(entry).toHaveProperty('description');
+        expect(entry).toHaveProperty('index');
         expect(entry).toHaveProperty('inViewport');
         expect(entry).toHaveProperty('formState');
-        expect(typeof entry.description).toBe('string');
+        expect(typeof entry.description === 'string' || entry.description === null).toBe(true);
+        expect(typeof entry.index).toBe('number');
         expect(typeof entry.inViewport).toBe('boolean');
         expect(validTypes.has(entry.type)).toBe(true);
       }

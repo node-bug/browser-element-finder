@@ -5,36 +5,42 @@
         "description": "Accessibility Tree",
         "formState": null,
         "inViewport": false,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "Welcome",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Home",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "Docs",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "Submit",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
         "description": "Cancel",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
@@ -43,6 +49,7 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
@@ -51,22 +58,26 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       },
       {
         "description": "Some visible text",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "element"
       },
       {
         "description": "tree-iframe",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "iframe"
       }
     ],
-    "frame": -1
+    "frame": -1,
+    "overlay": null
   },
   {
     "elements": [
@@ -74,18 +85,21 @@
         "description": "Iframe Heading",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "heading"
       },
       {
         "description": "Iframe Home",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "link"
       },
       {
         "description": "Login",
         "formState": null,
         "inViewport": true,
+        "index": 1,
         "type": "button"
       },
       {
@@ -94,9 +108,11 @@
           "value": ""
         },
         "inViewport": true,
+        "index": 1,
         "type": "textbox"
       }
     ],
-    "frame": 0
+    "frame": 0,
+    "overlay": null
   }
 ]
