@@ -37,7 +37,7 @@ const TEXTLESS_TYPES = new Set(
   ),
 );
 
-const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT'];
+const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT', 'META', 'TITLE', 'BASE', 'LINK'];
 
 let IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
 
@@ -1292,18 +1292,27 @@ function isOverlayElement(el) {
   // 4. Popover API
   if (el.hasAttribute('popover')) return true;
 
-  // 5. High z-index with fixed, sticky, or absolute positioning
+  // 5. High z-index with fixed, sticky, or absolute positioning.
+  //    Only consider elements with a minimum visible size to avoid
+  //    false positives from thin decorative strips or 1px divs.
+  //    When getBoundingClientRect() returns all zeros (e.g. in JSDOM),
+  //    skip the size check since the environment doesn't support layout.
   try {
     const style = window.getComputedStyle(el);
     const zIndexValue = parseInt(style.zIndex, 10);
     if (!isNaN(zIndexValue) && zIndexValue > 999) {
-      if (style.position === 'fixed' || style.position === 'sticky') return true;
+      if (style.position === 'fixed' || style.position === 'sticky') {
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0 && rect.height === 0) return true; // JSDOM or hidden
+        if (rect.width >= 4 && rect.height >= 4) return true;
+      }
     }
     // Also catch absolute-positioned overlays with moderate z-index (common for dropdowns, menus, tooltips)
     if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === 'absolute') {
       // Only consider elements that are visibly rendered (not collapsed)
       const rect = el.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) return true;
+      if (rect.width === 0 && rect.height === 0) return true; // JSDOM or hidden
+      if (rect.width >= 4 && rect.height >= 4) return true;
     }
   } catch {
     // Restricted access — skip computed-style check
@@ -1321,7 +1330,13 @@ function isOverlayElement(el) {
     for (let i = 0; i < classes.length; i++) {
       const cls = classes[i];
       if (/^(cookie|consent|banner|overlay|modal|popup|dropdown|flyout|sheet)(-|$)/i.test(cls)) {
-        return true;
+        // Require a minimum visible size for class-name-based overlay detection
+        // to avoid matching thin decorative strips or 1px divs. When
+        // getBoundingClientRect() returns all zeros (e.g. in JSDOM), skip the
+        // size check since the environment doesn't support layout.
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0 && rect.height === 0) return true; // JSDOM or hidden
+        if (rect.width >= 4 && rect.height >= 4) return true;
       }
     }
   }

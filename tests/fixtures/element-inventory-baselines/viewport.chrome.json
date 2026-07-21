@@ -14,48 +14,10 @@
           "x": 0,
           "y": 0
         },
-        "description": "Unit Tests - Viewport",
+        "description": "Inside",
         "formState": null,
         "inViewport": true,
         "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Unit Tests - Viewport",
-        "formState": null,
-        "inViewport": false,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Unit Tests - Viewport",
-        "formState": null,
-        "inViewport": false,
-        "index": 3,
         "type": "element"
       },
       {
@@ -74,7 +36,7 @@
         "description": "Inside",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "element"
       },
       {

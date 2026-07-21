@@ -58,7 +58,7 @@ var ElementFinder = (() => {
 
   // src/element-definitions.json
   var element_definitions_default = {
-    link: "self::a or @role='link' or @href",
+    link: "self::a or @role='link'",
     navigation: "@role='navigation' or self::nav",
     heading: "@role='heading' or self::h1 or self::h2 or self::h3 or self::h4 or self::h5 or self::h6",
     button: "self::button or @role='button' or @type='button' or @type='submit'",
@@ -126,7 +126,7 @@ var ElementFinder = (() => {
       (type) => type !== "element" && type !== "iframe"
     )
   );
-  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT"];
+  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT", "META", "TITLE", "BASE", "LINK"];
   var IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
   for (const [type, expr] of Object.entries(element_definitions_default)) {
@@ -853,11 +853,16 @@ var ElementFinder = (() => {
       const style = window.getComputedStyle(el);
       const zIndexValue = parseInt(style.zIndex, 10);
       if (!isNaN(zIndexValue) && zIndexValue > 999) {
-        if (style.position === "fixed" || style.position === "sticky") return true;
+        if (style.position === "fixed" || style.position === "sticky") {
+          const rect = el.getBoundingClientRect();
+          if (rect.width === 0 && rect.height === 0) return true;
+          if (rect.width >= 4 && rect.height >= 4) return true;
+        }
       }
       if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === "absolute") {
         const rect = el.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) return true;
+        if (rect.width === 0 && rect.height === 0) return true;
+        if (rect.width >= 4 && rect.height >= 4) return true;
       }
     } catch (e) {
     }
@@ -867,7 +872,9 @@ var ElementFinder = (() => {
       for (let i = 0; i < classes.length; i++) {
         const cls = classes[i];
         if (/^(cookie|consent|banner|overlay|modal|popup|dropdown|flyout|sheet)(-|$)/i.test(cls)) {
-          return true;
+          const rect = el.getBoundingClientRect();
+          if (rect.width === 0 && rect.height === 0) return true;
+          if (rect.width >= 4 && rect.height >= 4) return true;
         }
       }
     }

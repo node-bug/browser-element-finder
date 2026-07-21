@@ -22,97 +22,40 @@
       },
       {
         "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
+          "bottom": 975.91,
+          "height": 935.91,
+          "left": 40,
+          "midx": 378,
+          "midy": 507.95,
+          "right": 716,
+          "top": 40,
+          "width": 676,
+          "x": 40,
+          "y": 40
         },
         "description": "Ultimate Switch Testing",
         "formState": null,
-        "inViewport": false,
+        "inViewport": true,
         "index": 2,
         "type": "element"
       },
       {
         "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
-        },
-        "description": "viewport",
-        "formState": null,
-        "inViewport": false,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
+          "bottom": 975.91,
+          "height": 935.91,
+          "left": 40,
+          "midx": 378,
+          "midy": 507.95,
+          "right": 716,
+          "top": 40,
+          "width": 676,
+          "x": 40,
+          "y": 40
         },
         "description": "Ultimate Switch Testing",
         "formState": null,
-        "inViewport": false,
+        "inViewport": true,
         "index": 3,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 975.91,
-          "height": 935.91,
-          "left": 40,
-          "midx": 378,
-          "midy": 507.95,
-          "right": 716,
-          "top": 40,
-          "width": 676,
-          "x": 40,
-          "y": 40
-        },
-        "description": "Ultimate Switch Testing",
-        "formState": null,
-        "inViewport": true,
-        "index": 4,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 975.91,
-          "height": 935.91,
-          "left": 40,
-          "midx": 378,
-          "midy": 507.95,
-          "right": 716,
-          "top": 40,
-          "width": 676,
-          "x": 40,
-          "y": 40
-        },
-        "description": "Ultimate Switch Testing",
-        "formState": null,
-        "inViewport": true,
-        "index": 5,
         "type": "element"
       },
       {

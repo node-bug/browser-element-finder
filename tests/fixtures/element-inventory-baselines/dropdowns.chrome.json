@@ -22,63 +22,6 @@
       },
       {
         "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Dropdown Capabilities",
-        "formState": null,
-        "inViewport": false,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
-        },
-        "description": "viewport",
-        "formState": null,
-        "inViewport": false,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 0,
-          "height": 0,
-          "left": 0,
-          "midx": 0,
-          "midy": 0,
-          "right": 0,
-          "top": 0,
-          "width": 0,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Dropdown Capabilities",
-        "formState": null,
-        "inViewport": false,
-        "index": 3,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 1054.52,
           "height": 1046.52,
           "left": 8,
@@ -93,7 +36,7 @@
         "description": "Dropdown Capabilities",
         "formState": null,
         "inViewport": true,
-        "index": 4,
+        "index": 2,
         "type": "element"
       },
       {
