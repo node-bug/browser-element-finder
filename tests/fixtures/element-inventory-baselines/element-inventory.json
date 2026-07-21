@@ -5,6 +5,75 @@
       {
         "type": "element",
         "description": "Accessibility Tree",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Accessibility Tree",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 2,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Accessibility Tree",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 3,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Welcome",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -12,6 +81,18 @@
       {
         "type": "heading",
         "description": "Welcome",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -19,6 +100,18 @@
       {
         "type": "link",
         "description": "Home",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -26,6 +119,18 @@
       {
         "type": "link",
         "description": "Docs",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -33,6 +138,18 @@
       {
         "type": "button",
         "description": "Submit",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -40,6 +157,18 @@
       {
         "type": "button",
         "description": "Cancel",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -47,6 +176,18 @@
       {
         "type": "textbox",
         "description": "Email",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": {
@@ -56,6 +197,18 @@
       {
         "type": "textbox",
         "description": "Full name",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": {
@@ -65,6 +218,18 @@
       {
         "type": "element",
         "description": "Some visible text",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -72,6 +237,18 @@
       {
         "type": "iframe",
         "description": "tree-iframe",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null

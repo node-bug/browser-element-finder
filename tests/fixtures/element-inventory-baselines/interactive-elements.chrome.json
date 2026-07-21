@@ -2,6 +2,56 @@
   {
     "elements": [
       {
+        "boundingBox": {
+          "bottom": 2416.02,
+          "height": 2416.02,
+          "left": 0,
+          "midx": 378,
+          "midy": 1208.01,
+          "right": 756,
+          "top": 0,
+          "width": 756,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Interactive Elements",
+        "formState": null,
+        "inViewport": true,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Interactive Elements",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "viewport",
         "formState": null,
         "inViewport": false,
@@ -9,13 +59,56 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Interactive Elements",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2408.02,
+          "height": 2400.02,
+          "left": 8,
+          "midx": 378,
+          "midy": 1208.01,
+          "right": 748,
+          "top": 8,
+          "width": 740,
+          "x": 8,
+          "y": 8
+        },
+        "description": "Interactive Elements",
+        "formState": null,
+        "inViewport": true,
+        "index": 4,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 100.63,
+          "height": 51.19,
+          "left": 28,
+          "midx": 378,
+          "midy": 75.03,
+          "right": 728,
+          "top": 49.44,
+          "width": 700,
+          "x": 28,
+          "y": 49.44
+        },
         "description": "Interactive Elements",
         "formState": null,
         "inViewport": true,
@@ -23,6 +116,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 305.55,
+          "height": 183.48,
+          "left": 28,
+          "midx": 378,
+          "midy": 213.8,
+          "right": 728,
+          "top": 122.06,
+          "width": 700,
+          "x": 28,
+          "y": 122.06
+        },
         "description": "links-section",
         "formState": null,
         "inViewport": true,
@@ -30,6 +135,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 193.45,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 168.26,
+          "right": 707,
+          "top": 143.06,
+          "width": 658,
+          "x": 49,
+          "y": 143.06
+        },
         "description": "1. Links",
         "formState": null,
         "inViewport": true,
@@ -37,6 +154,37 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 269.55,
+          "height": 56.19,
+          "left": 49,
+          "midx": 378,
+          "midy": 241.45,
+          "right": 707,
+          "top": 213.36,
+          "width": 658,
+          "x": 49,
+          "y": 213.36
+        },
+        "description": "Enabled Link",
+        "formState": null,
+        "inViewport": true,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 238.95,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 226.16,
+          "right": 707,
+          "top": 213.36,
+          "width": 658,
+          "x": 49,
+          "y": 213.36
+        },
         "description": "Enabled Link",
         "formState": null,
         "inViewport": true,
@@ -44,6 +192,18 @@
         "type": "link"
       },
       {
+        "boundingBox": {
+          "bottom": 269.55,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 256.75,
+          "right": 707,
+          "top": 243.95,
+          "width": 658,
+          "x": 49,
+          "y": 243.95
+        },
         "description": "Disabled Link (Simulated)",
         "formState": null,
         "inViewport": true,
@@ -51,6 +211,18 @@
         "type": "link"
       },
       {
+        "boundingBox": {
+          "bottom": 581.03,
+          "height": 235.48,
+          "left": 28,
+          "midx": 378,
+          "midy": 463.29,
+          "right": 728,
+          "top": 345.55,
+          "width": 700,
+          "x": 28,
+          "y": 345.55
+        },
         "description": "buttons-section",
         "formState": null,
         "inViewport": true,
@@ -58,6 +230,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 416.94,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 391.74,
+          "right": 707,
+          "top": 366.55,
+          "width": 658,
+          "x": 49,
+          "y": 366.55
+        },
         "description": "2. Buttons",
         "formState": null,
         "inViewport": true,
@@ -65,6 +249,37 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 545.03,
+          "height": 108.19,
+          "left": 49,
+          "midx": 378,
+          "midy": 490.94,
+          "right": 707,
+          "top": 436.84,
+          "width": 658,
+          "x": 49,
+          "y": 436.84
+        },
+        "description": "Enabled Button",
+        "formState": null,
+        "inViewport": true,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 457.84,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 447.34,
+          "right": 707,
+          "top": 436.84,
+          "width": 658,
+          "x": 49,
+          "y": 436.84
+        },
         "description": "Enabled Button",
         "formState": null,
         "inViewport": true,
@@ -72,6 +287,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 483.84,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 473.34,
+          "right": 707,
+          "top": 462.84,
+          "width": 658,
+          "x": 49,
+          "y": 462.84
+        },
         "description": "Disabled Button",
         "formState": null,
         "inViewport": true,
@@ -79,6 +306,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Hidden Button",
         "formState": null,
         "inViewport": false,
@@ -86,6 +325,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 514.44,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 501.64,
+          "right": 707,
+          "top": 488.84,
+          "width": 658,
+          "x": 49,
+          "y": 488.84
+        },
         "description": "ARIA Enabled Button",
         "formState": null,
         "inViewport": false,
@@ -93,6 +344,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 545.03,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 532.23,
+          "right": 707,
+          "top": 519.44,
+          "width": 658,
+          "x": 49,
+          "y": 519.44
+        },
         "description": "ARIA Disabled Button",
         "formState": null,
         "inViewport": false,
@@ -100,6 +363,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 885.11,
+          "height": 264.08,
+          "left": 28,
+          "midx": 378,
+          "midy": 753.07,
+          "right": 728,
+          "top": 621.03,
+          "width": 700,
+          "x": 28,
+          "y": 621.03
+        },
         "description": "sliders-section",
         "formState": null,
         "inViewport": false,
@@ -107,6 +382,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 692.42,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 667.23,
+          "right": 707,
+          "top": 642.03,
+          "width": 658,
+          "x": 49,
+          "y": 642.03
+        },
         "description": "3. Sliders",
         "formState": null,
         "inViewport": false,
@@ -114,6 +401,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 849.11,
+          "height": 136.78,
+          "left": 49,
+          "midx": 378,
+          "midy": 780.72,
+          "right": 707,
+          "top": 712.33,
+          "width": 658,
+          "x": 49,
+          "y": 712.33
+        },
         "description": "Enabled Slider",
         "formState": null,
         "inViewport": false,
@@ -121,6 +420,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 737.92,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 725.13,
+          "right": 707,
+          "top": 712.33,
+          "width": 658,
+          "x": 49,
+          "y": 712.33
+        },
+        "description": "Enabled Slider",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 760.92,
+          "height": 16,
+          "left": 51,
+          "midx": 378,
+          "midy": 752.92,
+          "right": 705,
+          "top": 744.92,
+          "width": 654,
+          "x": 51,
+          "y": 744.92
+        },
         "description": "Enabled Slider",
         "formState": {
           "value": 50
@@ -130,6 +460,18 @@
         "type": "slider"
       },
       {
+        "boundingBox": {
+          "bottom": 793.52,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 780.72,
+          "right": 707,
+          "top": 767.92,
+          "width": 658,
+          "x": 49,
+          "y": 767.92
+        },
         "description": "Disabled Slider",
         "formState": null,
         "inViewport": false,
@@ -137,6 +479,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 816.52,
+          "height": 16,
+          "left": 51,
+          "midx": 378,
+          "midy": 808.52,
+          "right": 705,
+          "top": 800.52,
+          "width": 654,
+          "x": 51,
+          "y": 800.52
+        },
         "description": "Disabled Slider",
         "formState": {
           "value": 30
@@ -146,6 +500,18 @@
         "type": "slider"
       },
       {
+        "boundingBox": {
+          "bottom": 849.11,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 836.31,
+          "right": 707,
+          "top": 823.52,
+          "width": 658,
+          "x": 49,
+          "y": 823.52
+        },
         "description": "Hidden Slider",
         "formState": null,
         "inViewport": false,
@@ -153,6 +519,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Hidden Slider",
         "formState": {
           "value": 20
@@ -162,6 +540,18 @@
         "type": "slider"
       },
       {
+        "boundingBox": {
+          "bottom": 1099.41,
+          "height": 174.3,
+          "left": 28,
+          "midx": 378,
+          "midy": 1012.26,
+          "right": 728,
+          "top": 925.11,
+          "width": 700,
+          "x": 28,
+          "y": 925.11
+        },
         "description": "file-section",
         "formState": null,
         "inViewport": false,
@@ -169,6 +559,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 996.5,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 971.3,
+          "right": 707,
+          "top": 946.11,
+          "width": 658,
+          "x": 49,
+          "y": 946.11
+        },
         "description": "4. File Inputs",
         "formState": null,
         "inViewport": false,
@@ -176,6 +578,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 1037.41,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 1026.91,
+          "right": 707,
+          "top": 1016.41,
+          "width": 658,
+          "x": 49,
+          "y": 1016.41
+        },
         "description": "file-enabled",
         "formState": {
           "fileName": null
@@ -185,6 +599,18 @@
         "type": "file"
       },
       {
+        "boundingBox": {
+          "bottom": 1063.41,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 1052.91,
+          "right": 707,
+          "top": 1042.41,
+          "width": 658,
+          "x": 49,
+          "y": 1042.41
+        },
         "description": "file-disabled",
         "formState": {
           "fileName": null
@@ -194,6 +620,18 @@
         "type": "file"
       },
       {
+        "boundingBox": {
+          "bottom": 1438.08,
+          "height": 298.67,
+          "left": 28,
+          "midx": 378,
+          "midy": 1288.74,
+          "right": 728,
+          "top": 1139.41,
+          "width": 700,
+          "x": 28,
+          "y": 1139.41
+        },
         "description": "lists-section",
         "formState": null,
         "inViewport": false,
@@ -201,6 +639,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1210.8,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 1185.6,
+          "right": 707,
+          "top": 1160.41,
+          "width": 658,
+          "x": 49,
+          "y": 1160.41
+        },
         "description": "5. Lists & ListItems",
         "formState": null,
         "inViewport": false,
@@ -208,6 +658,37 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 1402.08,
+          "height": 171.38,
+          "left": 49,
+          "midx": 378,
+          "midy": 1316.39,
+          "right": 707,
+          "top": 1230.7,
+          "width": 658,
+          "x": 49,
+          "y": 1230.7
+        },
+        "description": "Item 1 (Enabled)",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1297.89,
+          "height": 51.19,
+          "left": 49,
+          "midx": 378,
+          "midy": 1272.3,
+          "right": 707,
+          "top": 1246.7,
+          "width": 658,
+          "x": 49,
+          "y": 1246.7
+        },
         "description": "list-enabled",
         "formState": null,
         "inViewport": false,
@@ -215,6 +696,18 @@
         "type": "list"
       },
       {
+        "boundingBox": {
+          "bottom": 1272.3,
+          "height": 25.59,
+          "left": 89,
+          "midx": 398,
+          "midy": 1259.5,
+          "right": 707,
+          "top": 1246.7,
+          "width": 618,
+          "x": 89,
+          "y": 1246.7
+        },
         "description": "Item 1 (Enabled)",
         "formState": null,
         "inViewport": false,
@@ -222,6 +715,18 @@
         "type": "listitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1297.89,
+          "height": 25.59,
+          "left": 89,
+          "midx": 398,
+          "midy": 1285.09,
+          "right": 707,
+          "top": 1272.3,
+          "width": 618,
+          "x": 89,
+          "y": 1272.3
+        },
         "description": "Item 2 (Enabled)",
         "formState": null,
         "inViewport": false,
@@ -229,6 +734,18 @@
         "type": "listitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1386.08,
+          "height": 51.19,
+          "left": 49,
+          "midx": 378,
+          "midy": 1360.48,
+          "right": 707,
+          "top": 1334.89,
+          "width": 658,
+          "x": 49,
+          "y": 1334.89
+        },
         "description": "list-disabled",
         "formState": null,
         "inViewport": false,
@@ -236,6 +753,18 @@
         "type": "list"
       },
       {
+        "boundingBox": {
+          "bottom": 1360.48,
+          "height": 25.59,
+          "left": 89,
+          "midx": 398,
+          "midy": 1347.69,
+          "right": 707,
+          "top": 1334.89,
+          "width": 618,
+          "x": 89,
+          "y": 1334.89
+        },
         "description": "Item 1 (Disabled)",
         "formState": null,
         "inViewport": false,
@@ -243,6 +772,18 @@
         "type": "listitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1386.08,
+          "height": 25.59,
+          "left": 89,
+          "midx": 398,
+          "midy": 1373.28,
+          "right": 707,
+          "top": 1360.48,
+          "width": 618,
+          "x": 89,
+          "y": 1360.48
+        },
         "description": "Item 2 (Disabled)",
         "formState": null,
         "inViewport": false,
@@ -250,6 +791,18 @@
         "type": "listitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1712.75,
+          "height": 234.67,
+          "left": 28,
+          "midx": 378,
+          "midy": 1595.41,
+          "right": 728,
+          "top": 1478.08,
+          "width": 700,
+          "x": 28,
+          "y": 1478.08
+        },
         "description": "menus-section",
         "formState": null,
         "inViewport": false,
@@ -257,6 +810,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1549.47,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 1524.27,
+          "right": 707,
+          "top": 1499.08,
+          "width": 658,
+          "x": 49,
+          "y": 1499.08
+        },
         "description": "6. Menus & MenuItems",
         "formState": null,
         "inViewport": false,
@@ -264,6 +829,37 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 1676.75,
+          "height": 107.38,
+          "left": 49,
+          "midx": 378,
+          "midy": 1623.06,
+          "right": 707,
+          "top": 1569.38,
+          "width": 658,
+          "x": 49,
+          "y": 1569.38
+        },
+        "description": "Menu Item 1 (Enabled)",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1620.56,
+          "height": 51.19,
+          "left": 49,
+          "midx": 378,
+          "midy": 1594.97,
+          "right": 707,
+          "top": 1569.38,
+          "width": 658,
+          "x": 49,
+          "y": 1569.38
+        },
         "description": "menu-enabled",
         "formState": null,
         "inViewport": false,
@@ -271,6 +867,18 @@
         "type": "menu"
       },
       {
+        "boundingBox": {
+          "bottom": 1594.97,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1582.17,
+          "right": 707,
+          "top": 1569.38,
+          "width": 658,
+          "x": 49,
+          "y": 1569.38
+        },
         "description": "Menu Item 1 (Enabled)",
         "formState": null,
         "inViewport": false,
@@ -278,6 +886,18 @@
         "type": "menuitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1620.56,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1607.77,
+          "right": 707,
+          "top": 1594.97,
+          "width": 658,
+          "x": 49,
+          "y": 1594.97
+        },
         "description": "Menu Item 2 (Enabled)",
         "formState": null,
         "inViewport": false,
@@ -285,6 +905,18 @@
         "type": "menuitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1676.75,
+          "height": 51.19,
+          "left": 49,
+          "midx": 378,
+          "midy": 1651.16,
+          "right": 707,
+          "top": 1625.56,
+          "width": 658,
+          "x": 49,
+          "y": 1625.56
+        },
         "description": "menu-disabled",
         "formState": null,
         "inViewport": false,
@@ -292,6 +924,18 @@
         "type": "menu"
       },
       {
+        "boundingBox": {
+          "bottom": 1651.16,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1638.36,
+          "right": 707,
+          "top": 1625.56,
+          "width": 658,
+          "x": 49,
+          "y": 1625.56
+        },
         "description": "Menu Item 1 (Disabled)",
         "formState": null,
         "inViewport": false,
@@ -299,6 +943,18 @@
         "type": "menuitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1676.75,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1663.95,
+          "right": 707,
+          "top": 1651.16,
+          "width": 658,
+          "x": 49,
+          "y": 1651.16
+        },
         "description": "Menu Item 2 (Disabled)",
         "formState": null,
         "inViewport": false,
@@ -306,6 +962,18 @@
         "type": "menuitem"
       },
       {
+        "boundingBox": {
+          "bottom": 1936.23,
+          "height": 183.48,
+          "left": 28,
+          "midx": 378,
+          "midy": 1844.49,
+          "right": 728,
+          "top": 1752.75,
+          "width": 700,
+          "x": 28,
+          "y": 1752.75
+        },
         "description": "toolbars-section",
         "formState": null,
         "inViewport": false,
@@ -313,6 +981,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1824.14,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 1798.95,
+          "right": 707,
+          "top": 1773.75,
+          "width": 658,
+          "x": 49,
+          "y": 1773.75
+        },
         "description": "7. Toolbars",
         "formState": null,
         "inViewport": false,
@@ -320,6 +1000,37 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 1900.23,
+          "height": 56.19,
+          "left": 49,
+          "midx": 378,
+          "midy": 1872.14,
+          "right": 707,
+          "top": 1844.05,
+          "width": 658,
+          "x": 49,
+          "y": 1844.05
+        },
+        "description": "Tool 1",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1869.64,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1856.84,
+          "right": 707,
+          "top": 1844.05,
+          "width": 658,
+          "x": 49,
+          "y": 1844.05
+        },
         "description": "toolbar-enabled",
         "formState": null,
         "inViewport": false,
@@ -327,6 +1038,18 @@
         "type": "toolbar"
       },
       {
+        "boundingBox": {
+          "bottom": 1867.05,
+          "height": 21,
+          "left": 49,
+          "midx": 74.79,
+          "midy": 1856.55,
+          "right": 100.58,
+          "top": 1846.05,
+          "width": 51.58,
+          "x": 49,
+          "y": 1846.05
+        },
         "description": "Tool 1",
         "formState": null,
         "inViewport": false,
@@ -334,6 +1057,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 1867.05,
+          "height": 21,
+          "left": 105.03,
+          "midx": 130.82,
+          "midy": 1856.55,
+          "right": 156.61,
+          "top": 1846.05,
+          "width": 51.58,
+          "x": 105.03,
+          "y": 1846.05
+        },
         "description": "Tool 2",
         "formState": null,
         "inViewport": false,
@@ -341,6 +1076,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 1900.23,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1887.44,
+          "right": 707,
+          "top": 1874.64,
+          "width": 658,
+          "x": 49,
+          "y": 1874.64
+        },
         "description": "toolbar-disabled",
         "formState": null,
         "inViewport": false,
@@ -348,6 +1095,18 @@
         "type": "toolbar"
       },
       {
+        "boundingBox": {
+          "bottom": 1897.64,
+          "height": 21,
+          "left": 49,
+          "midx": 107.02,
+          "midy": 1887.14,
+          "right": 165.03,
+          "top": 1876.64,
+          "width": 116.03,
+          "x": 49,
+          "y": 1876.64
+        },
         "description": "Tool 1 (Disabled)",
         "formState": null,
         "inViewport": false,
@@ -355,6 +1114,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 1897.64,
+          "height": 21,
+          "left": 169.48,
+          "midx": 227.5,
+          "midy": 1887.14,
+          "right": 285.52,
+          "top": 1876.64,
+          "width": 116.03,
+          "x": 169.48,
+          "y": 1876.64
+        },
         "description": "Tool 2 (Disabled)",
         "formState": null,
         "inViewport": false,
@@ -362,6 +1133,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 2159.72,
+          "height": 183.48,
+          "left": 28,
+          "midx": 378,
+          "midy": 2067.98,
+          "right": 728,
+          "top": 1976.23,
+          "width": 700,
+          "x": 28,
+          "y": 1976.23
+        },
         "description": "images-section",
         "formState": null,
         "inViewport": false,
@@ -369,6 +1152,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2047.63,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 2022.43,
+          "right": 707,
+          "top": 1997.23,
+          "width": 658,
+          "x": 49,
+          "y": 1997.23
+        },
         "description": "8. Images",
         "formState": null,
         "inViewport": false,
@@ -376,6 +1171,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 2093.13,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2080.33,
+          "right": 707,
+          "top": 2067.53,
+          "width": 658,
+          "x": 49,
+          "y": 2067.53
+        },
         "description": "Enabled Image",
         "formState": null,
         "inViewport": false,
@@ -383,6 +1190,18 @@
         "type": "image"
       },
       {
+        "boundingBox": {
+          "bottom": 2123.72,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2110.92,
+          "right": 707,
+          "top": 2098.13,
+          "width": 658,
+          "x": 49,
+          "y": 2098.13
+        },
         "description": "Disabled Image",
         "formState": null,
         "inViewport": false,
@@ -390,6 +1209,18 @@
         "type": "image"
       },
       {
+        "boundingBox": {
+          "bottom": 2348.02,
+          "height": 148.3,
+          "left": 28,
+          "midx": 378,
+          "midy": 2273.87,
+          "right": 728,
+          "top": 2199.72,
+          "width": 700,
+          "x": 28,
+          "y": 2199.72
+        },
         "description": "dialogs-section",
         "formState": null,
         "inViewport": false,
@@ -397,6 +1228,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2271.11,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 2245.91,
+          "right": 707,
+          "top": 2220.72,
+          "width": 658,
+          "x": 49,
+          "y": 2220.72
+        },
         "description": "9. Dialogs",
         "formState": null,
         "inViewport": false,
@@ -404,6 +1247,37 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 2312.02,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 2301.52,
+          "right": 707,
+          "top": 2291.02,
+          "width": 658,
+          "x": 49,
+          "y": 2291.02
+        },
+        "description": "Open Dialog",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 2312.02,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 2301.52,
+          "right": 707,
+          "top": 2291.02,
+          "width": 658,
+          "x": 49,
+          "y": 2291.02
+        },
         "description": "Open Dialog",
         "formState": null,
         "inViewport": false,
@@ -411,6 +1285,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "overlay",
         "formState": null,
         "inViewport": false,
@@ -418,6 +1304,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Test Dialog",
         "formState": null,
         "inViewport": false,
@@ -425,6 +1323,18 @@
         "type": "dialog"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Test Dialog",
         "formState": null,
         "inViewport": false,
@@ -432,6 +1342,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "This is a modal dialog.",
         "formState": null,
         "inViewport": false,
@@ -439,6 +1361,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Close",
         "formState": null,
         "inViewport": false,

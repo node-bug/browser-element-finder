@@ -5,6 +5,75 @@
       {
         "type": "element",
         "description": "Unit Tests - Viewport",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Unit Tests - Viewport",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 2,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Unit Tests - Viewport",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 3,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Inside",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -12,6 +81,18 @@
       {
         "type": "element",
         "description": "viewport-test-root",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -19,6 +100,18 @@
       {
         "type": "button",
         "description": "Inside",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -26,6 +119,18 @@
       {
         "type": "button",
         "description": "Offscreen",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -33,6 +138,18 @@
       {
         "type": "button",
         "description": "Partial",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -40,6 +157,18 @@
       {
         "type": "button",
         "description": "Zero",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -47,6 +176,18 @@
       {
         "type": "button",
         "description": "Hidden",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -54,6 +195,18 @@
       {
         "type": "element",
         "description": "offscreen-container",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -61,6 +214,18 @@
       {
         "type": "button",
         "description": "Way Off",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null

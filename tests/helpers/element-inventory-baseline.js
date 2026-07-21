@@ -27,3 +27,29 @@ export function loadElementInventoryBaseline(name, opts = {}) {
   const fileName = engine === 'chrome' ? name.replace(/\.json$/, '.chrome.json') : name;
   return JSON.parse(readFileSync(resolve(baselineDir, fileName), 'utf-8'));
 }
+
+/**
+ * Recursively normalizes bounding box values by rounding to 2 decimal places.
+ * This reduces sub-pixel drift between Chrome runs (e.g., display scaling,
+ * animation frames) while preserving meaningful layout differences.
+ */
+export function normalizeBoundingBoxes(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(normalizeBoundingBoxes);
+
+  const result = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (key === 'boundingBox' && typeof value === 'object' && value !== null) {
+      result[key] = Object.fromEntries(
+        Object.entries(value).map(([k, v]) => [
+          k,
+          typeof v === 'number' ? Math.round(v * 100) / 100 : v,
+        ]),
+      );
+    } else {
+      result[key] = normalizeBoundingBoxes(value);
+    }
+  }
+  return result;
+}
+

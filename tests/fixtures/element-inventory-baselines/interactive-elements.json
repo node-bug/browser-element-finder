@@ -4,7 +4,19 @@
     "elements": [
       {
         "type": "element",
-        "description": "viewport",
+        "description": "Interactive Elements",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -12,13 +24,94 @@
       {
         "type": "element",
         "description": "Interactive Elements",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 2,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "viewport",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Interactive Elements",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 3,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Interactive Elements",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 4,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Interactive Elements",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -26,6 +119,18 @@
       {
         "type": "element",
         "description": "links-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -33,6 +138,37 @@
       {
         "type": "heading",
         "description": "1. Links",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Enabled Link",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -40,6 +176,18 @@
       {
         "type": "link",
         "description": "Enabled Link",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -47,6 +195,18 @@
       {
         "type": "link",
         "description": "Disabled Link (Simulated)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -54,6 +214,18 @@
       {
         "type": "element",
         "description": "buttons-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -61,6 +233,37 @@
       {
         "type": "heading",
         "description": "2. Buttons",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Enabled Button",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -68,6 +271,18 @@
       {
         "type": "button",
         "description": "Enabled Button",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -75,6 +290,18 @@
       {
         "type": "button",
         "description": "Disabled Button",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -82,6 +309,18 @@
       {
         "type": "button",
         "description": "Hidden Button",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -89,6 +328,18 @@
       {
         "type": "button",
         "description": "ARIA Enabled Button",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -96,6 +347,18 @@
       {
         "type": "button",
         "description": "ARIA Disabled Button",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -103,6 +366,18 @@
       {
         "type": "element",
         "description": "sliders-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -110,6 +385,18 @@
       {
         "type": "heading",
         "description": "3. Sliders",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -117,13 +404,56 @@
       {
         "type": "element",
         "description": "Enabled Slider",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Enabled Slider",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 2,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "slider",
         "description": "Enabled Slider",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": {
@@ -133,6 +463,18 @@
       {
         "type": "element",
         "description": "Disabled Slider",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -140,6 +482,18 @@
       {
         "type": "slider",
         "description": "Disabled Slider",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": {
@@ -149,6 +503,18 @@
       {
         "type": "element",
         "description": "Hidden Slider",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -156,6 +522,18 @@
       {
         "type": "slider",
         "description": "Hidden Slider",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": {
@@ -165,6 +543,18 @@
       {
         "type": "element",
         "description": "file-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -172,6 +562,18 @@
       {
         "type": "heading",
         "description": "4. File Inputs",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -179,6 +581,18 @@
       {
         "type": "file",
         "description": "file-enabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": {
@@ -188,6 +602,18 @@
       {
         "type": "file",
         "description": "file-disabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": {
@@ -197,6 +623,18 @@
       {
         "type": "element",
         "description": "lists-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -204,6 +642,37 @@
       {
         "type": "heading",
         "description": "5. Lists & ListItems",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Item 1 (Enabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -211,6 +680,18 @@
       {
         "type": "list",
         "description": "list-enabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -218,6 +699,18 @@
       {
         "type": "listitem",
         "description": "Item 1 (Enabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -225,6 +718,18 @@
       {
         "type": "listitem",
         "description": "Item 2 (Enabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -232,6 +737,18 @@
       {
         "type": "list",
         "description": "list-disabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -239,6 +756,18 @@
       {
         "type": "listitem",
         "description": "Item 1 (Disabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -246,6 +775,18 @@
       {
         "type": "listitem",
         "description": "Item 2 (Disabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -253,6 +794,18 @@
       {
         "type": "element",
         "description": "menus-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -260,6 +813,37 @@
       {
         "type": "heading",
         "description": "6. Menus & MenuItems",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Menu Item 1 (Enabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -267,6 +851,18 @@
       {
         "type": "menu",
         "description": "menu-enabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -274,6 +870,18 @@
       {
         "type": "menuitem",
         "description": "Menu Item 1 (Enabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -281,6 +889,18 @@
       {
         "type": "menuitem",
         "description": "Menu Item 2 (Enabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -288,6 +908,18 @@
       {
         "type": "menu",
         "description": "menu-disabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -295,6 +927,18 @@
       {
         "type": "menuitem",
         "description": "Menu Item 1 (Disabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -302,6 +946,18 @@
       {
         "type": "menuitem",
         "description": "Menu Item 2 (Disabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -309,6 +965,18 @@
       {
         "type": "element",
         "description": "toolbars-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -316,6 +984,37 @@
       {
         "type": "heading",
         "description": "7. Toolbars",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Tool 1",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -323,6 +1022,18 @@
       {
         "type": "toolbar",
         "description": "toolbar-enabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -330,6 +1041,18 @@
       {
         "type": "button",
         "description": "Tool 1",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -337,6 +1060,18 @@
       {
         "type": "button",
         "description": "Tool 2",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -344,6 +1079,18 @@
       {
         "type": "toolbar",
         "description": "toolbar-disabled",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -351,6 +1098,18 @@
       {
         "type": "button",
         "description": "Tool 1 (Disabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -358,6 +1117,18 @@
       {
         "type": "button",
         "description": "Tool 2 (Disabled)",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -365,6 +1136,18 @@
       {
         "type": "element",
         "description": "images-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -372,6 +1155,18 @@
       {
         "type": "heading",
         "description": "8. Images",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -379,6 +1174,18 @@
       {
         "type": "image",
         "description": "Enabled Image",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -386,6 +1193,18 @@
       {
         "type": "image",
         "description": "Disabled Image",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -393,6 +1212,18 @@
       {
         "type": "element",
         "description": "dialogs-section",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -400,6 +1231,37 @@
       {
         "type": "heading",
         "description": "9. Dialogs",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Open Dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -407,6 +1269,18 @@
       {
         "type": "button",
         "description": "Open Dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -414,6 +1288,18 @@
       {
         "type": "element",
         "description": "overlay",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -421,6 +1307,18 @@
       {
         "type": "dialog",
         "description": "Test Dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -428,6 +1326,18 @@
       {
         "type": "heading",
         "description": "Test Dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -435,6 +1345,18 @@
       {
         "type": "element",
         "description": "This is a modal dialog.",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -442,6 +1364,18 @@
       {
         "type": "button",
         "description": "Close",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null

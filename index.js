@@ -343,6 +343,12 @@ var ElementFinder = (() => {
     if (nearbyLabel) {
       return { attributeName: "label", identifiableText: nearbyLabel };
     }
+    if (!isIgnoredElement(el)) {
+      const fullText = shortenDescriptorText(getSearchableTextContent(el));
+      if (fullText) {
+        return { attributeName: "text", identifiableText: fullText };
+      }
+    }
     return null;
   }
   function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
@@ -856,8 +862,14 @@ var ElementFinder = (() => {
     } catch (e) {
     }
     const className = el.getAttribute ? el.getAttribute("class") || "" : "";
-    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/.test(className)) {
-      return true;
+    if (className) {
+      const classes = className.split(/\s+/);
+      for (let i = 0; i < classes.length; i++) {
+        const cls = classes[i];
+        if (/^(cookie|consent|banner|overlay|modal|popup|dropdown|flyout|sheet)(-|$)/i.test(cls)) {
+          return true;
+        }
+      }
     }
     return false;
   }
@@ -1133,10 +1145,23 @@ var ElementFinder = (() => {
         if (!TEXTLESS_TYPES.has(type)) {
           const vp2 = inViewport(el);
           if (vp2 && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
+            const rect2 = el.getBoundingClientRect();
             overlayCandidates.push({
               el,
               type,
               description: null,
+              boundingBox: {
+                x: rect2.x,
+                y: rect2.y,
+                width: rect2.width,
+                height: rect2.height,
+                top: rect2.top,
+                bottom: rect2.bottom,
+                left: rect2.left,
+                right: rect2.right,
+                midx: rect2.x + rect2.width / 2,
+                midy: rect2.y + rect2.height / 2
+              },
               inViewport: vp2,
               formState: null,
               index: pos
@@ -1156,18 +1181,45 @@ var ElementFinder = (() => {
       }
       const formState = getFormState(el, type);
       const vp = inViewport(el);
+      const rect = el.getBoundingClientRect();
+      const round = (v) => Math.round(v * 100) / 100;
       entries.push({
         type,
         description: text,
+        boundingBox: {
+          x: round(rect.x),
+          y: round(rect.y),
+          width: round(rect.width),
+          height: round(rect.height),
+          top: round(rect.top),
+          bottom: round(rect.bottom),
+          left: round(rect.left),
+          right: round(rect.right),
+          midx: round(rect.x + rect.width / 2),
+          midy: round(rect.y + rect.height / 2)
+        },
         index,
         inViewport: vp,
         formState: formState || null
       });
       if (vp && isOverlayElement(el)) {
+        const round2 = (v) => Math.round(v * 100) / 100;
         overlayCandidates.push({
           el,
           type,
           description: text,
+          boundingBox: {
+            x: round2(rect.x),
+            y: round2(rect.y),
+            width: round2(rect.width),
+            height: round2(rect.height),
+            top: round2(rect.top),
+            bottom: round2(rect.bottom),
+            left: round2(rect.left),
+            right: round2(rect.right),
+            midx: round2(rect.x + rect.width / 2),
+            midy: round2(rect.y + rect.height / 2)
+          },
           inViewport: vp,
           formState: formState || null,
           index
@@ -1200,6 +1252,7 @@ var ElementFinder = (() => {
         overlay = {
           type: best.type,
           description: best.description,
+          boundingBox: best.boundingBox,
           inViewport: best.inViewport,
           formState: best.formState,
           index: best.index

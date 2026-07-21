@@ -5,13 +5,113 @@
       {
         "type": "element",
         "description": "Overlay Elements Test",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Overlay Elements Test",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 2,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Overlay Elements Test",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 3,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Overlay Test Page",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 1,
+        "inViewport": false,
+        "formState": null
+      },
+      {
+        "type": "element",
+        "description": "Overlay Test Page",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
+        "index": 2,
         "inViewport": false,
         "formState": null
       },
       {
         "type": "heading",
         "description": "Overlay Test Page",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -19,6 +119,18 @@
       {
         "type": "element",
         "description": "This is regular page",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -26,6 +138,18 @@
       {
         "type": "button",
         "description": "Open Modal",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -33,6 +157,18 @@
       {
         "type": "dialog",
         "description": "aria-dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -40,6 +176,18 @@
       {
         "type": "heading",
         "description": "Aria Dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -47,6 +195,18 @@
       {
         "type": "element",
         "description": "This is an ARIA modal",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -54,6 +214,18 @@
       {
         "type": "button",
         "description": "Close",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -61,6 +233,18 @@
       {
         "type": "element",
         "description": "native-dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -68,6 +252,18 @@
       {
         "type": "heading",
         "description": "Native Dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -75,6 +271,18 @@
       {
         "type": "element",
         "description": "This is a native HTML",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -82,6 +290,18 @@
       {
         "type": "button",
         "description": "Close",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 2,
         "inViewport": false,
         "formState": null
@@ -89,6 +309,18 @@
       {
         "type": "element",
         "description": "cookie-banner",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -96,6 +328,18 @@
       {
         "type": "element",
         "description": "We use cookies.",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -103,6 +347,18 @@
       {
         "type": "button",
         "description": "Accept All",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -110,6 +366,18 @@
       {
         "type": "element",
         "description": "toast",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -117,6 +385,18 @@
       {
         "type": "element",
         "description": "Action completed",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -124,6 +404,18 @@
       {
         "type": "element",
         "description": "popover-element",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -131,6 +423,18 @@
       {
         "type": "heading",
         "description": "Popover Content",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -138,6 +442,18 @@
       {
         "type": "element",
         "description": "This uses the Popover",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -145,6 +461,18 @@
       {
         "type": "dialog",
         "description": "alert-dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -152,6 +480,18 @@
       {
         "type": "heading",
         "description": "Alert Dialog",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -159,6 +499,18 @@
       {
         "type": "element",
         "description": "Are you sure?",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -166,6 +518,18 @@
       {
         "type": "button",
         "description": "Yes",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -173,6 +537,18 @@
       {
         "type": "button",
         "description": "No",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null
@@ -180,6 +556,18 @@
       {
         "type": "element",
         "description": "backdrop",
+        "boundingBox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "midx": 0,
+          "midy": 0
+        },
         "index": 1,
         "inViewport": false,
         "formState": null

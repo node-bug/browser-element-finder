@@ -96,8 +96,6 @@ npm install @nodebug/browser-element-finder
 browser-element-finder/
 ├── src/
 │   ├── element-finder.js          # Main canonical implementation (combined)
-│   ├── element-finder-by-type.js  # Standalone type-only finder
-│   ├── element-finder-by-attribute.js # Standalone attribute-only finder
 │   ├── element-definitions.json   # XPath-like type definitions
 │   └── searchable-attributes.json # Attributes searched for text matching
 ├── scripts/

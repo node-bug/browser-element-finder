@@ -2,6 +2,56 @@
   {
     "elements": [
       {
+        "boundingBox": {
+          "bottom": 156,
+          "height": 156,
+          "left": 0,
+          "midx": 378,
+          "midy": 78,
+          "right": 756,
+          "top": 0,
+          "width": 756,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Show Overlay",
+        "formState": null,
+        "inViewport": true,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 148,
+          "height": 140,
+          "left": 8,
+          "midx": 378,
+          "midy": 78,
+          "right": 748,
+          "top": 8,
+          "width": 740,
+          "x": 8,
+          "y": 8
+        },
+        "description": "Show Overlay",
+        "formState": null,
+        "inViewport": true,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 98,
+          "height": 40,
+          "left": 58,
+          "midx": 108,
+          "midy": 78,
+          "right": 158,
+          "top": 58,
+          "width": 100,
+          "x": 58,
+          "y": 58
+        },
         "description": "Show Overlay",
         "formState": null,
         "inViewport": true,
@@ -9,6 +59,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "overlay-container",
         "formState": null,
         "inViewport": false,
@@ -16,6 +78,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Overlay Link",
         "formState": null,
         "inViewport": false,

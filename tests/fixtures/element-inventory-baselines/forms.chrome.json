@@ -2,6 +2,56 @@
   {
     "elements": [
       {
+        "boundingBox": {
+          "bottom": 2474.09,
+          "height": 2474.09,
+          "left": 0,
+          "midx": 378,
+          "midy": 1237.05,
+          "right": 756,
+          "top": 0,
+          "width": 756,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Form Elements",
+        "formState": null,
+        "inViewport": true,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Form Elements",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "viewport",
         "formState": null,
         "inViewport": false,
@@ -9,13 +59,56 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Form Elements",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2466.09,
+          "height": 2458.09,
+          "left": 8,
+          "midx": 378,
+          "midy": 1237.05,
+          "right": 748,
+          "top": 8,
+          "width": 740,
+          "x": 8,
+          "y": 8
+        },
+        "description": "Form Elements",
+        "formState": null,
+        "inViewport": true,
+        "index": 4,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 100.63,
+          "height": 51.19,
+          "left": 28,
+          "midx": 378,
+          "midy": 75.03,
+          "right": 728,
+          "top": 49.44,
+          "width": 700,
+          "x": 28,
+          "y": 49.44
+        },
         "description": "Form Elements",
         "formState": null,
         "inViewport": true,
@@ -23,6 +116,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 812.11,
+          "height": 690.05,
+          "left": 28,
+          "midx": 378,
+          "midy": 467.09,
+          "right": 728,
+          "top": 122.06,
+          "width": 700,
+          "x": 28,
+          "y": 122.06
+        },
         "description": "text-inputs-section",
         "formState": null,
         "inViewport": true,
@@ -30,6 +135,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 193.45,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 168.26,
+          "right": 707,
+          "top": 143.06,
+          "width": 658,
+          "x": 49,
+          "y": 143.06
+        },
         "description": "1. Text-based Inputs",
         "formState": null,
         "inViewport": true,
@@ -37,6 +154,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 264.95,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 239.16,
+          "right": 707,
+          "top": 213.36,
+          "width": 658,
+          "x": 49,
+          "y": 213.36
+        },
         "description": "Single-line Text",
         "formState": null,
         "inViewport": true,
@@ -44,6 +173,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 238.95,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 226.16,
+          "right": 707,
+          "top": 213.36,
+          "width": 658,
+          "x": 49,
+          "y": 213.36
+        },
+        "description": "Single-line Text",
+        "formState": null,
+        "inViewport": true,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 264.95,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 254.45,
+          "right": 707,
+          "top": 243.95,
+          "width": 658,
+          "x": 49,
+          "y": 243.95
+        },
         "description": "Enter text here...",
         "formState": {
           "value": ""
@@ -53,6 +213,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 331.55,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 305.75,
+          "right": 707,
+          "top": 279.95,
+          "width": 658,
+          "x": 49,
+          "y": 279.95
+        },
         "description": "Password Field",
         "formState": null,
         "inViewport": true,
@@ -60,6 +232,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 305.55,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 292.75,
+          "right": 707,
+          "top": 279.95,
+          "width": 658,
+          "x": 49,
+          "y": 279.95
+        },
+        "description": "Password Field",
+        "formState": null,
+        "inViewport": true,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 331.55,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 321.05,
+          "right": 707,
+          "top": 310.55,
+          "width": 658,
+          "x": 49,
+          "y": 310.55
+        },
         "description": "Enter password...",
         "formState": {
           "value": ""
@@ -69,6 +272,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 398.14,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 372.34,
+          "right": 707,
+          "top": 346.55,
+          "width": 658,
+          "x": 49,
+          "y": 346.55
+        },
         "description": "Email Field",
         "formState": null,
         "inViewport": true,
@@ -76,6 +291,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 372.14,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 359.34,
+          "right": 707,
+          "top": 346.55,
+          "width": 658,
+          "x": 49,
+          "y": 346.55
+        },
+        "description": "Email Field",
+        "formState": null,
+        "inViewport": true,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 398.14,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 387.64,
+          "right": 707,
+          "top": 377.14,
+          "width": 658,
+          "x": 49,
+          "y": 377.14
+        },
         "description": "email@example.com",
         "formState": {
           "value": ""
@@ -85,6 +331,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 464.73,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 438.94,
+          "right": 707,
+          "top": 413.14,
+          "width": 658,
+          "x": 49,
+          "y": 413.14
+        },
         "description": "Number Field",
         "formState": null,
         "inViewport": true,
@@ -92,6 +350,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 438.73,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 425.94,
+          "right": 707,
+          "top": 413.14,
+          "width": 658,
+          "x": 49,
+          "y": 413.14
+        },
+        "description": "Number Field",
+        "formState": null,
+        "inViewport": true,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 464.73,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 454.23,
+          "right": 707,
+          "top": 443.73,
+          "width": 658,
+          "x": 49,
+          "y": 443.73
+        },
         "description": "Number Field",
         "formState": {
           "value": "10"
@@ -101,6 +390,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 531.33,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 505.53,
+          "right": 707,
+          "top": 479.73,
+          "width": 658,
+          "x": 49,
+          "y": 479.73
+        },
         "description": "Telephone Field",
         "formState": null,
         "inViewport": false,
@@ -108,6 +409,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 505.33,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 492.53,
+          "right": 707,
+          "top": 479.73,
+          "width": 658,
+          "x": 49,
+          "y": 479.73
+        },
+        "description": "Telephone Field",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 531.33,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 520.83,
+          "right": 707,
+          "top": 510.33,
+          "width": 658,
+          "x": 49,
+          "y": 510.33
+        },
         "description": "+1 234 567 890",
         "formState": {
           "value": ""
@@ -117,6 +449,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 597.92,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 572.13,
+          "right": 707,
+          "top": 546.33,
+          "width": 658,
+          "x": 49,
+          "y": 546.33
+        },
         "description": "URL Field",
         "formState": null,
         "inViewport": false,
@@ -124,6 +468,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 571.92,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 559.13,
+          "right": 707,
+          "top": 546.33,
+          "width": 658,
+          "x": 49,
+          "y": 546.33
+        },
+        "description": "URL Field",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 597.92,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 587.42,
+          "right": 707,
+          "top": 576.92,
+          "width": 658,
+          "x": 49,
+          "y": 576.92
+        },
         "description": "https://example.com",
         "formState": {
           "value": ""
@@ -133,6 +508,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 709.52,
+          "height": 96.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 661.22,
+          "right": 707,
+          "top": 612.92,
+          "width": 658,
+          "x": 49,
+          "y": 612.92
+        },
         "description": "Multi-line Text",
         "formState": null,
         "inViewport": false,
@@ -140,6 +527,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 638.52,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 625.72,
+          "right": 707,
+          "top": 612.92,
+          "width": 658,
+          "x": 49,
+          "y": 612.92
+        },
+        "description": "Multi-line Text",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 709.52,
+          "height": 66,
+          "left": 49,
+          "midx": 378,
+          "midy": 676.52,
+          "right": 707,
+          "top": 643.52,
+          "width": 658,
+          "x": 49,
+          "y": 643.52
+        },
         "description": "Enter long text...",
         "formState": {
           "value": ""
@@ -149,6 +567,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 776.11,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 750.31,
+          "right": 707,
+          "top": 724.52,
+          "width": 658,
+          "x": 49,
+          "y": 724.52
+        },
         "description": "Search Field",
         "formState": null,
         "inViewport": false,
@@ -156,6 +586,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 750.11,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 737.31,
+          "right": 707,
+          "top": 724.52,
+          "width": 658,
+          "x": 49,
+          "y": 724.52
+        },
+        "description": "Search Field",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 776.11,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 765.61,
+          "right": 707,
+          "top": 755.11,
+          "width": 658,
+          "x": 49,
+          "y": 755.11
+        },
         "description": "Search...",
         "formState": {
           "value": ""
@@ -165,6 +626,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 1127.38,
+          "height": 275.27,
+          "left": 28,
+          "midx": 378,
+          "midy": 989.74,
+          "right": 728,
+          "top": 852.11,
+          "width": 700,
+          "x": 28,
+          "y": 852.11
+        },
         "description": "checkboxes-section",
         "formState": null,
         "inViewport": false,
@@ -172,6 +645,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 923.5,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 898.3,
+          "right": 707,
+          "top": 873.11,
+          "width": 658,
+          "x": 49,
+          "y": 873.11
+        },
         "description": "2. Checkboxes",
         "formState": null,
         "inViewport": false,
@@ -179,6 +664,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 1091.38,
+          "height": 147.97,
+          "left": 49,
+          "midx": 378,
+          "midy": 1017.39,
+          "right": 707,
+          "top": 943.41,
+          "width": 658,
+          "x": 49,
+          "y": 943.41
+        },
         "description": "Preferences",
         "formState": null,
         "inViewport": false,
@@ -186,6 +683,56 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 969,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 956.2,
+          "right": 707,
+          "top": 943.41,
+          "width": 658,
+          "x": 49,
+          "y": 943.41
+        },
+        "description": "Preferences",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 999.59,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 986.8,
+          "right": 707,
+          "top": 974,
+          "width": 658,
+          "x": 49,
+          "y": 974
+        },
+        "description": "Subscribe to newsletter",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 993.3,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 986.8,
+          "right": 62,
+          "top": 980.3,
+          "width": 13,
+          "x": 49,
+          "y": 980.3
+        },
         "description": "Subscribe to newsletter",
         "formState": {
           "checked": false
@@ -195,13 +742,56 @@
         "type": "checkbox"
       },
       {
+        "boundingBox": {
+          "bottom": 999.59,
+          "height": 25.59,
+          "left": 72,
+          "midx": 162.25,
+          "midy": 986.8,
+          "right": 252.5,
+          "top": 974,
+          "width": 180.5,
+          "x": 72,
+          "y": 974
+        },
         "description": "Subscribe to newsletter",
         "formState": null,
         "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1030.19,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1017.39,
+          "right": 707,
+          "top": 1004.59,
+          "width": 658,
+          "x": 49,
+          "y": 1004.59
+        },
+        "description": "Accept terms and",
+        "formState": null,
+        "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1023.89,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1017.39,
+          "right": 62,
+          "top": 1010.89,
+          "width": 13,
+          "x": 49,
+          "y": 1010.89
+        },
         "description": "Accept terms and",
         "formState": {
           "checked": false
@@ -211,13 +801,56 @@
         "type": "checkbox"
       },
       {
+        "boundingBox": {
+          "bottom": 1030.19,
+          "height": 25.59,
+          "left": 72,
+          "midx": 181.8,
+          "midy": 1017.39,
+          "right": 291.59,
+          "top": 1004.59,
+          "width": 219.59,
+          "x": 72,
+          "y": 1004.59
+        },
         "description": "Accept terms and",
         "formState": null,
         "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1060.78,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1047.98,
+          "right": 707,
+          "top": 1035.19,
+          "width": 658,
+          "x": 49,
+          "y": 1035.19
+        },
+        "description": "Hidden Checkbox (should",
+        "formState": null,
+        "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Hidden Checkbox (should",
         "formState": {
           "checked": false
@@ -227,13 +860,56 @@
         "type": "checkbox"
       },
       {
+        "boundingBox": {
+          "bottom": 1060.78,
+          "height": 25.59,
+          "left": 49,
+          "midx": 223.69,
+          "midy": 1047.98,
+          "right": 398.38,
+          "top": 1035.19,
+          "width": 349.38,
+          "x": 49,
+          "y": 1035.19
+        },
         "description": "Hidden Checkbox (should",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1091.38,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1078.58,
+          "right": 707,
+          "top": 1065.78,
+          "width": 658,
+          "x": 49,
+          "y": 1065.78
+        },
+        "description": "Disabled Checkbox",
         "formState": null,
         "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1085.08,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1078.58,
+          "right": 62,
+          "top": 1072.08,
+          "width": 13,
+          "x": 49,
+          "y": 1072.08
+        },
         "description": "Disabled Checkbox",
         "formState": {
           "checked": false
@@ -243,13 +919,37 @@
         "type": "checkbox"
       },
       {
+        "boundingBox": {
+          "bottom": 1091.38,
+          "height": 25.59,
+          "left": 72,
+          "midx": 145.8,
+          "midy": 1078.58,
+          "right": 219.61,
+          "top": 1065.78,
+          "width": 147.61,
+          "x": 72,
+          "y": 1065.78
+        },
         "description": "Disabled Checkbox",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1575.02,
+          "height": 407.64,
+          "left": 28,
+          "midx": 378,
+          "midy": 1371.2,
+          "right": 728,
+          "top": 1167.38,
+          "width": 700,
+          "x": 28,
+          "y": 1167.38
+        },
         "description": "radios-section",
         "formState": null,
         "inViewport": false,
@@ -257,6 +957,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1238.77,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 1213.57,
+          "right": 707,
+          "top": 1188.38,
+          "width": 658,
+          "x": 49,
+          "y": 1188.38
+        },
         "description": "3. Radio Buttons",
         "formState": null,
         "inViewport": false,
@@ -264,6 +976,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 1376.05,
+          "height": 117.38,
+          "left": 49,
+          "midx": 378,
+          "midy": 1317.36,
+          "right": 707,
+          "top": 1258.67,
+          "width": 658,
+          "x": 49,
+          "y": 1258.67
+        },
         "description": "Payment Method",
         "formState": null,
         "inViewport": false,
@@ -271,6 +995,56 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1284.27,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1271.47,
+          "right": 707,
+          "top": 1258.67,
+          "width": 658,
+          "x": 49,
+          "y": 1258.67
+        },
+        "description": "Payment Method",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1314.86,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1302.06,
+          "right": 707,
+          "top": 1289.27,
+          "width": 658,
+          "x": 49,
+          "y": 1289.27
+        },
+        "description": "Credit Card",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1308.56,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1302.06,
+          "right": 62,
+          "top": 1295.56,
+          "width": 13,
+          "x": 49,
+          "y": 1295.56
+        },
         "description": "Credit Card",
         "formState": {
           "set": false
@@ -280,13 +1054,56 @@
         "type": "radio"
       },
       {
+        "boundingBox": {
+          "bottom": 1314.86,
+          "height": 25.59,
+          "left": 72,
+          "midx": 115.56,
+          "midy": 1302.06,
+          "right": 159.13,
+          "top": 1289.27,
+          "width": 87.13,
+          "x": 72,
+          "y": 1289.27
+        },
         "description": "Credit Card",
         "formState": null,
         "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1345.45,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1332.66,
+          "right": 707,
+          "top": 1319.86,
+          "width": 658,
+          "x": 49,
+          "y": 1319.86
+        },
+        "description": "PayPal",
+        "formState": null,
+        "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1339.16,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1332.66,
+          "right": 62,
+          "top": 1326.16,
+          "width": 13,
+          "x": 49,
+          "y": 1326.16
+        },
         "description": "PayPal",
         "formState": {
           "set": false
@@ -296,13 +1113,56 @@
         "type": "radio"
       },
       {
+        "boundingBox": {
+          "bottom": 1345.45,
+          "height": 25.59,
+          "left": 72,
+          "midx": 98.24,
+          "midy": 1332.66,
+          "right": 124.48,
+          "top": 1319.86,
+          "width": 52.48,
+          "x": 72,
+          "y": 1319.86
+        },
         "description": "PayPal",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1376.05,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1363.25,
+          "right": 707,
+          "top": 1350.45,
+          "width": 658,
+          "x": 49,
+          "y": 1350.45
+        },
+        "description": "Bank Transfer",
         "formState": null,
         "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1369.75,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1363.25,
+          "right": 62,
+          "top": 1356.75,
+          "width": 13,
+          "x": 49,
+          "y": 1356.75
+        },
         "description": "Bank Transfer",
         "formState": {
           "set": false
@@ -312,13 +1172,37 @@
         "type": "radio"
       },
       {
+        "boundingBox": {
+          "bottom": 1376.05,
+          "height": 25.59,
+          "left": 72,
+          "midx": 125.36,
+          "midy": 1363.25,
+          "right": 178.72,
+          "top": 1350.45,
+          "width": 106.72,
+          "x": 72,
+          "y": 1350.45
+        },
         "description": "Bank Transfer",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1539.02,
+          "height": 147.97,
+          "left": 49,
+          "midx": 378,
+          "midy": 1465.03,
+          "right": 707,
+          "top": 1391.05,
+          "width": 658,
+          "x": 49,
+          "y": 1391.05
+        },
         "description": "Gender",
         "formState": null,
         "inViewport": false,
@@ -326,6 +1210,56 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1416.64,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1403.84,
+          "right": 707,
+          "top": 1391.05,
+          "width": 658,
+          "x": 49,
+          "y": 1391.05
+        },
+        "description": "Gender",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1447.23,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1434.44,
+          "right": 707,
+          "top": 1421.64,
+          "width": 658,
+          "x": 49,
+          "y": 1421.64
+        },
+        "description": "Male",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1440.94,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1434.44,
+          "right": 62,
+          "top": 1427.94,
+          "width": 13,
+          "x": 49,
+          "y": 1427.94
+        },
         "description": "Male",
         "formState": {
           "set": false
@@ -335,13 +1269,56 @@
         "type": "radio"
       },
       {
+        "boundingBox": {
+          "bottom": 1447.23,
+          "height": 25.59,
+          "left": 72,
+          "midx": 89.79,
+          "midy": 1434.44,
+          "right": 107.58,
+          "top": 1421.64,
+          "width": 35.58,
+          "x": 72,
+          "y": 1421.64
+        },
         "description": "Male",
         "formState": null,
         "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1477.83,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1465.03,
+          "right": 707,
+          "top": 1452.23,
+          "width": 658,
+          "x": 49,
+          "y": 1452.23
+        },
+        "description": "Female",
+        "formState": null,
+        "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1471.53,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1465.03,
+          "right": 62,
+          "top": 1458.53,
+          "width": 13,
+          "x": 49,
+          "y": 1458.53
+        },
         "description": "Female",
         "formState": {
           "set": false
@@ -351,13 +1328,56 @@
         "type": "radio"
       },
       {
+        "boundingBox": {
+          "bottom": 1477.83,
+          "height": 25.59,
+          "left": 72,
+          "midx": 99.57,
+          "midy": 1465.03,
+          "right": 127.14,
+          "top": 1452.23,
+          "width": 55.14,
+          "x": 72,
+          "y": 1452.23
+        },
         "description": "Female",
         "formState": null,
         "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1508.42,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1495.63,
+          "right": 707,
+          "top": 1482.83,
+          "width": 658,
+          "x": 49,
+          "y": 1482.83
+        },
+        "description": "Other",
+        "formState": null,
+        "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1502.13,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1495.63,
+          "right": 62,
+          "top": 1489.13,
+          "width": 13,
+          "x": 49,
+          "y": 1489.13
+        },
         "description": "Other",
         "formState": {
           "set": false
@@ -367,13 +1387,56 @@
         "type": "radio"
       },
       {
+        "boundingBox": {
+          "bottom": 1508.42,
+          "height": 25.59,
+          "left": 72,
+          "midx": 93.34,
+          "midy": 1495.63,
+          "right": 114.67,
+          "top": 1482.83,
+          "width": 42.67,
+          "x": 72,
+          "y": 1482.83
+        },
         "description": "Other",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1539.02,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1526.22,
+          "right": 707,
+          "top": 1513.42,
+          "width": 658,
+          "x": 49,
+          "y": 1513.42
+        },
+        "description": "Disabled Radio",
         "formState": null,
         "inViewport": false,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1532.72,
+          "height": 13,
+          "left": 49,
+          "midx": 55.5,
+          "midy": 1526.22,
+          "right": 62,
+          "top": 1519.72,
+          "width": 13,
+          "x": 49,
+          "y": 1519.72
+        },
         "description": "Disabled Radio",
         "formState": {
           "set": false
@@ -383,13 +1446,37 @@
         "type": "radio"
       },
       {
+        "boundingBox": {
+          "bottom": 1539.02,
+          "height": 25.59,
+          "left": 72,
+          "midx": 129.79,
+          "midy": 1526.22,
+          "right": 187.58,
+          "top": 1513.42,
+          "width": 115.58,
+          "x": 72,
+          "y": 1513.42
+        },
         "description": "Disabled Radio",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1932.42,
+          "height": 317.41,
+          "left": 28,
+          "midx": 378,
+          "midy": 1773.72,
+          "right": 728,
+          "top": 1615.02,
+          "width": 700,
+          "x": 28,
+          "y": 1615.02
+        },
         "description": "special-inputs-section",
         "formState": null,
         "inViewport": false,
@@ -397,6 +1484,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1686.41,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 1661.21,
+          "right": 707,
+          "top": 1636.02,
+          "width": 658,
+          "x": 49,
+          "y": 1636.02
+        },
         "description": "4. Special Inputs",
         "formState": null,
         "inViewport": false,
@@ -404,6 +1503,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 1758.23,
+          "height": 51.92,
+          "left": 49,
+          "midx": 378,
+          "midy": 1732.27,
+          "right": 707,
+          "top": 1706.31,
+          "width": 658,
+          "x": 49,
+          "y": 1706.31
+        },
         "description": "Date Picker",
         "formState": null,
         "inViewport": false,
@@ -411,6 +1522,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1731.91,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1719.11,
+          "right": 707,
+          "top": 1706.31,
+          "width": 658,
+          "x": 49,
+          "y": 1706.31
+        },
+        "description": "Date Picker",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1758.23,
+          "height": 21.33,
+          "left": 49,
+          "midx": 378,
+          "midy": 1747.57,
+          "right": 707,
+          "top": 1736.91,
+          "width": 658,
+          "x": 49,
+          "y": 1736.91
+        },
         "description": "Date Picker",
         "formState": {
           "value": ""
@@ -420,6 +1562,18 @@
         "type": "datepicker"
       },
       {
+        "boundingBox": {
+          "bottom": 1830.83,
+          "height": 57.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1802.03,
+          "right": 707,
+          "top": 1773.23,
+          "width": 658,
+          "x": 49,
+          "y": 1773.23
+        },
         "description": "Color Picker",
         "formState": null,
         "inViewport": false,
@@ -427,6 +1581,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1798.83,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1786.03,
+          "right": 707,
+          "top": 1773.23,
+          "width": 658,
+          "x": 49,
+          "y": 1773.23
+        },
+        "description": "Color Picker",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1830.83,
+          "height": 27,
+          "left": 49,
+          "midx": 74,
+          "midy": 1817.33,
+          "right": 99,
+          "top": 1803.83,
+          "width": 50,
+          "x": 49,
+          "y": 1803.83
+        },
         "description": "Color Picker",
         "formState": {
           "value": "#ff0000"
@@ -436,6 +1621,18 @@
         "type": "colorpicker"
       },
       {
+        "boundingBox": {
+          "bottom": 1896.42,
+          "height": 50.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1871.13,
+          "right": 707,
+          "top": 1845.83,
+          "width": 658,
+          "x": 49,
+          "y": 1845.83
+        },
         "description": "Range Slider",
         "formState": null,
         "inViewport": false,
@@ -443,6 +1640,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 1871.42,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 1858.63,
+          "right": 707,
+          "top": 1845.83,
+          "width": 658,
+          "x": 49,
+          "y": 1845.83
+        },
+        "description": "Range Slider",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 1894.42,
+          "height": 16,
+          "left": 51,
+          "midx": 378,
+          "midy": 1886.42,
+          "right": 705,
+          "top": 1878.42,
+          "width": 654,
+          "x": 51,
+          "y": 1878.42
+        },
         "description": "Range Slider",
         "formState": {
           "value": 50
@@ -452,6 +1680,18 @@
         "type": "slider"
       },
       {
+        "boundingBox": {
+          "bottom": 2351.09,
+          "height": 378.67,
+          "left": 28,
+          "midx": 378,
+          "midy": 2161.76,
+          "right": 728,
+          "top": 1972.42,
+          "width": 700,
+          "x": 28,
+          "y": 1972.42
+        },
         "description": "validation-section",
         "formState": null,
         "inViewport": false,
@@ -459,6 +1699,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2043.81,
+          "height": 50.39,
+          "left": 49,
+          "midx": 378,
+          "midy": 2018.62,
+          "right": 707,
+          "top": 1993.42,
+          "width": 658,
+          "x": 49,
+          "y": 1993.42
+        },
         "description": "5. Form Validation &",
         "formState": null,
         "inViewport": false,
@@ -466,6 +1718,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 2115.31,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2089.52,
+          "right": 707,
+          "top": 2063.72,
+          "width": 658,
+          "x": 49,
+          "y": 2063.72
+        },
         "description": "Required Field (HTML5)",
         "formState": null,
         "inViewport": false,
@@ -473,6 +1737,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2089.31,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2076.52,
+          "right": 707,
+          "top": 2063.72,
+          "width": 658,
+          "x": 49,
+          "y": 2063.72
+        },
+        "description": "Required Field (HTML5)",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 2115.31,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 2104.81,
+          "right": 707,
+          "top": 2094.31,
+          "width": 658,
+          "x": 49,
+          "y": 2094.31
+        },
         "description": "This field is required",
         "formState": {
           "value": ""
@@ -482,6 +1777,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "This field is required!",
         "formState": null,
         "inViewport": false,
@@ -489,6 +1796,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2181.91,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2156.11,
+          "right": 707,
+          "top": 2130.31,
+          "width": 658,
+          "x": 49,
+          "y": 2130.31
+        },
         "description": "Email Validation (HTML5)",
         "formState": null,
         "inViewport": false,
@@ -496,6 +1815,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2155.91,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2143.11,
+          "right": 707,
+          "top": 2130.31,
+          "width": 658,
+          "x": 49,
+          "y": 2130.31
+        },
+        "description": "Email Validation (HTML5)",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 2181.91,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 2171.41,
+          "right": 707,
+          "top": 2160.91,
+          "width": 658,
+          "x": 49,
+          "y": 2160.91
+        },
         "description": "Enter a valid email",
         "formState": {
           "value": ""
@@ -505,6 +1855,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
         "description": "Please enter a valid",
         "formState": null,
         "inViewport": false,
@@ -512,6 +1874,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2248.5,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2222.7,
+          "right": 707,
+          "top": 2196.91,
+          "width": 658,
+          "x": 49,
+          "y": 2196.91
+        },
         "description": "Disabled Field",
         "formState": null,
         "inViewport": false,
@@ -519,6 +1893,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2222.5,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2209.7,
+          "right": 707,
+          "top": 2196.91,
+          "width": 658,
+          "x": 49,
+          "y": 2196.91
+        },
+        "description": "Disabled Field",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 2248.5,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 2238,
+          "right": 707,
+          "top": 2227.5,
+          "width": 658,
+          "x": 49,
+          "y": 2227.5
+        },
         "description": "Disabled Field",
         "formState": {
           "value": "Cannot edit this"
@@ -528,6 +1933,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 2315.09,
+          "height": 51.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2289.3,
+          "right": 707,
+          "top": 2263.5,
+          "width": 658,
+          "x": 49,
+          "y": 2263.5
+        },
         "description": "Read-only Field",
         "formState": null,
         "inViewport": false,
@@ -535,6 +1952,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 2289.09,
+          "height": 25.59,
+          "left": 49,
+          "midx": 378,
+          "midy": 2276.3,
+          "right": 707,
+          "top": 2263.5,
+          "width": 658,
+          "x": 49,
+          "y": 2263.5
+        },
+        "description": "Read-only Field",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 2315.09,
+          "height": 21,
+          "left": 49,
+          "midx": 378,
+          "midy": 2304.59,
+          "right": 707,
+          "top": 2294.09,
+          "width": 658,
+          "x": 49,
+          "y": 2294.09
+        },
         "description": "Read-only Field",
         "formState": {
           "value": "Read only content"
@@ -544,6 +1992,37 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 2430.09,
+          "height": 39,
+          "left": 28,
+          "midx": 378,
+          "midy": 2410.59,
+          "right": 728,
+          "top": 2391.09,
+          "width": 700,
+          "x": 28,
+          "y": 2391.09
+        },
+        "description": "Submit Form",
+        "formState": null,
+        "inViewport": false,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 2430.09,
+          "height": 39,
+          "left": 317.84,
+          "midx": 377.99,
+          "midy": 2410.59,
+          "right": 438.14,
+          "top": 2391.09,
+          "width": 120.3,
+          "x": 317.84,
+          "y": 2391.09
+        },
         "description": "Submit Form",
         "formState": null,
         "inViewport": false,
@@ -551,6 +2030,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 2440.09,
+          "height": 0,
+          "left": 28,
+          "midx": 378,
+          "midy": 2440.09,
+          "right": 728,
+          "top": 2440.09,
+          "width": 700,
+          "x": 28,
+          "y": 2440.09
+        },
         "description": "form-status",
         "formState": null,
         "inViewport": false,

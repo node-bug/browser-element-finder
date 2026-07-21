@@ -2,13 +2,94 @@
   {
     "elements": [
       {
+        "boundingBox": {
+          "bottom": 266.88,
+          "height": 266.88,
+          "left": 0,
+          "midx": 378,
+          "midy": 133.44,
+          "right": 756,
+          "top": 0,
+          "width": 756,
+          "x": 0,
+          "y": 0
+        },
         "description": "Accessibility Tree",
         "formState": null,
-        "inViewport": false,
+        "inViewport": true,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Accessibility Tree",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Accessibility Tree",
+        "formState": null,
+        "inViewport": false,
+        "index": 3,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 258.88,
+          "height": 237.44,
+          "left": 8,
+          "midx": 378,
+          "midy": 140.16,
+          "right": 748,
+          "top": 21.44,
+          "width": 740,
+          "x": 8,
+          "y": 21.44
+        },
+        "description": "Welcome",
+        "formState": null,
+        "inViewport": true,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 58.44,
+          "height": 37,
+          "left": 8,
+          "midx": 378,
+          "midy": 39.94,
+          "right": 748,
+          "top": 21.44,
+          "width": 740,
+          "x": 8,
+          "y": 21.44
+        },
         "description": "Welcome",
         "formState": null,
         "inViewport": true,
@@ -16,6 +97,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 98.88,
+          "height": 18,
+          "left": 8,
+          "midx": 27.55,
+          "midy": 89.88,
+          "right": 47.11,
+          "top": 80.88,
+          "width": 39.11,
+          "x": 8,
+          "y": 80.88
+        },
         "description": "Home",
         "formState": null,
         "inViewport": true,
@@ -23,6 +116,18 @@
         "type": "link"
       },
       {
+        "boundingBox": {
+          "bottom": 98.88,
+          "height": 18,
+          "left": 51.11,
+          "midx": 67.55,
+          "midy": 89.88,
+          "right": 84,
+          "top": 80.88,
+          "width": 32.89,
+          "x": 51.11,
+          "y": 80.88
+        },
         "description": "Docs",
         "formState": null,
         "inViewport": true,
@@ -30,6 +135,18 @@
         "type": "link"
       },
       {
+        "boundingBox": {
+          "bottom": 100.88,
+          "height": 21,
+          "left": 88,
+          "midx": 116.75,
+          "midy": 90.38,
+          "right": 145.5,
+          "top": 79.88,
+          "width": 57.5,
+          "x": 88,
+          "y": 79.88
+        },
         "description": "Submit",
         "formState": null,
         "inViewport": true,
@@ -37,6 +154,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 100.88,
+          "height": 21,
+          "left": 149.5,
+          "midx": 178.25,
+          "midy": 90.38,
+          "right": 207,
+          "top": 79.88,
+          "width": 57.5,
+          "x": 149.5,
+          "y": 79.88
+        },
         "description": "Cancel",
         "formState": null,
         "inViewport": true,
@@ -44,6 +173,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 100.88,
+          "height": 21,
+          "left": 211,
+          "midx": 287.5,
+          "midy": 90.38,
+          "right": 364,
+          "top": 79.88,
+          "width": 153,
+          "x": 211,
+          "y": 79.88
+        },
         "description": "Email",
         "formState": {
           "value": ""
@@ -53,6 +194,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 100.88,
+          "height": 21,
+          "left": 368,
+          "midx": 444.5,
+          "midy": 90.38,
+          "right": 521,
+          "top": 79.88,
+          "width": 153,
+          "x": 368,
+          "y": 79.88
+        },
         "description": "Full name",
         "formState": {
           "value": ""
@@ -62,6 +215,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 98.88,
+          "height": 18,
+          "left": 525,
+          "midx": 580.55,
+          "midy": 89.88,
+          "right": 636.11,
+          "top": 80.88,
+          "width": 111.11,
+          "x": 525,
+          "y": 80.88
+        },
         "description": "Some visible text",
         "formState": null,
         "inViewport": true,
@@ -69,6 +234,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 254.88,
+          "height": 154,
+          "left": 8,
+          "midx": 160,
+          "midy": 177.88,
+          "right": 312,
+          "top": 100.88,
+          "width": 304,
+          "x": 8,
+          "y": 100.88
+        },
         "description": "tree-iframe",
         "formState": null,
         "inViewport": true,
@@ -82,6 +259,56 @@
   {
     "elements": [
       {
+        "boundingBox": {
+          "bottom": 117.81,
+          "height": 117.81,
+          "left": 0,
+          "midx": 150,
+          "midy": 58.91,
+          "right": 300,
+          "top": 0,
+          "width": 300,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Iframe Heading",
+        "formState": null,
+        "inViewport": true,
+        "index": 1,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 109.81,
+          "height": 89.91,
+          "left": 8,
+          "midx": 150,
+          "midy": 64.86,
+          "right": 292,
+          "top": 19.91,
+          "width": 284,
+          "x": 8,
+          "y": 19.91
+        },
+        "description": "Iframe Heading",
+        "formState": null,
+        "inViewport": true,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 47.91,
+          "height": 28,
+          "left": 8,
+          "midx": 150,
+          "midy": 33.91,
+          "right": 292,
+          "top": 19.91,
+          "width": 284,
+          "x": 8,
+          "y": 19.91
+        },
         "description": "Iframe Heading",
         "formState": null,
         "inViewport": true,
@@ -89,6 +316,18 @@
         "type": "heading"
       },
       {
+        "boundingBox": {
+          "bottom": 86.81,
+          "height": 18,
+          "left": 8,
+          "midx": 50.87,
+          "midy": 77.81,
+          "right": 93.73,
+          "top": 68.81,
+          "width": 85.73,
+          "x": 8,
+          "y": 68.81
+        },
         "description": "Iframe Home",
         "formState": null,
         "inViewport": true,
@@ -96,6 +335,18 @@
         "type": "link"
       },
       {
+        "boundingBox": {
+          "bottom": 88.81,
+          "height": 21,
+          "left": 97.73,
+          "midx": 122.05,
+          "midy": 78.31,
+          "right": 146.36,
+          "top": 67.81,
+          "width": 48.63,
+          "x": 97.73,
+          "y": 67.81
+        },
         "description": "Login",
         "formState": null,
         "inViewport": true,
@@ -103,6 +354,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 109.81,
+          "height": 21,
+          "left": 8,
+          "midx": 84.5,
+          "midy": 99.31,
+          "right": 161,
+          "top": 88.81,
+          "width": 153,
+          "x": 8,
+          "y": 88.81
+        },
         "description": "Search",
         "formState": {
           "value": ""

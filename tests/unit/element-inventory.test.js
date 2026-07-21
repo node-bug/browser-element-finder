@@ -120,10 +120,10 @@ describe('getElementInventory Unit Tests', () => {
     // Text-less elements are always included, identified by their positional
     // index field and any form-state object.
     expect(tree[0].elements).toEqual([
-      { type: 'button', description: null, index: 1, inViewport: false, formState: null },
-      { type: 'button', description: null, index: 2, inViewport: false, formState: null },
-      { type: 'textbox', description: null, index: 1, inViewport: false, formState: { value: '' } },
-      { type: 'image', description: null, index: 1, inViewport: false, formState: null },
+      { type: 'button', description: null, boundingBox: { x: 0, y: 0, width: 0, height: 0, top: 0, bottom: 0, left: 0, right: 0, midx: 0, midy: 0 }, index: 1, inViewport: false, formState: null },
+      { type: 'button', description: null, boundingBox: { x: 0, y: 0, width: 0, height: 0, top: 0, bottom: 0, left: 0, right: 0, midx: 0, midy: 0 }, index: 2, inViewport: false, formState: null },
+      { type: 'textbox', description: null, boundingBox: { x: 0, y: 0, width: 0, height: 0, top: 0, bottom: 0, left: 0, right: 0, midx: 0, midy: 0 }, index: 1, inViewport: false, formState: { value: '' } },
+      { type: 'image', description: null, boundingBox: { x: 0, y: 0, width: 0, height: 0, top: 0, bottom: 0, left: 0, right: 0, midx: 0, midy: 0 }, index: 1, inViewport: false, formState: null },
     ]);
 
     emptyDom.window.close();
@@ -141,9 +141,21 @@ describe('getElementInventory Unit Tests', () => {
       for (const entry of group.elements) {
         expect(entry).toHaveProperty('type');
         expect(entry).toHaveProperty('description');
+        expect(entry).toHaveProperty('boundingBox');
         expect(entry).toHaveProperty('index');
         expect(entry).toHaveProperty('inViewport');
         expect(entry).toHaveProperty('formState');
+        // boundingBox shape check
+        expect(entry.boundingBox).toHaveProperty('x');
+        expect(entry.boundingBox).toHaveProperty('y');
+        expect(entry.boundingBox).toHaveProperty('width');
+        expect(entry.boundingBox).toHaveProperty('height');
+        expect(entry.boundingBox).toHaveProperty('top');
+        expect(entry.boundingBox).toHaveProperty('bottom');
+        expect(entry.boundingBox).toHaveProperty('left');
+        expect(entry.boundingBox).toHaveProperty('right');
+        expect(entry.boundingBox).toHaveProperty('midx');
+        expect(entry.boundingBox).toHaveProperty('midy');
         expect(typeof entry.description === 'string' || entry.description === null).toBe(true);
         expect(typeof entry.index).toBe('number');
         expect(typeof entry.inViewport).toBe('boolean');

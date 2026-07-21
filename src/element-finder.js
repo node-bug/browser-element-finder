@@ -441,6 +441,21 @@ function getElementDescriptorText(el) {
     return { attributeName: 'label', identifiableText: nearbyLabel };
   }
 
+  // Fallback: if direct text is empty (text is nested in child elements like
+  // <span> inside <button>), use the element's full textContent (shortened).
+  // This handles frameworks that wrap visible text in child nodes. We check
+  // this AFTER searchable attributes and nearby labels so that explicit
+  // a11y/semantic text and <label> associations take priority. For form
+  // controls, the nearby label (if found) would have already returned above;
+  // if no label was found, textContent is a reasonable last resort (e.g. a
+  // <select> with visible option text but no <label>).
+  if (!isIgnoredElement(el)) {
+    const fullText = shortenDescriptorText(getSearchableTextContent(el));
+    if (fullText) {
+      return { attributeName: 'text', identifiableText: fullText };
+    }
+  }
+
   return null;
 }
 
@@ -1294,10 +1309,21 @@ function isOverlayElement(el) {
     // Restricted access — skip computed-style check
   }
 
-  // 6. Common class-name patterns used by frameworks and cookie-consent libraries
+  // 6. Common class-name patterns used by frameworks and cookie-consent libraries.
+  // Splits the class attribute by whitespace and checks each class name
+  // individually, so compound names like "header-overlay-fixed" don't trigger
+  // false positives. A class name matches if it is exactly one of the patterns
+  // (e.g. "modal", "popup") or starts with one followed by a hyphen
+  // (e.g. "dropdown-menu", "cookie-banner").
   const className = el.getAttribute ? (el.getAttribute('class') || '') : '';
-  if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/.test(className)) {
-    return true;
+  if (className) {
+    const classes = className.split(/\s+/);
+    for (let i = 0; i < classes.length; i++) {
+      const cls = classes[i];
+      if (/^(cookie|consent|banner|overlay|modal|popup|dropdown|flyout|sheet)(-|$)/i.test(cls)) {
+        return true;
+      }
+    }
   }
 
   return false;
@@ -1770,10 +1796,23 @@ function collectInventoryEntries(elements) {
         // id/aria-label). Check for overlay candidacy before skipping.
         const vp = inViewport(el);
         if (vp && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
+          const rect = el.getBoundingClientRect();
           overlayCandidates.push({
             el,
             type,
             description: null,
+            boundingBox: {
+              x: rect.x,
+              y: rect.y,
+              width: rect.width,
+              height: rect.height,
+              top: rect.top,
+              bottom: rect.bottom,
+              left: rect.left,
+              right: rect.right,
+              midx: rect.x + rect.width / 2,
+              midy: rect.y + rect.height / 2,
+            },
             inViewport: vp,
             formState: null,
             index: pos,
@@ -1797,9 +1836,23 @@ function collectInventoryEntries(elements) {
 
     const formState = getFormState(el, type);
     const vp = inViewport(el);
+    const rect = el.getBoundingClientRect();
+    const round = (v) => Math.round(v * 100) / 100;
     entries.push({
       type,
       description: text,
+      boundingBox: {
+        x: round(rect.x),
+        y: round(rect.y),
+        width: round(rect.width),
+        height: round(rect.height),
+        top: round(rect.top),
+        bottom: round(rect.bottom),
+        left: round(rect.left),
+        right: round(rect.right),
+        midx: round(rect.x + rect.width / 2),
+        midy: round(rect.y + rect.height / 2),
+      },
       index,
       inViewport: vp,
       formState: formState || null,
@@ -1811,10 +1864,23 @@ function collectInventoryEntries(elements) {
     // is structurally identical to an entry (its `index` mirrors this element's
     // own entry index, not the raw type-position `pos`).
     if (vp && isOverlayElement(el)) {
+      const round = (v) => Math.round(v * 100) / 100;
       overlayCandidates.push({
         el,
         type,
         description: text,
+        boundingBox: {
+          x: round(rect.x),
+          y: round(rect.y),
+          width: round(rect.width),
+          height: round(rect.height),
+          top: round(rect.top),
+          bottom: round(rect.bottom),
+          left: round(rect.left),
+          right: round(rect.right),
+          midx: round(rect.x + rect.width / 2),
+          midy: round(rect.y + rect.height / 2),
+        },
         inViewport: vp,
         formState: formState || null,
         index,
@@ -1854,6 +1920,7 @@ function collectInventoryEntries(elements) {
       overlay = {
         type: best.type,
         description: best.description,
+        boundingBox: best.boundingBox,
         inViewport: best.inViewport,
         formState: best.formState,
         index: best.index,

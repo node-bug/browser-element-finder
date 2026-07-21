@@ -2,6 +2,18 @@
   {
     "elements": [
       {
+        "boundingBox": {
+          "bottom": 25,
+          "height": 6,
+          "left": 8,
+          "midx": 16,
+          "midy": 22,
+          "right": 24,
+          "top": 19,
+          "width": 16,
+          "x": 8,
+          "y": 19
+        },
         "description": null,
         "formState": null,
         "inViewport": true,
@@ -9,6 +21,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 25,
+          "height": 6,
+          "left": 28,
+          "midx": 36,
+          "midy": 22,
+          "right": 44,
+          "top": 19,
+          "width": 16,
+          "x": 28,
+          "y": 19
+        },
         "description": null,
         "formState": null,
         "inViewport": true,
@@ -16,6 +40,18 @@
         "type": "button"
       },
       {
+        "boundingBox": {
+          "bottom": 47,
+          "height": 21,
+          "left": 8,
+          "midx": 84.5,
+          "midy": 36.5,
+          "right": 161,
+          "top": 26,
+          "width": 153,
+          "x": 8,
+          "y": 26
+        },
         "description": null,
         "formState": {
           "value": ""
@@ -25,6 +61,18 @@
         "type": "textbox"
       },
       {
+        "boundingBox": {
+          "bottom": 41,
+          "height": 0,
+          "left": 165,
+          "midx": 165,
+          "midy": 41,
+          "right": 165,
+          "top": 41,
+          "width": 0,
+          "x": 165,
+          "y": 41
+        },
         "description": null,
         "formState": null,
         "inViewport": false,

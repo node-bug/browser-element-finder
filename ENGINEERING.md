@@ -70,8 +70,6 @@ ElementFinder.findOverlayElements(100, 200)
 browser-element-finder/
 ├── src/
 │   ├── element-finder.js              # Main canonical implementation
-│   ├── element-finder-by-type.js      # Standalone type-only finder
-│   ├── element-finder-by-attribute.js # Standalone attribute-only finder
 │   ├── element-definitions.json       # Type → XPath mapping
 │   └── searchable-attributes.json     # Attribute search priority
 ├── tests/
@@ -115,17 +113,15 @@ browser-element-finder/
 
 ### 2.1 Module Organization Philosophy
 
-**Why Three Modules?**
+**Why a Single Module?**
 
-1. **element-finder-by-type.js** - Focused implementation for type-only searches
-2. **element-finder-by-attribute.js** - Focused implementation for attribute-only searches
-3. **element-finder.js** - Combined canonical module incorporating both
+1. **element-finder.js** - Combined canonical module incorporating all search logic
 
 **Rationale**:
 
-- Allows specialized use cases to have minimal dependencies
-- Provides reference implementations for testing logic isolation
-- Combined module reuses proven logic rather than duplicating
+- Simpler API surface with no redundant standalone modules
+- All search strategies (type, attribute, combined, probable) share the same codebase
+- Easier to maintain and test with a single source of truth
 
 ### 2.2 Pre-compiled Type Matchers
 
@@ -1794,8 +1790,7 @@ npm test -- --run          # Run once, don't watch
 ```
 tests/integration/
 ├── helpers/
-│   ├── driver-helper.js        # Selenium setup/teardown
-│   └── test-helpers.js         # Shared validation utilities
+│   └── driver-helper.js        # Selenium setup/teardown
 ├── element-types.test.js       # Type matching tests
 ├── dropdowns.test.js           # Dropdown/search tests
 ├── forms.test.js               # Form element tests

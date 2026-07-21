@@ -248,9 +248,12 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       button.appendChild(span);
       document.body.appendChild(button);
 
+      // With the textContent fallback, nested text in child elements (like
+      // <span> inside <button>) is now picked up as the descriptor, shortened
+      // to the first line and MAX_IDENTIFIABLE_TEXT_LENGTH characters.
       expect(getElementDescriptor(button)).toMatchObject({
-        identifiableText: null,
-        attributeName: null,
+        identifiableText: 'Nested text with spaces',
+        attributeName: 'text',
         type: 'button',
         tagName: 'button'
       });
@@ -356,9 +359,11 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       button.appendChild(span);
       document.body.appendChild(button);
 
+      // With the textContent fallback, text nested in child elements (like
+      // <span> inside <button>) is now used as the descriptor.
       expect(getElementDescriptor(button)).toEqual({
-        identifiableText: null,
-        attributeName: null,
+        identifiableText: 'Nested Action',
+        attributeName: 'text',
         index: 1,
         type: 'button',
         tagName: 'button'
@@ -937,6 +942,9 @@ describe('ElementFinderByAttribute Node.js Module Tests', () => {
       button.setAttribute('title', 'Fallback Title');
       document.body.appendChild(button);
 
+      // Searchable attributes (like title) take priority over the textContent
+      // fallback. The textContent fallback is a last resort, used only when
+      // there is no direct text, no searchable attributes, and no nearby label.
       expect(getElementDescriptor(button)).toEqual({
         identifiableText: 'Fallback Title',
         attributeName: 'title',

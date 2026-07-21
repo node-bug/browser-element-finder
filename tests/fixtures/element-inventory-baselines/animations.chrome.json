@@ -2,13 +2,75 @@
   {
     "elements": [
       {
+        "boundingBox": {
+          "bottom": 91,
+          "height": 91,
+          "left": 0,
+          "midx": 378,
+          "midy": 45.5,
+          "right": 756,
+          "top": 0,
+          "width": 756,
+          "x": 0,
+          "y": 0
+        },
         "description": "Unit Tests - Animations",
         "formState": null,
-        "inViewport": false,
+        "inViewport": true,
         "index": 1,
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Unit Tests - Animations",
+        "formState": null,
+        "inViewport": false,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "midx": 0,
+          "midy": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "description": "Unit Tests - Animations",
+        "formState": null,
+        "inViewport": false,
+        "index": 3,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 83,
+          "height": 75,
+          "left": 8,
+          "midx": 378,
+          "midy": 45.5,
+          "right": 748,
+          "top": 8,
+          "width": 740,
+          "x": 8,
+          "y": 8
+        },
         "description": "Animated Box",
         "formState": null,
         "inViewport": true,
@@ -16,6 +78,37 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 26,
+          "height": 18,
+          "left": 30.07,
+          "midx": 400.07,
+          "midy": 17,
+          "right": 770.07,
+          "top": 8,
+          "width": 740,
+          "x": 30.07,
+          "y": 8
+        },
+        "description": "Animated Box",
+        "formState": null,
+        "inViewport": true,
+        "index": 2,
+        "type": "element"
+      },
+      {
+        "boundingBox": {
+          "bottom": 44,
+          "height": 18,
+          "left": 8,
+          "midx": 378,
+          "midy": 35,
+          "right": 748,
+          "top": 26,
+          "width": 740,
+          "x": 8,
+          "y": 26
+        },
         "description": "Fade Box",
         "formState": null,
         "inViewport": true,
@@ -23,6 +116,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 62,
+          "height": 18,
+          "left": 8,
+          "midx": 378,
+          "midy": 53,
+          "right": 748,
+          "top": 44,
+          "width": 740,
+          "x": 8,
+          "y": 44
+        },
         "description": "Static Box",
         "formState": null,
         "inViewport": true,
@@ -30,6 +135,18 @@
         "type": "element"
       },
       {
+        "boundingBox": {
+          "bottom": 83,
+          "height": 21,
+          "left": 30.07,
+          "midx": 87.35,
+          "midy": 72.5,
+          "right": 144.63,
+          "top": 62,
+          "width": 114.56,
+          "x": 30.07,
+          "y": 62
+        },
         "description": "Animated Button",
         "formState": null,
         "inViewport": true,

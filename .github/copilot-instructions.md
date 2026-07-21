@@ -11,7 +11,7 @@ A robust, agent-friendly JavaScript library for identifying DOM elements by sema
 
 ## Architecture
 
-Three-module source design with a unified build output:
+Single-module source design with a unified build output:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -29,14 +29,6 @@ Three-module source design with a unified build output:
 │  • Attribute priority-based text search             │
 │  • Shadow DOM & iframe traversal                    │
 │  • Probable element fallback logic                  │
-└────────────────────┬────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────┐
-│         Standalone Modules (for testing & reuse)     │
-│  (src/element-finder-by-type.js)                    │
-│  (src/element-finder-by-attribute.js)               │
-│  • Focused single-purpose implementations           │
-│  • Reference implementations for test isolation     │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -56,8 +48,6 @@ browser-element-finder/
 │
 ├── src/                          # Source modules
 │   ├── element-finder.js         # Main canonical implementation (combined)
-│   ├── element-finder-by-type.js     # Standalone type-only finder
-│   ├── element-finder-by-attribute.js # Standalone attribute-only finder
 │   ├── element-definitions.json  # XPath-like type → expression mapping
 │   └── searchable-attributes.json # Attribute search priority list
 │
@@ -448,19 +438,17 @@ See `TODO.md` for the feature roadmap:
 
 ## Key Files for AI Agents
 
-| File                                 | Purpose                       | When to Reference                       |
-| ------------------------------------ | ----------------------------- | --------------------------------------- |
-| `src/element-finder.js`              | Main canonical implementation | Modifying search logic, adding features |
-| `src/element-definitions.json`       | Type → XPath mapping          | Adding new element types                |
-| `src/searchable-attributes.json`     | Attribute priority list       | Changing attribute search order         |
-| `src/element-finder-by-type.js`      | Standalone type finder        | Type-specific logic changes             |
-| `src/element-finder-by-attribute.js` | Standalone attribute finder   | Attribute matching changes              |
-| `build.js`                           | esbuild configuration         | Changing build output format            |
-| `tests/unit/*.test.js`               | Unit test suite               | Adding unit tests for new logic         |
-| `tests/integration/types/*.test.js`  | Integration type tests        | Testing in real browser                 |
-| `tests/integration/fixtures/`        | HTML test pages               | Creating test scenarios                 |
-| `ENGINEERING.md`                     | Technical reference           | Understanding architecture              |
-| `TODO.md`                            | Feature roadmap               | Planning new features                   |
+| File                                | Purpose                       | When to Reference                       |
+| ----------------------------------- | ----------------------------- | --------------------------------------- |
+| `src/element-finder.js`             | Main canonical implementation | Modifying search logic, adding features |
+| `src/element-definitions.json`      | Type → XPath mapping          | Adding new element types                |
+| `src/searchable-attributes.json`    | Attribute priority list       | Changing attribute search order         |
+| `build.js`                          | esbuild configuration         | Changing build output format            |
+| `tests/unit/*.test.js`              | Unit test suite               | Adding unit tests for new logic         |
+| `tests/integration/types/*.test.js` | Integration type tests        | Testing in real browser                 |
+| `tests/integration/fixtures/`       | HTML test pages               | Creating test scenarios                 |
+| `ENGINEERING.md`                    | Technical reference           | Understanding architecture              |
+| `TODO.md`                           | Feature roadmap               | Planning new features                   |
 
 ## Rules for AI Agents
 
