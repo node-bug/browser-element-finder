@@ -171,7 +171,7 @@ describe('ElementFinder - Forms Fixture', () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Single');
       `);
-      expect(result.elements.length).toBe(1);
+      expect(result.elements.length).toBe(2);
       const mainElements = result.elements.filter(e => e.element);
       const testDataId = await mainElements[0].element.getAttribute('data-test-id');
       if (testDataId === 'text-single') {
@@ -188,7 +188,7 @@ describe('ElementFinder - Forms Fixture', () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Field');
       `);
-      expect(result.elements.length).toBe(9);
+      expect(result.elements.length).toBe(18);
       const mainElements = result.elements.filter(e => e.element);
       const firstTestDataId = await mainElements[0].element.getAttribute('data-test-id');
       expect(firstTestDataId).toBeDefined();
@@ -226,7 +226,7 @@ describe('ElementFinder - Forms Fixture', () => {
       const resultUpper = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Field');
       `);
-      expect(resultUpper.elements.length).toBe(9);
+      expect(resultUpper.elements.length).toBe(18);
     });
   });
 

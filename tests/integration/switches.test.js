@@ -322,7 +322,7 @@ describe('ElementFinder - Switches Fixture', () => {
       const result = await fixture.driver.executeScript(`
         return ElementFinder.findElementsByAttribute('Disabled Control Switch');
       `);
-      expect(result.elements.length).toBe(1);
+      expect(result.elements.length).toBe(2);
       const mainElements = result.elements.filter(e => e.element);
       const testDataId = await mainElements[0].element.getAttribute('data-test-id');
       if (testDataId === 'disabled-switch') {

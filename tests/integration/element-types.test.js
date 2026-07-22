@@ -40,7 +40,7 @@ describe('ElementFinder - Element Types Fixture', () => {
       expect(counts.column).toEqual({ visible: 3, hidden: 0, total: 3 });
       expect(counts.cell).toEqual({ visible: 2, hidden: 0, total: 2 });
       expect(counts.image).toEqual({ visible: 3, hidden: 0, total: 3 });
-      expect(counts.element).toEqual({ visible: 100, hidden: 1, total: 101 });
+      expect(counts.element).toEqual({ visible: 100, hidden: 0, total: 100 });
     });
 
     it('should return visible, hidden, and total counts for one semantic type', async () => {

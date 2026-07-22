@@ -11,7 +11,7 @@ export default defineConfig({
     exclude: ['tests/integration/helpers/**', 'tests/helpers/**'],
     // Run integration tests serially to avoid spawning too many Chrome processes
     // and to ensure proper cleanup between test files
-    maxWorkers: 2,
+    maxWorkers: 4,
     // Forcefully terminate workers after tests complete to prevent orphaned processes
     teardownTimeout: 10000,
     coverage: {

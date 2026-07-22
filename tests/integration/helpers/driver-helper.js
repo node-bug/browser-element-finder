@@ -108,6 +108,10 @@ function createDriverFixture(options = {}) {
     get driver() {
       return driver;
     },
+
+    get url() {
+      return options.url;
+    },
   };
 
   return fixture;

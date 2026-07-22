@@ -101,7 +101,6 @@ browser-element-finder/
 ├── scripts/
 │   └── build.js                   # esbuild IIFE bundler for browser injection
 ├── tests/
-│   ├── unit/                      # Unit tests (JSDOM)
 │   ├── integration/               # Integration tests (Selenium + Chrome)
 │   └── fixtures/                  # HTML test pages
 ├── index.js                       # Built IIFE bundle (browser entry point)

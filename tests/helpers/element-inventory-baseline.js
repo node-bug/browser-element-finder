@@ -14,18 +14,14 @@ const baselineDir = resolve(__dirname, '..', 'fixtures', 'element-inventory-base
 
 /**
  * Loads a baseline JSON file by name (e.g. 'element-inventory.json').
- * Some fixtures render differently in JSDOM vs a real browser (e.g. tables and
- * shadow DOM are traversed more completely by Chrome's layout engine). For those
- * fixtures a browser-specific baseline is committed alongside the JSDOM one,
- * named '<name>.chrome.json'. Pass engine: 'chrome' to load that variant.
- * @param {string} name - Baseline file name (without the .chrome suffix)
- * @param {{engine?: 'jsdom'|'chrome'}} [opts] - Engine selector
+ * Baselines are generated from real Chrome via Selenium by
+ * scripts/generate-element-inventory-baselines.js and stored in
+ * tests/fixtures/element-inventory-baselines/.
+ * @param {string} name - Baseline file name
  * @returns {Array<{frame: number, elements: string[]}>} The baseline inventory
  */
-export function loadElementInventoryBaseline(name, opts = {}) {
-  const { engine = 'jsdom' } = opts;
-  const fileName = engine === 'chrome' ? name.replace(/\.json$/, '.chrome.json') : name;
-  return JSON.parse(readFileSync(resolve(baselineDir, fileName), 'utf-8'));
+export function loadElementInventoryBaseline(name) {
+  return JSON.parse(readFileSync(resolve(baselineDir, name), 'utf-8'));
 }
 
 /**

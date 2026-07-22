@@ -1,86 +1,86 @@
 [
   {
-    "frame": -1,
     "elements": [
       {
-        "type": "button",
-        "description": null,
         "boundingBox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "top": 0,
-          "bottom": 0,
-          "left": 0,
-          "right": 0,
-          "midx": 0,
-          "midy": 0
+          "bottom": 25,
+          "height": 6,
+          "left": 8,
+          "midx": 16,
+          "midy": 22,
+          "right": 24,
+          "top": 19,
+          "width": 16,
+          "x": 8,
+          "y": 19
         },
+        "description": null,
+        "formState": null,
+        "inViewport": true,
         "index": 1,
-        "inViewport": false,
-        "formState": null
+        "type": "button"
       },
       {
-        "type": "button",
-        "description": null,
         "boundingBox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "top": 0,
-          "bottom": 0,
-          "left": 0,
-          "right": 0,
-          "midx": 0,
-          "midy": 0
+          "bottom": 25,
+          "height": 6,
+          "left": 28,
+          "midx": 36,
+          "midy": 22,
+          "right": 44,
+          "top": 19,
+          "width": 16,
+          "x": 28,
+          "y": 19
         },
+        "description": null,
+        "formState": null,
+        "inViewport": true,
         "index": 2,
-        "inViewport": false,
-        "formState": null
+        "type": "button"
       },
       {
-        "type": "textbox",
-        "description": null,
         "boundingBox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "top": 0,
-          "bottom": 0,
-          "left": 0,
-          "right": 0,
-          "midx": 0,
-          "midy": 0
+          "bottom": 47,
+          "height": 21,
+          "left": 8,
+          "midx": 84.5,
+          "midy": 36.5,
+          "right": 161,
+          "top": 26,
+          "width": 153,
+          "x": 8,
+          "y": 26
         },
-        "index": 1,
-        "inViewport": false,
+        "description": null,
         "formState": {
           "value": ""
-        }
+        },
+        "inViewport": true,
+        "index": 1,
+        "type": "textbox"
       },
       {
-        "type": "image",
-        "description": null,
         "boundingBox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
+          "bottom": 41,
           "height": 0,
-          "top": 0,
-          "bottom": 0,
-          "left": 0,
-          "right": 0,
-          "midx": 0,
-          "midy": 0
+          "left": 165,
+          "midx": 165,
+          "midy": 41,
+          "right": 165,
+          "top": 41,
+          "width": 0,
+          "x": 165,
+          "y": 41
         },
-        "index": 1,
+        "description": null,
+        "formState": null,
         "inViewport": false,
-        "formState": null
+        "index": 1,
+        "type": "image"
       }
     ],
+    "frame": -1,
     "overlay": null
   }
 ]

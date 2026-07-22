@@ -52,27 +52,37 @@ browser-element-finder/
 │   └── searchable-attributes.json # Attribute search priority list
 │
 ├── tests/                        # Vitest test suite
-│   ├── unit/                     # Fast JSDOM-based unit tests
-│   │   ├── find-elements.test.js     # Combined type + attribute search
-│   │   ├── attributes.test.js        # Attribute matching logic
-│   │   ├── types.test.js             # Type matching & XPath parsing
+│   ├── integration/              # Real browser Selenium tests
 │   │   ├── animations.test.js        # pauseAnimations/resumeAnimations
-│   │   └── edge-cases.test.js        # Null input, cross-frame, etc.
-│   │
-│   └── integration/              # Real browser Selenium tests
-│       ├── types/                        # Type-based search tests
-│       ├── attributes/                   # Attribute-based search tests
-│       ├── fixtures/                     # HTML test pages
-│       │   ├── demo-page.html
-│       │   ├── element-types.html
-│       │   ├── dropdowns.html
-│       │   ├── forms.html
-│       │   ├── iframes.html
-│       │   ├── shadow-dom.html
-│       │   ├── tables.html
-│       │   └── ...
-│       └── helpers/
-│           └── driver-helper.js  # Shared Selenium driver setup/cleanup
+│   │   ├── attributes.test.js        # Attribute matching logic
+│   │   ├── edge-cases.test.js        # Null input, cross-frame, etc.
+│   │   ├── element-inventory.test.js # getElementInventory tests
+│   │   ├── find-elements.test.js     # Combined type + attribute search
+│   │   ├── form-state.test.js        # getFormState tests
+│   │   ├── overlay-elements.test.js  # findOverlayElements tests
+│   │   ├── types.test.js             # Type matching & XPath parsing
+│   │   ├── viewport.test.js          # inViewport tests
+│   │   ├── dropdowns.test.js         # Dropdown search tests
+│   │   ├── element-types.test.js     # Element type search tests
+│   │   ├── forms.test.js             # Form element search tests
+│   │   ├── iframes.test.js           # Cross-frame search tests
+│   │   ├── overlays.test.js          # Overlay detection tests
+│   │   ├── radio-iframe-table.test.js # Radio + iframe + table tests
+│   │   ├── shadow-dom.test.js        # Shadow DOM traversal tests
+│   │   ├── switches.test.js          # Switch element tests
+│   │   ├── tables.test.js            # Table element tests
+│   │   ├── fixtures/                 # HTML test pages
+│   │   │   ├── demo-page.html
+│   │   │   ├── element-types.html
+│   │   │   ├── dropdowns.html
+│   │   │   ├── forms.html
+│   │   │   ├── iframes.html
+│   │   │   ├── shadow-dom.html
+│   │   │   ├── tables.html
+│   │   │   └── ...
+│   │   └── helpers/
+│   │       └── driver-helper.js  # Shared Selenium driver setup/cleanup
+│   └── fixtures/                  # Shared HTML test pages
 │
 └── coverage/                     # Test coverage reports (v8 provider)
 ```
@@ -187,7 +197,7 @@ All search functions return:
 ```bash
 npm install                 # Install dependencies
 npm run build               # Build index.js and index.min.js via esbuild
-npm test                    # Build + run all tests (unit + integration)
+npm test                    # Build + run all tests
 npm run test:watch          # Watch mode (re-run on changes)
 npm run test:coverage       # Run with v8 coverage report
 npm run lint                # ESLint check
@@ -195,9 +205,8 @@ npm run lint                # ESLint check
 
 ### Test Configuration
 
-- **Vitest** with `maxWorkers: 2` to avoid spawning too many Chrome processes
-- Integration tests run serially for proper browser cleanup
-- Unit tests use JSDOM for fast DOM simulation
+- **Vitest** with `maxWorkers: 4` to run integration tests in parallel
+- All tests run in real Chrome via Selenium for proper layout and shadow DOM support
 - Coverage excludes `index.js` (browser-injected code) but covers `src/element-finder.js`
 
 ### Adding Dependencies
@@ -205,7 +214,6 @@ npm run lint                # ESLint check
 Check existing dependencies in `package.json` before adding new ones. Key dependencies:
 
 - `selenium-webdriver` — Browser automation for integration tests
-- `jsdom` — DOM simulation for unit tests
 - `esbuild` — Bundling ESM → IIFE for browser injection
 - `vitest` + `@vitest/coverage-v8` — Testing and coverage
 
@@ -322,7 +330,6 @@ export function findElements(type = "element", text = '', exact = false, parent 
 
 ### Testing
 
-- **Unit tests** (`tests/unit/`): Fast JSDOM-based tests for pure logic
 - **Integration tests** (`tests/integration/`): Real Chrome browser via Selenium
 - Tests should verify observable outcomes (element counts, properties), not internal structure
 - Use `describe`/`it` blocks with meaningful names
@@ -337,11 +344,14 @@ it('should find all buttons when type is "button"', async () => {
   expect(result.elements.length).toBe(7)
 })
 
-// GOOD - unit test with JSDOM
-it('should match checkbox by type', () => {
-  const input = document.createElement('input')
-  input.type = 'checkbox'
-  expect(matchesType(input, 'checkbox')).toBe(true)
+// GOOD - testing type matching in real browser
+it('should match checkbox by type', async () => {
+  const result = await driver.executeScript(`
+    const input = document.createElement('input')
+    input.type = 'checkbox'
+    return ElementFinder.matchesType(input, 'checkbox')
+  `)
+  expect(result).toBe(true)
 })
 ```
 
@@ -455,7 +465,7 @@ See `TODO.md` for the feature roadmap:
 1. **Function-based design** — this is a function library, not a class-based framework
 2. **Performance matters** — use pre-compiled matchers, stack traversal, Set/Map lookups
 3. **ESM source, IIFE build** — source uses `import`/`export`, build produces browser globals
-4. **Test both unit and integration** — JSDOM for fast logic tests, Selenium for real browser behavior
+4. **Test in real browser** — all tests run via Selenium in Chrome for proper layout & shadow DOM support
 5. **Add JSDoc to new public APIs** — document parameters, return types, and thrown errors
 6. **Follow existing naming conventions** — camelCase for functions/variables, kebab-case for files
 7. **Check TODO.md** before implementing features that may already be planned

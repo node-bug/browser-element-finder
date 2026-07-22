@@ -37,7 +37,7 @@ const TEXTLESS_TYPES = new Set(
   ),
 );
 
-const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT', 'META', 'TITLE', 'BASE', 'LINK'];
+const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT', 'HEAD'];
 
 let IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
 
@@ -985,6 +985,16 @@ export function matchesAttribute(el, value, exact = false) {
     return true;
   }
 
+  // Check nearby <label> text — mirrors the fallback used by
+  // getElementDescriptorText during inventory capture, so elements identified
+  // via a wrapping or for-associated label remain discoverable at find time.
+  const nearbyLabel = getNearbyLabelText(el);
+  if (nearbyLabel) {
+    if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -1295,15 +1305,13 @@ function isOverlayElement(el) {
   // 5. High z-index with fixed, sticky, or absolute positioning.
   //    Only consider elements with a minimum visible size to avoid
   //    false positives from thin decorative strips or 1px divs.
-  //    When getBoundingClientRect() returns all zeros (e.g. in JSDOM),
-  //    skip the size check since the environment doesn't support layout.
   try {
     const style = window.getComputedStyle(el);
     const zIndexValue = parseInt(style.zIndex, 10);
     if (!isNaN(zIndexValue) && zIndexValue > 999) {
       if (style.position === 'fixed' || style.position === 'sticky') {
         const rect = el.getBoundingClientRect();
-        if (rect.width === 0 && rect.height === 0) return true; // JSDOM or hidden
+        if (rect.width === 0 && rect.height === 0) return true; // hidden
         if (rect.width >= 4 && rect.height >= 4) return true;
       }
     }
@@ -1311,7 +1319,7 @@ function isOverlayElement(el) {
     if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === 'absolute') {
       // Only consider elements that are visibly rendered (not collapsed)
       const rect = el.getBoundingClientRect();
-      if (rect.width === 0 && rect.height === 0) return true; // JSDOM or hidden
+      if (rect.width === 0 && rect.height === 0) return true; // hidden
       if (rect.width >= 4 && rect.height >= 4) return true;
     }
   } catch {
@@ -1331,11 +1339,9 @@ function isOverlayElement(el) {
       const cls = classes[i];
       if (/^(cookie|consent|banner|overlay|modal|popup|dropdown|flyout|sheet)(-|$)/i.test(cls)) {
         // Require a minimum visible size for class-name-based overlay detection
-        // to avoid matching thin decorative strips or 1px divs. When
-        // getBoundingClientRect() returns all zeros (e.g. in JSDOM), skip the
-        // size check since the environment doesn't support layout.
+        // to avoid matching thin decorative strips or 1px divs.
         const rect = el.getBoundingClientRect();
-        if (rect.width === 0 && rect.height === 0) return true; // JSDOM or hidden
+        if (rect.width === 0 && rect.height === 0) return true; // hidden
         if (rect.width >= 4 && rect.height >= 4) return true;
       }
     }
@@ -1557,6 +1563,16 @@ function hasOwnMatch(el, value, exact = false) {
   const directText = getDirectText(el);
   if (exact ? directText === value : directText.includes(value)) {
     return true;
+  }
+
+  // Check nearby <label> text — mirrors the fallback used by
+  // getElementDescriptorText during inventory capture, so elements identified
+  // via a wrapping or for-associated label are not filtered out.
+  const nearbyLabel = getNearbyLabelText(el);
+  if (nearbyLabel) {
+    if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
+      return true;
+    }
   }
 
   return false;

@@ -73,17 +73,16 @@ browser-element-finder/
 │   ├── element-definitions.json       # Type → XPath mapping
 │   └── searchable-attributes.json     # Attribute search priority
 ├── tests/
-│   ├── unit/                          # Fast JSDOM tests
-│   │   ├── find-elements.test.js
-│   │   ├── attributes.test.js
-│   │   ├── types.test.js
-│   │   ├── element-inventory.test.js
+│   ├── integration/                   # Real browser Selenium tests
 │   │   ├── animations.test.js
+│   │   ├── attributes.test.js
 │   │   ├── edge-cases.test.js
+│   │   ├── element-inventory.test.js
+│   │   ├── find-elements.test.js
 │   │   ├── form-state.test.js
 │   │   ├── overlay-elements.test.js
-│   │   └── viewport.test.js
-│   ├── integration/                   # Real browser Selenium tests
+│   │   ├── types.test.js
+│   │   ├── viewport.test.js
 │   │   ├── element-types.test.js
 │   │   ├── dropdowns.test.js
 │   │   ├── forms.test.js
@@ -93,7 +92,6 @@ browser-element-finder/
 │   │   ├── shadow-dom.test.js
 │   │   ├── switches.test.js
 │   │   ├── tables.test.js
-│   │   ├── element-inventory.test.js
 │   │   ├── helpers/
 │   │   └── fixtures/
 │   └── fixtures/                      # Shared HTML test pages
@@ -481,18 +479,21 @@ function parseCondition(cond, el) {
    }
    ```
 
-3. **Add unit test** in `tests/unit/types.test.js`:
+3. **Add integration test** in `tests/integration/types.test.js`:
 
    ```javascript
-   it('should match native range inputs as slider', () => {
-     const html = '<input type="range" min="0" max="100" />'
-     const doc = new JSDOM(html).window.document
-     const result = findElementsByType('slider', doc.body)
+   it('should match native range inputs as slider', async () => {
+     const result = await fixture.driver.executeScript(`
+       const input = document.createElement('input');
+       input.type = 'range';
+       input.min = '0';
+       input.max = '100';
+       document.body.appendChild(input);
+       return ElementFinder.findElementsByType('slider');
+     `)
      expect(result.elements.length).toBe(1)
    })
    ```
-
-4. **Add integration test** in `tests/integration/element-types.test.js`:
 
    ```javascript
    it('should find slider in complex form', async () => {
@@ -503,7 +504,7 @@ function parseCondition(cond, el) {
    })
    ```
 
-5. **Rebuild and test**:
+4. **Rebuild and test**:
    ```bash
    npm run build && npm test
    ```
@@ -1684,7 +1685,9 @@ try {
 
 ## 9. Testing Strategy
 
-### 9.1 Testing Pyramid
+### 9.1 Testing Strategy
+
+All tests run in a real Chrome browser via Selenium WebDriver. There are no JSDOM-based unit tests — every test exercises the library in an actual browser environment.
 
 ```
                  ▲
@@ -1692,98 +1695,11 @@ try {
             (Real Browser)
            Selenium WebDriver
            Full DOM scenarios
-                 │
-          ◆ ◆ ◆ UNIT TESTS ◆ ◆ ◆
-         (Fast - JSDOM)
-         Controlled scenarios
-         Edge case coverage
+           Shadow DOM, iframes,
+           layout, viewport
 ```
 
-**Cost/Benefit**:
-
-- **Unit tests** (90%): Fast, isolated, comprehensive edge cases
-- **Integration tests** (10%): Slow, real browser, confirms real-world scenarios
-
-### 9.2 Unit Tests (tests/unit/)
-
-**File Organization**:
-
-```
-tests/unit/
-├── find-elements.test.js     # Combined search function tests
-├── attributes.test.js        # Attribute matching tests
-├── types.test.js             # Type definition tests
-├── element-inventory.test.js # getElementInventory tests
-├── animations.test.js        # pauseAnimations/resumeAnimations tests
-├── edge-cases.test.js        # Null input, cross-frame, etc.
-├── form-state.test.js        # getFormState tests
-├── overlay-elements.test.js  # findOverlayElements tests
-└── viewport.test.js          # inViewport tests
-```
-
-**Scope**: Individual function behavior, edge cases, error handling
-
-**Test Environment**: JSDOM (simulated DOM in Node.js)
-
-**Element-inventory baselines**: `getElementInventory()` output is validated against committed baselines in `tests/fixtures/element-inventory-baselines/`. Because a real browser traverses tables, shadow DOM, and iframes more completely than JSDOM, two baseline variants are committed per fixture:
-
-- `<name>.json` — generated from JSDOM (the deterministic source of truth for the unit suite).
-- `<name>.chrome.json` — generated from real Chrome (used by the integration suite, which runs in a browser).
-
-`scripts/generate-element-inventory-baselines.js` regenerates both sets (`npm run test:baselines`). The unit suite loads the JSDOM variant; the integration suite passes `{ engine: 'chrome' }` to `loadElementInventoryBaseline`.
-
-**Example**:
-
-```javascript
-// tests/unit/find-elements.test.js
-import { describe, it, expect, beforeEach } from 'vitest'
-import { JSDOM } from 'jsdom'
-import { findElements } from '../../src/element-finder.js'
-
-describe('findElements - Combined search', () => {
-  let doc
-
-  beforeEach(() => {
-    const html = `
-      <button id="btn1">Submit</button>
-      <div role="button">Save</div>
-      <input type="text" placeholder="Search" />
-    `
-    doc = new JSDOM(html).window.document
-  })
-
-  it('should find elements matching both type and text', () => {
-    const result = findElements('button', 'Submit', false, doc.body)
-    expect(result.elements.length).toBe(1)
-    expect(result.elements[0].element?.id).toBe('btn1')
-  })
-
-  it('should return empty when no element matches both type and text', () => {
-    const result = findElements('button', 'NonExistent', false, doc.body)
-    expect(result.elements.length).toBe(0)
-  })
-
-  it('should support exact matching', () => {
-    const result = findElements('button', 'Submit', true, doc.body)
-    expect(result.elements.length).toBe(1)
-  })
-
-  it('should handle null parameters (find all)', () => {
-    const result = findElements(null, null, false, doc.body)
-    expect(result.elements.length).toBeGreaterThan(0)
-  })
-})
-```
-
-**Running Unit Tests**:
-
-```bash
-npm test                    # All tests
-npm test -- find-elements   # Specific file
-npm test -- --run          # Run once, don't watch
-```
-
-### 9.3 Integration Tests (tests/integration/)
+**Test Environment**: Real Chrome browser via Selenium WebDriver
 
 **File Organization**:
 
@@ -1791,69 +1707,119 @@ npm test -- --run          # Run once, don't watch
 tests/integration/
 ├── helpers/
 │   └── driver-helper.js        # Selenium setup/teardown
+├── animations.test.js          # pauseAnimations/resumeAnimations tests
+├── attributes.test.js          # Attribute matching tests
+├── edge-cases.test.js          # Null input, cross-frame, etc.
+├── element-inventory.test.js   # getElementInventory tests
+├── find-elements.test.js       # Combined type + attribute search tests
+├── form-state.test.js          # getFormState tests
+├── overlay-elements.test.js    # findOverlayElements tests
+├── types.test.js               # Type matching & XPath parsing tests
+├── viewport.test.js            # inViewport tests
 ├── element-types.test.js       # Type matching tests
-├── dropdowns.test.js           # Dropdown/search tests
+├── dropdowns.test.js           # Dropdown search tests
 ├── forms.test.js               # Form element tests
 ├── iframes.test.js             # Cross-frame search tests
-├── overlays.test.js            # findOverlayElements tests
+├── overlays.test.js            # Overlay detection tests
 ├── radio-iframe-table.test.js  # Radio/table/iframe tests
 ├── shadow-dom.test.js          # Shadow DOM traversal tests
 ├── switches.test.js            # Switch element tests
 ├── tables.test.js              # Table cell tests
-├── element-inventory.test.js  # getElementInventory tests
 └── fixtures/
     ├── element-types.html      # Test HTML
     ├── forms.html
     └── ...
 ```
 
-**Test Environment**: Real Chrome browser via Selenium WebDriver
+**Element-inventory baselines**: `getElementInventory()` output is validated against committed baselines in `tests/fixtures/element-inventory-baselines/`. Each fixture has a single `<name>.json` baseline generated from real Chrome via Selenium.
+
+`scripts/generate-element-inventory-baselines.js` regenerates all baselines (`npm run test:baselines`). Tests load baselines via `loadElementInventoryBaseline(name)` from `tests/helpers/element-inventory-baseline.js`.
 
 **Example**:
 
 ```javascript
-// tests/integration/types/find-probable-elements.test.js
+// tests/integration/find-elements.test.js
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { createDriver, loadLibrary } from '../helpers/driver-helper.js'
+import { createDriverFixture, loadFixture } from './helpers/driver-helper.js'
 
-describe('findProbableElements - Fallback behavior', () => {
-  let driver
+describe('findElements - Combined search', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('find-elements.html'),
+    injectFinder: true,
+    sleep: 500,
+  })
 
   beforeAll(async () => {
-    driver = await createDriver()
-    await driver.get(`file://${__dirname}/../fixtures/element-types.html`)
-    await loadLibrary(driver)
+    await fixture.setup()
   })
 
   afterAll(async () => {
-    await driver.quit()
+    await fixture.teardown()
   })
 
-  it('should find button when text is in nearby span', async () => {
+  it('should find elements matching both type and text', async () => {
+    const result = await fixture.driver.executeScript(`
+      return ElementFinder.findElements('button', 'Submit');
+    `)
+    expect(result.elements.length).toBe(1)
+    expect(result.elements[0].element?.id).toBe('btn1')
+  })
+
+  it('should return empty when no element matches both type and text', async () => {
+    const result = await fixture.driver.executeScript(`
+      return ElementFinder.findElements('button', 'NonExistent');
+    `)
+    expect(result.elements.length).toBe(0)
+  })
+
+  it('should support exact matching', async () => {
+    const result = await fixture.driver.executeScript(`
+      return ElementFinder.findElements('button', 'Submit', true);
+    `)
+    expect(result.elements.length).toBe(1)
+  })
+
+  it('should handle null parameters (find all)', async () => {
+    const result = await fixture.driver.executeScript(`
+      return ElementFinder.findElements(null, null);
+    `)
+    expect(result.elements.length).toBeGreaterThan(0)
+  })
+})
+```
+
+**Running Tests**:
+
+```bash
+npm test                    # All tests (builds first, then runs integration tests)
+npm test -- find-elements   # Specific file
+npm test -- --run          # Run once, don't watch
+```
+
     const result = await driver.executeScript(`
       return ElementFinder.findProbableElements('button', 'Click Me');
     `)
     expect(result.elements.length).toBe(1)
     expect(result.elements[0].tagName).toBe('BUTTON')
-  })
 
-  it('should find textbox when label text matches', async () => {
-    const result = await driver.executeScript(`
-      return ElementFinder.findProbableElements('textbox', 'Email');
-    `)
-    expect(result.elements.length).toBe(1)
-    expect(result.elements[0].tagName).toBe('INPUT')
-  })
-
-  it('should still find direct matches first', async () => {
-    const result = await driver.executeScript(`
-      return ElementFinder.findProbableElements('button', 'Direct Match Button');
-    `)
-    // Button with text directly in it should be found
-    expect(result.elements.length).toBe(1)
-  })
 })
-```
+
+it('should find textbox when label text matches', async () => {
+const result = await driver.executeScript(`       return ElementFinder.findProbableElements('textbox', 'Email');
+    `)
+expect(result.elements.length).toBe(1)
+expect(result.elements[0].tagName).toBe('INPUT')
+})
+
+it('should still find direct matches first', async () => {
+const result = await driver.executeScript(`       return ElementFinder.findProbableElements('button', 'Direct Match Button');
+    `)
+// Button with text directly in it should be found
+expect(result.elements.length).toBe(1)
+})
+})
+
+````
 
 **Running Integration Tests**:
 
@@ -1861,7 +1827,7 @@ describe('findProbableElements - Fallback behavior', () => {
 npm test -- tests/integration/     # All integration tests
 npm test -- find-probable-elements # Specific suite
 npm run test:integration           # Integration tests only
-```
+````
 
 ### 9.4 Test Coverage Goals
 
@@ -2344,8 +2310,9 @@ Test runner configuration.
 ```javascript
 export default defineConfig({
   test: {
-    environment: 'jsdom', // Use JSDOM for unit tests
-    globals: true, // Global test functions
+    testTimeout: 60000,
+    hookTimeout: 120000,
+    maxWorkers: 4,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
@@ -2776,22 +2743,29 @@ npm run build               # Should create index.js and index.min.js
 }
 ```
 
-**Step 2**: Create unit test
+**Step 2**: Create integration test
 
 ```javascript
-// tests/unit/types.test.js
-it('should match breadcrumb navigation', () => {
-  const html = '<nav aria-label="breadcrumb"><a href="/">Home</a></nav>'
-  const doc = new JSDOM(html).window.document
-  const result = findElementsByType('breadcrumb', null, doc.body)
+// tests/integration/types.test.js
+it('should match breadcrumb navigation', async () => {
+  const result = await fixture.driver.executeScript(`
+    const nav = document.createElement('nav');
+    nav.setAttribute('aria-label', 'breadcrumb');
+    const a = document.createElement('a');
+    a.href = '/';
+    a.textContent = 'Home';
+    nav.appendChild(a);
+    document.body.appendChild(nav);
+    return ElementFinder.findElementsByType('breadcrumb');
+  `)
   expect(result.elements.length).toBe(1)
 })
 ```
 
-**Step 3**: Run unit tests
+**Step 3**: Run tests
 
 ```bash
-npm test -- tests/unit/types.test.js
+npm test -- tests/integration/types.test.js
 ```
 
 **Step 4**: Create integration test
@@ -2885,18 +2859,22 @@ if (DEBUG) {
 **Test Individual Functions**:
 
 ```javascript
-// Unit test to isolate problem
-const html = '<button id="test">Click</button>'
-const doc = new JSDOM(html).window.document
-const button = doc.getElementById('test')
-
-// Test each function in isolation
-console.log('matchesType:', ElementFinder.matchesType(button, 'button'))
-console.log(
-  'matchesAttribute:',
-  ElementFinder.matchesAttribute(button, 'Click'),
-)
-console.log('parseXPath:', ElementFinder.parseXPath('self::button', button))
+// Integration test to isolate problem — inject into real browser
+const result = await driver.executeScript(`
+  const html = '<button id="test">Click</button>'
+  const container = document.createElement('div')
+  container.innerHTML = html
+  document.body.appendChild(container)
+  const button = document.getElementById('test')
+  return {
+    matchesType: ElementFinder.matchesType(button, 'button'),
+    matchesAttribute: ElementFinder.matchesAttribute(button, 'Click'),
+    parseXPath: ElementFinder.parseXPath('self::button', button),
+  }
+`)
+console.log('matchesType:', result.matchesType)
+console.log('matchesAttribute:', result.matchesAttribute)
+console.log('parseXPath:', result.parseXPath)
 ```
 
 **Check Type Definitions**:

@@ -126,7 +126,7 @@ var ElementFinder = (() => {
       (type) => type !== "element" && type !== "iframe"
     )
   );
-  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT", "META", "TITLE", "BASE", "LINK"];
+  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT", "HEAD"];
   var IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
   for (const [type, expr] of Object.entries(element_definitions_default)) {
@@ -680,6 +680,12 @@ var ElementFinder = (() => {
     if (exact ? textContent.trim() === value : textContent.includes(value)) {
       return true;
     }
+    const nearbyLabel = getNearbyLabelText(el);
+    if (nearbyLabel) {
+      if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
+        return true;
+      }
+    }
     return false;
   }
   function matchesType(el, type) {
@@ -1029,6 +1035,12 @@ var ElementFinder = (() => {
     const directText = getDirectText(el);
     if (exact ? directText === value : directText.includes(value)) {
       return true;
+    }
+    const nearbyLabel = getNearbyLabelText(el);
+    if (nearbyLabel) {
+      if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
+        return true;
+      }
     }
     return false;
   }

@@ -64,7 +64,7 @@ describe('ElementFinder - getElementInventory', () => {
     const tree = await fixture.driver.executeScript(`
       return ElementFinder.getElementInventory();
     `);
-    const baseline = loadElementInventoryBaseline('element-inventory.json', { engine: 'chrome' });
+    const baseline = loadElementInventoryBaseline('element-inventory.json');
     expect(tree).toEqual(baseline);
   });
 });
@@ -168,7 +168,7 @@ describe('ElementFinder - getElementInventory cross-origin handling', () => {
     const tree = await fixture.driver.executeScript(`
       return ElementFinder.getElementInventory();
     `);
-    const baseline = loadElementInventoryBaseline('iframes.json', { engine: 'chrome' });
+    const baseline = loadElementInventoryBaseline('iframes.json');
     expect(tree).toEqual(baseline);
   });
 });
@@ -224,9 +224,9 @@ describe('ElementFinder - getElementInventory baseline parity (all browser fixtu
         `);
         // The integration suite runs in a real browser, so it uses the
         // Chrome-specific baseline (tables, shadow DOM and iframes are
-        // traversed differently than in JSDOM). Use tolerance-based comparison
+        // traversed in a real browser). Use tolerance-based comparison
         // to handle sub-pixel bounding box drift across Chrome runs.
-        const baseline = loadElementInventoryBaseline(fixtureName.replace(/\.html$/, '.json'), { engine: 'chrome' });
+        const baseline = loadElementInventoryBaseline(fixtureName.replace(/\.html$/, '.json'));
         // Animations fixture has active @keyframes that move elements between
         // runs, so bounding boxes are inherently unstable — strip them for
         // comparison while still validating structure/counts/types.
@@ -307,6 +307,228 @@ describe('ElementFinder - getElementInventory inViewport flag', () => {
     expect(main.elements).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Offscreen Heading', inViewport: true, formState: null }));
     expect(main.elements).toContainEqual(expect.objectContaining({ type: 'button', description: 'Offscreen Button', inViewport: true, formState: null }));
     expect(main.elements).toContainEqual(expect.objectContaining({ type: 'link', description: 'Offscreen Link', inViewport: true, formState: null }));
+  });
+});
+
+describe('ElementFinder - getElementInventory entry shape and structure', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('element-types-unit.html'),
+    injectFinder: true,
+    sleep: 300
+  });
+
+  beforeAll(async () => {
+    await fixture.setup();
+  });
+
+  afterAll(async () => {
+    await fixture.teardown();
+  });
+
+  it('should return a single frame group for a single-frame page', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    expect(Array.isArray(tree)).toBe(true);
+    expect(tree.length).toBe(1);
+    expect(tree[0].frame).toBe(-1);
+    expect(Array.isArray(tree[0].elements)).toBe(true);
+    expect(tree[0].elements.length).toBeGreaterThan(0);
+  });
+
+  it('should include expected identifiable elements from the main document', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Cancel', formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Click Me', formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Enter name', formState: { value: '' } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Enter email', formState: { value: '' } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'link', description: 'Home', formState: null }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'link', description: 'About', formState: null }));
+  });
+
+  it('should format every entry as an object with a known element type', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const validTypes = await fixture.driver.executeScript(`
+      return Object.keys(ElementFinder.ELEMENT_DEFINITIONS);
+    `);
+    const validTypesSet = new Set(validTypes);
+
+    for (const group of tree) {
+      for (const entry of group.elements) {
+        expect(entry).toHaveProperty('type');
+        expect(entry).toHaveProperty('description');
+        expect(entry).toHaveProperty('boundingBox');
+        expect(entry).toHaveProperty('index');
+        expect(entry).toHaveProperty('inViewport');
+        expect(entry).toHaveProperty('formState');
+        // boundingBox shape check
+        expect(entry.boundingBox).toHaveProperty('x');
+        expect(entry.boundingBox).toHaveProperty('y');
+        expect(entry.boundingBox).toHaveProperty('width');
+        expect(entry.boundingBox).toHaveProperty('height');
+        expect(entry.boundingBox).toHaveProperty('top');
+        expect(entry.boundingBox).toHaveProperty('bottom');
+        expect(entry.boundingBox).toHaveProperty('left');
+        expect(entry.boundingBox).toHaveProperty('right');
+        expect(entry.boundingBox).toHaveProperty('midx');
+        expect(entry.boundingBox).toHaveProperty('midy');
+        expect(typeof entry.description === 'string' || entry.description === null).toBe(true);
+        expect(typeof entry.index).toBe('number');
+        expect(typeof entry.inViewport).toBe('boolean');
+        expect(validTypesSet.has(entry.type)).toBe(true);
+      }
+    }
+  });
+
+  it('should expose an inViewport boolean on every element', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    for (const group of tree) {
+      for (const entry of group.elements) {
+        expect(typeof entry.inViewport).toBe('boolean');
+      }
+    }
+  });
+
+  it('should match the committed baseline for element-types-unit.html', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const baseline = loadElementInventoryBaseline('element-types-unit.json');
+    expect(tree).toEqual(baseline);
+  });
+});
+
+describe('ElementFinder - getElementInventory enrichment options', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('demo-page.html'),
+    injectFinder: true,
+    sleep: 300
+  });
+
+  beforeAll(async () => {
+    await fixture.setup();
+  });
+
+  afterAll(async () => {
+    await fixture.teardown();
+  });
+
+  it('default tree includes text-less form controls with nearby labels and form state', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const entries = tree[0].elements;
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'radio', description: 'RadioButton 1', formState: { set: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'dropdown', description: 'Select Dropdown', formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%', 'Set to 50%', 'Set to 75%'] } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Enter text here...', formState: { value: '' } }));
+  });
+
+  it('nearby labels rescue text from for-associated labels', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const entries = tree[0].elements;
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox', formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'radio', description: 'RadioButton 1', formState: { set: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'dropdown', description: 'Select Dropdown', formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%', 'Set to 50%', 'Set to 75%'] } }));
+  });
+
+  it('explicit aria-label wins over a nearby label', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const entries = tree[0].elements;
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', formState: { checked: false } }));
+    expect(entries.some((e) => e.type === 'checkbox' && e.description === 'Nearby Label')).toBe(false);
+  });
+
+  it('placeholder wins over a nearby label', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const entries = tree[0].elements;
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Enter text here...', formState: { value: '' } }));
+  });
+
+  it('text-less controls get a positional index when no text is available', async () => {
+    // demo-page.html has a single textbox with a placeholder, so it gets
+    // a description. Verify the textbox is included with its placeholder text.
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const entries = tree[0].elements;
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Enter text here...', formState: { value: '' } }));
+  });
+
+  it('non-form text-less elements stay excluded', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const entries = tree[0].elements;
+    const divs = entries.filter((e) => e.type === 'element');
+    expect(divs.every((e) => !e.description || !e.description.startsWith('#'))).toBe(true);
+  });
+
+  it('form state is appended to form controls by default', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+    const entries = tree[0].elements;
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'checkbox', description: 'CheckBox in iFrame', formState: { checked: false } }));
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'dropdown', description: 'Select Dropdown', formState: { selected: 'Please choose...', options: ['Please choose...', 'Set to 25%', 'Set to 50%', 'Set to 75%'] } }));
+  });
+
+  it('getElementDescriptor exposes nearby label', async () => {
+    const descriptor = await fixture.driver.executeScript(`
+      const cb = document.getElementById('checkbox-in-iframe');
+      return ElementFinder.getElementDescriptor(cb, true);
+    `);
+    expect(descriptor.identifiableText).toBe('CheckBox in iFrame');
+    expect(descriptor.attributeName).toBe('label');
+  });
+
+  it('identified elements get an occurrence index within their (type, text) group', async () => {
+    const result = await fixture.driver.executeScript(`
+      const scope = document.createElement('div');
+      scope.innerHTML = '<button>Submit</button><button>Cancel</button><button>Submit</button>';
+      document.body.appendChild(scope);
+      const tree = ElementFinder.getElementInventory(scope);
+      const entries = tree[0].elements.filter(e => e.type === 'button');
+      document.body.removeChild(scope);
+      return entries;
+    `);
+    expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', index: 1 }));
+    expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', index: 2 }));
+    expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Cancel', index: 1 }));
+  });
+
+  it('text-less controls keep the type-only positional #N index', async () => {
+    const result = await fixture.driver.executeScript(`
+      const scope = document.createElement('div');
+      scope.innerHTML = '<button>Submit</button><button></button><button>Cancel</button>';
+      document.body.appendChild(scope);
+      const tree = ElementFinder.getElementInventory(scope);
+      const entries = tree[0].elements.filter(e => e.type === 'button');
+      document.body.removeChild(scope);
+      return entries;
+    `);
+    const textless = result.find((e) => e.description === null);
+    expect(textless).toBeDefined();
+    expect(textless.index).toBe(2);
   });
 });
 

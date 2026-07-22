@@ -91,7 +91,7 @@ describe('ElementFinder - Iframes Fixture', () => {
       // reference across the frame boundary, so they have frameIndex !== -1
       // and no `element` property.
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
-      expect(iframeElements.length).toBe(2);
+      expect(iframeElements.length).toBe(4);
     });
 
     it('should find elements by id attribute and validate first match', async () => {
@@ -158,7 +158,7 @@ describe('ElementFinder - Iframes Fixture', () => {
       // the two same-origin iframe elements (returned without element refs).
       expect(resultLower.elements.length).toBe(0);
       const upperIframe = resultUpper.elements.filter(e => !e.element && e.frameIndex !== -1);
-      expect(upperIframe.length).toBe(2);
+      expect(upperIframe.length).toBe(4);
     });
   });
 });
