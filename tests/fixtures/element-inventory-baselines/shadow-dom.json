@@ -74,7 +74,7 @@
         "description": "Comprehensive test",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "element"
       },
       {
@@ -93,7 +93,7 @@
         "description": "section-basic",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "element"
       },
       {
@@ -112,7 +112,7 @@
         "description": "Section 1 — Basic Shadow",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "element"
       },
       {
@@ -131,7 +131,7 @@
         "description": "Single Shadow Host with",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "heading"
       },
       {
@@ -150,7 +150,7 @@
         "description": "Each element type",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 6,
         "type": "element"
       },
       {
@@ -169,7 +169,7 @@
         "description": "basic-shadow-host",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 7,
         "type": "element"
       },
       {
@@ -188,7 +188,7 @@
         "description": "Full Name",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 8,
         "type": "element"
       },
       {
@@ -207,7 +207,7 @@
         "description": "Full Name",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 9,
         "type": "element"
       },
       {
@@ -247,7 +247,7 @@
         "description": "Email Address",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 10,
         "type": "element"
       },
       {
@@ -266,7 +266,7 @@
         "description": "Email Address",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 11,
         "type": "element"
       },
       {
@@ -287,7 +287,7 @@
           "value": ""
         },
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "textbox"
       },
       {
@@ -306,7 +306,7 @@
         "description": "Role",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 12,
         "type": "element"
       },
       {
@@ -325,7 +325,7 @@
         "description": "Role",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 13,
         "type": "element"
       },
       {
@@ -371,7 +371,7 @@
         "description": "Select role...",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 14,
         "type": "element"
       },
       {
@@ -390,7 +390,7 @@
         "description": "Administrator",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 15,
         "type": "element"
       },
       {
@@ -409,7 +409,7 @@
         "description": "Regular User",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 16,
         "type": "element"
       },
       {
@@ -428,7 +428,7 @@
         "description": "Guest",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 17,
         "type": "element"
       },
       {
@@ -447,7 +447,7 @@
         "description": "I accept the terms and",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 18,
         "type": "element"
       },
       {
@@ -487,7 +487,7 @@
         "description": "I accept the terms and",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 19,
         "type": "element"
       },
       {
@@ -506,7 +506,7 @@
         "description": "Submit",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 20,
         "type": "element"
       },
       {
@@ -544,7 +544,7 @@
         "description": "Cancel",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "button"
       },
       {
@@ -563,7 +563,7 @@
         "description": "Need help?",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 21,
         "type": "element"
       },
       {
@@ -601,7 +601,7 @@
         "description": "section-multiple",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 22,
         "type": "element"
       },
       {
@@ -620,7 +620,7 @@
         "description": "Section 2 — Multiple",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 23,
         "type": "element"
       },
       {
@@ -639,7 +639,7 @@
         "description": "Independent Shadow Hosts",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "heading"
       },
       {
@@ -658,7 +658,7 @@
         "description": "Two shadow hosts",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 24,
         "type": "element"
       },
       {
@@ -677,7 +677,7 @@
         "description": "Host A — Login Form",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 25,
         "type": "element"
       },
       {
@@ -696,7 +696,7 @@
         "description": "Host A — Login Form",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 26,
         "type": "element"
       },
       {
@@ -715,7 +715,7 @@
         "description": "Host A — Login Form",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 27,
         "type": "element"
       },
       {
@@ -734,7 +734,7 @@
         "description": "multiple-host-a",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 28,
         "type": "element"
       },
       {
@@ -753,7 +753,7 @@
         "description": "Username",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 29,
         "type": "element"
       },
       {
@@ -774,7 +774,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "textbox"
       },
       {
@@ -793,7 +793,7 @@
         "description": "Password",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 30,
         "type": "element"
       },
       {
@@ -814,7 +814,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "textbox"
       },
       {
@@ -833,7 +833,7 @@
         "description": "Submit",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 3,
         "type": "button"
       },
       {
@@ -852,7 +852,7 @@
         "description": "Forgot password?",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "link"
       },
       {
@@ -871,7 +871,7 @@
         "description": "Host B — Signup Form",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 31,
         "type": "element"
       },
       {
@@ -890,7 +890,7 @@
         "description": "Host B — Signup Form",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 32,
         "type": "element"
       },
       {
@@ -909,7 +909,7 @@
         "description": "multiple-host-b",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 33,
         "type": "element"
       },
       {
@@ -928,7 +928,7 @@
         "description": "Full Name",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 34,
         "type": "element"
       },
       {
@@ -949,7 +949,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 5,
         "type": "textbox"
       },
       {
@@ -968,7 +968,7 @@
         "description": "Email",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 35,
         "type": "element"
       },
       {
@@ -989,7 +989,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 6,
         "type": "textbox"
       },
       {
@@ -1008,7 +1008,7 @@
         "description": "Submit",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 4,
         "type": "button"
       },
       {
@@ -1027,7 +1027,7 @@
         "description": "Terms of Service",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "link"
       },
       {
@@ -1046,7 +1046,7 @@
         "description": "section-nested",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 36,
         "type": "element"
       },
       {
@@ -1065,7 +1065,7 @@
         "description": "Section 3 — Nested",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 37,
         "type": "element"
       },
       {
@@ -1084,7 +1084,7 @@
         "description": "Two-Level Nested Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "heading"
       },
       {
@@ -1103,7 +1103,7 @@
         "description": "Outer shadow host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 38,
         "type": "element"
       },
       {
@@ -1122,7 +1122,7 @@
         "description": "nested-outer-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 39,
         "type": "element"
       },
       {
@@ -1141,7 +1141,7 @@
         "description": "Outer Shadow Content",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 40,
         "type": "element"
       },
       {
@@ -1160,7 +1160,7 @@
         "description": "Outer Shadow Content",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 41,
         "type": "element"
       },
       {
@@ -1179,7 +1179,7 @@
         "description": "Outer Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 5,
         "type": "button"
       },
       {
@@ -1198,7 +1198,7 @@
         "description": "Inner Shadow Content",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 43,
         "type": "element"
       },
       {
@@ -1217,7 +1217,7 @@
         "description": "Inner Shadow Content",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 44,
         "type": "element"
       },
       {
@@ -1238,7 +1238,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 7,
         "type": "textbox"
       },
       {
@@ -1257,7 +1257,7 @@
         "description": "Inner Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 6,
         "type": "button"
       },
       {
@@ -1278,7 +1278,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "checkbox"
       },
       {
@@ -1297,7 +1297,7 @@
         "description": "Inner checkbox",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 45,
         "type": "element"
       },
       {
@@ -1316,7 +1316,7 @@
         "description": "Three-Level Deep Nested",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 5,
         "type": "heading"
       },
       {
@@ -1335,7 +1335,7 @@
         "description": "Triple nesting to test",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 46,
         "type": "element"
       },
       {
@@ -1354,7 +1354,7 @@
         "description": "deep-nested-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 47,
         "type": "element"
       },
       {
@@ -1373,7 +1373,7 @@
         "description": "Level 1 Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 48,
         "type": "element"
       },
       {
@@ -1392,7 +1392,7 @@
         "description": "Level 1 Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 49,
         "type": "element"
       },
       {
@@ -1411,7 +1411,7 @@
         "description": "Level 1 Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 7,
         "type": "button"
       },
       {
@@ -1430,7 +1430,7 @@
         "description": "Level 2 Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 51,
         "type": "element"
       },
       {
@@ -1449,7 +1449,7 @@
         "description": "Level 2 Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 52,
         "type": "element"
       },
       {
@@ -1470,7 +1470,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 8,
         "type": "textbox"
       },
       {
@@ -1489,7 +1489,7 @@
         "description": "Level 3 Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 54,
         "type": "element"
       },
       {
@@ -1508,7 +1508,7 @@
         "description": "Level 3 Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 55,
         "type": "element"
       },
       {
@@ -1527,7 +1527,7 @@
         "description": "Level 3 Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 8,
         "type": "button"
       },
       {
@@ -1548,7 +1548,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "checkbox"
       },
       {
@@ -1567,7 +1567,7 @@
         "description": "Level 3 checkbox",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 56,
         "type": "element"
       },
       {
@@ -1586,7 +1586,7 @@
         "description": "section-spatial",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 57,
         "type": "element"
       },
       {
@@ -1605,7 +1605,7 @@
         "description": "Section 4 — Spatial",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 58,
         "type": "element"
       },
       {
@@ -1624,7 +1624,7 @@
         "description": "Shadow Elements with",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 6,
         "type": "heading"
       },
       {
@@ -1643,7 +1643,7 @@
         "description": "Layout designed to test",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 59,
         "type": "element"
       },
       {
@@ -1662,7 +1662,7 @@
         "description": "spatial-shadow-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 60,
         "type": "element"
       },
       {
@@ -1681,7 +1681,7 @@
         "description": "spatial-container",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 61,
         "type": "element"
       },
       {
@@ -1700,7 +1700,7 @@
         "description": "Container Section",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 62,
         "type": "element"
       },
       {
@@ -1721,7 +1721,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 9,
         "type": "textbox"
       },
       {
@@ -1740,7 +1740,7 @@
         "description": "Container Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 9,
         "type": "button"
       },
       {
@@ -1759,7 +1759,7 @@
         "description": "Personal Information",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 63,
         "type": "element"
       },
       {
@@ -1780,7 +1780,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 10,
         "type": "textbox"
       },
       {
@@ -1799,7 +1799,7 @@
         "description": "Below Heading Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 10,
         "type": "button"
       },
       {
@@ -1818,7 +1818,7 @@
         "description": "Left Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 64,
         "type": "element"
       },
       {
@@ -1837,7 +1837,7 @@
         "description": "Left Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 11,
         "type": "button"
       },
       {
@@ -1858,7 +1858,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 11,
         "type": "textbox"
       },
       {
@@ -1877,7 +1877,7 @@
         "description": "Far Right",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 12,
         "type": "button"
       },
       {
@@ -1896,7 +1896,7 @@
         "description": "Near Reference",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 65,
         "type": "element"
       },
       {
@@ -1915,7 +1915,7 @@
         "description": "Near Reference",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 66,
         "type": "element"
       },
       {
@@ -1934,7 +1934,7 @@
         "description": "Near Reference",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 67,
         "type": "element"
       },
       {
@@ -1953,7 +1953,7 @@
         "description": "Nearby Link",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "link"
       },
       {
@@ -1972,7 +1972,7 @@
         "description": "Another Label",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 68,
         "type": "element"
       },
       {
@@ -1991,7 +1991,7 @@
         "description": "Another Label",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 69,
         "type": "element"
       },
       {
@@ -2010,7 +2010,7 @@
         "description": "Near Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 13,
         "type": "button"
       },
       {
@@ -2029,7 +2029,7 @@
         "description": "Column A Label",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 70,
         "type": "element"
       },
       {
@@ -2048,7 +2048,7 @@
         "description": "Column A Label",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 71,
         "type": "element"
       },
       {
@@ -2067,7 +2067,7 @@
         "description": "Column A Label",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 72,
         "type": "element"
       },
       {
@@ -2088,7 +2088,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 12,
         "type": "textbox"
       },
       {
@@ -2107,7 +2107,7 @@
         "description": "Column B Label",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 73,
         "type": "element"
       },
       {
@@ -2126,7 +2126,7 @@
         "description": "Column B Label",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 74,
         "type": "element"
       },
       {
@@ -2147,7 +2147,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 13,
         "type": "textbox"
       },
       {
@@ -2166,7 +2166,7 @@
         "description": "section-iframe",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 75,
         "type": "element"
       },
       {
@@ -2185,7 +2185,7 @@
         "description": "Section 5 — Shadow DOM",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 76,
         "type": "element"
       },
       {
@@ -2204,7 +2204,7 @@
         "description": "Shadow Host Within an",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 7,
         "type": "heading"
       },
       {
@@ -2223,7 +2223,7 @@
         "description": "Tests the combination of",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 77,
         "type": "element"
       },
       {
@@ -2261,7 +2261,7 @@
         "description": "section-closed",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 78,
         "type": "element"
       },
       {
@@ -2280,7 +2280,7 @@
         "description": "Section 6 — Closed",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 79,
         "type": "element"
       },
       {
@@ -2299,7 +2299,7 @@
         "description": "Closed Shadow Root",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 8,
         "type": "heading"
       },
       {
@@ -2318,7 +2318,7 @@
         "description": "Closed shadow roots",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 80,
         "type": "element"
       },
       {
@@ -2337,7 +2337,7 @@
         "description": "Closed Shadow Root",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 81,
         "type": "element"
       },
       {
@@ -2356,7 +2356,7 @@
         "description": "section-dynamic",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 82,
         "type": "element"
       },
       {
@@ -2375,7 +2375,7 @@
         "description": "Section 7 — Dynamic",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 83,
         "type": "element"
       },
       {
@@ -2394,7 +2394,7 @@
         "description": "Dynamically Created",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 9,
         "type": "heading"
       },
       {
@@ -2413,7 +2413,7 @@
         "description": "Shadow root is attached",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 84,
         "type": "element"
       },
       {
@@ -2432,7 +2432,7 @@
         "description": "dynamic-shadow-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 85,
         "type": "element"
       },
       {
@@ -2451,7 +2451,7 @@
         "description": "Shadow root will be",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 86,
         "type": "element"
       },
       {
@@ -2470,7 +2470,7 @@
         "description": "Shadow Content Mutation",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 10,
         "type": "heading"
       },
       {
@@ -2489,7 +2489,7 @@
         "description": "Shadow content is",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 87,
         "type": "element"
       },
       {
@@ -2508,7 +2508,7 @@
         "description": "mutable-shadow-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 88,
         "type": "element"
       },
       {
@@ -2527,7 +2527,7 @@
         "description": "Original Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 14,
         "type": "button"
       },
       {
@@ -2546,7 +2546,7 @@
         "description": "Mutate Shadow Content",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 15,
         "type": "button"
       },
       {
@@ -2565,7 +2565,7 @@
         "description": "section-webcomponents",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 89,
         "type": "element"
       },
       {
@@ -2584,7 +2584,7 @@
         "description": "Section 8 — Web",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 90,
         "type": "element"
       },
       {
@@ -2603,7 +2603,7 @@
         "description": "Custom Elements with",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 11,
         "type": "heading"
       },
       {
@@ -2622,7 +2622,7 @@
         "description": "Registered custom",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 91,
         "type": "element"
       },
       {
@@ -2641,7 +2641,7 @@
         "description": "Component Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 16,
         "type": "button"
       },
       {
@@ -2660,7 +2660,7 @@
         "description": "Type here",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 93,
         "type": "element"
       },
       {
@@ -2679,7 +2679,7 @@
         "description": "Component Input",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 94,
         "type": "element"
       },
       {
@@ -2700,7 +2700,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 14,
         "type": "textbox"
       },
       {
@@ -2719,7 +2719,7 @@
         "description": "Component Toggle",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 96,
         "type": "element"
       },
       {
@@ -2740,7 +2740,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "checkbox"
       },
       {
@@ -2759,7 +2759,7 @@
         "description": "Component Toggle",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 97,
         "type": "element"
       },
       {
@@ -2778,7 +2778,7 @@
         "description": "section-combined",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 98,
         "type": "element"
       },
       {
@@ -2797,7 +2797,7 @@
         "description": "Section 9 — Combined",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 99,
         "type": "element"
       },
       {
@@ -2816,7 +2816,7 @@
         "description": "Mixed Regular and Shadow",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 12,
         "type": "heading"
       },
       {
@@ -2835,7 +2835,7 @@
         "description": "Same element types exist",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 100,
         "type": "element"
       },
       {
@@ -2854,7 +2854,7 @@
         "description": "Regular DOM",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 101,
         "type": "element"
       },
       {
@@ -2873,7 +2873,7 @@
         "description": "Regular DOM",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 102,
         "type": "element"
       },
       {
@@ -2892,7 +2892,7 @@
         "description": "Regular DOM",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 13,
         "type": "heading"
       },
       {
@@ -2911,7 +2911,7 @@
         "description": "Submit",
         "formState": null,
         "inViewport": false,
-        "index": 4,
+        "index": 17,
         "type": "button"
       },
       {
@@ -2932,7 +2932,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 2,
+        "index": 15,
         "type": "textbox"
       },
       {
@@ -2953,7 +2953,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 5,
         "type": "checkbox"
       },
       {
@@ -2972,7 +2972,7 @@
         "description": "Accept terms",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 103,
         "type": "element"
       },
       {
@@ -2991,7 +2991,7 @@
         "description": "Shadow DOM",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 104,
         "type": "element"
       },
       {
@@ -3010,7 +3010,7 @@
         "description": "Shadow DOM",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 14,
         "type": "heading"
       },
       {
@@ -3029,7 +3029,7 @@
         "description": "combined-shadow-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 105,
         "type": "element"
       },
       {
@@ -3048,7 +3048,7 @@
         "description": "Submit",
         "formState": null,
         "inViewport": false,
-        "index": 5,
+        "index": 18,
         "type": "button"
       },
       {
@@ -3067,7 +3067,7 @@
         "description": "Username",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 106,
         "type": "element"
       },
       {
@@ -3088,7 +3088,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 3,
+        "index": 16,
         "type": "textbox"
       },
       {
@@ -3109,7 +3109,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 6,
         "type": "checkbox"
       },
       {
@@ -3128,7 +3128,7 @@
         "description": "Accept terms",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 107,
         "type": "element"
       },
       {
@@ -3147,7 +3147,7 @@
         "description": "section-edge",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 108,
         "type": "element"
       },
       {
@@ -3166,7 +3166,7 @@
         "description": "Section 10 — Edge Cases",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 109,
         "type": "element"
       },
       {
@@ -3185,7 +3185,7 @@
         "description": "Empty Shadow Root",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 15,
         "type": "heading"
       },
       {
@@ -3204,7 +3204,7 @@
         "description": "empty-shadow-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 110,
         "type": "element"
       },
       {
@@ -3223,7 +3223,7 @@
         "description": "Shadow Root with Only",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 16,
         "type": "heading"
       },
       {
@@ -3242,7 +3242,7 @@
         "description": "textonly-shadow-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 111,
         "type": "element"
       },
       {
@@ -3261,7 +3261,7 @@
         "description": "Five-Level Deep Nesting",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 17,
         "type": "heading"
       },
       {
@@ -3280,7 +3280,7 @@
         "description": "Extreme nesting depth to",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 112,
         "type": "element"
       },
       {
@@ -3299,7 +3299,7 @@
         "description": "five-level-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 113,
         "type": "element"
       },
       {
@@ -3318,7 +3318,7 @@
         "description": "L1",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 114,
         "type": "element"
       },
       {
@@ -3337,7 +3337,7 @@
         "description": "L2",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 116,
         "type": "element"
       },
       {
@@ -3356,7 +3356,7 @@
         "description": "L3",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 118,
         "type": "element"
       },
       {
@@ -3375,7 +3375,7 @@
         "description": "L4",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 120,
         "type": "element"
       },
       {
@@ -3394,7 +3394,7 @@
         "description": "L5",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 122,
         "type": "element"
       },
       {
@@ -3413,7 +3413,7 @@
         "description": "Deepest Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 19,
         "type": "button"
       }
     ],
@@ -3495,7 +3495,7 @@
         "description": "Regular iFrame Input",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "element"
       },
       {
@@ -3554,7 +3554,7 @@
         "description": "Shadow DOM inside this",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "element"
       },
       {
@@ -3573,7 +3573,7 @@
         "description": "frame-shadow-host",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 6,
         "type": "element"
       },
       {
@@ -3592,7 +3592,7 @@
         "description": "Shadow Input in Frame",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 7,
         "type": "element"
       },
       {
@@ -3613,7 +3613,7 @@
           "value": ""
         },
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "textbox"
       },
       {
@@ -3632,7 +3632,7 @@
         "description": "Shadow Frame Button",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "button"
       },
       {
@@ -3672,7 +3672,7 @@
         "description": "Frame shadow checkbox",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 8,
         "type": "element"
       },
       {
@@ -3691,7 +3691,7 @@
         "description": "Nested Shadow inside",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 10,
         "type": "element"
       },
       {
@@ -3710,7 +3710,7 @@
         "description": "frame-nested-shadow-host",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 11,
         "type": "element"
       },
       {
@@ -3729,7 +3729,7 @@
         "description": "Frame Nested Outer",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 12,
         "type": "element"
       },
       {
@@ -3748,7 +3748,7 @@
         "description": "Frame Nested Outer",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 13,
         "type": "element"
       },
       {
@@ -3767,7 +3767,7 @@
         "description": "Frame Outer Button",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "button"
       },
       {
@@ -3786,7 +3786,7 @@
         "description": "Frame Nested Inner",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 15,
         "type": "element"
       },
       {
@@ -3805,7 +3805,7 @@
         "description": "Frame Nested Inner",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 16,
         "type": "element"
       },
       {
@@ -3826,7 +3826,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "textbox"
       },
       {
@@ -3845,7 +3845,7 @@
         "description": "Frame Inner Button",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "button"
       }
     ],

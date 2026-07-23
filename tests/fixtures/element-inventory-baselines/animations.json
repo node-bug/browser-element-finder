@@ -43,13 +43,13 @@
         "boundingBox": {
           "bottom": 26,
           "height": 18,
-          "left": 31.89,
-          "midx": 401.89,
+          "left": 29.96,
+          "midx": 399.96,
           "midy": 17,
-          "right": 771.89,
+          "right": 769.96,
           "top": 8,
           "width": 740,
-          "x": 31.89,
+          "x": 29.96,
           "y": 8
         },
         "description": "Animated Box",
@@ -74,7 +74,7 @@
         "description": "Fade Box",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "element"
       },
       {
@@ -93,20 +93,20 @@
         "description": "Static Box",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "element"
       },
       {
         "boundingBox": {
           "bottom": 83,
           "height": 21,
-          "left": 31.89,
-          "midx": 89.18,
+          "left": 29.96,
+          "midx": 87.24,
           "midy": 72.5,
-          "right": 146.46,
+          "right": 144.52,
           "top": 62,
           "width": 114.56,
-          "x": 31.89,
+          "x": 29.96,
           "y": 62
         },
         "description": "Animated Button",

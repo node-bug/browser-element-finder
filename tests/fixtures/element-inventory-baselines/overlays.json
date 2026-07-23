@@ -93,7 +93,7 @@
         "description": "This is regular page",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "element"
       },
       {
@@ -150,7 +150,7 @@
         "description": "Aria Dialog",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "heading"
       },
       {
@@ -169,7 +169,7 @@
         "description": "This is an ARIA modal",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "element"
       },
       {
@@ -188,7 +188,7 @@
         "description": "Close",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "button"
       },
       {
@@ -207,7 +207,7 @@
         "description": "native-dialog",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 6,
         "type": "element"
       },
       {
@@ -226,7 +226,7 @@
         "description": "Native Dialog",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "heading"
       },
       {
@@ -245,7 +245,7 @@
         "description": "This is a native HTML",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 7,
         "type": "element"
       },
       {
@@ -264,7 +264,7 @@
         "description": "Close",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 3,
         "type": "button"
       },
       {
@@ -283,7 +283,7 @@
         "description": "cookie-banner",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 8,
         "type": "element"
       },
       {
@@ -302,7 +302,7 @@
         "description": "We use cookies.",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 9,
         "type": "element"
       },
       {
@@ -321,7 +321,7 @@
         "description": "Accept All",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "button"
       },
       {
@@ -340,7 +340,7 @@
         "description": "toast",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 10,
         "type": "element"
       },
       {
@@ -359,7 +359,7 @@
         "description": "Action completed",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 11,
         "type": "element"
       },
       {
@@ -378,7 +378,7 @@
         "description": "popover-element",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 12,
         "type": "element"
       },
       {
@@ -397,7 +397,7 @@
         "description": "Popover Content",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "heading"
       },
       {
@@ -416,7 +416,7 @@
         "description": "This uses the Popover",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 13,
         "type": "element"
       },
       {
@@ -435,7 +435,7 @@
         "description": "alert-dialog",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "dialog"
       },
       {
@@ -454,7 +454,7 @@
         "description": "Alert Dialog",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "heading"
       },
       {
@@ -473,7 +473,7 @@
         "description": "Are you sure?",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 14,
         "type": "element"
       },
       {
@@ -492,7 +492,7 @@
         "description": "Yes",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "button"
       },
       {
@@ -511,7 +511,7 @@
         "description": "No",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 6,
         "type": "button"
       },
       {
@@ -530,7 +530,7 @@
         "description": "backdrop",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 15,
         "type": "element"
       }
     ],
@@ -551,7 +551,7 @@
       "description": "alert-dialog",
       "formState": null,
       "inViewport": true,
-      "index": 1,
+      "index": 2,
       "type": "dialog"
     }
   }

@@ -1147,7 +1147,6 @@ var ElementFinder = (() => {
   function collectInventoryEntries(elements) {
     const entries = [];
     const typePos = /* @__PURE__ */ new Map();
-    const typeTextPos = /* @__PURE__ */ new Map();
     const overlayCandidates = [];
     const overlayCount = /* @__PURE__ */ new Map();
     const overlayCandidateSet = /* @__PURE__ */ new Set();
@@ -1194,9 +1193,7 @@ var ElementFinder = (() => {
         index = pos;
       } else {
         text = identifiableText;
-        const key = type + "\0" + identifiableText;
-        index = (typeTextPos.get(key) || 0) + 1;
-        typeTextPos.set(key, index);
+        index = pos;
       }
       const formState = getFormState(el, type);
       const vp = inViewport(el);

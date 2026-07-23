@@ -1784,15 +1784,14 @@ function findFrameIndexForElement(el) {
  * large pages. The output only needs each element's type, its identifiable text
  * (or a positional #N for text-less elements), its viewport membership, and its
  * form state, so we compute those once here and track the running 1-based
- * position per type for the #N fallback.
+ * position per type.
  *
  * @param {Element[]} elements - Elements to inventory (already filtered to the desired scope)
  * @returns {{entries: Array<{type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, inViewport: boolean, formState: Object|null, index: number}|null}} Inventory entries plus the dominant visible overlay
  */
 function collectInventoryEntries(elements) {
   const entries = [];
-  const typePos = new Map(); // type -> running count (for #N fallback)
-  const typeTextPos = new Map(); // "type\u0000text" -> running count (occurrence index for identified elements)
+  const typePos = new Map(); // type -> running count (positional #N for all elements)
   // Visible overlays that are themselves inventory entries (so they carry a
   // type + index we can report). Keyed by element for O(1) ancestor lookup.
   const overlayCandidates = [];
@@ -1818,9 +1817,7 @@ function collectInventoryEntries(elements) {
     let index;
     if (!identifiableText) {
       // Text-less elements: only real element types (not `element`/`iframe`)
-      // are included, using a null description and a separate index field
-      // so they remain actionable. Their index is the running position among
-      // same-type elements (the #N fallback).
+      // are included, using a null description and the positional #N index.
       if (!TEXTLESS_TYPES.has(type)) {
         // Even though this element won't be an inventory entry, it can still
         // be a visible overlay container (e.g., <div class="modal"> with no
@@ -1857,12 +1854,10 @@ function collectInventoryEntries(elements) {
       index = pos;
     } else {
       text = identifiableText;
-      // Identified elements get an occurrence index within their (type, text)
-      // group, consistent with getElementDescriptor(). The first occurrence is
-      // 1, the second 2, and so on; unique text resets to 1.
-      const key = type + '\u0000' + identifiableText;
-      index = (typeTextPos.get(key) || 0) + 1;
-      typeTextPos.set(key, index);
+      // All elements (identified or text-less) use the same positional #N
+      // index — a running count per type. The first button is index 1,
+      // the second button is index 2, regardless of their text content.
+      index = pos;
     }
 
     const formState = getFormState(el, type);

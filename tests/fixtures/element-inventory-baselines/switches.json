@@ -93,7 +93,7 @@
         "description": "A single-page HTML suite",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "element"
       },
       {
@@ -112,7 +112,7 @@
         "description": "browser.switch('target').on()",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "element"
       },
       {
@@ -131,7 +131,7 @@
         "description": "Standard Switch",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 6,
         "type": "element"
       },
       {
@@ -150,7 +150,7 @@
         "description": "Standard Checkbox Switch",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 7,
         "type": "element"
       },
       {
@@ -169,7 +169,7 @@
         "description": "Standard Checkbox Switch",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 8,
         "type": "element"
       },
       {
@@ -188,7 +188,7 @@
         "description": "Standard Checkbox Switch",
         "formState": null,
         "inViewport": true,
-        "index": 3,
+        "index": 9,
         "type": "element"
       },
       {
@@ -207,7 +207,7 @@
         "description": "The real checkbox is",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 10,
         "type": "element"
       },
       {
@@ -226,7 +226,7 @@
         "description": ".slider",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 11,
         "type": "element"
       },
       {
@@ -266,7 +266,7 @@
         "description": "ARIA Div Switch",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 14,
         "type": "element"
       },
       {
@@ -285,7 +285,7 @@
         "description": "ARIA Div Switch",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 15,
         "type": "element"
       },
       {
@@ -304,7 +304,7 @@
         "description": "ARIA Div Switch",
         "formState": null,
         "inViewport": true,
-        "index": 3,
+        "index": 16,
         "type": "element"
       },
       {
@@ -323,7 +323,7 @@
         "description": "No native form controls.",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 17,
         "type": "element"
       },
       {
@@ -342,7 +342,7 @@
         "description": "aria-checked",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 18,
         "type": "element"
       },
       {
@@ -382,7 +382,7 @@
         "description": "Native Button Switch",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 19,
         "type": "element"
       },
       {
@@ -401,7 +401,7 @@
         "description": "Native Button Switch",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 20,
         "type": "element"
       },
       {
@@ -420,7 +420,7 @@
         "description": "Native Button Switch",
         "formState": null,
         "inViewport": true,
-        "index": 3,
+        "index": 21,
         "type": "element"
       },
       {
@@ -439,7 +439,7 @@
         "description": "Standard HTML button",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 22,
         "type": "element"
       },
       {
@@ -477,7 +477,7 @@
         "description": "Bare Native Checkbox",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 23,
         "type": "element"
       },
       {
@@ -496,7 +496,7 @@
         "description": "Bare Native Checkbox",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 24,
         "type": "element"
       },
       {
@@ -515,7 +515,7 @@
         "description": "Bare Native Checkbox",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 25,
         "type": "element"
       },
       {
@@ -534,7 +534,7 @@
         "description": "Unstyled baseline",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 26,
         "type": "element"
       },
       {
@@ -553,7 +553,7 @@
         "description": ".click()",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 27,
         "type": "element"
       },
       {
@@ -572,7 +572,7 @@
         "description": ".check()",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 28,
         "type": "element"
       },
       {
@@ -593,7 +593,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "checkbox"
       },
       {
@@ -612,7 +612,7 @@
         "description": "Advanced Contexts &",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 29,
         "type": "element"
       },
       {
@@ -631,7 +631,7 @@
         "description": "Disabled Control Switch",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 30,
         "type": "element"
       },
       {
@@ -650,7 +650,7 @@
         "description": "Disabled Control Switch",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 31,
         "type": "element"
       },
       {
@@ -669,7 +669,7 @@
         "description": "Disabled Control Switch",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 32,
         "type": "element"
       },
       {
@@ -688,7 +688,7 @@
         "description": "Validates if the",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 33,
         "type": "element"
       },
       {
@@ -709,7 +709,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "checkbox"
       },
       {
@@ -728,7 +728,7 @@
         "description": "Switch inside Shadow DOM",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 36,
         "type": "element"
       },
       {
@@ -747,7 +747,7 @@
         "description": "Switch inside Shadow DOM",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 37,
         "type": "element"
       },
       {
@@ -766,7 +766,7 @@
         "description": "Switch inside Shadow DOM",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 38,
         "type": "element"
       },
       {
@@ -785,7 +785,7 @@
         "description": "Playwright pierces this",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 39,
         "type": "element"
       },
       {
@@ -804,7 +804,7 @@
         "description": "shadow-host",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 40,
         "type": "element"
       },
       {
@@ -825,7 +825,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "checkbox"
       },
       {
@@ -844,7 +844,7 @@
         "description": "Switch inside an iFrame",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 43,
         "type": "element"
       },
       {
@@ -863,7 +863,7 @@
         "description": "Switch inside an iFrame",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 44,
         "type": "element"
       },
       {
@@ -882,7 +882,7 @@
         "description": "Switch inside an iFrame",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 45,
         "type": "element"
       },
       {
@@ -901,7 +901,7 @@
         "description": "Requires driving a",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 46,
         "type": "element"
       },
       {
@@ -920,7 +920,7 @@
         "description": "driver.switchTo().frame()",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 47,
         "type": "element"
       },
       {

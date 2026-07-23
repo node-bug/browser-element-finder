@@ -93,7 +93,7 @@
         "description": "Docs",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "link"
       },
       {
@@ -131,7 +131,7 @@
         "description": "Cancel",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "button"
       },
       {
@@ -173,7 +173,7 @@
           "value": ""
         },
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "textbox"
       },
       {
@@ -192,7 +192,7 @@
         "description": "Some visible text",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "element"
       },
       {

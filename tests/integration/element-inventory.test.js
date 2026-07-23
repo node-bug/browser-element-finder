@@ -501,7 +501,7 @@ describe('ElementFinder - getElementInventory enrichment options', () => {
     expect(descriptor.attributeName).toBe('label');
   });
 
-  it('identified elements get an occurrence index within their (type, text) group', async () => {
+  it('all elements get a positional #N index within their type (regardless of text)', async () => {
     const result = await fixture.driver.executeScript(`
       const scope = document.createElement('div');
       scope.innerHTML = '<button>Submit</button><button>Cancel</button><button>Submit</button>';
@@ -511,9 +511,11 @@ describe('ElementFinder - getElementInventory enrichment options', () => {
       document.body.removeChild(scope);
       return entries;
     `);
+    // Positional indexing: first button=1, second button=2, third button=3
+    // regardless of text content.
     expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', index: 1 }));
-    expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', index: 2 }));
-    expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Cancel', index: 1 }));
+    expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Cancel', index: 2 }));
+    expect(result).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit', index: 3 }));
   });
 
   it('text-less controls keep the type-only positional #N index', async () => {

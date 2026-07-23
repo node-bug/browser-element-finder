@@ -55,7 +55,7 @@
         "description": "root",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "element"
       },
       {
@@ -74,7 +74,7 @@
         "description": "level1",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "element"
       },
       {
@@ -93,7 +93,7 @@
         "description": "level2",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "element"
       },
       {
@@ -112,7 +112,7 @@
         "description": "level3",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 6,
         "type": "element"
       },
       {
@@ -131,7 +131,7 @@
         "description": "level4",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 7,
         "type": "element"
       },
       {
@@ -150,7 +150,7 @@
         "description": "level5",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 8,
         "type": "element"
       },
       {
@@ -169,7 +169,7 @@
         "description": "level6",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 9,
         "type": "element"
       },
       {
@@ -188,7 +188,7 @@
         "description": "level7",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 10,
         "type": "element"
       },
       {
@@ -207,7 +207,7 @@
         "description": "level8",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 11,
         "type": "element"
       },
       {
@@ -226,7 +226,7 @@
         "description": "level9",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 12,
         "type": "element"
       },
       {
@@ -264,7 +264,7 @@
         "description": "level que",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 13,
         "type": "element"
       },
       {
@@ -283,7 +283,7 @@
         "description": "Spezial ✨ Text",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "button"
       },
       {
@@ -302,7 +302,7 @@
         "description": "script-test",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 14,
         "type": "element"
       },
       {
@@ -321,7 +321,7 @@
         "description": "Valid Button",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "button"
       },
       {
@@ -340,7 +340,7 @@
         "description": "priority-test",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 15,
         "type": "element"
       },
       {
@@ -359,7 +359,7 @@
         "description": "Priority Test",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "button"
       }
     ],

@@ -74,7 +74,7 @@
         "description": "buttons-section",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "element"
       },
       {
@@ -93,7 +93,7 @@
         "description": "1. Buttons",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "heading"
       },
       {
@@ -112,7 +112,7 @@
         "description": "Click Me (Green)",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 4,
         "type": "element"
       },
       {
@@ -150,7 +150,7 @@
         "description": "Click Me (Blue)",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 2,
         "type": "button"
       },
       {
@@ -169,7 +169,7 @@
         "description": "text-inputs-section",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 5,
         "type": "element"
       },
       {
@@ -188,7 +188,7 @@
         "description": "2. Text-based Inputs",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 3,
         "type": "heading"
       },
       {
@@ -207,7 +207,7 @@
         "description": "Text Input Field",
         "formState": null,
         "inViewport": true,
-        "index": 1,
+        "index": 6,
         "type": "element"
       },
       {
@@ -226,7 +226,7 @@
         "description": "Text Input Field",
         "formState": null,
         "inViewport": true,
-        "index": 2,
+        "index": 7,
         "type": "element"
       },
       {
@@ -266,7 +266,7 @@
         "description": "Textarea",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 8,
         "type": "element"
       },
       {
@@ -285,7 +285,7 @@
         "description": "Textarea",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 9,
         "type": "element"
       },
       {
@@ -306,7 +306,7 @@
           "value": ""
         },
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "textbox"
       },
       {
@@ -325,7 +325,7 @@
         "description": "checkboxes-section",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 10,
         "type": "element"
       },
       {
@@ -344,7 +344,7 @@
         "description": "3. Checkboxes",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "heading"
       },
       {
@@ -363,7 +363,7 @@
         "description": "CheckBox in iFrame",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 11,
         "type": "element"
       },
       {
@@ -382,7 +382,7 @@
         "description": "CheckBox in iFrame",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 12,
         "type": "element"
       },
       {
@@ -422,7 +422,7 @@
         "description": "CheckBox in iFrame",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 13,
         "type": "element"
       },
       {
@@ -441,7 +441,7 @@
         "description": "CheckBox",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 14,
         "type": "element"
       },
       {
@@ -462,7 +462,7 @@
           "checked": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "checkbox"
       },
       {
@@ -481,7 +481,7 @@
         "description": "CheckBox",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 15,
         "type": "element"
       },
       {
@@ -500,7 +500,7 @@
         "description": "radios-section",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 16,
         "type": "element"
       },
       {
@@ -519,7 +519,7 @@
         "description": "4. Radio Buttons",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 5,
         "type": "heading"
       },
       {
@@ -538,7 +538,7 @@
         "description": "RadioButton 1",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 17,
         "type": "element"
       },
       {
@@ -557,7 +557,7 @@
         "description": "RadioButton 1",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 18,
         "type": "element"
       },
       {
@@ -597,7 +597,7 @@
         "description": "RadioButton 1",
         "formState": null,
         "inViewport": false,
-        "index": 3,
+        "index": 19,
         "type": "element"
       },
       {
@@ -616,7 +616,7 @@
         "description": "RadioButton 2",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 20,
         "type": "element"
       },
       {
@@ -637,7 +637,7 @@
           "set": false
         },
         "inViewport": false,
-        "index": 1,
+        "index": 2,
         "type": "radio"
       },
       {
@@ -656,7 +656,7 @@
         "description": "RadioButton 2",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 21,
         "type": "element"
       },
       {
@@ -675,7 +675,7 @@
         "description": "dropdown-section",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 22,
         "type": "element"
       },
       {
@@ -694,7 +694,7 @@
         "description": "5. Dropdown",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 6,
         "type": "heading"
       },
       {
@@ -713,7 +713,7 @@
         "description": "Select Dropdown",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 23,
         "type": "element"
       },
       {
@@ -732,7 +732,7 @@
         "description": "Select Dropdown",
         "formState": null,
         "inViewport": false,
-        "index": 2,
+        "index": 24,
         "type": "element"
       },
       {
@@ -778,7 +778,7 @@
         "description": "Please choose...",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 25,
         "type": "element"
       },
       {
@@ -797,7 +797,7 @@
         "description": "Set to 25%",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 26,
         "type": "element"
       },
       {
@@ -816,7 +816,7 @@
         "description": "Set to 50%",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 27,
         "type": "element"
       },
       {
@@ -835,7 +835,7 @@
         "description": "Set to 75%",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 28,
         "type": "element"
       },
       {
@@ -854,7 +854,7 @@
         "description": "hover-section",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 29,
         "type": "element"
       },
       {
@@ -873,7 +873,7 @@
         "description": "6. Hover Elements",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 7,
         "type": "heading"
       },
       {
@@ -892,7 +892,7 @@
         "description": "Hover Dropdown",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 30,
         "type": "element"
       },
       {
@@ -911,7 +911,7 @@
         "description": "Hover Dropdown",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 3,
         "type": "button"
       },
       {
@@ -930,7 +930,7 @@
         "description": "Submit Form",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 31,
         "type": "element"
       },
       {
@@ -949,7 +949,7 @@
         "description": "Submit Form",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 4,
         "type": "button"
       },
       {
@@ -968,7 +968,7 @@
         "description": "form-status",
         "formState": null,
         "inViewport": false,
-        "index": 1,
+        "index": 32,
         "type": "element"
       }
     ],
