@@ -3,44 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 149.17,
-          "height": 149.17,
-          "left": 0,
-          "midx": 378,
-          "midy": 74.59,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Submit",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 141.17,
-          "height": 133.17,
-          "left": 8,
-          "midx": 378,
-          "midy": 74.59,
-          "right": 748,
-          "top": 8,
-          "width": 740,
-          "x": 8,
-          "y": 8
-        },
-        "description": "Submit",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 50,
           "height": 21,
           "left": 8,
@@ -56,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -75,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -94,6 +58,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -115,6 +80,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -136,6 +102,7 @@
         },
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -157,6 +124,7 @@
         },
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -178,6 +146,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "checkbox"
       },
       {
@@ -199,6 +168,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -220,6 +190,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "slider"
       },
       {
@@ -241,6 +212,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "datepicker"
       },
       {
@@ -262,6 +234,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "colorpicker"
       },
       {
@@ -281,6 +254,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "link"
       },
       {
@@ -300,6 +274,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "link"
       },
       {
@@ -322,6 +297,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "dropdown"
       },
       {
@@ -341,6 +317,7 @@
         "formState": null,
         "inViewport": false,
         "index": 3,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -360,25 +337,7 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 95.17,
-          "height": 18,
-          "left": 8,
-          "midx": 378,
-          "midy": 86.17,
-          "right": 748,
-          "top": 77.17,
-          "width": 740,
-          "x": 8,
-          "y": 77.17
-        },
-        "description": "Nested text",
-        "formState": null,
-        "inViewport": true,
-        "index": 5,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -398,6 +357,7 @@
         "formState": null,
         "inViewport": true,
         "index": 6,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -417,6 +377,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "table"
       },
       {
@@ -432,29 +393,11 @@
           "x": 10,
           "y": 97.17
         },
-        "description": "Name",
-        "formState": null,
-        "inViewport": true,
-        "index": 7,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 117.17,
-          "height": 20,
-          "left": 10,
-          "midx": 80.78,
-          "midy": 107.17,
-          "right": 151.56,
-          "top": 97.17,
-          "width": 141.56,
-          "x": 10,
-          "y": 97.17
-        },
-        "description": "Name",
+        "description": null,
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "row"
       },
       {
@@ -474,6 +417,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "column"
       },
       {
@@ -493,6 +437,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "column"
       },
       {
@@ -512,6 +457,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "column"
       },
       {
@@ -527,29 +473,11 @@
           "x": 10,
           "y": 119.17
         },
-        "description": "Alice",
-        "formState": null,
-        "inViewport": true,
-        "index": 8,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 139.17,
-          "height": 20,
-          "left": 10,
-          "midx": 80.78,
-          "midy": 129.17,
-          "right": 151.56,
-          "top": 119.17,
-          "width": 141.56,
-          "x": 10,
-          "y": 119.17
-        },
-        "description": "Alice",
+        "description": null,
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "row"
       },
       {
@@ -569,6 +497,7 @@
         "formState": null,
         "inViewport": true,
         "index": 4,
+        "isHidden": false,
         "type": "column"
       },
       {
@@ -588,6 +517,7 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "column"
       },
       {
@@ -607,6 +537,7 @@
         "formState": null,
         "inViewport": true,
         "index": 6,
+        "isHidden": false,
         "type": "column"
       }
     ],

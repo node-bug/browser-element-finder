@@ -18,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -37,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -58,6 +60,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -77,6 +80,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "image"
       }
     ],

@@ -3,44 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 1602,
-          "height": 1602,
-          "left": 0,
-          "midx": 378,
-          "midy": 801,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "SeleniumBase Demo Page",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1594,
-          "height": 1586,
-          "left": 8,
-          "midx": 378,
-          "midy": 801,
-          "right": 748,
-          "top": 8,
-          "width": 740,
-          "x": 8,
-          "y": 8
-        },
-        "description": "SeleniumBase Demo Page",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 100.63,
           "height": 51.19,
           "left": 28,
@@ -56,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -75,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -94,26 +58,8 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 260.36,
-          "height": 47,
-          "left": 49,
-          "midx": 378,
-          "midy": 236.86,
-          "right": 707,
-          "top": 213.36,
-          "width": 658,
-          "x": 49,
-          "y": 213.36
-        },
-        "description": "Click Me (Green)",
-        "formState": null,
-        "inViewport": true,
-        "index": 4,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -132,6 +78,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -151,6 +98,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -170,6 +118,7 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -189,26 +138,8 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 479.25,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 453.45,
-          "right": 707,
-          "top": 427.66,
-          "width": 658,
-          "x": 49,
-          "y": 427.66
-        },
-        "description": "Text Input Field",
-        "formState": null,
-        "inViewport": true,
-        "index": 6,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -227,6 +158,7 @@
         "formState": null,
         "inViewport": true,
         "index": 7,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -248,26 +180,8 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 590.84,
-          "height": 96.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 542.55,
-          "right": 707,
-          "top": 494.25,
-          "width": 658,
-          "x": 49,
-          "y": 494.25
-        },
-        "description": "Textarea",
-        "formState": null,
-        "inViewport": false,
-        "index": 8,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -286,6 +200,7 @@
         "formState": null,
         "inViewport": false,
         "index": 9,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -307,6 +222,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -326,6 +242,7 @@
         "formState": null,
         "inViewport": false,
         "index": 10,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -345,45 +262,8 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 814.33,
-          "height": 56.19,
-          "left": 49,
-          "midx": 378,
-          "midy": 786.23,
-          "right": 707,
-          "top": 758.14,
-          "width": 658,
-          "x": 49,
-          "y": 758.14
-        },
-        "description": "CheckBox in iFrame",
-        "formState": null,
-        "inViewport": false,
-        "index": 11,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 783.73,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 770.94,
-          "right": 707,
-          "top": 758.14,
-          "width": 658,
-          "x": 49,
-          "y": 758.14
-        },
-        "description": "CheckBox in iFrame",
-        "formState": null,
-        "inViewport": false,
-        "index": 12,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -404,6 +284,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "checkbox"
       },
       {
@@ -423,25 +304,7 @@
         "formState": null,
         "inViewport": false,
         "index": 13,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 814.33,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 801.53,
-          "right": 707,
-          "top": 788.73,
-          "width": 658,
-          "x": 49,
-          "y": 788.73
-        },
-        "description": "CheckBox",
-        "formState": null,
-        "inViewport": false,
-        "index": 14,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -463,6 +326,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "checkbox"
       },
       {
@@ -482,6 +346,7 @@
         "formState": null,
         "inViewport": false,
         "index": 15,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -501,6 +366,7 @@
         "formState": null,
         "inViewport": false,
         "index": 16,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -520,45 +386,8 @@
         "formState": null,
         "inViewport": false,
         "index": 5,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1037.81,
-          "height": 56.19,
-          "left": 49,
-          "midx": 378,
-          "midy": 1009.72,
-          "right": 707,
-          "top": 981.63,
-          "width": 658,
-          "x": 49,
-          "y": 981.63
-        },
-        "description": "RadioButton 1",
-        "formState": null,
-        "inViewport": false,
-        "index": 17,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1007.22,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 994.42,
-          "right": 707,
-          "top": 981.63,
-          "width": 658,
-          "x": 49,
-          "y": 981.63
-        },
-        "description": "RadioButton 1",
-        "formState": null,
-        "inViewport": false,
-        "index": 18,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -579,6 +408,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -598,25 +428,7 @@
         "formState": null,
         "inViewport": false,
         "index": 19,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1037.81,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1025.02,
-          "right": 707,
-          "top": 1012.22,
-          "width": 658,
-          "x": 49,
-          "y": 1012.22
-        },
-        "description": "RadioButton 2",
-        "formState": null,
-        "inViewport": false,
-        "index": 20,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -638,6 +450,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -657,6 +470,7 @@
         "formState": null,
         "inViewport": false,
         "index": 21,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -676,6 +490,7 @@
         "formState": null,
         "inViewport": false,
         "index": 22,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -695,26 +510,8 @@
         "formState": null,
         "inViewport": false,
         "index": 6,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1254.7,
-          "height": 49.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1229.91,
-          "right": 707,
-          "top": 1205.11,
-          "width": 658,
-          "x": 49,
-          "y": 1205.11
-        },
-        "description": "Select Dropdown",
-        "formState": null,
-        "inViewport": false,
-        "index": 23,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -733,6 +530,7 @@
         "formState": null,
         "inViewport": false,
         "index": 24,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -760,6 +558,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "dropdown"
       },
       {
@@ -779,6 +578,7 @@
         "formState": null,
         "inViewport": false,
         "index": 25,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -798,6 +598,7 @@
         "formState": null,
         "inViewport": false,
         "index": 26,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -817,6 +618,7 @@
         "formState": null,
         "inViewport": false,
         "index": 27,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -836,6 +638,7 @@
         "formState": null,
         "inViewport": false,
         "index": 28,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -855,6 +658,7 @@
         "formState": null,
         "inViewport": false,
         "index": 29,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -874,6 +678,7 @@
         "formState": null,
         "inViewport": false,
         "index": 7,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -892,46 +697,9 @@
         "description": "Hover Dropdown",
         "formState": null,
         "inViewport": false,
-        "index": 30,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1443,
-          "height": 21,
-          "left": 49,
-          "midx": 378,
-          "midy": 1432.5,
-          "right": 707,
-          "top": 1422,
-          "width": 658,
-          "x": 49,
-          "y": 1422
-        },
-        "description": "Hover Dropdown",
-        "formState": null,
-        "inViewport": false,
         "index": 3,
+        "isHidden": false,
         "type": "button"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1558,
-          "height": 39,
-          "left": 28,
-          "midx": 378,
-          "midy": 1538.5,
-          "right": 728,
-          "top": 1519,
-          "width": 700,
-          "x": 28,
-          "y": 1519
-        },
-        "description": "Submit Form",
-        "formState": null,
-        "inViewport": false,
-        "index": 31,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -950,6 +718,7 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -969,6 +738,7 @@
         "formState": null,
         "inViewport": false,
         "index": 32,
+        "isHidden": false,
         "type": "element"
       }
     ],

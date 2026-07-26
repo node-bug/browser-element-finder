@@ -3,63 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 1015.91,
-          "height": 1015.91,
-          "left": 0,
-          "midx": 378,
-          "midy": 507.95,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Ultimate Switch Testing",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 975.91,
-          "height": 935.91,
-          "left": 40,
-          "midx": 378,
-          "midy": 507.95,
-          "right": 716,
-          "top": 40,
-          "width": 676,
-          "x": 40,
-          "y": 40
-        },
-        "description": "Ultimate Switch Testing",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 975.91,
-          "height": 935.91,
-          "left": 40,
-          "midx": 378,
-          "midy": 507.95,
-          "right": 716,
-          "top": 40,
-          "width": 676,
-          "x": 40,
-          "y": 40
-        },
-        "description": "Ultimate Switch Testing",
-        "formState": null,
-        "inViewport": true,
-        "index": 3,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 93,
           "height": 28,
           "left": 65,
@@ -75,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -94,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 4,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -113,6 +58,7 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -132,44 +78,7 @@
         "formState": null,
         "inViewport": true,
         "index": 6,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 302.91,
-          "height": 83,
-          "left": 65,
-          "midx": 378,
-          "midy": 261.41,
-          "right": 691,
-          "top": 219.91,
-          "width": 626,
-          "x": 65,
-          "y": 219.91
-        },
-        "description": "Standard Checkbox Switch",
-        "formState": null,
-        "inViewport": true,
-        "index": 7,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 286.91,
-          "height": 52,
-          "left": 65,
-          "midx": 315,
-          "midy": 260.91,
-          "right": 565,
-          "top": 234.91,
-          "width": 500,
-          "x": 65,
-          "y": 234.91
-        },
-        "description": "Standard Checkbox Switch",
-        "formState": null,
-        "inViewport": true,
-        "index": 8,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -189,6 +98,7 @@
         "formState": null,
         "inViewport": true,
         "index": 9,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -208,6 +118,7 @@
         "formState": null,
         "inViewport": true,
         "index": 10,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -227,6 +138,7 @@
         "formState": null,
         "inViewport": true,
         "index": 11,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -248,45 +160,8 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "checkbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 385.91,
-          "height": 83,
-          "left": 65,
-          "midx": 378,
-          "midy": 344.41,
-          "right": 691,
-          "top": 302.91,
-          "width": 626,
-          "x": 65,
-          "y": 302.91
-        },
-        "description": "ARIA Div Switch",
-        "formState": null,
-        "inViewport": true,
-        "index": 14,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 369.91,
-          "height": 52,
-          "left": 65,
-          "midx": 315,
-          "midy": 343.91,
-          "right": 565,
-          "top": 317.91,
-          "width": 500,
-          "x": 65,
-          "y": 317.91
-        },
-        "description": "ARIA Div Switch",
-        "formState": null,
-        "inViewport": true,
-        "index": 15,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -305,6 +180,7 @@
         "formState": null,
         "inViewport": true,
         "index": 16,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -324,6 +200,7 @@
         "formState": null,
         "inViewport": true,
         "index": 17,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -343,6 +220,7 @@
         "formState": null,
         "inViewport": true,
         "index": 18,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -364,45 +242,8 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "switch"
-      },
-      {
-        "boundingBox": {
-          "bottom": 468.91,
-          "height": 83,
-          "left": 65,
-          "midx": 378,
-          "midy": 427.41,
-          "right": 691,
-          "top": 385.91,
-          "width": 626,
-          "x": 65,
-          "y": 385.91
-        },
-        "description": "Native Button Switch",
-        "formState": null,
-        "inViewport": true,
-        "index": 19,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 452.91,
-          "height": 52,
-          "left": 65,
-          "midx": 315,
-          "midy": 426.91,
-          "right": 565,
-          "top": 400.91,
-          "width": 500,
-          "x": 65,
-          "y": 400.91
-        },
-        "description": "Native Button Switch",
-        "formState": null,
-        "inViewport": true,
-        "index": 20,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -421,6 +262,7 @@
         "formState": null,
         "inViewport": true,
         "index": 21,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -440,6 +282,7 @@
         "formState": null,
         "inViewport": true,
         "index": 22,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -459,45 +302,8 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
-      },
-      {
-        "boundingBox": {
-          "bottom": 551.91,
-          "height": 83,
-          "left": 65,
-          "midx": 378,
-          "midy": 510.41,
-          "right": 691,
-          "top": 468.91,
-          "width": 626,
-          "x": 65,
-          "y": 468.91
-        },
-        "description": "Bare Native Checkbox",
-        "formState": null,
-        "inViewport": true,
-        "index": 23,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 535.91,
-          "height": 52,
-          "left": 65,
-          "midx": 315,
-          "midy": 509.91,
-          "right": 565,
-          "top": 483.91,
-          "width": 500,
-          "x": 65,
-          "y": 483.91
-        },
-        "description": "Bare Native Checkbox",
-        "formState": null,
-        "inViewport": false,
-        "index": 24,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -516,6 +322,7 @@
         "formState": null,
         "inViewport": false,
         "index": 25,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -535,6 +342,7 @@
         "formState": null,
         "inViewport": false,
         "index": 26,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -554,6 +362,7 @@
         "formState": null,
         "inViewport": false,
         "index": 27,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -573,6 +382,7 @@
         "formState": null,
         "inViewport": false,
         "index": 28,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -594,6 +404,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "checkbox"
       },
       {
@@ -613,44 +424,7 @@
         "formState": null,
         "inViewport": false,
         "index": 29,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 687.91,
-          "height": 83,
-          "left": 65,
-          "midx": 378,
-          "midy": 646.41,
-          "right": 691,
-          "top": 604.91,
-          "width": 626,
-          "x": 65,
-          "y": 604.91
-        },
-        "description": "Disabled Control Switch",
-        "formState": null,
-        "inViewport": false,
-        "index": 30,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 671.91,
-          "height": 52,
-          "left": 65,
-          "midx": 315,
-          "midy": 645.91,
-          "right": 565,
-          "top": 619.91,
-          "width": 500,
-          "x": 65,
-          "y": 619.91
-        },
-        "description": "Disabled Control Switch",
-        "formState": null,
-        "inViewport": false,
-        "index": 31,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -670,6 +444,7 @@
         "formState": null,
         "inViewport": false,
         "index": 32,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -689,6 +464,7 @@
         "formState": null,
         "inViewport": false,
         "index": 33,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -710,45 +486,8 @@
         },
         "inViewport": false,
         "index": 3,
+        "isHidden": false,
         "type": "checkbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 770.91,
-          "height": 83,
-          "left": 65,
-          "midx": 378,
-          "midy": 729.41,
-          "right": 691,
-          "top": 687.91,
-          "width": 626,
-          "x": 65,
-          "y": 687.91
-        },
-        "description": "Switch inside Shadow DOM",
-        "formState": null,
-        "inViewport": false,
-        "index": 36,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 754.91,
-          "height": 52,
-          "left": 65,
-          "midx": 315,
-          "midy": 728.91,
-          "right": 565,
-          "top": 702.91,
-          "width": 500,
-          "x": 65,
-          "y": 702.91
-        },
-        "description": "Switch inside Shadow DOM",
-        "formState": null,
-        "inViewport": false,
-        "index": 37,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -767,6 +506,7 @@
         "formState": null,
         "inViewport": false,
         "index": 38,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -786,6 +526,7 @@
         "formState": null,
         "inViewport": false,
         "index": 39,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -805,6 +546,7 @@
         "formState": null,
         "inViewport": false,
         "index": 40,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -826,45 +568,8 @@
         },
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "checkbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 950.91,
-          "height": 180,
-          "left": 65,
-          "midx": 378,
-          "midy": 860.91,
-          "right": 691,
-          "top": 770.91,
-          "width": 626,
-          "x": 65,
-          "y": 770.91
-        },
-        "description": "Switch inside an iFrame",
-        "formState": null,
-        "inViewport": false,
-        "index": 43,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 837.91,
-          "height": 52,
-          "left": 65,
-          "midx": 378,
-          "midy": 811.91,
-          "right": 691,
-          "top": 785.91,
-          "width": 626,
-          "x": 65,
-          "y": 785.91
-        },
-        "description": "Switch inside an iFrame",
-        "formState": null,
-        "inViewport": false,
-        "index": 44,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -883,6 +588,7 @@
         "formState": null,
         "inViewport": false,
         "index": 45,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -902,6 +608,7 @@
         "formState": null,
         "inViewport": false,
         "index": 46,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -921,6 +628,7 @@
         "formState": null,
         "inViewport": false,
         "index": 47,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -940,6 +648,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "iframe"
       }
     ],
@@ -948,44 +657,6 @@
   },
   {
     "elements": [
-      {
-        "boundingBox": {
-          "bottom": 54,
-          "height": 54,
-          "left": 0,
-          "midx": 313,
-          "midy": 27,
-          "right": 626,
-          "top": 0,
-          "width": 626,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Document Switch Window",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 39,
-          "height": 24,
-          "left": 15,
-          "midx": 313,
-          "midy": 27,
-          "right": 611,
-          "top": 15,
-          "width": 596,
-          "x": 15,
-          "y": 15
-        },
-        "description": "Document Switch Window",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
       {
         "boundingBox": {
           "bottom": 34.5,
@@ -1003,6 +674,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1024,6 +696,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "checkbox"
       }
     ],

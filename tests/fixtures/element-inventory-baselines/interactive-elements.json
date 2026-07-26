@@ -3,44 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 2416.02,
-          "height": 2416.02,
-          "left": 0,
-          "midx": 378,
-          "midy": 1208.01,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Interactive Elements",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2408.02,
-          "height": 2400.02,
-          "left": 8,
-          "midx": 378,
-          "midy": 1208.01,
-          "right": 748,
-          "top": 8,
-          "width": 740,
-          "x": 8,
-          "y": 8
-        },
-        "description": "Interactive Elements",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 100.63,
           "height": 51.19,
           "left": 28,
@@ -56,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -75,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -94,26 +58,8 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 269.55,
-          "height": 56.19,
-          "left": 49,
-          "midx": 378,
-          "midy": 241.45,
-          "right": 707,
-          "top": 213.36,
-          "width": 658,
-          "x": 49,
-          "y": 213.36
-        },
-        "description": "Enabled Link",
-        "formState": null,
-        "inViewport": true,
-        "index": 4,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -132,6 +78,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "link"
       },
       {
@@ -151,6 +98,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "link"
       },
       {
@@ -170,6 +118,7 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -189,26 +138,8 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 545.03,
-          "height": 108.19,
-          "left": 49,
-          "midx": 378,
-          "midy": 490.94,
-          "right": 707,
-          "top": 436.84,
-          "width": 658,
-          "x": 49,
-          "y": 436.84
-        },
-        "description": "Enabled Button",
-        "formState": null,
-        "inViewport": true,
-        "index": 6,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -227,6 +158,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -246,6 +178,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -265,6 +198,7 @@
         "formState": null,
         "inViewport": false,
         "index": 3,
+        "isHidden": true,
         "type": "button"
       },
       {
@@ -284,6 +218,7 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -303,6 +238,7 @@
         "formState": null,
         "inViewport": false,
         "index": 5,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -322,6 +258,7 @@
         "formState": null,
         "inViewport": false,
         "index": 7,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -341,26 +278,8 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 849.11,
-          "height": 136.78,
-          "left": 49,
-          "midx": 378,
-          "midy": 780.72,
-          "right": 707,
-          "top": 712.33,
-          "width": 658,
-          "x": 49,
-          "y": 712.33
-        },
-        "description": "Enabled Slider",
-        "formState": null,
-        "inViewport": false,
-        "index": 8,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -379,6 +298,7 @@
         "formState": null,
         "inViewport": false,
         "index": 9,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -400,6 +320,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "slider"
       },
       {
@@ -419,6 +340,7 @@
         "formState": null,
         "inViewport": false,
         "index": 10,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -440,6 +362,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "slider"
       },
       {
@@ -459,6 +382,7 @@
         "formState": null,
         "inViewport": false,
         "index": 11,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -480,6 +404,7 @@
         },
         "inViewport": false,
         "index": 3,
+        "isHidden": true,
         "type": "slider"
       },
       {
@@ -499,6 +424,7 @@
         "formState": null,
         "inViewport": false,
         "index": 12,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -518,6 +444,7 @@
         "formState": null,
         "inViewport": false,
         "index": 5,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -539,6 +466,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "file"
       },
       {
@@ -560,6 +488,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "file"
       },
       {
@@ -579,6 +508,7 @@
         "formState": null,
         "inViewport": false,
         "index": 14,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -598,26 +528,8 @@
         "formState": null,
         "inViewport": false,
         "index": 6,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1402.08,
-          "height": 171.38,
-          "left": 49,
-          "midx": 378,
-          "midy": 1316.39,
-          "right": 707,
-          "top": 1230.7,
-          "width": 658,
-          "x": 49,
-          "y": 1230.7
-        },
-        "description": "Item 1 (Enabled)",
-        "formState": null,
-        "inViewport": false,
-        "index": 15,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -636,6 +548,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "list"
       },
       {
@@ -655,6 +568,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "listitem"
       },
       {
@@ -674,6 +588,7 @@
         "formState": null,
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "listitem"
       },
       {
@@ -693,6 +608,7 @@
         "formState": null,
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "list"
       },
       {
@@ -712,6 +628,7 @@
         "formState": null,
         "inViewport": false,
         "index": 3,
+        "isHidden": false,
         "type": "listitem"
       },
       {
@@ -731,6 +648,7 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "listitem"
       },
       {
@@ -750,6 +668,7 @@
         "formState": null,
         "inViewport": false,
         "index": 16,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -769,26 +688,8 @@
         "formState": null,
         "inViewport": false,
         "index": 7,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1676.75,
-          "height": 107.38,
-          "left": 49,
-          "midx": 378,
-          "midy": 1623.06,
-          "right": 707,
-          "top": 1569.38,
-          "width": 658,
-          "x": 49,
-          "y": 1569.38
-        },
-        "description": "Menu Item 1 (Enabled)",
-        "formState": null,
-        "inViewport": false,
-        "index": 17,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -807,6 +708,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "menu"
       },
       {
@@ -826,6 +728,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "menuitem"
       },
       {
@@ -845,6 +748,7 @@
         "formState": null,
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "menuitem"
       },
       {
@@ -864,6 +768,7 @@
         "formState": null,
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "menu"
       },
       {
@@ -883,6 +788,7 @@
         "formState": null,
         "inViewport": false,
         "index": 3,
+        "isHidden": false,
         "type": "menuitem"
       },
       {
@@ -902,6 +808,7 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "menuitem"
       },
       {
@@ -921,6 +828,7 @@
         "formState": null,
         "inViewport": false,
         "index": 18,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -940,26 +848,8 @@
         "formState": null,
         "inViewport": false,
         "index": 8,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1900.23,
-          "height": 56.19,
-          "left": 49,
-          "midx": 378,
-          "midy": 1872.14,
-          "right": 707,
-          "top": 1844.05,
-          "width": 658,
-          "x": 49,
-          "y": 1844.05
-        },
-        "description": "Tool 1",
-        "formState": null,
-        "inViewport": false,
-        "index": 19,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -978,6 +868,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "toolbar"
       },
       {
@@ -997,6 +888,7 @@
         "formState": null,
         "inViewport": false,
         "index": 6,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -1016,6 +908,7 @@
         "formState": null,
         "inViewport": false,
         "index": 7,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -1035,6 +928,7 @@
         "formState": null,
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "toolbar"
       },
       {
@@ -1054,6 +948,7 @@
         "formState": null,
         "inViewport": false,
         "index": 8,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -1073,6 +968,7 @@
         "formState": null,
         "inViewport": false,
         "index": 9,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -1092,6 +988,7 @@
         "formState": null,
         "inViewport": false,
         "index": 20,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1111,6 +1008,7 @@
         "formState": null,
         "inViewport": false,
         "index": 9,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -1130,6 +1028,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "image"
       },
       {
@@ -1149,6 +1048,7 @@
         "formState": null,
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "image"
       },
       {
@@ -1168,6 +1068,7 @@
         "formState": null,
         "inViewport": false,
         "index": 22,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1187,6 +1088,7 @@
         "formState": null,
         "inViewport": false,
         "index": 10,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -1205,26 +1107,8 @@
         "description": "Open Dialog",
         "formState": null,
         "inViewport": false,
-        "index": 23,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2312.02,
-          "height": 21,
-          "left": 49,
-          "midx": 378,
-          "midy": 2301.52,
-          "right": 707,
-          "top": 2291.02,
-          "width": 658,
-          "x": 49,
-          "y": 2291.02
-        },
-        "description": "Open Dialog",
-        "formState": null,
-        "inViewport": false,
         "index": 10,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -1244,6 +1128,7 @@
         "formState": null,
         "inViewport": false,
         "index": 24,
+        "isHidden": true,
         "type": "element"
       },
       {
@@ -1263,6 +1148,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": true,
         "type": "dialog"
       },
       {
@@ -1282,6 +1168,7 @@
         "formState": null,
         "inViewport": false,
         "index": 11,
+        "isHidden": true,
         "type": "heading"
       },
       {
@@ -1301,6 +1188,7 @@
         "formState": null,
         "inViewport": false,
         "index": 25,
+        "isHidden": true,
         "type": "element"
       },
       {
@@ -1320,6 +1208,7 @@
         "formState": null,
         "inViewport": false,
         "index": 11,
+        "isHidden": true,
         "type": "button"
       }
     ],

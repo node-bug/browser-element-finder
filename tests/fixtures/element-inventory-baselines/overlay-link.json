@@ -3,44 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 156,
-          "height": 156,
-          "left": 0,
-          "midx": 378,
-          "midy": 78,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Show Overlay",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 148,
-          "height": 140,
-          "left": 8,
-          "midx": 378,
-          "midy": 78,
-          "right": 748,
-          "top": 8,
-          "width": 740,
-          "x": 8,
-          "y": 8
-        },
-        "description": "Show Overlay",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 98,
           "height": 40,
           "left": 58,
@@ -56,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -75,6 +38,7 @@
         "formState": null,
         "inViewport": false,
         "index": 3,
+        "isHidden": true,
         "type": "element"
       },
       {
@@ -94,6 +58,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": true,
         "type": "link"
       }
     ],

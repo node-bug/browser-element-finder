@@ -3,63 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 121,
-          "height": 121,
-          "left": 0,
-          "midx": 378,
-          "midy": 60.5,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Regular content",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 113,
-          "height": 97,
-          "left": 8,
-          "midx": 378,
-          "midy": 64.5,
-          "right": 748,
-          "top": 16,
-          "width": 740,
-          "x": 8,
-          "y": 16
-        },
-        "description": "Regular content",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 34,
-          "height": 18,
-          "left": 8,
-          "midx": 378,
-          "midy": 25,
-          "right": 748,
-          "top": 16,
-          "width": 740,
-          "x": 8,
-          "y": 16
-        },
-        "description": "Regular content",
-        "formState": null,
-        "inViewport": true,
-        "index": 3,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 34,
           "height": 18,
           "left": 8,
@@ -75,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 4,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -94,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "dialog"
       },
       {
@@ -113,6 +58,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -132,6 +78,7 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -151,6 +98,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -170,6 +118,7 @@
         "formState": null,
         "inViewport": true,
         "index": 6,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -189,6 +138,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -208,6 +158,7 @@
         "formState": null,
         "inViewport": false,
         "index": 7,
+        "isHidden": true,
         "type": "element"
       },
       {
@@ -227,6 +178,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "dialog"
       },
       {
@@ -246,6 +198,7 @@
         "formState": null,
         "inViewport": true,
         "index": 4,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -265,6 +218,7 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "button"
       }
     ],
@@ -286,6 +240,7 @@
       "formState": null,
       "inViewport": true,
       "index": 2,
+      "isHidden": false,
       "type": "dialog"
     }
   }

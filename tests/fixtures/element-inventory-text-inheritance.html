@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Inheritance Fixture</title>
+</head>
+<body>
+  <!-- Case 1: button with direct text — should get "Submit" -->
+  <button id="direct-text-btn">Submit</button>
+
+  <!-- Case 2: button wrapping an empty span — the span should NOT inherit "Submit" -->
+  <button id="parent-btn"><span id="child-span"></span></button>
+
+  <!-- Case 3: div wrapping a button — the div should NOT inherit "Login" -->
+  <div id="parent-div"><button id="child-btn">Login</button></div>
+
+  <!-- Case 4: span with its own direct text — should get its own text -->
+  <span id="own-text-span">Some text</span>
+
+  <!-- Case 5: span wrapping a button — span should NOT inherit "Click Me" -->
+  <span id="parent-span"><button id="inner-btn">Click Me</button></span>
+
+  <!-- Case 6: heading with direct text — should get "Section Title" -->
+  <h2 id="direct-heading">Section Title</h2>
+
+  <!-- Case 7: heading wrapping an empty span — heading should NOT inherit span text -->
+  <h2 id="parent-heading"><span></span></h2>
+
+  <!-- Case 8: link with direct text — should get "Home" -->
+  <a href="/home" id="direct-link">Home</a>
+
+  <!-- Case 9: link wrapping an empty span — link should NOT inherit span text -->
+  <a href="/about" id="parent-link"><span></span></a>
+
+  <!-- Case 10: nested semantic elements — inner elements get their own text -->
+  <div id="nested">
+    <button id="nested-btn">Save</button>
+    <span id="nested-span">Extra</span>
+  </div>
+
+  <!-- Case 11: deeply nested semantic child behind generic wrappers -->
+  <!-- The div role="link" should NOT inherit "Deep Button" from the button -->
+  <div id="deep-wrapper" role="link">
+    <span><i><button id="deep-btn">Deep Button</button></i></span>
+  </div>
+
+  <!-- Case 12: heading with deeply nested button — heading should NOT inherit button text -->
+  <h3 id="heading-deep-nested">
+    <span><em><button id="heading-btn">Heading Button</button></em></span>
+  </h3>
+
+  <!-- Case 13: link with deeply nested textbox — link should NOT inherit textbox placeholder -->
+  <a href="/deep" id="link-deep-nested">
+    <span><div><input type="text" id="deep-textbox" placeholder="Deep Input"></div></span>
+  </a>
+
+  <!-- Case 14: button with deeply nested span that has no text — button should NOT get span's textContent -->
+  <button id="btn-deep-empty">
+    <span><span><span></span></span></span>
+  </button>
+
+  <!-- Case 15: multiple levels of generic wrappers between parent and semantic child -->
+  <div id="multi-wrapper">
+    <div><div><div><button id="multi-btn">Multi Level</button></div></div></div>
+  </div>
+</body>
+</html>

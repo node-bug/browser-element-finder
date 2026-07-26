@@ -11,7 +11,7 @@
  */
 import { Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -86,7 +86,35 @@ async function main() {
     console.log(`Average: ${avg.toFixed(2)} ms`);
     console.log(`Min:     ${min.toFixed(2)} ms`);
     console.log(`Max:     ${max.toFixed(2)} ms`);
-    console.log(`Elements inventoried: ${timings.length ? '' : ''}${await driver.executeScript('let c=0; for (const g of ElementFinder.getElementInventory()) c+=g.elements.length; return c;')}`);
+
+    // Capture the final inventory and save to output folder.
+    const totalElements = await driver.executeScript('let c=0; for (const g of ElementFinder.getElementInventory()) c+=g.elements.length; return c;');
+    console.log(`Elements inventoried: ${totalElements}`);
+
+    const inventory = await driver.executeScript('return ElementFinder.getElementInventory();');
+
+    const outputDir = join(ROOT, 'output');
+    mkdirSync(outputDir, { recursive: true });
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const outputPath = join(outputDir, `benchmark-inventory-${timestamp}.json`);
+    writeFileSync(outputPath, JSON.stringify(inventory, null, 2));
+    console.log(`Inventory saved to: ${outputPath}`);
+
+    // Also save a summary file with timing results.
+    const summaryPath = join(outputDir, 'benchmark-summary.json');
+    writeFileSync(summaryPath, JSON.stringify({
+      url: TARGET_URL,
+      runs: RUNS,
+      warmup: WARMUP,
+      timings,
+      average: avg,
+      min,
+      max,
+      totalElements,
+      timestamp: new Date().toISOString(),
+    }, null, 2));
+    console.log(`Summary saved to: ${summaryPath}`);
   } finally {
     await driver.quit();
   }

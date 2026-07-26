@@ -449,10 +449,31 @@ function getElementDescriptorText(el) {
   // controls, the nearby label (if found) would have already returned above;
   // if no label was found, textContent is a reasonable last resort (e.g. a
   // <select> with visible option text but no <label>).
+  // For generic `element`-type containers, only apply this fallback when the
+  // element is not a root-level structural node — <html>, <body>, and their
+  // immediate children produce descriptors containing all descendant text,
+  // causing false matches during findProbableElements searches.
   if (!isIgnoredElement(el)) {
-    const fullText = shortenDescriptorText(getSearchableTextContent(el));
-    if (fullText) {
-      return { attributeName: 'text', identifiableText: fullText };
+    // Guard: skip textContent fallback for generic `element` types — these
+    // containers accumulate all descendant text, producing descriptors that
+    // match any search term (e.g. "American Airlines" matching <html>).
+    // Elements with a meaningful semantic type (button, link, heading, etc.)
+    // still get the textContent fallback for cases where text is nested in
+    // child nodes (e.g. <span> inside <button>).
+    if (type !== 'element') {
+      // Only use the textContent fallback when the element has no
+      // child elements with their own semantic type (TEXTLESS_TYPES).
+      // If a child element has a meaningful semantic type (button,
+      // link, heading, etc.), the parent should not inherit that
+      // child's text — the child will get its own descriptor.
+      // Generic `element`-type children (plain containers) are
+      // allowed because they don't have their own semantic identity.
+      if (!hasSemanticChildElements(el)) {
+        const fullText = shortenDescriptorText(getSearchableTextContent(el));
+        if (fullText) {
+          return { attributeName: 'text', identifiableText: fullText };
+        }
+      }
     }
   }
 
@@ -924,6 +945,38 @@ function getDirectText(el) {
     }
   }
   return text.trim();
+}
+
+/**
+ * Checks whether an element has any descendant ELEMENT nodes whose
+ * semantic type is in TEXTLESS_TYPES (i.e., they have their own
+ * meaningful semantic identity). Generic `element`-type descendants
+ * are ignored because they are plain containers without their own
+ * semantic meaning. Used by getElementDescriptorText to decide
+ * whether the textContent fallback is safe (the element should
+ * not inherit text from descendants that have their own descriptors).
+ * Walks all descendants iteratively (not just direct children) so
+ * that deeply-nested semantic elements behind generic wrappers
+ * (<span>, <i>, <div>, etc.) are still detected.
+ * @param {Element} el - The DOM element to check
+ * @returns {boolean} True if the element has at least one descendant
+ *   element with a semantic type (not `element` or `iframe`)
+ */
+function hasSemanticChildElements(el) {
+  const stack = Array.from(el.children);
+  while (stack.length > 0) {
+    const node = stack.pop();
+    if (isIgnoredElement(node)) continue;
+    const childType = getElementDescriptorType(node);
+    if (childType !== null && childType !== 'element' && childType !== 'iframe') {
+      return true;
+    }
+    // Push children of this node for deeper traversal
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      stack.push(node.children[i]);
+    }
+  }
+  return false;
 }
 
 /**
@@ -1713,7 +1766,7 @@ export function getViewportElementCounts(options = {}) {
  * call), matching `findElements()` ordering within the scope.
  *
  * @param {Element|null} [parent=null] - Parent element to scope the inventory to. When null/undefined, the full page across all same-origin frames is returned.
- * @returns {Array<{frame: number, elements: Array<{type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}|null}>} Element inventory grouped by frame
+ * @returns {Array<{frame: number, elements: Array<{type: string, description: string|null, index: number, inViewport: boolean, isHidden: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, index: number, inViewport: boolean, isHidden: boolean, formState: Object|null}|null}>} Element inventory grouped by frame
  */
 export function getElementInventory(parent = null) {
   // Scoped mode: only the parent's descendants, in a single frame group.
@@ -1789,7 +1842,7 @@ function findFrameIndexForElement(el) {
  * position per type.
  *
  * @param {Element[]} elements - Elements to inventory (already filtered to the desired scope)
- * @returns {{entries: Array<{type: string, description: string|null, index: number, inViewport: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, inViewport: boolean, formState: Object|null, index: number}|null}} Inventory entries plus the dominant visible overlay
+ * @returns {{entries: Array<{type: string, description: string|null, index: number, inViewport: boolean, isHidden: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, inViewport: boolean, isHidden: boolean, formState: Object|null, index: number}|null}} Inventory entries plus the dominant visible overlay
  */
 function collectInventoryEntries(elements) {
   const entries = [];
@@ -1825,6 +1878,7 @@ function collectInventoryEntries(elements) {
         // be a visible overlay container (e.g., <div class="modal"> with no
         // id/aria-label). Check for overlay candidacy before skipping.
         const vp = inViewport(el);
+        const hidden = isHidden(el);
         if (vp && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
           const rect = el.getBoundingClientRect();
           overlayCandidates.push({
@@ -1844,6 +1898,7 @@ function collectInventoryEntries(elements) {
               midy: rect.y + rect.height / 2,
             },
             inViewport: vp,
+            isHidden: hidden,
             formState: null,
             index: pos,
           });
@@ -1864,6 +1919,7 @@ function collectInventoryEntries(elements) {
 
     const formState = getFormState(el, type);
     const vp = inViewport(el);
+    const hidden = isHidden(el);
     const rect = el.getBoundingClientRect();
     const round = (v) => Math.round(v * 100) / 100;
     entries.push({
@@ -1883,6 +1939,7 @@ function collectInventoryEntries(elements) {
       },
       index,
       inViewport: vp,
+      isHidden: hidden,
       formState: formState || null,
     });
 
@@ -1910,6 +1967,7 @@ function collectInventoryEntries(elements) {
           midy: round(rect.y + rect.height / 2),
         },
         inViewport: vp,
+        isHidden: hidden,
         formState: formState || null,
         index,
       });
@@ -1950,6 +2008,7 @@ function collectInventoryEntries(elements) {
         description: best.description,
         boundingBox: best.boundingBox,
         inViewport: best.inViewport,
+        isHidden: best.isHidden,
         formState: best.formState,
         index: best.index,
       };

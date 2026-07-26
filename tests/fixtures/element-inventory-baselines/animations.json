@@ -3,59 +3,22 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 91,
-          "height": 91,
-          "left": 0,
-          "midx": 378,
-          "midy": 45.5,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Animated Box",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 83,
-          "height": 75,
-          "left": 8,
-          "midx": 378,
-          "midy": 45.5,
-          "right": 748,
-          "top": 8,
-          "width": 740,
-          "x": 8,
-          "y": 8
-        },
-        "description": "Animated Box",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 26,
           "height": 18,
-          "left": 29.96,
-          "midx": 399.96,
+          "left": 30.07,
+          "midx": 400.07,
           "midy": 17,
-          "right": 769.96,
+          "right": 770.07,
           "top": 8,
           "width": 740,
-          "x": 29.96,
+          "x": 30.07,
           "y": 8
         },
         "description": "Animated Box",
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -75,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 4,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -94,25 +58,27 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "element"
       },
       {
         "boundingBox": {
           "bottom": 83,
           "height": 21,
-          "left": 29.96,
-          "midx": 87.24,
+          "left": 30.07,
+          "midx": 87.35,
           "midy": 72.5,
-          "right": 144.52,
+          "right": 144.63,
           "top": 62,
           "width": 114.56,
-          "x": 29.96,
+          "x": 30.07,
           "y": 62
         },
         "description": "Animated Button",
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       }
     ],

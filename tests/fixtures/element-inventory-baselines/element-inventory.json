@@ -3,44 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 266.88,
-          "height": 266.88,
-          "left": 0,
-          "midx": 378,
-          "midy": 133.44,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Welcome",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 258.88,
-          "height": 237.44,
-          "left": 8,
-          "midx": 378,
-          "midy": 140.16,
-          "right": 748,
-          "top": 21.44,
-          "width": 740,
-          "x": 8,
-          "y": 21.44
-        },
-        "description": "Welcome",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 58.44,
           "height": 37,
           "left": 8,
@@ -56,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -75,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "link"
       },
       {
@@ -94,6 +58,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "link"
       },
       {
@@ -113,6 +78,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -132,6 +98,7 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -153,6 +120,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -174,6 +142,7 @@
         },
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -193,6 +162,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -212,6 +182,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "iframe"
       }
     ],
@@ -220,44 +191,6 @@
   },
   {
     "elements": [
-      {
-        "boundingBox": {
-          "bottom": 117.81,
-          "height": 117.81,
-          "left": 0,
-          "midx": 150,
-          "midy": 58.91,
-          "right": 300,
-          "top": 0,
-          "width": 300,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Iframe Heading",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 109.81,
-          "height": 89.91,
-          "left": 8,
-          "midx": 150,
-          "midy": 64.86,
-          "right": 292,
-          "top": 19.91,
-          "width": 284,
-          "x": 8,
-          "y": 19.91
-        },
-        "description": "Iframe Heading",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
       {
         "boundingBox": {
           "bottom": 47.91,
@@ -275,6 +208,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -294,6 +228,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "link"
       },
       {
@@ -313,6 +248,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -334,6 +270,7 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "textbox"
       }
     ],

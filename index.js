@@ -344,9 +344,13 @@ var ElementFinder = (() => {
       return { attributeName: "label", identifiableText: nearbyLabel };
     }
     if (!isIgnoredElement(el)) {
-      const fullText = shortenDescriptorText(getSearchableTextContent(el));
-      if (fullText) {
-        return { attributeName: "text", identifiableText: fullText };
+      if (type !== "element") {
+        if (!hasSemanticChildElements(el)) {
+          const fullText = shortenDescriptorText(getSearchableTextContent(el));
+          if (fullText) {
+            return { attributeName: "text", identifiableText: fullText };
+          }
+        }
       }
     }
     return null;
@@ -642,6 +646,21 @@ var ElementFinder = (() => {
       }
     }
     return text.trim();
+  }
+  function hasSemanticChildElements(el) {
+    const stack = Array.from(el.children);
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (isIgnoredElement(node)) continue;
+      const childType = getElementDescriptorType(node);
+      if (childType !== null && childType !== "element" && childType !== "iframe") {
+        return true;
+      }
+      for (let i = node.children.length - 1; i >= 0; i--) {
+        stack.push(node.children[i]);
+      }
+    }
+    return false;
   }
   function matchesAttribute(el, value, exact = false) {
     if (el == null) return false;
@@ -1160,6 +1179,7 @@ var ElementFinder = (() => {
       if (!identifiableText) {
         if (!TEXTLESS_TYPES.has(type)) {
           const vp2 = inViewport(el);
+          const hidden2 = isHidden(el);
           if (vp2 && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
             const rect2 = el.getBoundingClientRect();
             overlayCandidates.push({
@@ -1179,6 +1199,7 @@ var ElementFinder = (() => {
                 midy: rect2.y + rect2.height / 2
               },
               inViewport: vp2,
+              isHidden: hidden2,
               formState: null,
               index: pos
             });
@@ -1195,6 +1216,7 @@ var ElementFinder = (() => {
       }
       const formState = getFormState(el, type);
       const vp = inViewport(el);
+      const hidden = isHidden(el);
       const rect = el.getBoundingClientRect();
       const round = (v) => Math.round(v * 100) / 100;
       entries.push({
@@ -1214,6 +1236,7 @@ var ElementFinder = (() => {
         },
         index,
         inViewport: vp,
+        isHidden: hidden,
         formState: formState || null
       });
       if (vp && isOverlayElement(el)) {
@@ -1235,6 +1258,7 @@ var ElementFinder = (() => {
             midy: round2(rect.y + rect.height / 2)
           },
           inViewport: vp,
+          isHidden: hidden,
           formState: formState || null,
           index
         });
@@ -1268,6 +1292,7 @@ var ElementFinder = (() => {
           description: best.description,
           boundingBox: best.boundingBox,
           inViewport: best.inViewport,
+          isHidden: best.isHidden,
           formState: best.formState,
           index: best.index
         };

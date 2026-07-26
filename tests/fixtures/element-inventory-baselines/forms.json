@@ -3,44 +3,6 @@
     "elements": [
       {
         "boundingBox": {
-          "bottom": 2474.09,
-          "height": 2474.09,
-          "left": 0,
-          "midx": 378,
-          "midy": 1237.05,
-          "right": 756,
-          "top": 0,
-          "width": 756,
-          "x": 0,
-          "y": 0
-        },
-        "description": "Form Elements",
-        "formState": null,
-        "inViewport": true,
-        "index": 1,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2466.09,
-          "height": 2458.09,
-          "left": 8,
-          "midx": 378,
-          "midy": 1237.05,
-          "right": 748,
-          "top": 8,
-          "width": 740,
-          "x": 8,
-          "y": 8
-        },
-        "description": "Form Elements",
-        "formState": null,
-        "inViewport": true,
-        "index": 2,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
           "bottom": 100.63,
           "height": 51.19,
           "left": 28,
@@ -56,6 +18,7 @@
         "formState": null,
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "heading"
       },
       {
@@ -75,6 +38,7 @@
         "formState": null,
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -94,26 +58,8 @@
         "formState": null,
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 264.95,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 239.16,
-          "right": 707,
-          "top": 213.36,
-          "width": 658,
-          "x": 49,
-          "y": 213.36
-        },
-        "description": "Single-line Text",
-        "formState": null,
-        "inViewport": true,
-        "index": 4,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -132,6 +78,7 @@
         "formState": null,
         "inViewport": true,
         "index": 5,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -153,26 +100,8 @@
         },
         "inViewport": true,
         "index": 1,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 331.55,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 305.75,
-          "right": 707,
-          "top": 279.95,
-          "width": 658,
-          "x": 49,
-          "y": 279.95
-        },
-        "description": "Password Field",
-        "formState": null,
-        "inViewport": true,
-        "index": 6,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -191,6 +120,7 @@
         "formState": null,
         "inViewport": true,
         "index": 7,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -212,26 +142,8 @@
         },
         "inViewport": true,
         "index": 2,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 398.14,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 372.34,
-          "right": 707,
-          "top": 346.55,
-          "width": 658,
-          "x": 49,
-          "y": 346.55
-        },
-        "description": "Email Field",
-        "formState": null,
-        "inViewport": true,
-        "index": 8,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -250,6 +162,7 @@
         "formState": null,
         "inViewport": true,
         "index": 9,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -271,26 +184,8 @@
         },
         "inViewport": true,
         "index": 3,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 464.73,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 438.94,
-          "right": 707,
-          "top": 413.14,
-          "width": 658,
-          "x": 49,
-          "y": 413.14
-        },
-        "description": "Number Field",
-        "formState": null,
-        "inViewport": true,
-        "index": 10,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -309,6 +204,7 @@
         "formState": null,
         "inViewport": true,
         "index": 11,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -330,26 +226,8 @@
         },
         "inViewport": true,
         "index": 4,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 531.33,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 505.53,
-          "right": 707,
-          "top": 479.73,
-          "width": 658,
-          "x": 49,
-          "y": 479.73
-        },
-        "description": "Telephone Field",
-        "formState": null,
-        "inViewport": false,
-        "index": 12,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -368,6 +246,7 @@
         "formState": null,
         "inViewport": false,
         "index": 13,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -389,26 +268,8 @@
         },
         "inViewport": false,
         "index": 5,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 597.92,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 572.13,
-          "right": 707,
-          "top": 546.33,
-          "width": 658,
-          "x": 49,
-          "y": 546.33
-        },
-        "description": "URL Field",
-        "formState": null,
-        "inViewport": false,
-        "index": 14,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -427,6 +288,7 @@
         "formState": null,
         "inViewport": false,
         "index": 15,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -448,26 +310,8 @@
         },
         "inViewport": false,
         "index": 6,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 709.52,
-          "height": 96.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 661.22,
-          "right": 707,
-          "top": 612.92,
-          "width": 658,
-          "x": 49,
-          "y": 612.92
-        },
-        "description": "Multi-line Text",
-        "formState": null,
-        "inViewport": false,
-        "index": 16,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -486,6 +330,7 @@
         "formState": null,
         "inViewport": false,
         "index": 17,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -507,26 +352,8 @@
         },
         "inViewport": false,
         "index": 7,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 776.11,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 750.31,
-          "right": 707,
-          "top": 724.52,
-          "width": 658,
-          "x": 49,
-          "y": 724.52
-        },
-        "description": "Search Field",
-        "formState": null,
-        "inViewport": false,
-        "index": 18,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -545,6 +372,7 @@
         "formState": null,
         "inViewport": false,
         "index": 19,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -566,6 +394,7 @@
         },
         "inViewport": false,
         "index": 8,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -585,6 +414,7 @@
         "formState": null,
         "inViewport": false,
         "index": 20,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -604,26 +434,8 @@
         "formState": null,
         "inViewport": false,
         "index": 3,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1091.38,
-          "height": 147.97,
-          "left": 49,
-          "midx": 378,
-          "midy": 1017.39,
-          "right": 707,
-          "top": 943.41,
-          "width": 658,
-          "x": 49,
-          "y": 943.41
-        },
-        "description": "Preferences",
-        "formState": null,
-        "inViewport": false,
-        "index": 21,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -642,25 +454,7 @@
         "formState": null,
         "inViewport": false,
         "index": 22,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 999.59,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 986.8,
-          "right": 707,
-          "top": 974,
-          "width": 658,
-          "x": 49,
-          "y": 974
-        },
-        "description": "Subscribe to newsletter",
-        "formState": null,
-        "inViewport": false,
-        "index": 23,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -682,6 +476,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "checkbox"
       },
       {
@@ -701,25 +496,7 @@
         "formState": null,
         "inViewport": false,
         "index": 24,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1030.19,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1017.39,
-          "right": 707,
-          "top": 1004.59,
-          "width": 658,
-          "x": 49,
-          "y": 1004.59
-        },
-        "description": "Accept terms and",
-        "formState": null,
-        "inViewport": false,
-        "index": 25,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -741,6 +518,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "checkbox"
       },
       {
@@ -760,25 +538,7 @@
         "formState": null,
         "inViewport": false,
         "index": 26,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1060.78,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1047.98,
-          "right": 707,
-          "top": 1035.19,
-          "width": 658,
-          "x": 49,
-          "y": 1035.19
-        },
-        "description": "Hidden Checkbox (should",
-        "formState": null,
-        "inViewport": false,
-        "index": 27,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -800,6 +560,7 @@
         },
         "inViewport": false,
         "index": 3,
+        "isHidden": true,
         "type": "checkbox"
       },
       {
@@ -819,25 +580,7 @@
         "formState": null,
         "inViewport": false,
         "index": 28,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1091.38,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1078.58,
-          "right": 707,
-          "top": 1065.78,
-          "width": 658,
-          "x": 49,
-          "y": 1065.78
-        },
-        "description": "Disabled Checkbox",
-        "formState": null,
-        "inViewport": false,
-        "index": 29,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -859,6 +602,7 @@
         },
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "checkbox"
       },
       {
@@ -878,6 +622,7 @@
         "formState": null,
         "inViewport": false,
         "index": 30,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -897,6 +642,7 @@
         "formState": null,
         "inViewport": false,
         "index": 31,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -916,26 +662,8 @@
         "formState": null,
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1376.05,
-          "height": 117.38,
-          "left": 49,
-          "midx": 378,
-          "midy": 1317.36,
-          "right": 707,
-          "top": 1258.67,
-          "width": 658,
-          "x": 49,
-          "y": 1258.67
-        },
-        "description": "Payment Method",
-        "formState": null,
-        "inViewport": false,
-        "index": 32,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -954,25 +682,7 @@
         "formState": null,
         "inViewport": false,
         "index": 33,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1314.86,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1302.06,
-          "right": 707,
-          "top": 1289.27,
-          "width": 658,
-          "x": 49,
-          "y": 1289.27
-        },
-        "description": "Credit Card",
-        "formState": null,
-        "inViewport": false,
-        "index": 34,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -994,6 +704,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -1013,25 +724,7 @@
         "formState": null,
         "inViewport": false,
         "index": 35,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1345.45,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1332.66,
-          "right": 707,
-          "top": 1319.86,
-          "width": 658,
-          "x": 49,
-          "y": 1319.86
-        },
-        "description": "PayPal",
-        "formState": null,
-        "inViewport": false,
-        "index": 36,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1053,6 +746,7 @@
         },
         "inViewport": false,
         "index": 2,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -1072,25 +766,7 @@
         "formState": null,
         "inViewport": false,
         "index": 37,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1376.05,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1363.25,
-          "right": 707,
-          "top": 1350.45,
-          "width": 658,
-          "x": 49,
-          "y": 1350.45
-        },
-        "description": "Bank Transfer",
-        "formState": null,
-        "inViewport": false,
-        "index": 38,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1112,6 +788,7 @@
         },
         "inViewport": false,
         "index": 3,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -1131,25 +808,7 @@
         "formState": null,
         "inViewport": false,
         "index": 39,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1539.02,
-          "height": 147.97,
-          "left": 49,
-          "midx": 378,
-          "midy": 1465.03,
-          "right": 707,
-          "top": 1391.05,
-          "width": 658,
-          "x": 49,
-          "y": 1391.05
-        },
-        "description": "Gender",
-        "formState": null,
-        "inViewport": false,
-        "index": 40,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1169,25 +828,7 @@
         "formState": null,
         "inViewport": false,
         "index": 41,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1447.23,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1434.44,
-          "right": 707,
-          "top": 1421.64,
-          "width": 658,
-          "x": 49,
-          "y": 1421.64
-        },
-        "description": "Male",
-        "formState": null,
-        "inViewport": false,
-        "index": 42,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1209,6 +850,7 @@
         },
         "inViewport": false,
         "index": 4,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -1228,25 +870,7 @@
         "formState": null,
         "inViewport": false,
         "index": 43,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1477.83,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1465.03,
-          "right": 707,
-          "top": 1452.23,
-          "width": 658,
-          "x": 49,
-          "y": 1452.23
-        },
-        "description": "Female",
-        "formState": null,
-        "inViewport": false,
-        "index": 44,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1268,6 +892,7 @@
         },
         "inViewport": false,
         "index": 5,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -1287,25 +912,7 @@
         "formState": null,
         "inViewport": false,
         "index": 45,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1508.42,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1495.63,
-          "right": 707,
-          "top": 1482.83,
-          "width": 658,
-          "x": 49,
-          "y": 1482.83
-        },
-        "description": "Other",
-        "formState": null,
-        "inViewport": false,
-        "index": 46,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1327,6 +934,7 @@
         },
         "inViewport": false,
         "index": 6,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -1346,25 +954,7 @@
         "formState": null,
         "inViewport": false,
         "index": 47,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1539.02,
-          "height": 25.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1526.22,
-          "right": 707,
-          "top": 1513.42,
-          "width": 658,
-          "x": 49,
-          "y": 1513.42
-        },
-        "description": "Disabled Radio",
-        "formState": null,
-        "inViewport": false,
-        "index": 48,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1386,6 +976,7 @@
         },
         "inViewport": false,
         "index": 7,
+        "isHidden": false,
         "type": "radio"
       },
       {
@@ -1405,6 +996,7 @@
         "formState": null,
         "inViewport": false,
         "index": 49,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1424,6 +1016,7 @@
         "formState": null,
         "inViewport": false,
         "index": 50,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1443,26 +1036,8 @@
         "formState": null,
         "inViewport": false,
         "index": 5,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1758.23,
-          "height": 51.92,
-          "left": 49,
-          "midx": 378,
-          "midy": 1732.27,
-          "right": 707,
-          "top": 1706.31,
-          "width": 658,
-          "x": 49,
-          "y": 1706.31
-        },
-        "description": "Date Picker",
-        "formState": null,
-        "inViewport": false,
-        "index": 51,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -1481,6 +1056,7 @@
         "formState": null,
         "inViewport": false,
         "index": 52,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1502,26 +1078,8 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "datepicker"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1830.83,
-          "height": 57.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1802.03,
-          "right": 707,
-          "top": 1773.23,
-          "width": 658,
-          "x": 49,
-          "y": 1773.23
-        },
-        "description": "Color Picker",
-        "formState": null,
-        "inViewport": false,
-        "index": 53,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -1540,6 +1098,7 @@
         "formState": null,
         "inViewport": false,
         "index": 54,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1561,26 +1120,8 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "colorpicker"
-      },
-      {
-        "boundingBox": {
-          "bottom": 1896.42,
-          "height": 50.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 1871.13,
-          "right": 707,
-          "top": 1845.83,
-          "width": 658,
-          "x": 49,
-          "y": 1845.83
-        },
-        "description": "Range Slider",
-        "formState": null,
-        "inViewport": false,
-        "index": 55,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -1599,6 +1140,7 @@
         "formState": null,
         "inViewport": false,
         "index": 56,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1620,6 +1162,7 @@
         },
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "slider"
       },
       {
@@ -1639,6 +1182,7 @@
         "formState": null,
         "inViewport": false,
         "index": 57,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1658,26 +1202,8 @@
         "formState": null,
         "inViewport": false,
         "index": 6,
+        "isHidden": false,
         "type": "heading"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2115.31,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 2089.52,
-          "right": 707,
-          "top": 2063.72,
-          "width": 658,
-          "x": 49,
-          "y": 2063.72
-        },
-        "description": "Required Field (HTML5)",
-        "formState": null,
-        "inViewport": false,
-        "index": 58,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -1696,6 +1222,7 @@
         "formState": null,
         "inViewport": false,
         "index": 59,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1717,6 +1244,7 @@
         },
         "inViewport": false,
         "index": 9,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -1736,25 +1264,7 @@
         "formState": null,
         "inViewport": false,
         "index": 60,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2181.91,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 2156.11,
-          "right": 707,
-          "top": 2130.31,
-          "width": 658,
-          "x": 49,
-          "y": 2130.31
-        },
-        "description": "Email Validation (HTML5)",
-        "formState": null,
-        "inViewport": false,
-        "index": 61,
+        "isHidden": true,
         "type": "element"
       },
       {
@@ -1774,6 +1284,7 @@
         "formState": null,
         "inViewport": false,
         "index": 62,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1795,6 +1306,7 @@
         },
         "inViewport": false,
         "index": 10,
+        "isHidden": false,
         "type": "textbox"
       },
       {
@@ -1814,25 +1326,7 @@
         "formState": null,
         "inViewport": false,
         "index": 63,
-        "type": "element"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2248.5,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 2222.7,
-          "right": 707,
-          "top": 2196.91,
-          "width": 658,
-          "x": 49,
-          "y": 2196.91
-        },
-        "description": "Disabled Field",
-        "formState": null,
-        "inViewport": false,
-        "index": 64,
+        "isHidden": true,
         "type": "element"
       },
       {
@@ -1852,6 +1346,7 @@
         "formState": null,
         "inViewport": false,
         "index": 65,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1873,26 +1368,8 @@
         },
         "inViewport": false,
         "index": 11,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2315.09,
-          "height": 51.59,
-          "left": 49,
-          "midx": 378,
-          "midy": 2289.3,
-          "right": 707,
-          "top": 2263.5,
-          "width": 658,
-          "x": 49,
-          "y": 2263.5
-        },
-        "description": "Read-only Field",
-        "formState": null,
-        "inViewport": false,
-        "index": 66,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -1911,6 +1388,7 @@
         "formState": null,
         "inViewport": false,
         "index": 67,
+        "isHidden": false,
         "type": "element"
       },
       {
@@ -1932,26 +1410,8 @@
         },
         "inViewport": false,
         "index": 12,
+        "isHidden": false,
         "type": "textbox"
-      },
-      {
-        "boundingBox": {
-          "bottom": 2430.09,
-          "height": 39,
-          "left": 28,
-          "midx": 378,
-          "midy": 2410.59,
-          "right": 728,
-          "top": 2391.09,
-          "width": 700,
-          "x": 28,
-          "y": 2391.09
-        },
-        "description": "Submit Form",
-        "formState": null,
-        "inViewport": false,
-        "index": 68,
-        "type": "element"
       },
       {
         "boundingBox": {
@@ -1970,6 +1430,7 @@
         "formState": null,
         "inViewport": false,
         "index": 1,
+        "isHidden": false,
         "type": "button"
       },
       {
@@ -1989,6 +1450,7 @@
         "formState": null,
         "inViewport": false,
         "index": 69,
+        "isHidden": false,
         "type": "element"
       }
     ],

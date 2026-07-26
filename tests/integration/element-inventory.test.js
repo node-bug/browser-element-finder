@@ -565,10 +565,10 @@ describe('ElementFinder - getElementInventory overlay detection for text-less co
     // The dominant overlay is the one with the most descendants — the outer
     // .modal-backdrop div (type 'element') wraps everything.
     expect(overlay.type).toBe('element');
-    // The textContent fallback picks up text from child elements (e.g. the
-    // <h2>Modal Heading</h2> inside the dialog), so the overlay gets a
-    // description even though the container itself has no own text.
-    expect(overlay.description).toBe('Modal Heading');
+    // Generic `element`-type containers no longer get textContent-based
+    // descriptors (to avoid false matches during findProbableElements searches),
+    // so the overlay's description is null.
+    expect(overlay.description).toBeNull();
     expect(overlay.inViewport).toBe(true);
   });
 
@@ -602,5 +602,229 @@ describe('ElementFinder - getElementInventory overlay detection for text-less co
     // overlay-a wraps 4 buttons (A-1, A-2, A-3, B-1), overlay-b wraps 1 (B-1).
     // The outer overlay should win.
     expect(overlay.type).toBe('element');
+  });
+});
+
+// Tests for text-content inheritance prevention. Small elements
+// (like <span>) inside parent elements (like <button>) should NOT
+// inherit the parent's text content via the textContent fallback.
+describe('ElementFinder - getElementInventory text inheritance prevention', () => {
+  const fixture = createDriverFixture({
+    url: loadFixture('element-inventory-text-inheritance.html'),
+    injectFinder: true,
+    sleep: 300,
+  });
+
+  beforeAll(async () => {
+    await fixture.setup();
+  });
+
+  afterAll(async () => {
+    await fixture.teardown();
+  });
+
+  it('should not let an empty child span inherit text from its parent button', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The button with direct text "Submit" should be described as "Submit".
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit' }));
+
+    // No generic element entry should have description "Submit" — the empty
+    // <span> inside the button should NOT inherit "Submit" from the parent.
+    const submitElements = entries.filter(
+      (e) => e.type === 'element' && e.description === 'Submit',
+    );
+    expect(submitElements).toHaveLength(0);
+  });
+
+  it('should not let a parent div inherit text from its child button', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The button "Login" should be found with its own text.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Login' }));
+
+    // The div wrapping the button is a generic `element` type — it
+    // already gets no textContent fallback (excluded for element types).
+    // Verify no element entry has description "Login" unless it is
+    // the button itself.
+    const loginEntries = entries.filter((e) => e.description === 'Login');
+    expect(loginEntries).toHaveLength(1);
+    expect(loginEntries[0].type).toBe('button');
+  });
+
+  it('should let a button with direct text keep its description', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // Button with direct text (no child elements) should still get
+    // its description correctly.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Submit' }));
+  });
+
+  it('should let a span with its own direct text keep its description', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // Span with its own direct text should get that text as its
+    // description.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'element', description: 'Some text' }));
+  });
+
+  it('should not let an empty span inherit text from a wrapped button', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The button "Click Me" should be found with its own text.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Click Me' }));
+
+    // No generic element entry should have description "Click Me" — the empty
+    // <span> wrapping the button should NOT inherit "Click Me".
+    const clickMeElements = entries.filter(
+      (e) => e.type === 'element' && e.description === 'Click Me',
+    );
+    expect(clickMeElements).toHaveLength(0);
+  });
+
+  it('should not let an empty span inside a heading inherit the heading text', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The heading with direct text "Section Title" should be found.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'heading', description: 'Section Title' }));
+
+    // No generic element entry should have description "Section Title" — the empty
+    // <span> inside the heading should NOT inherit that text.
+    const sectionTitleElements = entries.filter(
+      (e) => e.type === 'element' && e.description === 'Section Title',
+    );
+    expect(sectionTitleElements).toHaveLength(0);
+  });
+
+  it('should not let an empty span inside a link inherit the link text', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The link with direct text "Home" should be found.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'link', description: 'Home' }));
+
+    // No generic element entry should have description "Home" — the empty
+    // <span> inside the link should NOT inherit that text.
+    const homeElements = entries.filter(
+      (e) => e.type === 'element' && e.description === 'Home',
+    );
+    expect(homeElements).toHaveLength(0);
+  });
+
+  it('should not let a div with role="link" inherit text from a deeply nested button behind generic wrappers', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The deeply nested button should be found with its own text.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Deep Button' }));
+
+    // The div role="link" wraps <span><i><button>Deep Button</button></i></span>.
+    // Even though the button is behind two generic wrappers (span, i), the
+    // link should NOT inherit "Deep Button" via textContent fallback.
+    const deepLinkEntries = entries.filter(
+      (e) => e.type === 'link' && e.description === 'Deep Button',
+    );
+    expect(deepLinkEntries).toHaveLength(0);
+  });
+
+  it('should not let a heading inherit text from a deeply nested button behind generic wrappers', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The deeply nested button should be found with its own text.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Heading Button' }));
+
+    // The h3 wraps <span><em><button>Heading Button</button></em></span>.
+    // The heading should NOT inherit "Heading Button" via textContent fallback.
+    const headingEntries = entries.filter(
+      (e) => e.type === 'heading' && e.description === 'Heading Button',
+    );
+    expect(headingEntries).toHaveLength(0);
+  });
+
+  it('should not let a link inherit text from a deeply nested textbox placeholder behind generic wrappers', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The deeply nested textbox should be found with its placeholder.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'textbox', description: 'Deep Input' }));
+
+    // The link wraps <span><div><input placeholder="Deep Input"></div></span>.
+    // The link should NOT inherit "Deep Input" via textContent fallback.
+    const deepInputLinks = entries.filter(
+      (e) => e.type === 'link' && e.description === 'Deep Input',
+    );
+    expect(deepInputLinks).toHaveLength(0);
+  });
+
+  it('should not let a button with deeply nested empty spans inherit text from the empty descendants', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The button wraps <span><span><span></span></span></span> — all empty.
+    // It has no direct text and no semantic children, so it should appear
+    // as a text-less button (description null).
+    const deepEmptyButtons = entries.filter(
+      (e) => e.type === 'button' && e.description !== null,
+    );
+    // All buttons with descriptions should be ones that have actual text.
+    expect(deepEmptyButtons.every((e) => e.description !== '')).toBe(true);
+  });
+
+  it('should not let a generic div inherit text from a deeply nested button behind multiple wrapper levels', async () => {
+    const tree = await fixture.driver.executeScript(`
+      return ElementFinder.getElementInventory();
+    `);
+
+    const entries = tree[0].elements;
+
+    // The deeply nested button should be found with its own text.
+    expect(entries).toContainEqual(expect.objectContaining({ type: 'button', description: 'Multi Level' }));
+
+    // The outer div wraps <div><div><div><button>Multi Level</button></div></div></div>.
+    // Generic `element`-type containers should never get textContent fallback.
+    const multiLevelElements = entries.filter(
+      (e) => e.type === 'element' && e.description === 'Multi Level',
+    );
+    expect(multiLevelElements).toHaveLength(0);
   });
 });
