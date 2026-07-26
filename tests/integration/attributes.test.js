@@ -1041,7 +1041,7 @@ describe('ElementFinder Attribute Tests', () => {
     it('should throw TypeError for non-string value', async () => {
       const result = await fixture.driver.executeScript(`
         try {
-          ElementFinder.findElementsByAttribute(123);
+          ElementFinder.findElementsByAttribute({ value: 123 });
           return 'no-throw';
         } catch (e) {
           return e.constructor.name;
@@ -1052,14 +1052,14 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should return all elements for empty value', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('').elements.length;
+        return ElementFinder.findElementsByAttribute({ value: '' }).elements.length;
       `);
       expect(result).toBeGreaterThan(0);
     });
 
     it('should find elements by placeholder attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Enter name');
+        return ElementFinder.findElementsByAttribute({ value: 'Enter name' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -1068,7 +1068,7 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should find elements by data-testid attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('email-input');
+        return ElementFinder.findElementsByAttribute({ value: 'email-input' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -1077,7 +1077,7 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should find elements by id attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('btn1');
+        return ElementFinder.findElementsByAttribute({ value: 'btn1' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -1086,7 +1086,7 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should find elements by aria-label attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Cancel button');
+        return ElementFinder.findElementsByAttribute({ value: 'Cancel button' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -1095,7 +1095,7 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should find elements by title attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Click Me');
+        return ElementFinder.findElementsByAttribute({ value: 'Click Me' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -1105,9 +1105,9 @@ describe('ElementFinder Attribute Tests', () => {
     it('should support exact matching for attributes', async () => {
       const result = await fixture.driver.executeScript(`
         return [
-          ElementFinder.findElementsByAttribute('Enter name', true).elements.length,
-          ElementFinder.findElementsByAttribute('Enter', true).elements.length,
-          ElementFinder.findElementsByAttribute('Enter', false).elements.length
+          ElementFinder.findElementsByAttribute({ value: 'Enter name', exact: true }).elements.length,
+          ElementFinder.findElementsByAttribute({ value: 'Enter', exact: true }).elements.length,
+          ElementFinder.findElementsByAttribute({ value: 'Enter', exact: false }).elements.length
         ];
       `);
       expect(result[0]).toBe(1);
@@ -1118,9 +1118,9 @@ describe('ElementFinder Attribute Tests', () => {
     it('should support exact matching for text content', async () => {
       const result = await fixture.driver.executeScript(`
         return [
-          ElementFinder.findElementsByAttribute('Submit', true).elements.length,
-          ElementFinder.findElementsByAttribute('Sub', true).elements.length,
-          ElementFinder.findElementsByAttribute('Sub', false).elements.length
+          ElementFinder.findElementsByAttribute({ value: 'Submit', exact: true }).elements.length,
+          ElementFinder.findElementsByAttribute({ value: 'Sub', exact: true }).elements.length,
+          ElementFinder.findElementsByAttribute({ value: 'Sub', exact: false }).elements.length
         ];
       `);
       expect(result[0]).toBe(1);
@@ -1130,7 +1130,7 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should return innermost matches only', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('container');
+        return ElementFinder.findElementsByAttribute({ value: 'container' });
       `);
       expect(result.elements.length).toBe(1);
       const dataTestId = await result.elements[0].element.getAttribute('data-test-id');
@@ -1139,7 +1139,7 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should return elements with bounding box and tagName', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('btn1');
+        return ElementFinder.findElementsByAttribute({ value: 'btn1' });
       `);
       expect(result.elements[0].boundingBox).toBeDefined();
       expect(result.elements[0].tagName).toBe('button');
@@ -1188,7 +1188,7 @@ describe('ElementFinder Attribute Tests', () => {
 
     it('should handle highlight with result wrapper format', async () => {
       const result = await fixture.driver.executeScript(`
-        const result = ElementFinder.findElementsByAttribute('btn1');
+        const result = ElementFinder.findElementsByAttribute({ value: 'btn1' });
         ElementFinder.highlight(result, 'blue', 2);
         const btn = document.getElementById('btn1');
         return btn.style.outline;

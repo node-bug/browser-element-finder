@@ -44,7 +44,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     });
 
     it('should return visible, hidden, and total counts for one semantic type', async () => {
-      const counts = await fixture.driver.executeScript('return ElementFinder.getElementCounts("button")');
+      const counts = await fixture.driver.executeScript('return ElementFinder.getElementCounts({ type: "button" })');
 
       expect(counts).toEqual({ button: { visible: 7, hidden: 0, total: 7 } });
     });
@@ -52,7 +52,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should count elements within a parent element', async () => {
       const counts = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.getElementCounts('button', parent);
+        return ElementFinder.getElementCounts({ type: 'button', parent });
       `);
 
       expect(counts).toEqual({ button: { visible: 4, hidden: 0, total: 4 } });
@@ -65,7 +65,7 @@ describe('ElementFinder - Element Types Fixture', () => {
         document.body.appendChild(hiddenButton);
 
         try {
-          return ElementFinder.getElementCounts('button');
+          return ElementFinder.getElementCounts({ type: 'button' });
         } finally {
           hiddenButton.remove();
         }
@@ -78,14 +78,14 @@ describe('ElementFinder - Element Types Fixture', () => {
   describe('findElementsByType', () => {
     it('should find all elements with "element" type', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('element');
+        return ElementFinder.findElementsByType({ type: 'element' });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should find buttons and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(7);
@@ -95,7 +95,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find checkboxes and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('checkbox');
+        return ElementFinder.findElementsByType({ type: 'checkbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -105,7 +105,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find textboxes and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(6);
@@ -115,7 +115,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find links and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('link');
+        return ElementFinder.findElementsByType({ type: 'link' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -125,7 +125,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find dropdowns and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('dropdown');
+        return ElementFinder.findElementsByType({ type: 'dropdown' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(4);
@@ -135,7 +135,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find sliders and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('slider');
+        return ElementFinder.findElementsByType({ type: 'slider' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -145,7 +145,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find radios and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('radio');
+        return ElementFinder.findElementsByType({ type: 'radio' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -155,7 +155,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find headings and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('heading');
+        return ElementFinder.findElementsByType({ type: 'heading' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(24);
@@ -165,7 +165,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find navigation elements and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('navigation');
+        return ElementFinder.findElementsByType({ type: 'navigation' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -175,7 +175,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find images and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('image');
+        return ElementFinder.findElementsByType({ type: 'image' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -185,7 +185,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find tables and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('table');
+        return ElementFinder.findElementsByType({ type: 'table' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -195,7 +195,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find lists and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('list');
+        return ElementFinder.findElementsByType({ type: 'list' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -205,7 +205,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find file inputs and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('file');
+        return ElementFinder.findElementsByType({ type: 'file' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -215,7 +215,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find menus and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('menu');
+        return ElementFinder.findElementsByType({ type: 'menu' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -225,7 +225,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find toolbars and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('toolbar');
+        return ElementFinder.findElementsByType({ type: 'toolbar' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -235,7 +235,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find dialogs and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('dialog');
+        return ElementFinder.findElementsByType({ type: 'dialog' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -245,7 +245,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should return empty array for unknown type', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('unknown-type-xyz');
+        return ElementFinder.findElementsByType({ type: 'unknown-type-xyz' });
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -253,16 +253,16 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should throw TypeError for non-string type', async () => {
       await expect(async () => {
         await fixture.driver.executeScript(`
-          return ElementFinder.findElementsByType(123);
+          return ElementFinder.findElementsByType({ type: 123 });
         `);
       }).rejects.toThrow();
     });
   });
 
   describe('findElements with type only', () => {
-    it('should find all buttons when type is "button" and text is null', async () => {
+    it('should find all buttons when type is "button" (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', null);
+        return ElementFinder.findElements({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(7);
@@ -270,9 +270,9 @@ describe('ElementFinder - Element Types Fixture', () => {
       expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find all links when type is "link" and text is undefined', async () => {
+    it('should find all links when type is "link" (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('link', undefined);
+        return ElementFinder.findElements({ type: 'link' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -280,18 +280,18 @@ describe('ElementFinder - Element Types Fixture', () => {
       expect(firstTestDataId).toBeDefined();
     });
 
-    it('should find all elements when type is null', async () => {
+    it('should find all elements when type is null (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, '');
+        return ElementFinder.findElements({});
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
   });
 
   describe('findElements with text only', () => {
-    it('should find elements by text when type is null and validate first match', async () => {
+    it('should find elements by text when type is null (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Standard Button');
+        return ElementFinder.findElements({ text: 'Standard Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -301,9 +301,9 @@ describe('ElementFinder - Element Types Fixture', () => {
       expect(testDataId).toBe('btn-standard');
     });
 
-    it('should find elements by id when type is null and validate first match', async () => {
+    it('should find elements by id when type is null (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'btn-standard');
+        return ElementFinder.findElements({ text: 'btn-standard' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -313,9 +313,9 @@ describe('ElementFinder - Element Types Fixture', () => {
   });
 
   describe('findElements with type and text combined', () => {
-    it('should find button with matching text and validate first match', async () => {
+    it('should find button with matching text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'Standard Button');
+        return ElementFinder.findElements({ type: 'button', text: 'Standard Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -325,9 +325,9 @@ describe('ElementFinder - Element Types Fixture', () => {
       expect(testDataId).toBe('btn-standard');
     });
 
-    it('should find link with matching text and validate first match', async () => {
+    it('should find link with matching text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('link', 'Home');
+        return ElementFinder.findElements({ type: 'link', text: 'Home' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -337,9 +337,9 @@ describe('ElementFinder - Element Types Fixture', () => {
       expect(testDataId).toBe('link-home');
     });
 
-    it('should find textbox with matching placeholder and validate first match', async () => {
+    it('should find textbox with matching placeholder (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('textbox', 'Textarea content');
+        return ElementFinder.findElements({ type: 'textbox', text: 'Textarea content' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -351,7 +351,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should return empty when no match for combined criteria', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'nonexistent-text');
+        return ElementFinder.findElements({ type: 'button', text: 'nonexistent-text' });
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -360,7 +360,7 @@ describe('ElementFinder - Element Types Fixture', () => {
   describe('findElements with exact matching', () => {
     it('should find exact text match and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Standard Button', true);
+        return ElementFinder.findElements({ text: 'Standard Button', exact: true });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -370,14 +370,14 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should not find partial match with exact=true', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Standard', true);
+        return ElementFinder.findElements({ text: 'Standard', exact: true });
       `);
       expect(result.elements.length).toBe(0);
     });
 
     it('should find partial match with exact=false', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Standard', false);
+        return ElementFinder.findElements({ text: 'Standard', exact: false });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -390,7 +390,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find elements within parent by type only and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElements('button', null, false, parent);
+        return ElementFinder.findElements({ type: 'button', parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(4);
@@ -401,7 +401,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find elements within parent by text only and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElements(null, 'Standard Button', false, parent);
+        return ElementFinder.findElements({ text: 'Standard Button', exact: false, parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -415,7 +415,7 @@ describe('ElementFinder - Element Types Fixture', () => {
   describe('findProbableElements direct match', () => {
     it('should find element matching both type and text directly and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('button', 'Standard Button');
+        return ElementFinder.findProbableElements({ type: 'button', text: 'Standard Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -427,7 +427,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find textbox with matching placeholder and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('textbox', 'Textarea content');
+        return ElementFinder.findProbableElements({ type: 'textbox', text: 'Textarea content' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -439,7 +439,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find link with matching text and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('link', 'Home');
+        return ElementFinder.findProbableElements({ type: 'link', text: 'Home' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -454,7 +454,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find elements within a specific parent element', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementsByType('button', parent);
+        return ElementFinder.findElementsByType({ type: 'button', parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(4);
@@ -463,7 +463,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find buttons within navigation section', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('navigation-section');
-        return ElementFinder.findElementsByType('link', parent);
+        return ElementFinder.findElementsByType({ type: 'link', parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(3);
@@ -472,7 +472,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find textboxes within textboxes section', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('textboxes-section');
-        return ElementFinder.findElementsByType('textbox', parent);
+        return ElementFinder.findElementsByType({ type: 'textbox', parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(6);
@@ -481,7 +481,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should return empty array when no elements match in parent', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementsByType('textbox', parent);
+        return ElementFinder.findElementsByType({ type: 'textbox', parent });
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -489,7 +489,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find checkboxes within checkboxes section', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('checkboxes-section');
-        return ElementFinder.findElementsByType('checkbox', parent);
+        return ElementFinder.findElementsByType({ type: 'checkbox', parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -500,7 +500,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find elements within a specific parent element', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementsByAttribute('Standard Button', false, parent);
+        return ElementFinder.findElementsByAttribute({ value: 'Standard Button', exact: false, parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -509,7 +509,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find elements by id within parent section', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementsByAttribute('btn-standard', false, parent);
+        return ElementFinder.findElementsByAttribute({ value: 'btn-standard', exact: false, parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -518,7 +518,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should return empty array when no elements match in parent', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('buttons-section');
-        return ElementFinder.findElementsByAttribute('Home', false, parent);
+        return ElementFinder.findElementsByAttribute({ value: 'Home', exact: false, parent });
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -526,7 +526,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find links within navigation section by text', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('navigation-section');
-        return ElementFinder.findElementsByAttribute('Home', false, parent);
+        return ElementFinder.findElementsByAttribute({ value: 'Home', exact: false, parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -535,7 +535,7 @@ describe('ElementFinder - Element Types Fixture', () => {
     it('should find textboxes within textboxes section', async () => {
       const result = await fixture.driver.executeScript(`
         const parent = document.getElementById('textboxes-section');
-        return ElementFinder.findElementsByAttribute('Textarea content', false, parent);
+        return ElementFinder.findElementsByAttribute({ value: 'Textarea content', exact: false, parent });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -545,7 +545,7 @@ describe('ElementFinder - Element Types Fixture', () => {
   describe('findElementsByAttribute', () => {
     it('should find elements matching visible text "Home" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Home');
+        return ElementFinder.findElementsByAttribute({ value: 'Home' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -555,7 +555,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Heading 1" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Heading 1');
+        return ElementFinder.findElementsByAttribute({ value: 'Heading 1' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -565,7 +565,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Standard Button" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Standard Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Standard Button' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -575,7 +575,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements by id attribute and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('btn-standard');
+        return ElementFinder.findElementsByAttribute({ value: 'btn-standard' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -587,7 +587,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements by aria-label attribute and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role Image');
+        return ElementFinder.findElementsByAttribute({ value: 'Role Image' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -599,7 +599,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements by alt attribute and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Test Image');
+        return ElementFinder.findElementsByAttribute({ value: 'Test Image' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -611,7 +611,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Role Button" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Role Button' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -621,7 +621,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Role Switch" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role Switch');
+        return ElementFinder.findElementsByAttribute({ value: 'Role Switch' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -631,7 +631,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Role Radio" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role Radio');
+        return ElementFinder.findElementsByAttribute({ value: 'Role Radio' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -641,7 +641,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Combobox" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Combobox');
+        return ElementFinder.findElementsByAttribute({ value: 'Combobox' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -651,7 +651,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Role Textbox" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role Textbox');
+        return ElementFinder.findElementsByAttribute({ value: 'Role Textbox' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -661,7 +661,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Role List Item" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role List Item');
+        return ElementFinder.findElementsByAttribute({ value: 'Role List Item' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -671,7 +671,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Role Menu Item" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role Menu Item');
+        return ElementFinder.findElementsByAttribute({ value: 'Role Menu Item' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -681,7 +681,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Role Heading" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Role Heading');
+        return ElementFinder.findElementsByAttribute({ value: 'Role Heading' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -691,7 +691,7 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should find elements matching "Dialog content" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Dialog content');
+        return ElementFinder.findElementsByAttribute({ value: 'Dialog content' });
       `);
       expect(result.elements.length).toBe(1);
       const mainElements = result.elements.filter(e => e.element);
@@ -701,11 +701,11 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should be case-sensitive for "home" vs "Home"', async () => {
       const resultLower = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('home');
+        return ElementFinder.findElementsByAttribute({ value: 'home' });
       `);
       const resultUpper = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Home');
-      `);
+        return ElementFinder.findElementsByAttribute({ value: 'Home' });
+      `)
       expect(resultLower.elements.length).toBeGreaterThanOrEqual(0);
       expect(resultUpper.elements.length).toBe(1);
       const mainElements = resultUpper.elements.filter(e => e.element);
@@ -717,34 +717,34 @@ describe('ElementFinder - Element Types Fixture', () => {
 
     it('should support exact matching for attributes', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Standard Button', true);
+        return ElementFinder.findElementsByAttribute({ value: 'Standard Button', exact: true });
       `);
       expect(result.elements.length).toBe(1);
 
       const result2 = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Standard', true);
+        return ElementFinder.findElementsByAttribute({ value: 'Standard', exact: true });
       `);
       expect(result2.elements.length).toBe(0);
 
       const result3 = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Standard', false);
+        return ElementFinder.findElementsByAttribute({ value: 'Standard', exact: false });
       `);
       expect(result3.elements.length).toBeGreaterThan(0);
     });
 
     it('should support exact matching for text content', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Heading 1', true);
+        return ElementFinder.findElementsByAttribute({ value: 'Heading 1', exact: true });
       `);
       expect(result.elements.length).toBe(1);
 
       const result2 = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Heading', true);
+        return ElementFinder.findElementsByAttribute({ value: 'Heading', exact: true });
       `);
       expect(result2.elements.length).toBe(0);
 
       const result3 = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Heading', false);
+        return ElementFinder.findElementsByAttribute({ value: 'Heading', exact: false });
       `);
       expect(result3.elements.length).toBeGreaterThan(0);
     });

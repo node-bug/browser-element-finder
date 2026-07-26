@@ -45,9 +45,9 @@ describe('findElements combined search', () => {
   });
 
   describe('findElements with type only', () => {
-    it('should find elements by type when text is null', async () => {
+    it('should find elements by type when text is null (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', null);
+        return ElementFinder.findElements({ type: 'button' });
       `);
       expect(result.elements.length).toBe(3);
       result.elements.forEach(el => {
@@ -55,50 +55,50 @@ describe('findElements combined search', () => {
       });
     });
 
-    it('should find elements by type when text is undefined', async () => {
+    it('should find elements by type when text is undefined (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', undefined);
+        return ElementFinder.findElements({ type: 'button', text: undefined });
       `);
       expect(result.elements.length).toBe(3);
     });
 
-    it('should find elements by type when text is empty string', async () => {
+    it('should find elements by type when text is empty string (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', '');
+        return ElementFinder.findElements({ type: 'button', text: '' });
+      `);
+      expect(result.elements.length).toBe(3);
+    });
+
+    it('should find elements by type', async () => {
+      const result = await fixture.driver.executeScript(`
+        return ElementFinder.findElements({ type: 'button' });
       `);
       expect(result.elements.length).toBe(3);
     });
   });
 
   describe('findElements with text only', () => {
-    it('should find elements by text when type is null', async () => {
+    it('should find elements by text when type is null (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Submit');
+        return ElementFinder.findElements({ text: 'Submit' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
       expect(id).toBe('btn1');
     });
 
-    it('should find elements by text when type is undefined', async () => {
+    it('should find elements by placeholder attribute (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(undefined, 'Submit');
-      `);
-      expect(result.elements.length).toBe(1);
-    });
-
-    it('should find elements by placeholder attribute', async () => {
-      const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Enter name');
+        return ElementFinder.findElements({ text: 'Enter name' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
       expect(id).toBe('txt1');
     });
 
-    it('should find elements by aria-label attribute', async () => {
+    it('should find elements by aria-label attribute (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Cancel button');
+        return ElementFinder.findElements({ text: 'Cancel button' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -107,43 +107,43 @@ describe('findElements combined search', () => {
   });
 
   describe('findElements with type and text combined', () => {
-    it('should find elements matching both type and text', async () => {
+    it('should find elements matching both type and text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'Submit');
+        return ElementFinder.findElements({ type: 'button', text: 'Submit' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
       expect(id).toBe('btn1');
     });
 
-    it('should return empty array when no elements match both criteria', async () => {
+    it('should return empty array when no elements match both criteria (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'nonexistent');
+        return ElementFinder.findElements({ type: 'button', text: 'nonexistent' });
       `);
       expect(result.elements.length).toBe(0);
     });
 
-    it('should find button with matching aria-label', async () => {
+    it('should find button with matching aria-label (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'Cancel');
+        return ElementFinder.findElements({ type: 'button', text: 'Cancel' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
       expect(id).toBe('btn2');
     });
 
-    it('should find textbox with matching placeholder', async () => {
+    it('should find textbox with matching placeholder (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('textbox', 'Enter name');
+        return ElementFinder.findElements({ type: 'textbox', text: 'Enter name' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
       expect(id).toBe('txt1');
     });
 
-    it('should find link with matching text', async () => {
+    it('should find link with matching text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('link', 'Home');
+        return ElementFinder.findElements({ type: 'link', text: 'Home' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -152,32 +152,32 @@ describe('findElements combined search', () => {
   });
 
   describe('findElements with exact matching', () => {
-    it('should support exact matching for text', async () => {
+    it('should support exact matching for text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Enter name', true);
+        return ElementFinder.findElements({ text: 'Enter name', exact: true });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
       expect(id).toBe('txt1');
     });
 
-    it('should not find partial matches with exact=true', async () => {
+    it('should not find partial matches with exact=true (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Enter', true);
+        return ElementFinder.findElements({ text: 'Enter', exact: true });
       `);
       expect(result.elements.length).toBe(0);
     });
 
-    it('should find partial matches with exact=false (default)', async () => {
+    it('should find partial matches with exact=false (default) (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements(null, 'Enter', false);
+        return ElementFinder.findElements({ text: 'Enter', exact: false });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
-    it('should combine exact matching with type', async () => {
+    it('should combine exact matching with type (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('textbox', 'Enter name', true);
+        return ElementFinder.findElements({ type: 'textbox', text: 'Enter name', exact: true });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -186,20 +186,20 @@ describe('findElements combined search', () => {
   });
 
   describe('findElements with parent parameter', () => {
-    it('should search within parent element when provided', async () => {
+    it('should search within parent element when provided (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
         const container = document.querySelector('.container');
-        return ElementFinder.findElements(null, 'Nested', null, container);
+        return ElementFinder.findElements({ text: 'Nested', parent: container });
       `);
       expect(result.elements.length).toBe(1);
       const dataTestId = await result.elements[0].element.getAttribute('data-testid');
       expect(dataTestId).toBe('nested-span');
     });
 
-    it('should combine type and parent search', async () => {
+    it('should combine type and parent search (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
         const container = document.querySelector('.container');
-        return ElementFinder.findElements('element', null, false, container);
+        return ElementFinder.findElements({ type: 'element', parent: container });
       `);
       expect(result.elements.length).toBe(2);
       const tagNames = result.elements.map(el => el.tagName);
@@ -207,20 +207,20 @@ describe('findElements combined search', () => {
       expect(tagNames).toContain('span');
     });
 
-    it('should combine text and parent search', async () => {
+    it('should combine text and parent search (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
         const container = document.querySelector('.container');
-        return ElementFinder.findElements(null, 'container', false, container);
+        return ElementFinder.findElements({ text: 'container', exact: false, parent: container });
       `);
       expect(result.elements.length).toBe(1);
       const dataTestId = await result.elements[0].element.getAttribute('data-test-id');
       expect(dataTestId).toBe('container-div');
     });
 
-    it('should combine type, text, and parent search', async () => {
+    it('should combine type, text, and parent search (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
         const container = document.querySelector('.container');
-        return ElementFinder.findElements('element', 'Nested', false, container);
+        return ElementFinder.findElements({ type: 'element', text: 'Nested', exact: false, parent: container });
       `);
       expect(result.elements.length).toBe(1);
       const dataTestId = await result.elements[0].element.getAttribute('data-testid');
@@ -229,10 +229,10 @@ describe('findElements combined search', () => {
   });
 
   describe('findElements error handling', () => {
-    it('should throw TypeError for non-string type', async () => {
+    it('should throw TypeError for non-string type (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
         try {
-          ElementFinder.findElements(123, 'test');
+          ElementFinder.findElements({ type: 123, text: 'test' });
           return 'no-throw';
         } catch (e) {
           return e.constructor.name;
@@ -241,10 +241,10 @@ describe('findElements combined search', () => {
       expect(result).toBe('TypeError');
     });
 
-    it('should throw TypeError for non-string text', async () => {
+    it('should throw TypeError for non-string text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
         try {
-          ElementFinder.findElements('button', 123);
+          ElementFinder.findElements({ type: 'button', text: 123 });
           return 'no-throw';
         } catch (e) {
           return e.constructor.name;
@@ -253,31 +253,30 @@ describe('findElements combined search', () => {
       expect(result).toBe('TypeError');
     });
 
-    it('should throw TypeError for non-boolean exact parameter', async () => {
-      // The library does not validate the exact parameter type — truthy values
-      // behave like true (exact match), falsy values behave like false.
-      // Passing a string 'not-a-boolean' is truthy, so it acts as exact=true.
+    it('should handle exact parameter type coercion (object syntax)', async () => {
+      // The normalization treats only strict === true as exact, so 'not-a-boolean'
+      // becomes exact: false. This means substring matching is used.
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'Submit', 'not-a-boolean');
+        return ElementFinder.findElements({ type: 'button', text: 'Submit', exact: 'not-a-boolean' });
       `);
-      // Should behave like exact=true, finding the Submit button with an exact match
+      // Should behave like exact=false, finding the Submit button with substring match
       expect(result.elements.length).toBeGreaterThanOrEqual(1);
     });
   });
 
   describe('findProbableElements', () => {
-    it('should find probable elements when exact match exists', async () => {
+    it('should find probable elements when exact match exists (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('button', 'Submit');
+        return ElementFinder.findProbableElements({ type: 'button', text: 'Submit' });
       `);
       expect(result.elements.length).toBeGreaterThanOrEqual(1);
       const btnId = await result.elements[0].element.getAttribute('id');
       expect(btnId).toBe('btn1');
     });
 
-    it('should find probable elements with nearby text', async () => {
+    it('should find probable elements with nearby text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('button', 'nonexistent');
+        return ElementFinder.findProbableElements({ type: 'button', text: 'nonexistent' });
       `);
       // Should still find buttons as probable matches
       expect(result.elements.length).toBeGreaterThanOrEqual(0);

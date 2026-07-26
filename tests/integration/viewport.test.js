@@ -101,7 +101,7 @@ describe('ElementFinder Viewport Helpers', () => {
   describe('inViewport flag on result objects', () => {
     it('includes inViewport alongside isHidden on every result', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
       for (const item of result.elements) {
@@ -114,7 +114,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('reports inViewport=true for elements inside the viewport', async () => {
       const inside = await fixture.driver.executeScript(`
-        const result = ElementFinder.findElementsByType('button');
+        const result = ElementFinder.findElementsByType({ type: 'button' });
         return result.elements.find((e) => e.element && e.element.id === 'inside-btn');
       `);
       expect(inside).toBeDefined();
@@ -124,7 +124,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('reports inViewport=false for elements fully outside the viewport', async () => {
       const wayOff = await fixture.driver.executeScript(`
-        const result = ElementFinder.findElementsByType('button');
+        const result = ElementFinder.findElementsByType({ type: 'button' });
         return result.elements.find((e) => e.element && e.element.id === 'way-off-btn');
       `);
       expect(wayOff).toBeDefined();
@@ -133,7 +133,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('reports inViewport=false for hidden elements', async () => {
       const hidden = await fixture.driver.executeScript(`
-        const result = ElementFinder.findElementsByType('button');
+        const result = ElementFinder.findElementsByType({ type: 'button' });
         return result.elements.find((e) => e.element && e.element.id === 'hidden-btn');
       `);
       expect(hidden).toBeDefined();
@@ -143,7 +143,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('findElements also exposes inViewport on each result', async () => {
       const inside = await fixture.driver.executeScript(`
-        const result = ElementFinder.findElements('button', null);
+        const result = ElementFinder.findElements({ type: 'button' });
         return result.elements.find((e) => e.element && e.element.id === 'inside-btn');
       `);
       expect(inside).toBeDefined();
@@ -152,7 +152,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('findElementsByAttribute also exposes inViewport on each result', async () => {
       const inside = await fixture.driver.executeScript(`
-        const result = ElementFinder.findElementsByAttribute('Inside');
+        const result = ElementFinder.findElementsByAttribute({ value: 'Inside' });
         return result.elements.find((e) => e.element && e.element.id === 'inside-btn');
       `);
       expect(inside).toBeDefined();
@@ -163,7 +163,7 @@ describe('ElementFinder Viewport Helpers', () => {
   describe('getViewportElementCounts', () => {
     it('returns visible, hidden and total counts for all types when no type specified', async () => {
       const counts = await fixture.driver.executeScript(`
-        return ElementFinder.getViewportElementCounts();
+        return ElementFinder.getViewportElementCounts({ type: 'button' });
       `);
       expect(counts.button).toBeDefined();
       expect(counts.button.visible).toBeGreaterThanOrEqual(0);
@@ -173,7 +173,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('returns visible, hidden and total counts for a specific type', async () => {
       const counts = await fixture.driver.executeScript(`
-        return ElementFinder.getViewportElementCounts('button');
+        return ElementFinder.getViewportElementCounts({ type: 'button' });
       `);
       expect(counts.button).toBeDefined();
       expect(counts.button.visible).toBeGreaterThanOrEqual(0);
@@ -183,14 +183,14 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('returns total as sum of visible and hidden for viewport elements', async () => {
       const counts = await fixture.driver.executeScript(`
-        return ElementFinder.getViewportElementCounts('button');
+        return ElementFinder.getViewportElementCounts({ type: 'button' });
       `);
       expect(counts.button.total).toBe(counts.button.visible + counts.button.hidden);
     });
 
     it('returns zero for unknown type', async () => {
       const counts = await fixture.driver.executeScript(`
-        return ElementFinder.getViewportElementCounts('unknown-type');
+        return ElementFinder.getViewportElementCounts({ type: 'unknown-type' });
       `);
       expect(counts['unknown-type']).toEqual({ visible: 0, hidden: 0, total: 0 });
     });
@@ -198,7 +198,7 @@ describe('ElementFinder Viewport Helpers', () => {
     it('throws TypeError for non-string type', async () => {
       const result = await fixture.driver.executeScript(`
         try {
-          ElementFinder.getViewportElementCounts(123);
+          ElementFinder.getViewportElementCounts({ type: 123 });
           return 'no-throw';
         } catch (e) {
           return e.constructor.name;
@@ -209,7 +209,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('accepts null type to count all types', async () => {
       const counts = await fixture.driver.executeScript(`
-        return ElementFinder.getViewportElementCounts(null);
+        return ElementFinder.getViewportElementCounts({ type: null });
       `);
       expect(counts.button).toBeDefined();
       expect(counts.textbox).toBeDefined();
@@ -218,8 +218,8 @@ describe('ElementFinder Viewport Helpers', () => {
     it('excludes elements outside the viewport', async () => {
       const result = await fixture.driver.executeScript(`
         return [
-          ElementFinder.getViewportElementCounts('button'),
-          ElementFinder.getElementCounts('button')
+          ElementFinder.getViewportElementCounts({ type: 'button' }),
+          ElementFinder.getElementCounts({ type: 'button' })
         ];
       `);
       expect(result[0].button.total).toBeLessThanOrEqual(result[1].button.total);
@@ -227,7 +227,7 @@ describe('ElementFinder Viewport Helpers', () => {
 
     it('returns counts within a parent element when provided', async () => {
       const counts = await fixture.driver.executeScript(`
-        return ElementFinder.getViewportElementCounts('button', document.querySelector('body'));
+        return ElementFinder.getViewportElementCounts({ type: 'button', parent: document.querySelector('body') });
       `);
       expect(counts.button).toBeDefined();
       expect(counts.button.total).toBeGreaterThanOrEqual(0);

@@ -56,7 +56,8 @@
     "test:baselines": "npm run build && node scripts/generate-element-inventory-baselines.js",
     "test:watch": "npm run build && vitest",
     "test:coverage": "npm run build && vitest run --coverage",
-    "prepare": "husky && echo 'npx lint-staged' > .husky/pre-commit && chmod +x .husky/pre-commit"
+    "prepare": "husky && echo 'npx lint-staged' > .husky/pre-commit && chmod +x .husky/pre-commit",
+    "capture:inventory": "node scripts/capture-inventory.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

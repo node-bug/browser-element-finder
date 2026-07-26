@@ -886,10 +886,8 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function findElementsByType(type = "element", parent = null) {
-    if (type === null || type === void 0) {
-      type = "element";
-    }
+  function findElementsByType(options = {}) {
+    const { type = "element", parent = null } = options;
     if (typeof type !== "string") {
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
@@ -952,10 +950,8 @@ var ElementFinder = (() => {
     });
     return { elements: qualified };
   }
-  function findElementsByAttribute(value, exact = false, parent = null) {
-    if (value === null || value === void 0) {
-      value = "";
-    }
+  function findElementsByAttribute(options = {}) {
+    const { value = "", exact = false, parent = null } = options;
     if (typeof value !== "string") {
       throw new TypeError(`value must be a string, got ${typeof value}`);
     }
@@ -1044,7 +1040,8 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function getElementCounts(type = null, parent = null) {
+  function getElementCounts(options = {}) {
+    const { type = null, parent = null } = options;
     const hasType = type !== null && type !== void 0;
     const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
     if (hasType) {
@@ -1062,7 +1059,7 @@ var ElementFinder = (() => {
     }
     for (let i = 0; i < targetTypes.length; i++) {
       const targetType = targetTypes[i];
-      const result = findElements(targetType, null, false, parent);
+      const result = findElements({ type: targetType, parent });
       const typeCounts = counts[targetType];
       for (let j = 0; j < result.elements.length; j++) {
         const item = result.elements[j];
@@ -1073,7 +1070,8 @@ var ElementFinder = (() => {
     }
     return counts;
   }
-  function getViewportElementCounts(type = null, parent = null) {
+  function getViewportElementCounts(options = {}) {
+    const { type = null, parent = null } = options;
     const hasType = type !== null && type !== void 0;
     const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
     if (hasType) {
@@ -1091,7 +1089,7 @@ var ElementFinder = (() => {
     }
     for (let i = 0; i < targetTypes.length; i++) {
       const targetType = targetTypes[i];
-      const result = findElements(targetType, null, false, parent);
+      const result = findElements({ type: targetType, parent });
       const typeCounts = counts[targetType];
       for (let j = 0; j < result.elements.length; j++) {
         const item = result.elements[j];
@@ -1277,10 +1275,11 @@ var ElementFinder = (() => {
     }
     return { entries, overlay };
   }
-  function findElements(type = null, text = null, exact = false, parent = null) {
-    if (text === null || text === void 0) {
-      text = "";
+  function findElements(options = {}) {
+    if (typeof options !== "object" || Array.isArray(options) || options === null) {
+      throw new TypeError("options must be an object");
     }
+    const { type = null, text = "", exact = false, parent = null } = options;
     if (type !== null && type !== void 0) {
       if (typeof type !== "string") {
         throw new TypeError(`type must be a string, got ${typeof type}`);
@@ -1417,14 +1416,18 @@ var ElementFinder = (() => {
     }
     return null;
   }
-  function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+  function findProbableElements(options = {}) {
+    if (typeof options !== "object" || Array.isArray(options) || options === null) {
+      throw new TypeError("options must be an object");
+    }
+    const { type: elementType = null, text: searchText = "", exact: isExact = false, parent: searchParent = null } = options;
     const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
-    const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
+    const hasText = searchText !== "";
     if (hasType && !hasText) {
-      return findElements(elementType, null, false, parent);
+      return findElements({ type: elementType, parent: searchParent });
     }
     if (!hasType && hasText) {
-      return findElementsByAttribute(attributeText, exact, parent);
+      return findElementsByAttribute(searchText, isExact, searchParent);
     }
     if (hasType) {
       if (typeof elementType !== "string") {
@@ -1436,20 +1439,20 @@ var ElementFinder = (() => {
       }
     }
     if (hasText) {
-      if (typeof attributeText !== "string") {
-        throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+      if (typeof searchText !== "string") {
+        throw new TypeError(`attributeText must be a string, got ${typeof searchText}`);
       }
     }
     const matches = [];
     const seenElements = /* @__PURE__ */ new Set();
     const frames = getAllFrames(window);
     for (const frame of frames) {
-      const allElements = getAllElements(parent || frame.document);
+      const allElements = getAllElements(searchParent || frame.document);
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
         if (seenElements.has(el)) continue;
         if (hasType && !matchesType(el, elementType)) continue;
-        if (hasText && !matchesAttribute(el, attributeText, exact)) continue;
+        if (hasText && !matchesAttribute(el, searchText, isExact)) continue;
         seenElements.add(el);
         matches.push({ element: el, frame });
       }
@@ -1457,11 +1460,11 @@ var ElementFinder = (() => {
     if (matches.length === 0 && hasType && hasText) {
       const attributeMatches = [];
       for (const frame of frames) {
-        const allElements = getAllElements(parent || frame.document);
+        const allElements = getAllElements(searchParent || frame.document);
         for (let i = 0; i < allElements.length; i++) {
           const el = allElements[i];
-          if (!matchesAttribute(el, attributeText, exact)) continue;
-          if (hasOwnMatch(el, attributeText, exact)) {
+          if (!matchesAttribute(el, searchText, isExact)) continue;
+          if (hasOwnMatch(el, searchText, isExact)) {
             attributeMatches.push({ element: el, frame });
           }
         }
@@ -1477,7 +1480,7 @@ var ElementFinder = (() => {
     }
     const filteredMatches = hasText ? matches.filter((item) => {
       const el = item.element;
-      const hasDirectMatch = hasOwnMatch(el, attributeText, exact);
+      const hasDirectMatch = hasOwnMatch(el, searchText, isExact);
       if (hasDirectMatch) return true;
       for (const other of matches) {
         if (other.element !== el && el.contains(other.element)) {

@@ -11,28 +11,31 @@
 Inject the library and find elements in any browser context (Selenium, Playwright, Puppeteer, or browser console):
 
 ```js
-// Find all buttons
-const results = ElementFinder.findElements('button')
+// Find all buttons (type-only search)
+const results = ElementFinder.findElements({ type: 'button' })
 
-// Find a button by text (substring match)
-const results = ElementFinder.findElements('button', 'Submit')
+// Find a button by text (substring match, combined type+text)
+const results = ElementFinder.findElements({ type: 'button', text: 'Submit' })
 
 // Find by text only (any type)
-const results = ElementFinder.findElements(null, 'seleniumbase')
+const results = ElementFinder.findElements({ text: 'seleniumbase' })
 
 // Count semantic element types on the screen
 const counts = ElementFinder.getElementCounts()
 // Returns { button: { visible: 3, hidden: 0, total: 3 }, ... }
 
 // Count one semantic type
-const buttonCount = ElementFinder.getElementCounts('button')
+const buttonCount = ElementFinder.getElementCounts({ type: 'button' })
 // Returns `{ button: { visible: 3, hidden: 0, total: 3 } }`
 
 // Find in all same-origin frames (iframe elements are returned without an `element` reference)
-const results = ElementFinder.findElements('button')
+const results = ElementFinder.findElements({ type: 'button' })
 
 // Find with fallback to nearby elements
-const results = ElementFinder.findProbableElements('button', 'Click Me')
+const results = ElementFinder.findProbableElements({
+  type: 'button',
+  text: 'Click Me',
+})
 // Returns button even if "Click Me" is in a nearby label
 
 // Find overlay elements (modals, dialogs, cookie banners, popovers)
@@ -114,15 +117,15 @@ browser-element-finder/
 
 ```js
 // Find all elements (visible and hidden)
-const results = ElementFinder.findElements('button')
-// Find by text
-const results = ElementFinder.findElements('button', 'Submit')
+const results = ElementFinder.findElements({ type: 'button' })
+// Find by type and text
+const results = ElementFinder.findElements({ type: 'button', text: 'Submit' })
 // Find by text only
-const results = ElementFinder.findElements(null, 'seleniumbase')
+const results = ElementFinder.findElements({ text: 'seleniumbase' })
 // Count element types
 const counts = ElementFinder.getElementCounts()
 // Count one type
-const buttonCount = ElementFinder.getElementCounts('button')
+const buttonCount = ElementFinder.getElementCounts({ type: 'button' })
 // Check visibility of found elements
 results.elements.forEach((e) => {
   console.log('Hidden:', e.isHidden)
@@ -140,7 +143,7 @@ The library traverses **all same-origin frames**. Elements inside iframes **are*
 
 ```js
 // Run inside the main document
-const results = ElementFinder.findElements('button')
+const results = ElementFinder.findElements({ type: 'button' })
 for (const item of results.elements) {
   if (item.frameIndex === -1 && item.element) {
     // Interact directly
@@ -232,50 +235,50 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 
 ## API Summary
 
-| Function                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `findElements(type, text, exact, parent)`         | Find elements by type/text across all same-origin frames, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `findElementsByType(type, parent)`                | Find elements by type only across all same-origin frames, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `findElementsByAttribute(value, exact, parent)`   | Find elements by text/attribute across all same-origin frames, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `findOverlayElements(x, y)`                       | Find overlay/modal/dialog/banner elements across all same-origin frames (or at a point via `elementsFromPoint`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `getElementCounts(type, parent)`                  | Count elements by semantic type and visibility, including generic `element` by default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `getViewportElementCounts(type, parent)`          | Count visible elements currently in the viewport by semantic type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `findProbableElements(type, text, exact, parent)` | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `highlight(elements, color, width)`               | Highlight elements with outline                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `unhighlight(elements)`                           | Remove highlight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `pauseAnimations()`                               | Pause all CSS animations and transitions, returns state object                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `resumeAnimations(state)`                         | Resume animations using state from `pauseAnimations()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `getValidTypes()`                                 | List all supported element types                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `getValidAttributes()`                            | List all valid searchable attribute names                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `getBoundingBox(element)`                         | Get bounding box for an element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `setSearchableAttributes(attributes)`             | Set custom attributes for text search                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `getSearchableAttributes()`                       | Get current searchable attributes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `setIgnoredTags(tags)`                            | Set tags to ignore during traversal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `getIgnoredTags()`                                | Get current ignored tags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `addIgnoredTags(tags)`                            | Add tags to the ignored list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `removeIgnoredTags(tags)`                         | Remove tags from the ignored list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `getSearchableAttributeValues(element)`           | Get current non-empty searchable attribute values from an element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `getElementDescriptor(element, includeHidden)`    | Get identifiable text, source attribute, occurrence index, type, tag name, and form state for an element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `getElementInventory(parent)`                     | Frame-grouped object snapshot `{type, description, inViewport, formState, index}`; each frame group also carries `overlay` (`{type, description, inViewport, formState, index}` of the visible overlay with the most inventory descendants, or `null`) — the same shape as a regular entry, with `index` mirroring that element's own entry index. Identified elements use a `(type, text)` occurrence `index`; text-less elements use the positional `#N`. Always-on text-less `#N` + form state + nearby-label rescue. Optional `parent` scopes the result to that element's descendants (single frame group) |
-| `getFormState(el, type)`                          | Get the interactive state of a form control (value/checked/selected/on, etc.) for form semantic types                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `matchesType(el, type)`                           | Check if element matches a type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `matchesAttribute(el, value, exact)`              | Check if element matches text/attribute                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `getAllElements(root)`                            | Get all elements (with shadow DOM)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `getAllFrames(root)`                              | Get all frames (main + iframes)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `parseXPath(expr, el, depth)`                     | Parse XPath-like type expressions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `splitByOperator(expr, op)`                       | Split XPath by operator                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `inViewport(el, options)`                         | Check if element intersects the visual viewport (sync)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `isHidden(el)`                                    | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Function                                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `findElements(options)`                        | Find elements by type/text across all same-origin frames, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `findElementsByType(options)`                  | Find elements by type only across all same-origin frames, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `findElementsByAttribute(options)`             | Find elements by text/attribute across all same-origin frames, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `findOverlayElements(x, y)`                    | Find overlay/modal/dialog/banner elements across all same-origin frames (or at a point via `elementsFromPoint`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `getElementCounts(options)`                    | Count elements by semantic type and visibility, including generic `element` by default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `getViewportElementCounts(options)`            | Count visible elements currently in the viewport by semantic type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `findProbableElements(options)`                | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `highlight(elements, color, width)`            | Highlight elements with outline                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `unhighlight(elements)`                        | Remove highlight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `pauseAnimations()`                            | Pause all CSS animations and transitions, returns state object                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `resumeAnimations(state)`                      | Resume animations using state from `pauseAnimations()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `getValidTypes()`                              | List all supported element types                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `getValidAttributes()`                         | List all valid searchable attribute names                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `getBoundingBox(element)`                      | Get bounding box for an element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `setSearchableAttributes(attributes)`          | Set custom attributes for text search                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `getSearchableAttributes()`                    | Get current searchable attributes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `setIgnoredTags(tags)`                         | Set tags to ignore during traversal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `getIgnoredTags()`                             | Get current ignored tags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `addIgnoredTags(tags)`                         | Add tags to the ignored list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `removeIgnoredTags(tags)`                      | Remove tags from the ignored list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `getSearchableAttributeValues(element)`        | Get current non-empty searchable attribute values from an element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `getElementDescriptor(element, includeHidden)` | Get identifiable text, source attribute, occurrence index, type, tag name, and form state for an element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `getElementInventory(parent)`                  | Frame-grouped object snapshot `{type, description, inViewport, formState, index}`; each frame group also carries `overlay` (`{type, description, inViewport, formState, index}` of the visible overlay with the most inventory descendants, or `null`) — the same shape as a regular entry, with `index` mirroring that element's own entry index. Identified elements use a `(type, text)` occurrence `index`; text-less elements use the positional `#N`. Always-on text-less `#N` + form state + nearby-label rescue. Optional `parent` scopes the result to that element's descendants (single frame group) |
+| `getFormState(el, type)`                       | Get the interactive state of a form control (value/checked/selected/on, etc.) for form semantic types                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `matchesType(el, type)`                        | Check if element matches a type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `matchesAttribute(el, value, exact)`           | Check if element matches text/attribute                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `getAllElements(root)`                         | Get all elements (with shadow DOM)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `getAllFrames(root)`                           | Get all frames (main + iframes)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `parseXPath(expr, el, depth)`                  | Parse XPath-like type expressions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `splitByOperator(expr, op)`                    | Split XPath by operator                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `inViewport(el, options)`                      | Check if element intersects the visual viewport (sync)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `isHidden(el)`                                 | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 ---
 
 ### Ignored Tags
 
-Elements under ignored tags are skipped during traversal and are not matched by text search. By default, ignored tags are `SCRIPT`, `STYLE`, `TEMPLATE`, and `NOSCRIPT`.
+Elements under ignored tags are skipped during traversal and are not matched by text search. By default, ignored tags are `SCRIPT`, `STYLE`, `TEMPLATE`, `NOSCRIPT`, and `HEAD`.
 
 ```javascript
 ElementFinder.getIgnoredTags()
-// ['NOSCRIPT', 'SCRIPT', 'STYLE', 'TEMPLATE']
+// ['HEAD', 'NOSCRIPT', 'SCRIPT', 'STYLE', 'TEMPLATE']
 
 ElementFinder.addIgnoredTags(['META', 'LINK'])
 ElementFinder.removeIgnoredTags(['TEMPLATE'])
@@ -286,16 +289,16 @@ Tag names are case-insensitive.
 
 ---
 
-### `findElements(type, text, exact, parent)`
+### `findElements(options)`
 
 Finds elements matching the specified type and/or text. Combines type and attribute matching in a single call. Traverses all same-origin frames (iframe elements are returned without an `element` reference).
 
-| Parameter | Type      | Default | Description                                                                                                                     |
-| --------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `string`  | `null`  | Element type (see supported types below). If `null` or `undefined`, matches any type. Throws `TypeError` for non-string values. |
-| `text`    | `string`  | `null`  | Text to search for in content/attributes. If `null`/`''`/`undefined`, matches any text.                                         |
-| `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                 |
-| `parent`  | `Element` | `null`  | Parent element to search within                                                                                                 |
+| Parameter        | Type      | Default | Description                                                                                                                     |
+| ---------------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `options.type`   | `string`  | `null`  | Element type (see supported types below). If `null` or `undefined`, matches any type. Throws `TypeError` for non-string values. |
+| `options.text`   | `string`  | `''`    | Text to search for in content/attributes. If `null`/`''`/`undefined`, matches any text.                                         |
+| `options.exact`  | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                 |
+| `options.parent` | `Element` | `null`  | Parent element to search within                                                                                                 |
 
 **Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden, inViewport }] }`
 
@@ -306,26 +309,26 @@ Finds elements matching the specified type and/or text. Combines type and attrib
 
 **Agent/Automation Note**: Results traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Switch into the iframe context and re-run the finder to get interactable `element` references for iframe contents.
 
-### `findProbableElements(type, text, exact, parent)`
+### `findProbableElements(options)`
 
 Finds elements matching the specified type with intelligent fallback to nearby elements. This function first attempts a direct match (element contains both type and text), then falls back to finding elements of the specified type near elements that match the text.
 
 **Use Case**: When UI patterns separate content from interactive elements (e.g., a label with text "Email" next to an input field), `findProbableElements` will find the input even though the text isn't inside it.
 
-| Parameter | Type      | Default | Description                                                                                                                       |
-| --------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `string`  | `null`  | Element type (see supported types below). If `null`/`undefined`/`''`, matches any type. Throws `TypeError` for non-string values. |
-| `text`    | `string`  | `null`  | Text to search for in content/attributes. If `null`/`undefined`/`''`, matches any text. Throws `TypeError` for non-string values. |
-| `exact`   | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                   |
-| `parent`  | `Element` | `null`  | Parent element to search within                                                                                                   |
+| Parameter        | Type      | Default | Description                                                                                                                       |
+| ---------------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `options.type`   | `string`  | `null`  | Element type (see supported types below). If `null`/`undefined`/`''`, matches any type. Throws `TypeError` for non-string values. |
+| `options.text`   | `string`  | `null`  | Text to search for in content/attributes. If `null`/`undefined`/`''`, matches any text. Throws `TypeError` for non-string values. |
+| `options.exact`  | `boolean` | `false` | Exact text match vs substring (only used when text is provided)                                                                   |
+| `options.parent` | `Element` | `null`  | Parent element to search within                                                                                                   |
 
 **Returns**: `{ elements: [{ element, boundingBox, tagName, frameIndex, isHidden, inViewport }] }`
 
 **Behavior**:
 
-- If only `type` is provided: delegates to `findElementsByType(type, parent)`
-- If only `text` is provided: delegates to `findElementsByAttribute(text, exact, parent)`
-- If both are provided: strict combined match — the element must satisfy BOTH the type and the text/attribute. There is no nearby-element fallback (use `findProbableElements` for that).
+- If only `type` is provided: delegates to `findElements({ type, parent })`
+- If only `text` is provided: delegates to `findElementsByAttribute({ value: text, exact, parent })`
+- If both are provided: first attempts a strict combined match (element must satisfy BOTH type and text/attribute). If no direct match is found, falls back to finding elements of the specified type near elements that match the text.
 
 **Fallback Strategy**: When no element matches both type and text directly, searches for nearby elements in this order:
 
@@ -337,23 +340,32 @@ Finds elements matching the specified type with intelligent fallback to nearby e
 
 ```javascript
 // Type-only search (delegates to findElementsByType)
-const result1 = ElementFinder.findProbableElements('button')
+const result1 = ElementFinder.findProbableElements({ type: 'button' })
 // Returns all buttons on the page
 
 // Text-only search (delegates to findElementsByAttribute)
-const result2 = ElementFinder.findProbableElements(null, 'Submit')
+const result2 = ElementFinder.findProbableElements({ text: 'Submit' })
 // Returns all elements containing "Submit"
 
 // Direct match - element contains text
-const result3 = ElementFinder.findProbableElements('button', 'Submit')
+const result3 = ElementFinder.findProbableElements({
+  type: 'button',
+  text: 'Submit',
+})
 // Returns button with text "Submit" inside it
 
 // Fallback match - text in nearby element
-const result4 = ElementFinder.findProbableElements('textbox', 'Email')
+const result4 = ElementFinder.findProbableElements({
+  type: 'textbox',
+  text: 'Email',
+})
 // Returns input element when "Email" text is in a nearby label
 
 // Fallback match - text in parent
-const result5 = ElementFinder.findProbableElements('button', 'Menu Item 1')
+const result5 = ElementFinder.findProbableElements({
+  type: 'button',
+  text: 'Menu Item 1',
+})
 // Returns button when "Menu Item 1" is in a child span
 ```
 
@@ -497,7 +509,7 @@ const checkboxState = ElementFinder.getFormState(checkboxEl, 'checkbox')
 
 ### `getElementInventory(parent)`
 
-Captures a compact, frame-grouped snapshot of identifiable elements for state capture and guided interaction. Each element is an object with its semantic `type`, an identifiable `description`, an `inViewport` flag, its `formState` (or `null`), and an `index`. For **identified** elements (those with text), `index` is the 1-based occurrence within their `(type, text)` group (the first "Submit" is `1`, the second "Submit" is `2`, a uniquely-named element resets to `1`) — matching `getElementDescriptor`. For **text-less** elements, `index` is the positional `#N` (1-based position among same-type elements in the frame). The complete page is returned (no viewport filtering) — every element carries an `inViewport` boolean so callers can filter if they wish. Hidden elements are included (no visibility filtering), and cross-origin iframes are silently skipped.
+Captures a compact, frame-grouped snapshot of identifiable elements for state capture and guided interaction. Each element is an object with its semantic `type`, an identifiable `description`, a `boundingBox`, an `inViewport` flag, its `formState` (or `null`), and an `index`. For **identified** elements (those with text), `index` is the 1-based occurrence within their `(type, text)` group (the first "Submit" is `1`, the second "Submit" is `2`, a uniquely-named element resets to `1`) — matching `getElementDescriptor`. For **text-less** elements, `index` is the positional `#N` (1-based position among same-type elements in the frame). The complete page is returned (no viewport filtering) — every element carries an `inViewport` boolean so callers can filter if they wish. Hidden elements are included (no visibility filtering), and cross-origin iframes are silently skipped.
 
 Text-less elements and form state are **always** included:
 
@@ -524,7 +536,7 @@ const subtree = ElementFinder.getElementInventory(
 
 **Key behaviors**:
 
-- Optional `parent` (an `Element`): when provided, only that element's descendants are returned (the parent itself is excluded), grouped into a single frame group for the frame the parent lives in. The `#N` positional index is computed relative to that subtree (reset per call), matching `findElements()` ordering within the scope. This mirrors how `findElements(type, text, exact, parent)` treats `parent` as a search root.
+- Optional `parent` (an `Element`): when provided, only that element's descendants are returned (the parent itself is excluded), grouped into a single frame group for the frame the parent lives in. The `#N` positional index is computed relative to that subtree (reset per call), matching `findElements()` ordering within the scope. This mirrors how `findElements(options)` treats `options.parent` as a search root.
 - Scoped mode does **not** recurse into same-origin iframes inside the parent's subtree — it returns only the light-DOM + shadow-DOM descendants of the parent in that frame. Use full-page mode (no `parent`) to traverse all frames.
 - When called with no argument, always returns the complete page across all same-origin frames.
 - Main document is `frame: -1`, iframes `0, 1, …`.
@@ -542,23 +554,23 @@ Checks if an element matches the specified type definition.
 
 Checks if an element matches the specified text/attribute value. Safely handles edge case elements that may throw errors on attribute access.
 
-### `findElementsByType(type, parent)`
+### `findElementsByType(options)`
 
 Finds elements by type only. Traverses all same-origin frames (iframe elements are returned without an `element` reference).
 
-| Parameter | Type      | Default     | Description                                                                         |
-| --------- | --------- | ----------- | ----------------------------------------------------------------------------------- |
-| `type`    | `string`  | `"element"` | Element type (see supported types below). Throws `TypeError` for non-string values. |
-| `parent`  | `Element` | `null`      | Parent element to search within                                                     |
+| Parameter        | Type      | Default     | Description                                                                         |
+| ---------------- | --------- | ----------- | ----------------------------------------------------------------------------------- |
+| `options.type`   | `string`  | `"element"` | Element type (see supported types below). Throws `TypeError` for non-string values. |
+| `options.parent` | `Element` | `null`      | Parent element to search within                                                     |
 
-### `getElementCounts(type, parent)`
+### `getElementCounts(options)`
 
 Counts elements by semantic type and visibility on the current screen. Traverses all same-origin frames (iframe elements are counted but have no `element` reference).
 
-| Parameter | Type      | Default | Description                                                                                  |
-| --------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
-| `type`    | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types. |
-| `parent`  | `Element` | `null`  | Parent element to count within                                                               |
+| Parameter        | Type      | Default | Description                                                                                  |
+| ---------------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
+| `options.type`   | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types. |
+| `options.parent` | `Element` | `null`  | Parent element to count within                                                               |
 
 **Returns**: `Object.<string, { visible: number, hidden: number, total: number }>` keyed by semantic element type.
 
@@ -568,27 +580,27 @@ const counts = ElementFinder.getElementCounts()
 // { element: { visible: 98, hidden: 6, total: 104 }, button: { visible: 3, hidden: 0, total: 3 }, textbox: { visible: 2, hidden: 0, total: 2 }, ... }
 
 // Count one type
-const buttons = ElementFinder.getElementCounts('button')
+const buttons = ElementFinder.getElementCounts({ type: 'button' })
 // { button: { visible: 3, hidden: 0, total: 3 } }
 
 // Count within a parent element
-const inputs = ElementFinder.getElementCounts(
-  'textbox',
-  document.querySelector('form'),
-)
+const inputs = ElementFinder.getElementCounts({
+  type: 'textbox',
+  parent: document.querySelector('form'),
+})
 // { textbox: { visible: 2, hidden: 0, total: 2 } }
 ```
 
 The generic `element` type is included in the all-types count, so the result contains both the catch-all `element` count and semantic types such as `button`, `textbox`, `link`, and `table`.
 
-### `getViewportElementCounts(type, parent)`
+### `getViewportElementCounts(options)`
 
 Counts elements by semantic type that are currently visible **within the browser viewport**. This is useful for determining which elements a user can actually see on screen without scrolling. Traverses all same-origin frames (iframe elements are counted but have no `element` reference).
 
-| Parameter | Type      | Default | Description                                                                                  |
-| --------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
-| `type`    | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types. |
-| `parent`  | `Element` | `null`  | Parent element to count within                                                               |
+| Parameter        | Type      | Default | Description                                                                                  |
+| ---------------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
+| `options.type`   | `string`  | `null`  | Specific element type to count. If `null`/`undefined`, returns counts for all defined types. |
+| `options.parent` | `Element` | `null`  | Parent element to count within                                                               |
 
 **Returns**: `Object.<string, { visible: number, hidden: number, total: number }>` keyed by semantic element type.
 
@@ -598,28 +610,28 @@ const counts = ElementFinder.getViewportElementCounts()
 // { button: { visible: 2, hidden: 0, total: 2 }, textbox: { visible: 1, hidden: 0, total: 1 }, ... }
 
 // Count one type in the viewport
-const buttons = ElementFinder.getViewportElementCounts('button')
+const buttons = ElementFinder.getViewportElementCounts({ type: 'button' })
 // { button: { visible: 2, hidden: 0, total: 2 } }
 
 // Count within a parent element
-const inputs = ElementFinder.getViewportElementCounts(
-  'textbox',
-  document.querySelector('form'),
-)
+const inputs = ElementFinder.getViewportElementCounts({
+  type: 'textbox',
+  parent: document.querySelector('form'),
+})
 // { textbox: { visible: 1, hidden: 0, total: 1 } }
 ```
 
 The `total` count represents all elements within the viewport (visible + hidden). Elements outside the viewport are excluded entirely.
 
-### `findElementsByAttribute(value, exact, parent)`
+### `findElementsByAttribute(options)`
 
 Finds elements by text/attribute value only. Traverses all same-origin frames (iframe elements are returned without an `element` reference).
 
-| Parameter | Type      | Default | Description                                                                                        |
-| --------- | --------- | ------- | -------------------------------------------------------------------------------------------------- |
-| `value`   | `string`  | `''`    | Text/attribute value to search for. If `null`/`undefined`, defaults to empty string (matches all). |
-| `exact`   | `boolean` | `false` | Exact text match vs substring                                                                      |
-| `parent`  | `Element` | `null`  | Parent element to search within                                                                    |
+| Parameter        | Type      | Default | Description                                                                                        |
+| ---------------- | --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `options.value`  | `string`  | `''`    | Text/attribute value to search for. If `null`/`undefined`, defaults to empty string (matches all). |
+| `options.exact`  | `boolean` | `false` | Exact text match vs substring                                                                      |
+| `options.parent` | `Element` | `null`  | Parent element to search within                                                                    |
 
 ### `getAllElements(root)`
 
@@ -670,7 +682,7 @@ The library traverses **all same-origin frames**. Elements inside iframes **are*
 ### Iframe Element Results
 
 ```javascript
-const results = ElementFinder.findElements('button')
+const results = ElementFinder.findElements({ type: 'button' })
 
 // results.elements contains main-frame AND iframe elements.
 // iframe elements have frameIndex >= 0 and no element reference.
@@ -693,14 +705,14 @@ To interact with elements inside an iframe, you must switch the Selenium driver 
 ```javascript
 // Find elements across all frames (main + iframes)
 const results = await driver.executeScript(`
-  return ElementFinder.findElements('button');
+  return ElementFinder.findElements({ type: 'button' });
 `)
 
 // Switch to the iframe, then run the finder again inside that frame
 await driver.switchTo().frame(0) // first iframe
 
 const iframeResults = await driver.executeScript(`
-  return ElementFinder.findElements('button');
+  return ElementFinder.findElements({ type: 'button' });
 `)
 // These elements will have the element property since we're in the iframe context
 ```
@@ -752,15 +764,21 @@ Both `column` and `cell` types find table cells, but they behave differently:
 
 ```javascript
 // Find all cells in the "City" column (header + 3 data cells = 4 total)
-const columnResult = ElementFinder.findElements('column', 'City')
+const columnResult = ElementFinder.findElements({
+  type: 'column',
+  text: 'City',
+})
 // Returns: [th:City, td:New York, td:London, td:Paris]
 
 // Find all cells when searching for a data cell value
-const columnResult2 = ElementFinder.findElements('column', 'Paris')
+const columnResult2 = ElementFinder.findElements({
+  type: 'column',
+  text: 'Paris',
+})
 // Returns: [th:City, td:New York, td:London, td:Paris]
 
 // Find only the specific cell containing "Paris"
-const cellResult = ElementFinder.findElements('cell', 'Paris')
+const cellResult = ElementFinder.findElements({ type: 'cell', text: 'Paris' })
 // Returns: [td:Paris]
 
 // Find by header text with cell type - returns only the header cell

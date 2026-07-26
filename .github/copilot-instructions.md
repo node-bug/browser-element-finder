@@ -95,16 +95,16 @@ The library exposes five primary search strategies:
 
 ```javascript
 // 1. Type-only: Find all elements of a semantic type
-ElementFinder.findElementsByType('button')
+ElementFinder.findElementsByType({ type: 'button' })
 
 // 2. Attribute-only: Find any element matching text in searchable attributes
-ElementFinder.findElementsByAttribute('Submit')
+ElementFinder.findElementsByAttribute({ value: 'Submit' })
 
 // 3. Combined strict: Find elements matching BOTH type AND attribute
-ElementFinder.findElements('button', 'Submit')
+ElementFinder.findElements({ type: 'button', text: 'Submit' })
 
 // 4. Probabilistic fallback: Find by type+attribute, but accept nearby matches
-ElementFinder.findProbableElements('button', 'Click Me')
+ElementFinder.findProbableElements({ type: 'button', text: 'Click Me' })
 
 // 5. Overlay detection: Find modals, dialogs, banners, popups (full scan or at a point)
 ElementFinder.findOverlayElements() // Full DOM scan across all frames
@@ -226,7 +226,7 @@ Check existing dependencies in `package.json` before adding new ones. Key depend
 ```javascript
 // GOOD - source files
 import elementDefinitionsData from './element-definitions.json' with { type: 'json' };
-export function findElements(type, text, exact = false, parent = null) { ... }
+export function findElements(options = {}) { ... }
 
 // BAD - never use require() in source
 const data = require('./data.json')
@@ -240,7 +240,7 @@ This library is **function-based**, not class-based. All exports are named funct
 // GOOD - pure function with exported state management
 let SEARCHABLE_ATTRIBUTES = defaultAttributes;
 export function setSearchableAttributes(attributes) { ... }
-export function findElements(type, text) { ... }
+export function findElements(options = {}) { ... }
 
 // BAD - don't introduce classes
 class ElementFinder { constructor() { ... } }
@@ -319,13 +319,14 @@ All public functions should have JSDoc annotations:
 /**
  * Finds elements matching the specified type and/or attribute value.
  * Searches all frames (main document + iframes) by default.
- * @param {string|null} [type="element"] - Element type or null for any type
- * @param {string} [text=''] - Attribute/text value to search for
- * @param {boolean} [exact=false] - Exact match vs substring
- * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {Object} [options] - Options object
+ * @param {string|null} [options.type="element"] - Element type or null for any type
+ * @param {string} [options.text=''] - Attribute/text value to search for
+ * @param {boolean} [options.exact=false] - Exact match vs substring
+ * @param {Element|null} [options.parent=null] - Parent element to search within
  * @returns {{elements: Array<{element, boundingBox, tagName, frameIndex}>}} Found elements with metadata
  */
-export function findElements(type = "element", text = '', exact = false, parent = null) { ... }
+export function findElements(options = {}) { ... }
 ```
 
 ### Testing
@@ -339,7 +340,7 @@ export function findElements(type = "element", text = '', exact = false, parent 
 // GOOD - behavior-focused integration test
 it('should find all buttons when type is "button"', async () => {
   const result = await driver.executeScript(`
-    return ElementFinder.findElements('button', null);
+    return ElementFinder.findElements({ type: 'button' });
   `)
   expect(result.elements.length).toBe(7)
 })
@@ -444,7 +445,7 @@ See `TODO.md` for the feature roadmap:
 - `waitForElement()` — Poll until found or timeout
 - `getElementState()` — Get visibility/enabled/selected state
 - `generateSelector()` — Generate unique CSS selector
-- `findElements(types, text)` — Batch find multiple types
+- `findElements(options)` — Find elements by type and/or text
 
 ## Key Files for AI Agents
 

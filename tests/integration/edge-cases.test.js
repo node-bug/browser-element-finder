@@ -32,8 +32,8 @@ describe('ElementFinder Edge Cases', () => {
     it('should handle null or undefined text in findElements', async () => {
       const result = await fixture.driver.executeScript(`
         return [
-          ElementFinder.findElements('button', null).elements.length,
-          ElementFinder.findElements('button', undefined).elements.length
+          ElementFinder.findElements({ type: 'button' }).elements.length,
+          ElementFinder.findElements({ type: 'button', text: undefined }).elements.length
         ];
       `);
       expect(result[0]).toBeGreaterThan(0);
@@ -42,7 +42,7 @@ describe('ElementFinder Edge Cases', () => {
 
     it('should handle empty string text in findElements', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', '').elements.length;
+        return ElementFinder.findElements({ type: 'button' }).elements.length;
       `);
       expect(result).toBeGreaterThan(0);
     });
@@ -61,16 +61,16 @@ describe('ElementFinder Edge Cases', () => {
   });
 
   describe('DOM Structure & Content Edge Cases', () => {
-    it('should find deeply nested elements', async () => {
+    it('should find deeply nested elements (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'Deep Button');
+        return ElementFinder.findElements({ type: 'button', text: 'Deep Button' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
       expect(id).toBe('deep-btn');
     });
 
-    it('should find elements with various leading and trailing whitespace (tabs, newlines, carriage returns)', async () => {
+    it('should find elements with various leading and trailing whitespace (object syntax)', async () => {
       await fixture.driver.executeScript(`
         const div = document.createElement('div');
         div.id = 'whitespace-test';
@@ -78,7 +78,7 @@ describe('ElementFinder Edge Cases', () => {
         document.body.appendChild(div);
       `);
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('element', 'Whitespace Test');
+        return ElementFinder.findElements({ type: 'element', text: 'Whitespace Test' });
       `);
       expect(result.elements.length).toBe(1);
       const id = await result.elements[0].element.getAttribute('id');
@@ -87,14 +87,14 @@ describe('ElementFinder Edge Cases', () => {
 
     it('should NOT find text inside script tags', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute("don't find me");
+        return ElementFinder.findElementsByAttribute({ value: "don't find me" });
       `);
       expect(result.elements.length).toBe(0);
     });
 
     it('should NOT find text inside style tags', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute("don't find me either");
+        return ElementFinder.findElementsByAttribute({ value: "don't find me either" });
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -103,7 +103,7 @@ describe('ElementFinder Edge Cases', () => {
   describe('isHidden flag', () => {
     it('should include isHidden flag in returned elements', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', null);
+        return ElementFinder.findElements({ type: 'button' });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
       expect(result.elements[0].isHidden).toBeDefined();
@@ -119,7 +119,7 @@ describe('ElementFinder Edge Cases', () => {
         document.body.appendChild(hiddenDiv);
       `);
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('hidden-attr-id');
+        return ElementFinder.findElementsByAttribute({ value: 'hidden-attr-id' });
       `);
       expect(result.elements.length).toBe(1);
       expect(result.elements[0].isHidden).toBe(true);
@@ -135,7 +135,7 @@ describe('ElementFinder Edge Cases', () => {
         document.body.appendChild(zeroSizeDiv);
       `);
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('zero-size-id');
+        return ElementFinder.findElementsByAttribute({ value: 'zero-size-id' });
       `);
       expect(result.elements.length).toBe(1);
       // Chrome's checkVisibility() considers zero-dimension elements still visible
@@ -158,7 +158,7 @@ describe('ElementFinder Edge Cases', () => {
         document.body.appendChild(zeroSizeParent);
       `);
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('zero-size-child-id');
+        return ElementFinder.findElementsByAttribute({ value: 'zero-size-child-id' });
       `);
       expect(result.elements.length).toBe(1);
       // Chrome's checkVisibility() considers zero-dimension ancestors as still

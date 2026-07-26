@@ -23,7 +23,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByType - Basic Shadow DOM (Section 1)', () => {
     it('should find buttons in basic shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -31,7 +31,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find textboxes in basic shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -39,7 +39,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find checkboxes in basic shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('checkbox');
+        return ElementFinder.findElementsByType({ type: 'checkbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(3);
@@ -47,7 +47,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find dropdowns in basic shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('dropdown');
+        return ElementFinder.findElementsByType({ type: 'dropdown' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(0);
@@ -55,7 +55,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find links in basic shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('link');
+        return ElementFinder.findElementsByType({ type: 'link' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(0);
@@ -65,7 +65,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByAttribute - Basic Shadow DOM (Section 1)', () => {
     it('should find elements by id attribute in basic shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('shadow-name-input');
+        return ElementFinder.findElementsByAttribute({ value: 'shadow-name-input' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -75,7 +75,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements by placeholder attribute in shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Enter your name');
+        return ElementFinder.findElementsByAttribute({ value: 'Enter your name' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -85,7 +85,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements by visible text in shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Submit');
+        return ElementFinder.findElementsByAttribute({ value: 'Submit' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(5);
@@ -93,7 +93,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements by data-test-id attribute in shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('shadow-help');
+        return ElementFinder.findElementsByAttribute({ value: 'shadow-help' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -105,7 +105,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByType - Multiple Shadow Hosts (Section 2)', () => {
     it('should find buttons in multiple shadow hosts', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -113,7 +113,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find textboxes in multiple shadow hosts', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -123,7 +123,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByAttribute - Multiple Shadow Hosts (Section 2)', () => {
     it('should find elements in multiple shadow hosts', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Submit');
+        return ElementFinder.findElementsByAttribute({ value: 'Submit' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(5);
@@ -131,7 +131,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements by id in specific shadow host', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('login-user-input');
+        return ElementFinder.findElementsByAttribute({ value: 'login-user-input' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -139,7 +139,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements by id in second shadow host', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('signup-name-input');
+        return ElementFinder.findElementsByAttribute({ value: 'signup-name-input' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -149,7 +149,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByAttribute - Nested Shadow DOM (Section 3)', () => {
     it('should find elements in two-level nested shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Inner Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Inner Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -157,7 +157,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements in three-level deep nested shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Level 3 Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Level 3 Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -165,7 +165,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements in five-level deep nested shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Deepest Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Deepest Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -175,7 +175,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByType - Shadow DOM in Iframe (Section 5)', () => {
     it('should return elements inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(4);
@@ -183,7 +183,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should return textboxes inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(3);
@@ -191,7 +191,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should return checkboxes inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('checkbox');
+        return ElementFinder.findElementsByType({ type: 'checkbox' });
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(1);
@@ -199,7 +199,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should return elements in nested shadow inside iframes without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(4);
@@ -209,7 +209,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByAttribute - Shadow DOM in Iframe (Section 5)', () => {
     it('should return elements in shadow DOM inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Shadow input in frame');
+        return ElementFinder.findElementsByAttribute({ value: 'Shadow input in frame' });
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(1);
@@ -217,7 +217,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should return buttons in shadow DOM inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Shadow Frame Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Shadow Frame Button' });
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(1);
@@ -225,7 +225,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should return elements in nested shadow inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Frame Inner Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Frame Inner Button' });
       `);
       const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
       expect(iframeElements.length).toBe(1);
@@ -235,7 +235,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByType - Web Components (Section 8)', () => {
     it('should find buttons in custom button web component', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -243,7 +243,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find textboxes in custom input web component', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -253,7 +253,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByAttribute - Web Components (Section 8)', () => {
     it('should find elements in custom button web component', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Component Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Component Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -261,7 +261,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements in custom input web component', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Component Input');
+        return ElementFinder.findElementsByAttribute({ value: 'Component Input' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -269,7 +269,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find elements in custom toggle web component', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Component Toggle');
+        return ElementFinder.findElementsByAttribute({ value: 'Component Toggle' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -277,9 +277,9 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   });
 
   describe('findElements - Combined Regular + Shadow DOM (Section 9)', () => {
-    it('should find the Component Input textbox by placeholder and validate first match', async () => {
+    it('should find the Component Input textbox by placeholder (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('textbox', 'Type here');
+        return ElementFinder.findElements({ type: 'textbox', text: 'Type here' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -289,9 +289,9 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
       expect(testDataId).toBe('custom-input-field');
     });
 
-    it('should find the Component Input textbox using findProbableElements and validate first match', async () => {
+    it('should find the Component Input textbox using findProbableElements (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('textbox', 'Type here');
+        return ElementFinder.findProbableElements({ type: 'textbox', text: 'Type here' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -301,9 +301,9 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
       expect(testDataId).toBe('custom-input-field');
     });
 
-    it('should find the Component Input textbox using findProbableElements by label text and validate first match', async () => {
+    it('should find the Component Input textbox using findProbableElements by label text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('textbox', 'Component Input');
+        return ElementFinder.findProbableElements({ type: 'textbox', text: 'Component Input' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -315,7 +315,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find checkboxes in custom toggle web component', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('checkbox');
+        return ElementFinder.findElementsByType({ type: 'checkbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(3);
@@ -325,7 +325,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByType - Combined Regular + Shadow DOM (Section 9)', () => {
     it('should find buttons in both regular and shadow DOM contexts', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -333,7 +333,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find textboxes in both regular and shadow DOM contexts', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -341,7 +341,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find checkboxes in both regular and shadow DOM contexts', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('checkbox');
+        return ElementFinder.findElementsByType({ type: 'checkbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(3);
@@ -351,7 +351,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByAttribute - Combined Regular + Shadow DOM (Section 9)', () => {
     it('should find elements in both regular and shadow DOM contexts', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Submit');
+        return ElementFinder.findElementsByAttribute({ value: 'Submit' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(1);
@@ -359,7 +359,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find regular DOM elements separately', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('regular-btn');
+        return ElementFinder.findElementsByAttribute({ value: 'regular-btn' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -378,7 +378,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
         'Dynamic shadow root was not attached'
       );
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Dynamic Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Dynamic Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -388,7 +388,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('findElementsByType - Dynamic Shadow DOM (Section 7)', () => {
     it('should find buttons in dynamically created shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -396,7 +396,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
 
     it('should find textboxes in dynamically created shadow DOM', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBeGreaterThan(5);
@@ -406,7 +406,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
   describe('Edge Cases', () => {
     it('should return empty array for unknown type', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('unknown-type-xyz');
+        return ElementFinder.findElementsByType({ type: 'unknown-type-xyz' });
       `);
       expect(result.elements.length).toBe(0);
     });
@@ -414,7 +414,7 @@ describe('ElementFinder - Shadow DOM Fixture', () => {
     it('should throw TypeError for non-string type', async () => {
       await expect(async () => {
         await fixture.driver.executeScript(`
-          return ElementFinder.findElementsByType(123);
+          return ElementFinder.findElementsByType({ type: 123 });
         `);
       }).rejects.toThrow();
     });

@@ -1353,14 +1353,13 @@ function isOverlayElement(el) {
 /**
  * Finds elements matching the specified type.
  * Searches all frames (main document + iframes) by default.
- * @param {string} [type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
- * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {Object} [options] - Options object
+ * @param {string} [options.type="element"] - Element type (see ELEMENT_DEFINITIONS for valid types)
+ * @param {Element|null} [options.parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementsByType(type = "element", parent = null) {
-  if (type === null || type === undefined) {
-    type = "element";
-  }
+export function findElementsByType(options = {}) {
+  const { type = "element", parent = null } = options;
 
   if (typeof type !== 'string') {
     throw new TypeError(`type must be a string, got ${typeof type}`);
@@ -1442,15 +1441,14 @@ export function findElementsByType(type = "element", parent = null) {
 /**
  * Finds elements matching the specified attribute value.
  * Searches all frames (main document + iframes) by default.
- * @param {string} value - The attribute value to search for
- * @param {boolean} [exact=false] - Exact match vs substring
- * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {Object} [options] - Options object
+ * @param {string} [options.value=''] - The attribute value to search for
+ * @param {boolean} [options.exact=false] - Exact match vs substring
+ * @param {Element|null} [options.parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findElementsByAttribute(value, exact = false, parent = null) {
-  if (value === null || value === undefined) {
-    value = '';
-  }
+export function findElementsByAttribute(options = {}) {
+  const { value = '', exact = false, parent = null } = options;
 
   if (typeof value !== 'string') {
     throw new TypeError(`value must be a string, got ${typeof value}`);
@@ -1583,11 +1581,13 @@ function hasOwnMatch(el, value, exact = false) {
  * Includes the generic `element` type by default.
  * If no type is provided, returns counts for all defined types.
  * Searches all frames (main document + iframes) by default.
- * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined types.
- * @param {Element|null} [parent=null] - Parent element to count within
+ * @param {Object} [options] - Options object
+ * @param {string|null} [options.type=null] - Element type to count. If null/undefined, count all defined types.
+ * @param {Element|null} [options.parent=null] - Parent element to count within
  * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
  */
-export function getElementCounts(type = null, parent = null) {
+export function getElementCounts(options = {}) {
+  const { type = null, parent = null } = options;
   const hasType = type !== null && type !== undefined;
   const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
 
@@ -1610,7 +1610,7 @@ export function getElementCounts(type = null, parent = null) {
   // element set, including its filtering behavior for each semantic type.
   for (let i = 0; i < targetTypes.length; i++) {
     const targetType = targetTypes[i];
-    const result = findElements(targetType, null, false, parent);
+    const result = findElements({ type: targetType, parent });
     const typeCounts = counts[targetType];
 
     for (let j = 0; j < result.elements.length; j++) {
@@ -1629,11 +1629,13 @@ export function getElementCounts(type = null, parent = null) {
  * Gets counts of elements that are currently within the browser viewport, grouped by semantic type.
  * Unlike `getElementCounts` which counts all rendered elements regardless of position, this only
  * counts elements whose bounding box intersects with the current viewport.
- * @param {string|null|undefined} [type=null] - Element type to count. If null/undefined, count all defined types.
- * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {Object} [options] - Options object
+ * @param {string|null} [options.type=null] - Element type to count. If null/undefined, count all defined types.
+ * @param {Element|null} [options.parent=null] - Parent element to search within
  * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
  */
-export function getViewportElementCounts(type = null, parent = null) {
+export function getViewportElementCounts(options = {}) {
+  const { type = null, parent = null } = options;
   const hasType = type !== null && type !== undefined;
   const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
 
@@ -1654,7 +1656,7 @@ export function getViewportElementCounts(type = null, parent = null) {
 
   for (let i = 0; i < targetTypes.length; i++) {
     const targetType = targetTypes[i];
-    const result = findElements(targetType, null, false, parent);
+    const result = findElements({ type: targetType, parent });
     const typeCounts = counts[targetType];
 
     for (let j = 0; j < result.elements.length; j++) {
@@ -1706,7 +1708,7 @@ export function getViewportElementCounts(type = null, parent = null) {
  * When a `parent` element is provided, only that parent's descendants (its
  * subtree, excluding the parent itself) are returned, grouped into a single
  * frame group for the frame the parent lives in. This mirrors how
- * `findElements(type, text, exact, parent)` treats `parent` as a search root.
+ * `findElements(options)` treats `options.parent` as a search root.
  * The `#N` positional index is computed relative to that subtree (reset per
  * call), matching `findElements()` ordering within the scope.
  *
@@ -1959,18 +1961,19 @@ function collectInventoryEntries(elements) {
 
 /**
  * Finds elements matching the specified type and/or attribute value.
- * Combines type and attribute matching in a single call.
- * @param {string|null} [type=null] - Element type (see ELEMENT_DEFINITIONS for valid types), or null for any type
- * @param {string|null} [text=null] - Text/attribute value to search for, or null/undefined/'' for any text
- * @param {boolean} [exact=false] - Exact match vs substring (only used when text is provided)
- * @param {Element|null} [parent=null] - Parent element to search within
- * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
+ * Searches all frames (main document + iframes) by default.
+ * @param {{type: string|null, text: string, exact: boolean, parent: Element|null}} options - Options object
+ * @param {string|null} [options.type="element"] - Element type or null for any type
+ * @param {string} [options.text=''] - Attribute/text value to search for
+ * @param {boolean} [options.exact=false] - Exact match vs substring
+ * @param {Element|null} [options.parent=null] - Parent element to search within
+ * @returns {{elements: Array<{element, boundingBox, tagName, frameIndex}>}} Found elements with metadata
  */
-export function findElements(type = null, text = null, exact = false, parent = null) {
-  // Normalize text parameter
-  if (text === null || text === undefined) {
-    text = '';
+export function findElements(options = {}) {
+  if (typeof options !== 'object' || Array.isArray(options) || options === null) {
+    throw new TypeError('options must be an object');
   }
+  const { type = null, text = '', exact = false, parent = null } = options;
 
   // Validate type if provided
   if (type !== null && type !== undefined) {
@@ -2015,7 +2018,7 @@ export function findElements(type = null, text = null, exact = false, parent = n
   // Filter out parent elements that ONLY match because they contain matching children
   // Keep elements that have their own independent match (attribute or direct text)
   // Only apply this filter when text is provided (not for type-only searches)
-  const filteredMatches = text !== '' 
+  const filteredMatches = text !== ''
     ? matches.filter(item => {
         const el = item.element;
         // Check if this element has its own direct match (not just via descendant)
@@ -2191,26 +2194,32 @@ function findNearbyElementType(el, targetType) {
  * finds elements matching the attribute/text and returns a nearby element of the specified type.
  * If only type is provided, delegates to findElementsByType.
  * If only text is provided, delegates to findElementsByAttribute.
- * @param {string|null|undefined} elementType - Element type (see ELEMENT_DEFINITIONS for valid types). If null/undefined/blank, matches any type.
- * @param {string|null|undefined} attributeText - Text/attribute value to search for. If null/undefined/blank, matches any text.
- * @param {boolean} [exact=false] - Exact match vs substring
- * @param {Element|null} [parent=null] - Parent element to search within
+ * @param {{type: string|null, text: string|null, exact: boolean, parent: Element|null}} options - Options object
+ * @param {string|null} [options.type=null] - Element type (see ELEMENT_DEFINITIONS for valid types). If null/undefined/blank, matches any type.
+ * @param {string|null} [options.text=null] - Text/attribute value to search for. If null/undefined/blank, matches any text.
+ * @param {boolean} [options.exact=false] - Exact match vs substring
+ * @param {Element|null} [options.parent=null] - Parent element to search within
  * @returns {{elements: Array<{element: Element|undefined, boundingBox: Object, tagName: string, frameIndex: number}>}} Found elements with metadata
  */
-export function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+export function findProbableElements(options = {}) {
+  if (typeof options !== 'object' || Array.isArray(options) || options === null) {
+    throw new TypeError('options must be an object');
+  }
+  const { type: elementType = null, text: searchText = '', exact: isExact = false, parent: searchParent = null } = options;
+
   // Normalize parameters
   const hasType = elementType !== null && elementType !== undefined && elementType !== '';
-  const hasText = attributeText !== null && attributeText !== undefined && attributeText !== '';
+  const hasText = searchText !== '';
 
   // If only type is provided, delegate to the same type-only search used by
   // findElements(type, '') so counts and result sets match exactly.
   if (hasType && !hasText) {
-    return findElements(elementType, null, false, parent);
+    return findElements({ type: elementType, parent: searchParent });
   }
 
   // If only text is provided, delegate to findElementsByAttribute
   if (!hasType && hasText) {
-    return findElementsByAttribute(attributeText, exact, parent);
+    return findElementsByAttribute(searchText, isExact, searchParent);
   }
 
   // Validate elementType if provided
@@ -2226,8 +2235,8 @@ export function findProbableElements(elementType, attributeText, exact = false, 
 
   // Validate attributeText if provided
   if (hasText) {
-    if (typeof attributeText !== 'string') {
-      throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+    if (typeof searchText !== 'string') {
+      throw new TypeError(`attributeText must be a string, got ${typeof searchText}`);
     }
   }
 
@@ -2237,7 +2246,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
 
   // First, try to find elements matching both type and attribute text
   for (const frame of frames) {
-    const allElements = getAllElements(parent || frame.document);
+    const allElements = getAllElements(searchParent || frame.document);
 
     for (let i = 0; i < allElements.length; i++) {
       const el = allElements[i];
@@ -2249,7 +2258,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
       if (hasType && !matchesType(el, elementType)) continue;
 
       // Check attribute/text match if text is specified
-      if (hasText && !matchesAttribute(el, attributeText, exact)) continue;
+      if (hasText && !matchesAttribute(el, searchText, isExact)) continue;
 
       seenElements.add(el);
       matches.push({ element: el, frame: frame });
@@ -2260,13 +2269,13 @@ export function findProbableElements(elementType, attributeText, exact = false, 
   if (matches.length === 0 && hasType && hasText) {
     const attributeMatches = [];
     for (const frame of frames) {
-      const allElements = getAllElements(parent || frame.document);
+      const allElements = getAllElements(searchParent || frame.document);
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
         // Check attribute match
-        if (!matchesAttribute(el, attributeText, exact)) continue;
+        if (!matchesAttribute(el, searchText, isExact)) continue;
         // Only consider elements with their own direct match (not just via descendant)
-        if (hasOwnMatch(el, attributeText, exact)) {
+        if (hasOwnMatch(el, searchText, isExact)) {
           attributeMatches.push({ element: el, frame: frame });
         }
       }
@@ -2291,7 +2300,7 @@ export function findProbableElements(elementType, attributeText, exact = false, 
     ? matches.filter(item => {
         const el = item.element;
         // Check if this element has its own direct match (not just via descendant)
-        const hasDirectMatch = hasOwnMatch(el, attributeText, exact);
+        const hasDirectMatch = hasOwnMatch(el, searchText, isExact);
         if (hasDirectMatch) return true; // Keep elements with their own match
         
         // Check if any descendant also matches - if so, this parent is redundant

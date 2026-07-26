@@ -9,9 +9,14 @@ export default defineConfig({
     hookTimeout: 120000,
     include: ['tests/**/*.js'],
     exclude: ['tests/integration/helpers/**', 'tests/helpers/**'],
-    // Run integration tests serially to avoid spawning too many Chrome processes
-    // and to ensure proper cleanup between test files
-    maxWorkers: 10,
+    // Run integration tests with moderate parallelism.
+    // Bounding box normalization rounds to integers, absorbing sub-pixel drift.
+    // The baseline parity suite now reuses a single driver across fixtures,
+    // reducing per-file Chrome spawn count from 21 to 1.
+    // 3 workers is the stable sweet spot on typical CI/dev machines: enough
+    // parallelism for meaningful speedup, few enough Chrome instances to avoid
+    // resource contention (renderer crashes, hook timeouts).
+    maxWorkers: 3,
     // Forcefully terminate workers after tests complete to prevent orphaned processes
     teardownTimeout: 10000,
     coverage: {

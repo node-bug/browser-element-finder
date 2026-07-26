@@ -364,7 +364,7 @@ describe('ElementFinder Type Tests', () => {
   describe('findElementsByType', () => {
     it('should find all buttons', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
       result.elements.forEach(el => {
@@ -374,46 +374,46 @@ describe('ElementFinder Type Tests', () => {
 
     it('should find all checkboxes', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('checkbox');
+        return ElementFinder.findElementsByType({ type: 'checkbox' });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should find all textboxes', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should find all links', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('link');
+        return ElementFinder.findElementsByType({ type: 'link' });
       `);
       expect(result.elements.length).toBeGreaterThan(0);
     });
 
     it('should return empty array for unknown type', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('nonexistent-type');
+        return ElementFinder.findElementsByType({ type: 'nonexistent-type' });
       `);
       expect(result.elements.length).toBe(0);
     });
   });
 
   describe('findElements', () => {
-    it('should find elements by type and text', async () => {
+    it('should find elements by type and text (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElements('button', 'Submit');
+        return ElementFinder.findElements({ type: 'button', text: 'Submit' });
       `);
       expect(result.elements.length).toBeGreaterThanOrEqual(0);
     });
   });
 
   describe('findProbableElements', () => {
-    it('should find probable elements', async () => {
+    it('should find probable elements (object syntax)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findProbableElements('button', 'Submit');
+        return ElementFinder.findProbableElements({ type: 'button', text: 'Submit' });
       `);
       expect(result.elements.length).toBeGreaterThanOrEqual(0);
     });

@@ -25,9 +25,10 @@ export function loadElementInventoryBaseline(name) {
 }
 
 /**
- * Recursively normalizes bounding box values by rounding to 2 decimal places.
- * This reduces sub-pixel drift between Chrome runs (e.g., display scaling,
- * animation frames) while preserving meaningful layout differences.
+ * Recursively normalizes bounding box values by rounding to integers.
+ * This eliminates sub-pixel drift between Chrome runs (display scaling,
+ * animation frames, resource contention under parallel workers) while
+ * still catching meaningful layout differences (>= 1 px shift).
  */
 export function normalizeBoundingBoxes(obj) {
   if (!obj || typeof obj !== 'object') return obj;
@@ -39,7 +40,7 @@ export function normalizeBoundingBoxes(obj) {
       result[key] = Object.fromEntries(
         Object.entries(value).map(([k, v]) => [
           k,
-          typeof v === 'number' ? Math.round(v * 100) / 100 : v,
+          typeof v === 'number' ? Math.round(v) : v,
         ]),
       );
     } else {

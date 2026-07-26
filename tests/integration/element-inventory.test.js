@@ -177,6 +177,8 @@ describe('ElementFinder - getElementInventory cross-origin handling', () => {
 // fixture in the repo that has a baseline (the complete page is returned, with
 // an inViewport flag per element). This catches regressions across all
 // available fixtures.
+// Uses a single shared Chrome instance across all fixtures to avoid spawning
+// 21 separate drivers — one driver navigates to each fixture URL in turn.
 const BROWSER_FIXTURES = [
   'element-inventory-empty.html',
   'element-inventory.html',
@@ -202,49 +204,48 @@ const BROWSER_FIXTURES = [
 ];
 
 describe('ElementFinder - getElementInventory baseline parity (all browser fixtures)', () => {
+  // One driver shared across all fixture comparisons — navigates to each URL in turn.
+  const fixture = createDriverFixture({
+    injectFinder: true,
+  });
+
+  beforeAll(async () => {
+    await fixture.setup();
+  });
+
+  afterAll(async () => {
+    await fixture.teardown();
+  });
+
   for (const fixtureName of BROWSER_FIXTURES) {
-    describe(fixtureName, () => {
-      const fixture = createDriverFixture({
-        url: loadFixture(fixtureName),
-        injectFinder: true,
-        sleep: 300,
-      });
-
-      beforeAll(async () => {
-        await fixture.setup();
-      });
-
-      afterAll(async () => {
-        await fixture.teardown();
-      });
-
-      it(`should match the committed baseline for ${fixtureName}`, async () => {
-        const tree = await fixture.driver.executeScript(`
-          return ElementFinder.getElementInventory();
-        `);
-        // The integration suite runs in a real browser, so it uses the
-        // Chrome-specific baseline (tables, shadow DOM and iframes are
-        // traversed in a real browser). Use tolerance-based comparison
-        // to handle sub-pixel bounding box drift across Chrome runs.
-        const baseline = loadElementInventoryBaseline(fixtureName.replace(/\.html$/, '.json'));
-        // Animations fixture has active @keyframes that move elements between
-        // runs, so bounding boxes are inherently unstable — strip them for
-        // comparison while still validating structure/counts/types.
-        if (fixtureName === 'animations.html') {
-          const stripBbox = (obj) => {
-            if (!obj || typeof obj !== 'object') return obj;
-            if (Array.isArray(obj)) return obj.map(stripBbox);
-            const copy = { ...obj };
-            delete copy.boundingBox;
-            return Object.fromEntries(
-              Object.entries(copy).map(([k, v]) => [k, stripBbox(v)]),
-            );
-          };
-          expect(stripBbox(tree)).toEqual(stripBbox(baseline));
-        } else {
-          expect(normalizeBoundingBoxes(tree)).toEqual(normalizeBoundingBoxes(baseline));
-        }
-      });
+    it(`should match the committed baseline for ${fixtureName}`, async () => {
+      // Re-inject finder after each navigation since executeScript state is lost on page load.
+      await fixture.navigateAndInject(loadFixture(fixtureName));
+      const tree = await fixture.driver.executeScript(`
+        return ElementFinder.getElementInventory();
+      `);
+      // The integration suite runs in a real browser, so it uses the
+      // Chrome-specific baseline (tables, shadow DOM and iframes are
+      // traversed in a real browser). Use tolerance-based comparison
+      // to handle sub-pixel bounding box drift across Chrome runs.
+      const baseline = loadElementInventoryBaseline(fixtureName.replace(/\.html$/, '.json'));
+      // Animations fixture has active @keyframes that move elements between
+      // runs, so bounding boxes are inherently unstable — strip them for
+      // comparison while still validating structure/counts/types.
+      if (fixtureName === 'animations.html') {
+        const stripBbox = (obj) => {
+          if (!obj || typeof obj !== 'object') return obj;
+          if (Array.isArray(obj)) return obj.map(stripBbox);
+          const copy = { ...obj };
+          delete copy.boundingBox;
+          return Object.fromEntries(
+            Object.entries(copy).map(([k, v]) => [k, stripBbox(v)]),
+          );
+        };
+        expect(stripBbox(tree)).toEqual(stripBbox(baseline));
+      } else {
+        expect(normalizeBoundingBoxes(tree)).toEqual(normalizeBoundingBoxes(baseline));
+      }
     });
   }
 });
