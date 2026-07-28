@@ -57,14 +57,12 @@ browser-element-finder/
 │   │   ├── attributes.test.js        # Attribute matching logic
 │   │   ├── edge-cases.test.js        # Null input, cross-frame, etc.
 │   │   ├── find-elements.test.js     # Combined type + attribute search
-│   │   ├── overlay-elements.test.js  # findOverlayElements tests
 │   │   ├── types.test.js             # Type matching & XPath parsing
 │   │   ├── viewport.test.js          # inViewport tests
 │   │   ├── dropdowns.test.js         # Dropdown search tests
 │   │   ├── element-types.test.js     # Element type search tests
 │   │   ├── forms.test.js             # Form element search tests
 │   │   ├── iframes.test.js           # Cross-frame search tests
-│   │   ├── overlays.test.js          # Overlay detection tests
 │   │   ├── radio-iframe-table.test.js # Radio + iframe + table tests
 │   │   ├── shadow-dom.test.js        # Shadow DOM traversal tests
 │   │   ├── switches.test.js          # Switch element tests
@@ -87,9 +85,9 @@ browser-element-finder/
 
 ## Core Concepts
 
-### Five Search Functions
+### Four Search Functions
 
-The library exposes five primary search strategies:
+The library exposes four primary search strategies:
 
 ```javascript
 // 1. Type-only: Find all elements of a semantic type
@@ -103,10 +101,6 @@ ElementFinder.findElements({ type: 'button', text: 'Submit' })
 
 // 4. Probabilistic fallback: Find by type+attribute, but accept nearby matches
 ElementFinder.findProbableElements({ type: 'button', text: 'Click Me' })
-
-// 5. Overlay detection: Find modals, dialogs, banners, popups (full scan or at a point)
-ElementFinder.findOverlayElements() // Full DOM scan across all frames
-ElementFinder.findOverlayElements(100, 200) // Overlays at specific point via elementsFromPoint()
 ```
 
 ### Element Type System
@@ -154,7 +148,7 @@ If no attribute matches, falls back to direct text nodes, then full `textContent
 ### Shadow DOM & Iframe Support
 
 - **Shadow DOM**: `getAllElements()` uses iterative stack-based traversal with shadow root penetration
-- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) traverse **all** same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference.
+- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`) traverse **all** same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference.
 - **Cross-origin iframes**: Gracefully skipped with `SecurityError` handling
 - **Searching iframe contents**: Switch into the iframe context, then run the finder inside that frame to get interactable `element` references.
 

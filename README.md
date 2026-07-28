@@ -30,12 +30,6 @@ const results = ElementFinder.findProbableElements({
 })
 // Returns button even if "Click Me" is in a nearby label
 
-// Find overlay elements (modals, dialogs, cookie banners, popovers)
-const overlays = ElementFinder.findOverlayElements()
-
-// Find overlays at a specific point (e.g., where a click was intercepted)
-const overlaysAtPoint = ElementFinder.findOverlayElements(100, 200)
-
 // Highlight found elements
 ElementFinder.highlight(results.elements.map((e) => e.element))
 
@@ -223,35 +217,34 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 
 ## API Summary
 
-| Function                                | Description                                                                                                     |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `findElements(options)`                 | Find elements by type/text across all same-origin frames, returns `{ elements: [...] }`                         |
-| `findElementsByType(options)`           | Find elements by type only across all same-origin frames, returns `{ elements: [...] }`                         |
-| `findElementsByAttribute(options)`      | Find elements by text/attribute across all same-origin frames, returns `{ elements: [...] }`                    |
-| `findOverlayElements(x, y)`             | Find overlay/modal/dialog/banner elements across all same-origin frames (or at a point via `elementsFromPoint`) |
-| `findProbableElements(options)`         | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                                   |
-| `highlight(elements, color, width)`     | Highlight elements with outline                                                                                 |
-| `unhighlight(elements)`                 | Remove highlight                                                                                                |
-| `pauseAnimations()`                     | Pause all CSS animations and transitions, returns state object                                                  |
-| `resumeAnimations(state)`               | Resume animations using state from `pauseAnimations()`                                                          |
-| `getValidTypes()`                       | List all supported element types                                                                                |
-| `getValidAttributes()`                  | List all valid searchable attribute names                                                                       |
-| `getBoundingBox(element)`               | Get bounding box for an element                                                                                 |
-| `setSearchableAttributes(attributes)`   | Set custom attributes for text search                                                                           |
-| `getSearchableAttributes()`             | Get current searchable attributes                                                                               |
-| `setIgnoredTags(tags)`                  | Set tags to ignore during traversal                                                                             |
-| `getIgnoredTags()`                      | Get current ignored tags                                                                                        |
-| `addIgnoredTags(tags)`                  | Add tags to the ignored list                                                                                    |
-| `removeIgnoredTags(tags)`               | Remove tags from the ignored list                                                                               |
-| `getSearchableAttributeValues(element)` | Get current non-empty searchable attribute values from an element                                               |
-| `matchesType(el, type)`                 | Check if element matches a type                                                                                 |
-| `matchesAttribute(el, value, exact)`    | Check if element matches text/attribute                                                                         |
-| `getAllElements(root)`                  | Get all elements (with shadow DOM)                                                                              |
-| `getAllFrames(root)`                    | Get all frames (main + iframes)                                                                                 |
-| `parseXPath(expr, el, depth)`           | Parse XPath-like type expressions                                                                               |
-| `splitByOperator(expr, op)`             | Split XPath by operator                                                                                         |
-| `inViewport(el, options)`               | Check if element intersects the visual viewport (sync)                                                          |
-| `isHidden(el)`                          | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions)       |
+| Function                                | Description                                                                                               |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `findElements(options)`                 | Find elements by type/text across all same-origin frames, returns `{ elements: [...] }`                   |
+| `findElementsByType(options)`           | Find elements by type only across all same-origin frames, returns `{ elements: [...] }`                   |
+| `findElementsByAttribute(options)`      | Find elements by text/attribute across all same-origin frames, returns `{ elements: [...] }`              |
+| `findProbableElements(options)`         | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                             |
+| `highlight(elements, color, width)`     | Highlight elements with outline                                                                           |
+| `unhighlight(elements)`                 | Remove highlight                                                                                          |
+| `pauseAnimations()`                     | Pause all CSS animations and transitions, returns state object                                            |
+| `resumeAnimations(state)`               | Resume animations using state from `pauseAnimations()`                                                    |
+| `getValidTypes()`                       | List all supported element types                                                                          |
+| `getValidAttributes()`                  | List all valid searchable attribute names                                                                 |
+| `getBoundingBox(element)`               | Get bounding box for an element                                                                           |
+| `setSearchableAttributes(attributes)`   | Set custom attributes for text search                                                                     |
+| `getSearchableAttributes()`             | Get current searchable attributes                                                                         |
+| `setIgnoredTags(tags)`                  | Set tags to ignore during traversal                                                                       |
+| `getIgnoredTags()`                      | Get current ignored tags                                                                                  |
+| `addIgnoredTags(tags)`                  | Add tags to the ignored list                                                                              |
+| `removeIgnoredTags(tags)`               | Remove tags from the ignored list                                                                         |
+| `getSearchableAttributeValues(element)` | Get current non-empty searchable attribute values from an element                                         |
+| `matchesType(el, type)`                 | Check if element matches a type                                                                           |
+| `matchesAttribute(el, value, exact)`    | Check if element matches text/attribute                                                                   |
+| `getAllElements(root)`                  | Get all elements (with shadow DOM)                                                                        |
+| `getAllFrames(root)`                    | Get all frames (main + iframes)                                                                           |
+| `parseXPath(expr, el, depth)`           | Parse XPath-like type expressions                                                                         |
+| `splitByOperator(expr, op)`             | Split XPath by operator                                                                                   |
+| `inViewport(el, options)`               | Check if element intersects the visual viewport (sync)                                                    |
+| `isHidden(el)`                          | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions) |
 
 ---
 

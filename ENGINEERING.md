@@ -56,12 +56,6 @@ ElementFinder.findElements({ type: 'button', text: 'Submit' })
 
 // Case 4: Probabilistic search (find a button, but nearby text "Submit" is OK)
 ElementFinder.findProbableElements({ type: 'button', text: 'Submit' })
-
-// Case 5: Find overlay/modal/dialog/banner elements
-ElementFinder.findOverlayElements()
-
-// Case 6: Find overlays at a specific point (e.g., where a click was intercepted)
-ElementFinder.findOverlayElements(100, 200)
 ```
 
 ### 1.3 Project Structure
@@ -78,14 +72,12 @@ browser-element-finder/
 │   │   ├── attributes.test.js
 │   │   ├── edge-cases.test.js
 │   │   ├── find-elements.test.js
-│   │   ├── overlay-elements.test.js
 │   │   ├── types.test.js
 │   │   ├── viewport.test.js
 │   │   ├── element-types.test.js
 │   │   ├── dropdowns.test.js
 │   │   ├── forms.test.js
 │   │   ├── iframes.test.js
-│   │   ├── overlays.test.js
 │   │   ├── radio-iframe-table.test.js
 │   │   ├── shadow-dom.test.js
 │   │   ├── switches.test.js
@@ -262,7 +254,7 @@ export function getAllFrames(root = window) {
 - **Flat structure**: Collects only the direct child iframes of the current window (no recursion into nested frames)
 - **Metadata tracking**: Each frame includes its index for debugging and context switching
 - **Graceful degradation**: Partial results from accessible frames if some are cross-origin
-- **All same-origin frames for results**: Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. To get interactable `element` references for iframe contents, switch into the iframe context and run the finder there.
+- **All same-origin frames for results**: Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`) traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. To get interactable `element` references for iframe contents, switch into the iframe context and run the finder there.
 
 ### 2.6 Shadow DOM Traversal
 
@@ -695,7 +687,7 @@ Behavior:
 
 ---
 
-## 5. The Five Search Functions
+## 5. The Four Search Functions
 
 ### 5.1 `findElementsByType(options)`
 
@@ -1042,159 +1034,12 @@ const result = ElementFinder.findProbableElements({
 | `findElementsByAttribute` | Just need text/attribute matching (any element with "Submit")  |
 | `findElements`            | Need STRICT matching (must be button WITH "Submit" text in it) |
 | `findProbableElements`    | Need FLEXIBLE matching (button with text nearby is OK)         |
-| `findOverlayElements`     | Need to find modals, dialogs, banners, popups, overlays        |
 
 ---
 
-### 5.5 `findOverlayElements(x = null, y = null)`
+## 6. Return Format & Metadata
 
-**Purpose**: Find all overlay elements on the page (modals, dialogs, banners, popups, tooltips).
-When coordinates are provided, uses `document.elementsFromPoint()` to find overlays at that specific point instead of scanning the entire DOM.
-
-**Signature**:
-
-```javascript
-export function findOverlayElements(x = null, y = null)
-  → { elements: [...] }
-```
-
-**Parameters**:
-
-| Parameter | Type             | Default | Description                                                          |
-| --------- | ---------------- | ------- | -------------------------------------------------------------------- |
-| `x`       | `number \| null` | `null`  | X coordinate in viewport pixels. Must be provided together with `y`. |
-| `y`       | `number \| null` | `null`  | Y coordinate in viewport pixels. Must be provided together with `x`. |
-
-**Validation Rules**:
-
-- If only one of `x` or `y` is provided, throws `TypeError: Both x and y coordinates must be provided together`
-- If either `x` or `y` is not a finite number, throws `TypeError: x and y must be finite numbers`
-- When both are `null` (default), performs a full DOM scan across all same-origin frames (iframe elements are returned with `frameIndex >= 0` and no `element` reference)
-
-**Key Differences from Other Search Functions**:
-
-- **Optional point-based search** — Accepts optional `x, y` coordinates for targeted overlay detection
-- **Heuristic-based detection** — Uses priority-ordered heuristics to identify overlay elements
-- **No innermost filtering** — Returns all matching overlays (not just leaf elements)
-- **Main frame only for point search** — When coordinates are provided, only searches the main document via `elementsFromPoint()` (cross-frame point lookup is not supported)
-
-**Detection Heuristics** (checked in priority order):
-
-1. **ARIA roles** — `role="dialog"`, `role="alertdialog"`, `role="tooltip"`, `role="menu"`, `role="listbox"`
-2. **aria-modal** — `aria-modal="true"`
-3. **Native dialog** — Open `<dialog>` element (has `open` attribute)
-4. **Popover API** — Elements with `[popover]` attribute
-5. **High z-index + fixed/sticky** — `z-index > 999` with `position: fixed` or `position: sticky`
-6. **Moderate z-index + absolute** — `z-index > 100` with `position: absolute` and non-zero rendered dimensions
-7. **Class name patterns** — Classes matching `/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/`
-
-**Algorithm**:
-
-```
-When x and y are provided (point-based search):
-1. Validate both coordinates are finite numbers
-2. Call document.elementsFromPoint(x, y) to get render stack at that point
-3. Filter the stack by isOverlayElement() heuristic check
-4. Deduplicate using a Set
-5. Map to qualified result format with boundingBox, tagName, frameIndex=-1, isHidden, inViewport
-6. Return results (main frame only)
-
-When no coordinates are provided (full scan — default):
-1. Iterate all same-origin frames (main document + iframes)
-2. Get all elements via getAllElements()
-3. Filter by isOverlayElement() heuristic check
-4. Map to qualified result format with boundingBox, tagName, frameIndex, isHidden, inViewport
-5. Return results (iframe elements have frameIndex >= 0 and no element reference)
-```
-
-**Return Format**:
-
-Same as other search functions — array of elements with metadata:
-
-```javascript
-{
-  elements: [
-    {
-      element: Element | undefined,
-      boundingBox: {
-        x,
-        y,
-        width,
-        height,
-        top,
-        bottom,
-        left,
-        right,
-        midx,
-        midy,
-        tagName,
-      },
-      tagName: string,
-      frameIndex: number, // -1 = main frame (only frame returned; iframe contents excluded)
-      isHidden: boolean,
-      inViewport: boolean,
-    },
-  ]
-}
-```
-
-**Example Usage**:
-
-```javascript
-// Find all overlay elements on the page (full DOM scan across all same-origin frames)
-const overlays = ElementFinder.findOverlayElements()
-// Returns modals, dialogs, banners, popups, tooltips from all same-origin frames (iframe elements have no element reference)
-
-// Find overlays at a specific point (e.g., where a click was intercepted)
-const overlaysAtPoint = ElementFinder.findOverlayElements(100, 200)
-// Returns only overlays present in the render stack at (100, 200)
-// Much faster for targeted detection after ElementClickInterceptedError
-
-// Filter to only visible overlays
-const visibleOverlays = overlays.elements.filter(
-  (e) => !e.isHidden && e.inViewport,
-)
-
-// Check if any modal is blocking interaction
-const hasModal = overlays.elements.some(
-  (e) => e.element && e.element.getAttribute('aria-modal') === 'true',
-)
-```
-
-**Why This Matters**:
-
-In browser automation, overlay elements often block interaction with underlying page content. Identifying overlays helps agents:
-
-- Detect when a modal is blocking the UI before attempting clicks
-- Find cookie consent banners that need dismissal
-- Identify toast notifications or popups that may interfere with element targeting
-- Determine if a dialog needs to be closed before continuing automation
-
-**Point-based search for click interception**:
-
-When an `ElementClickInterceptedError` occurs, the point-based mode is ideal:
-
-1. Get the target element's center coordinates from `getBoundingBox()`
-2. Call `findOverlayElements(centerX, centerY)` to get overlays at that exact point
-3. The returned elements are already sorted by render order (front-to-back)
-4. Pick the first overlay to dismiss or handle
-
-This is more accurate than a full DOM scan because it identifies the element that actually blocked the attempted click.
-
-**Comparison with `findElementsByType({ type: 'dialog' })`**:
-
-| Aspect           | `findElementsByType({ type: 'dialog' })` | `findOverlayElements()`            |
-| ---------------- | ---------------------------------------- | ---------------------------------- |
-| Detection method | ARIA `role="dialog"` only                | 6 heuristics (ARIA, z-index, etc.) |
-| Parameters       | Takes options object                     | Optional x, y coordinates          |
-| Coverage         | Only explicit ARIA dialogs               | Modals, banners, popups, tooltips  |
-| Use case         | Accessibility auditing                   | Automation blocking detection      |
-
----
-
-## 7. Return Format & Metadata
-
-### 7.1 Return Structure
+### 6.1 Return Structure
 
 All find functions return a standardized object:
 
@@ -1226,7 +1071,7 @@ All find functions return a standardized object:
 }
 ```
 
-### 7.2 Element Reference Safety
+### 6.2 Element Reference Safety
 
 ```javascript
 // Main frame elements: include actual DOM reference
@@ -1251,7 +1096,7 @@ All find functions return a standardized object:
 - **Metadata preserved**: Can still use bounding box for visual verification
 - **Agent-friendly**: Agents know they need to switch frames for iframe content
 
-### 7.3 Bounding Box Calculation
+### 6.3 Bounding Box Calculation
 
 ```javascript
 export function getBoundingBox(element) {
@@ -1365,9 +1210,9 @@ console.log(`Found ${offScreen.length} buttons outside the viewport`)
 
 ---
 
-## 8. Error Handling & Validation
+## 7. Error Handling & Validation
 
-### 8.1 Type Validation
+### 7.1 Type Validation
 
 ```javascript
 export function findElements(
@@ -1409,7 +1254,7 @@ export function findElements(
 - **User errors** (unknown type): Warn and return empty results
 - **None thrown**: Silent defaults for null/undefined
 
-### 8.2 Parameter Normalization
+### 7.2 Parameter Normalization
 
 ```javascript
 // Empty strings treated as "no filter" (kept as '' so the attribute filter is skipped)
@@ -1427,7 +1272,7 @@ if (type === null || type === undefined) {
 // parent defaults to null (searches the whole document/frame)
 ```
 
-### 8.3 Silent Error Handling
+### 7.3 Silent Error Handling
 
 Certain errors are expected and handled gracefully:
 
@@ -1465,9 +1310,9 @@ try {
 
 ---
 
-## 9. Testing Strategy
+## 8. Testing Strategy
 
-### 9.1 Testing Strategy
+### 8.1 Testing Strategy
 
 All tests run in a real Chrome browser via Selenium WebDriver. There are no JSDOM-based unit tests — every test exercises the library in an actual browser environment.
 
@@ -1493,14 +1338,12 @@ tests/integration/
 ├── attributes.test.js          # Attribute matching tests
 ├── edge-cases.test.js          # Null input, cross-frame, etc.
 ├── find-elements.test.js       # Combined type + attribute search tests
-├── overlay-elements.test.js    # findOverlayElements tests
 ├── types.test.js               # Type matching & XPath parsing tests
 ├── viewport.test.js            # inViewport tests
 ├── element-types.test.js       # Type matching tests
 ├── dropdowns.test.js           # Dropdown search tests
 ├── forms.test.js               # Form element tests
 ├── iframes.test.js             # Cross-frame search tests
-├── overlays.test.js            # Overlay detection tests
 ├── radio-iframe-table.test.js  # Radio/table/iframe tests
 ├── shadow-dom.test.js          # Shadow DOM traversal tests
 ├── switches.test.js            # Switch element tests
@@ -1605,7 +1448,7 @@ npm test -- find-probable-elements # Specific suite
 npm run test:integration           # Integration tests only
 ````
 
-### 9.4 Test Coverage Goals
+### 8.4 Test Coverage Goals
 
 **Current Coverage**:
 
@@ -1621,7 +1464,7 @@ npm run test:integration           # Integration tests only
 - Frame support: Main frame and iframe scenarios
 - Shadow DOM: Restricted and open shadow roots
 
-### 9.5 Writing Tests for New Features
+### 8.5 Writing Tests for New Features
 
 **Checklist**:
 
@@ -1666,9 +1509,9 @@ npm run test:integration           # Integration tests only
 
 ---
 
-## 10. Performance Considerations
+## 9. Performance Considerations
 
-### 10.1 Pre-compiled Type Matchers
+### 9.1 Pre-compiled Type Matchers
 
 ```javascript
 // GOOD: Compile once at module load
@@ -1684,7 +1527,7 @@ const matches = matcher(element)
 
 **Impact**: ~10-100x faster for searches with repeated types
 
-### 10.2 Stack-Based Traversal (No Recursion)
+### 9.2 Stack-Based Traversal (No Recursion)
 
 ```javascript
 // GOOD: Iterative - no stack depth limit
@@ -1705,7 +1548,7 @@ function traverse(node) {
 
 **Impact**: Handles deeply nested DOMs without crashes
 
-### 10.3 Set-Based Deduplication
+### 9.3 Set-Based Deduplication
 
 ```javascript
 // GOOD: O(1) lookup with Set
@@ -1726,7 +1569,7 @@ for (const match of matches) {
 
 **Impact**: 100x faster for large DOM trees
 
-### 10.4 Early Exit Conditions
+### 9.4 Early Exit Conditions
 
 ```javascript
 // GOOD: Check faster conditions first
@@ -1748,7 +1591,7 @@ for (const el of domElements) {
 
 **Impact**: 2-3x faster on typical DOMs
 
-### 10.5 Parent Parameter for Scoped Searches
+### 9.5 Parent Parameter for Scoped Searches
 
 ```javascript
 // GOOD: Search within a container
@@ -1763,7 +1606,7 @@ const result = findElements({ type: 'textbox', parent: document.body })
 
 **Impact**: Proportional to DOM size (10-100x faster for large pages)
 
-### 10.6 Performance Benchmarks
+### 9.6 Performance Benchmarks
 
 Typical performance on modern hardware:
 
@@ -1786,9 +1629,9 @@ Multi-frame search            10-50ms    (depends on iframe count)
 
 ---
 
-## 11. Build & Distribution
+## 10. Build & Distribution
 
-### 11.1 Build Process
+### 10.1 Build Process
 
 The library is built into two IIFE bundles (a global `ElementFinder` is exposed for browser injection):
 
@@ -1831,7 +1674,7 @@ esbuild.build({
 - `index.js`: Better for debugging (readable code)
 - `index.min.js`: Better for production (smaller size)
 
-### 11.2 Module Exports
+### 10.2 Module Exports
 
 Main entry point exports:
 
@@ -1841,7 +1684,6 @@ export { findElementsByType }
 export { findElementsByAttribute }
 export { findElements }
 export { findProbableElements }
-export { findOverlayElements }
 
 // Utilities
 export { getAllElements }
@@ -1878,7 +1720,7 @@ export { highlight }
 export { unhighlight }
 ```
 
-### 11.3 Browser Distribution
+### 10.3 Browser Distribution
 
 The library is distributed as an NPM package with multiple export formats:
 
@@ -1918,7 +1760,7 @@ import definitions from '@nodebug/browser-element-finder/element-definitions.jso
 import attributes from '@nodebug/browser-element-finder/searchable-attributes.json'
 ```
 
-### 11.4 Version Management
+### 10.4 Version Management
 
 **Current Version**: 1.3.5
 
@@ -1936,7 +1778,7 @@ import attributes from '@nodebug/browser-element-finder/searchable-attributes.js
 
 ---
 
-## 12. Configuration Files
+## 11. Configuration Files
 
 ### 11.1 element-definitions.json
 
@@ -2115,7 +1957,7 @@ rules: {
 
 ---
 
-## 13. Known Limitations & Edge Cases
+## 12. Known Limitations & Edge Cases
 
 ### 12.1 Iframe Restrictions
 
@@ -2284,7 +2126,7 @@ const expr = "(self::button or @role='button')" // ✅ Fine
 
 ---
 
-## 14. Common Usage Patterns
+## 13. Common Usage Patterns
 
 ### 13.1 Click a Button by Text
 
@@ -2438,7 +2280,7 @@ console.log(counts)
 // }
 ```
 
-### 13.8 List All Searchable Attributes
+### 13.9 List All Searchable Attributes
 
 ```javascript
 function listSearchableAttributes() {
@@ -2452,7 +2294,7 @@ listSearchableAttributes()
 // ['placeholder', 'value', 'data-test-id', 'data-testid', 'id', ...]
 ```
 
-### 13.9 Handle Multi-Frame Results
+### 13.10 Handle Multi-Frame Results
 
 ```javascript
 function processAllResults(result) {
@@ -2474,7 +2316,7 @@ function processAllResults(result) {
 
 ---
 
-## 15. Development Workflow
+## 14. Development Workflow
 
 ### 14.1 Setting Up Development Environment
 
@@ -2693,7 +2535,7 @@ console.log(`Search took ${measure.duration.toFixed(2)}ms`)
 
 ---
 
-## 16. Troubleshooting Guide
+## 15. Troubleshooting Guide
 
 ### 15.1 Element Not Found
 

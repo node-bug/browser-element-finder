@@ -25,7 +25,6 @@ var ElementFinder = (() => {
     findElements: () => findElements,
     findElementsByAttribute: () => findElementsByAttribute,
     findElementsByType: () => findElementsByType,
-    findOverlayElements: () => findOverlayElements,
     findProbableElements: () => findProbableElements,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
@@ -587,46 +586,6 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function isOverlayElement(el) {
-    if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
-    const role = el.getAttribute("role");
-    if (role === "dialog" || role === "alertdialog" || role === "tooltip" || role === "menu" || role === "listbox") {
-      return true;
-    }
-    if (el.getAttribute("aria-modal") === "true") return true;
-    if (el.tagName === "DIALOG" && el.open) return true;
-    if (el.hasAttribute("popover")) return true;
-    try {
-      const style = window.getComputedStyle(el);
-      const zIndexValue = parseInt(style.zIndex, 10);
-      if (!isNaN(zIndexValue) && zIndexValue > 999) {
-        if (style.position === "fixed" || style.position === "sticky") {
-          const rect = el.getBoundingClientRect();
-          if (rect.width === 0 && rect.height === 0) return true;
-          if (rect.width >= 4 && rect.height >= 4) return true;
-        }
-      }
-      if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === "absolute") {
-        const rect = el.getBoundingClientRect();
-        if (rect.width === 0 && rect.height === 0) return true;
-        if (rect.width >= 4 && rect.height >= 4) return true;
-      }
-    } catch (e) {
-    }
-    const className = el.getAttribute ? el.getAttribute("class") || "" : "";
-    if (className) {
-      const classes = className.split(/\s+/);
-      for (let i = 0; i < classes.length; i++) {
-        const cls = classes[i];
-        if (/^(cookie|consent|banner|overlay|modal|popup|dropdown|flyout|sheet)(-|$)/i.test(cls)) {
-          const rect = el.getBoundingClientRect();
-          if (rect.width === 0 && rect.height === 0) return true;
-          if (rect.width >= 4 && rect.height >= 4) return true;
-        }
-      }
-    }
-    return false;
-  }
   function findElementsByType(options = {}) {
     const { type = "element", parent = null } = options;
     if (typeof type !== "string") {
@@ -1052,66 +1011,6 @@ var ElementFinder = (() => {
         el.classList.remove("elementfinder-highlighted");
       }
     }
-  }
-  function findOverlayElements(x = null, y = null) {
-    const hasPoint = x !== null && x !== void 0 || y !== null && y !== void 0;
-    if (hasPoint) {
-      if (x === null || x === void 0 || y === null || y === void 0) {
-        throw new TypeError("Both x and y coordinates must be provided together");
-      }
-      if (!Number.isFinite(x) || !Number.isFinite(y)) {
-        throw new TypeError("x and y must be finite numbers");
-      }
-    }
-    const matches = [];
-    const seenElements = /* @__PURE__ */ new Set();
-    if (hasPoint) {
-      const pointStack = document.elementsFromPoint(x, y);
-      const mainFrame = { window, document, isMainFrame: true, frameIndex: -1 };
-      for (let i = 0; i < pointStack.length; i++) {
-        const el = pointStack[i];
-        if (seenElements.has(el)) continue;
-        if (!isOverlayElement(el)) continue;
-        seenElements.add(el);
-        matches.push({ element: el, frame: mainFrame });
-      }
-    } else {
-      const frames = getAllFrames(window);
-      for (const frame of frames) {
-        const allElements = getAllElements(frame.document);
-        for (let i = 0; i < allElements.length; i++) {
-          const el = allElements[i];
-          if (seenElements.has(el)) continue;
-          if (!isOverlayElement(el)) continue;
-          seenElements.add(el);
-          matches.push({ element: el, frame });
-        }
-      }
-    }
-    const qualified = matches.map((item) => {
-      const boundingBox = getBoundingBox(item.element);
-      const tagName = item.element.tagName.toLowerCase();
-      const hidden = isHidden(item.element);
-      const viewportValue = inViewport(item.element);
-      if (!item.frame.isMainFrame) {
-        return {
-          boundingBox,
-          tagName,
-          frameIndex: item.frame.frameIndex,
-          isHidden: hidden,
-          inViewport: viewportValue
-        };
-      }
-      return {
-        element: item.element,
-        boundingBox,
-        tagName,
-        frameIndex: item.frame.frameIndex,
-        isHidden: hidden,
-        inViewport: viewportValue
-      };
-    });
-    return { elements: qualified };
   }
   var animationPauseStack = [];
   function pauseAnimations() {
