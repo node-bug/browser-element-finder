@@ -1,5 +1,5 @@
 {
-  "link": "self::a or @role='link' or @href",
+  "link": "self::a or @role='link'",
   "navigation": "@role='navigation' or self::nav",
   "heading": "@role='heading' or self::h1 or self::h2 or self::h3 or self::h4 or self::h5 or self::h6",
   "button": "self::button or @role='button' or @type='button' or @type='submit'",

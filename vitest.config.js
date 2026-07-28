@@ -2,13 +2,21 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    testTimeout: 30000,
-    hookTimeout: 30000,
+    // Integration tests spawn real Chrome instances via Selenium; driver
+    // startup can exceed the default 30s under load (parallel workers),
+    // causing "Hook timed out" in beforeAll. Give it generous headroom.
+    testTimeout: 60000,
+    hookTimeout: 120000,
     include: ['tests/**/*.js'],
-    exclude: ['tests/integration/helpers/**'],
-    // Run integration tests serially to avoid spawning too many Chrome processes
-    // and to ensure proper cleanup between test files
-    maxWorkers: 2,
+    exclude: ['tests/integration/helpers/**', 'tests/helpers/**'],
+    // Run integration tests with moderate parallelism.
+    // Bounding box normalization rounds to integers, absorbing sub-pixel drift.
+    // The baseline parity suite now reuses a single driver across fixtures,
+    // reducing per-file Chrome spawn count from 21 to 1.
+    // 3 workers is the stable sweet spot on typical CI/dev machines: enough
+    // parallelism for meaningful speedup, few enough Chrome instances to avoid
+    // resource contention (renderer crashes, hook timeouts).
+    maxWorkers: 3,
     // Forcefully terminate workers after tests complete to prevent orphaned processes
     teardownTimeout: 10000,
     coverage: {

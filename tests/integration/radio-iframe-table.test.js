@@ -24,7 +24,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
   describe('findElementsByType', () => {
     it('should find radio buttons and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('radio');
+        return ElementFinder.findElementsByType({ type: 'radio' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -34,7 +34,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find iframes and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('iframe');
+        return ElementFinder.findElementsByType({ type: 'iframe' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -44,7 +44,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find tables and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('table');
+        return ElementFinder.findElementsByType({ type: 'table' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -54,7 +54,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find buttons and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -64,7 +64,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
   describe('findElementsByAttribute - Button text search', () => {
     it('should find elements containing "Button" in text or attributes', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Button');
+        return ElementFinder.findElementsByAttribute({ value: 'Button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(4);
@@ -72,7 +72,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find elements by exact text "RadioButton 1:"', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('RadioButton 1:');
+        return ElementFinder.findElementsByAttribute({ value: 'RadioButton 1:' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -80,7 +80,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find elements by partial text "RadioButton 1" (substring match)', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('RadioButton 1');
+        return ElementFinder.findElementsByAttribute({ value: 'RadioButton 1' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -88,7 +88,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find elements by exact text "RadioButton 2:"', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('RadioButton 2:');
+        return ElementFinder.findElementsByAttribute({ value: 'RadioButton 2:' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -96,7 +96,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find radio buttons by name attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('radioGroup1');
+        return ElementFinder.findElementsByAttribute({ value: 'radioGroup1' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(2);
@@ -104,7 +104,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find iframes by id attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('myFrame1');
+        return ElementFinder.findElementsByAttribute({ value: 'myFrame1' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -112,7 +112,7 @@ describe('ElementFinder - Radio iFrame Table Fixture', () => {
 
     it('should find iframes by name attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('frameName2');
+        return ElementFinder.findElementsByAttribute({ value: 'frameName2' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);

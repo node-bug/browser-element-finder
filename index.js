@@ -25,19 +25,13 @@ var ElementFinder = (() => {
     findElements: () => findElements,
     findElementsByAttribute: () => findElementsByAttribute,
     findElementsByType: () => findElementsByType,
-    findOverlayElements: () => findOverlayElements,
     findProbableElements: () => findProbableElements,
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
-    getElementCounts: () => getElementCounts,
-    getElementDescriptor: () => getElementDescriptor,
     getIgnoredTags: () => getIgnoredTags,
-    getSearchableAttributeValues: () => getSearchableAttributeValues,
     getSearchableAttributes: () => getSearchableAttributes,
-    getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
-    getViewportElementCounts: () => getViewportElementCounts,
     highlight: () => highlight,
     inViewport: () => inViewport,
     isHidden: () => isHidden,
@@ -56,7 +50,7 @@ var ElementFinder = (() => {
 
   // src/element-definitions.json
   var element_definitions_default = {
-    link: "self::a or @role='link' or @href",
+    link: "self::a or @role='link'",
     navigation: "@role='navigation' or self::nav",
     heading: "@role='heading' or self::h1 or self::h2 or self::h3 or self::h4 or self::h5 or self::h6",
     button: "self::button or @role='button' or @type='button' or @type='submit'",
@@ -86,21 +80,24 @@ var ElementFinder = (() => {
 
   // src/searchable-attributes.json
   var searchable_attributes_default = [
+    "name",
+    "aria-label",
+    "aria-labelledby",
+    "aria-placeholder",
+    "aria-valuetext",
+    "aria-description",
     "placeholder",
-    "value",
+    "hint",
+    "title",
+    "tooltip",
+    "alt",
     "data-value",
     "data-test-id",
     "data-testid",
     "id",
     "resource-id",
-    "name",
-    "aria-label",
-    "hint",
-    "title",
-    "tooltip",
-    "alt",
     "src",
-    "aria-labelledby"
+    "value"
   ];
 
   // src/element-finder.js
@@ -116,7 +113,7 @@ var ElementFinder = (() => {
   };
   var MAX_RECURSION_DEPTH = 100;
   var MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
-  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT"];
+  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT", "HEAD"];
   var IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
   for (const [type, expr] of Object.entries(element_definitions_default)) {
@@ -199,28 +196,6 @@ var ElementFinder = (() => {
     }
     return text;
   }
-  function getSearchableAttributeValues(el) {
-    if (el == null || el.nodeType !== Node.ELEMENT_NODE) return {};
-    const values = {};
-    const attrs = SEARCHABLE_ATTRIBUTES;
-    for (let i = 0; i < attrs.length; i++) {
-      const attr = attrs[i];
-      let attrValue;
-      try {
-        attrValue = el.getAttribute(attr);
-      } catch (e) {
-        continue;
-      }
-      if (attrValue !== null && attrValue !== void 0 && attrValue !== "") {
-        values[attr] = attrValue;
-      }
-    }
-    return values;
-  }
-  function normalizeDescriptorText(text) {
-    if (text == null) return "";
-    return String(text).replace(/\s+/g, " ").trim();
-  }
   function shortenDescriptorText(text) {
     if (text == null) return "";
     const lines = String(text).split(/\r\n|\r|\n/);
@@ -239,171 +214,34 @@ var ElementFinder = (() => {
     const lastSpaceIndex = shortened.lastIndexOf(" ");
     return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : resultText;
   }
-  function getImageFilenameWithoutExtension(src) {
-    const normalizedSrc = normalizeDescriptorText(src);
-    if (!normalizedSrc) return "";
-    const withoutQueryOrFragment = normalizedSrc.split(/[?#]/)[0];
-    const lastSlashIndex = Math.max(
-      withoutQueryOrFragment.lastIndexOf("/"),
-      withoutQueryOrFragment.lastIndexOf("\\")
-    );
-    const filenameWithExtension = lastSlashIndex >= 0 ? withoutQueryOrFragment.slice(lastSlashIndex + 1) : withoutQueryOrFragment;
-    const lastDotIndex = filenameWithExtension.lastIndexOf(".");
-    return lastDotIndex > 0 ? filenameWithExtension.slice(0, lastDotIndex) : filenameWithExtension;
-  }
-  function getResolvedAriaLabelledByText(el) {
-    const labelledBy = el.getAttribute("aria-labelledby");
-    if (!labelledBy) return "";
-    const ids = labelledBy.split(/\s+/);
-    const ownerDocument = el.ownerDocument || document;
-    let text = "";
-    for (const id of ids) {
-      try {
-        const refEl = ownerDocument.getElementById(id);
-        if (!refEl) continue;
-        const refText = normalizeDescriptorText(refEl.textContent);
-        if (refText) {
-          text = text ? `${text} ${refText}` : refText;
-        }
-      } catch (e) {
-      }
+  function cssEscapeId(id) {
+    if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
+      return CSS.escape(id);
     }
-    return text;
+    return id.replace(/[^a-zA-Z0-9_-]/g, (ch) => `\\${ch}`);
   }
-  function getElementDescriptorText(el) {
-    const values = getSearchableAttributeValues(el);
-    const attrs = SEARCHABLE_ATTRIBUTES;
-    for (let i = 0; i < attrs.length; i++) {
-      const attr = attrs[i];
-      if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
-      const rawText = attr === "aria-labelledby" ? getResolvedAriaLabelledByText(el) : attr === "src" ? getImageFilenameWithoutExtension(values[attr]) : values[attr];
-      if (rawText) {
-        return { attributeName: attr, identifiableText: rawText };
-      }
+  function getNearbyLabelText(el) {
+    if (el == null || typeof el.closest !== "function") return "";
+    const parentLabel = el.closest("label");
+    if (parentLabel) {
+      const labelText = shortenDescriptorText(getDirectText(parentLabel));
+      if (labelText) return labelText;
     }
-    const directText = shortenDescriptorText(getDirectText(el));
-    if (directText && !isIgnoredElement(el)) {
-      return { attributeName: "text", identifiableText: directText };
-    }
-    return null;
-  }
-  function getElementDescriptorFrame(el) {
-    if (!el || !el.ownerDocument) return null;
-    try {
-      const frames = getAllFrames(window);
-      for (let i = 0; i < frames.length; i++) {
-        if (frames[i].document === el.ownerDocument) {
-          return frames[i].document;
+    const id = el.getAttribute && el.getAttribute("id");
+    if (id) {
+      const doc = el.ownerDocument || (typeof document !== "undefined" ? document : null);
+      if (doc && typeof doc.querySelector === "function") {
+        try {
+          const forLabel = doc.querySelector(`label[for="${cssEscapeId(id)}"]`);
+          if (forLabel) {
+            const labelText = shortenDescriptorText(getDirectText(forLabel));
+            if (labelText) return labelText;
+          }
+        } catch (e) {
         }
       }
-    } catch (e) {
     }
-    return el.ownerDocument;
-  }
-  function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
-    const root = getElementDescriptorFrame(el);
-    if (!root) {
-      return { index: 1 };
-    }
-    const elements = getAllElements(root);
-    const seenElements = /* @__PURE__ */ new Set();
-    const descriptorCache = /* @__PURE__ */ new WeakMap();
-    const typeCache = /* @__PURE__ */ new WeakMap();
-    const matchingDescriptors = [];
-    for (let i = 0; i < elements.length; i++) {
-      const candidate = elements[i];
-      if (seenElements.has(candidate)) continue;
-      seenElements.add(candidate);
-      if (isIgnoredElement(candidate)) continue;
-      if (!includeHidden && isHidden(candidate)) continue;
-      let candidateDescriptor = descriptorCache.get(candidate);
-      if (candidateDescriptor === void 0) {
-        candidateDescriptor = getElementDescriptorText(candidate);
-        descriptorCache.set(candidate, candidateDescriptor);
-      }
-      if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
-      let candidateType = typeCache.get(candidate);
-      if (candidateType === void 0) {
-        candidateType = getElementDescriptorType(candidate);
-        typeCache.set(candidate, candidateType);
-      }
-      if (candidateType !== type) continue;
-      matchingDescriptors.push(candidate);
-    }
-    const filtered = matchingDescriptors.filter((item) => {
-      for (const other of matchingDescriptors) {
-        if (other !== item && item.contains(other)) {
-          return false;
-        }
-      }
-      return true;
-    });
-    for (let i = 0; i < filtered.length; i++) {
-      if (filtered[i] === el) {
-        return { index: i + 1 };
-      }
-    }
-    return { index: 1 };
-  }
-  function getElementPositionAmongType(el, type, includeHidden = true) {
-    const root = getElementDescriptorFrame(el);
-    if (!root) return 1;
-    const elements = getAllElements(root);
-    const typeCache = /* @__PURE__ */ new WeakMap();
-    let position = 1;
-    for (let i = 0; i < elements.length; i++) {
-      const candidate = elements[i];
-      if (candidate === el) break;
-      if (isIgnoredElement(candidate)) continue;
-      if (!includeHidden && isHidden(candidate)) continue;
-      let candidateType = typeCache.get(candidate);
-      if (candidateType === void 0) {
-        candidateType = getElementDescriptorType(candidate);
-        typeCache.set(candidate, candidateType);
-      }
-      if (candidateType === type) position++;
-    }
-    return position;
-  }
-  function getElementDescriptorType(el) {
-    if (el == null || el.nodeType !== Node.ELEMENT_NODE) return null;
-    const types = Object.keys(ELEMENT_DEFINITIONS);
-    for (let i = 0; i < types.length; i++) {
-      const type = types[i];
-      if (type === "element") continue;
-      if (matchesType(el, type)) return type;
-    }
-    return "element";
-  }
-  function getElementDescriptor(el, includeHidden = true) {
-    if (el == null || el.nodeType !== Node.ELEMENT_NODE) {
-      return {
-        identifiableText: null,
-        attributeName: null,
-        index: 1,
-        type: null,
-        tagName: null
-      };
-    }
-    const type = getElementDescriptorType(el);
-    const descriptorSource = getElementDescriptorText(el);
-    if (!descriptorSource || !descriptorSource.identifiableText) {
-      return {
-        identifiableText: null,
-        attributeName: null,
-        index: getElementPositionAmongType(el, type, includeHidden),
-        type,
-        tagName: el.tagName.toLowerCase()
-      };
-    }
-    const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type, includeHidden);
-    return {
-      identifiableText: descriptorSource.identifiableText,
-      attributeName: descriptorSource.attributeName,
-      index: uniqueness.index,
-      type,
-      tagName: el.tagName.toLowerCase()
-    };
+    return "";
   }
   function parseXPath(expr, el, depth = 0) {
     if (expr == null || el == null) return false;
@@ -562,6 +400,12 @@ var ElementFinder = (() => {
     if (exact ? textContent.trim() === value : textContent.includes(value)) {
       return true;
     }
+    const nearbyLabel = getNearbyLabelText(el);
+    if (nearbyLabel) {
+      if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
+        return true;
+      }
+    }
     return false;
   }
   function matchesType(el, type) {
@@ -639,8 +483,7 @@ var ElementFinder = (() => {
       left: rect.left,
       right: rect.right,
       midx: rect.x + rect.width / 2,
-      midy: rect.y + rect.height / 2,
-      tagName: el.tagName.toLowerCase()
+      midy: rect.y + rect.height / 2
     };
   }
   function isHidden(el) {
@@ -723,37 +566,8 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function isOverlayElement(el) {
-    if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
-    const role = el.getAttribute("role");
-    if (role === "dialog" || role === "alertdialog" || role === "tooltip" || role === "menu" || role === "listbox") {
-      return true;
-    }
-    if (el.getAttribute("aria-modal") === "true") return true;
-    if (el.tagName === "DIALOG" && el.open) return true;
-    if (el.hasAttribute("popover")) return true;
-    try {
-      const style = window.getComputedStyle(el);
-      const zIndexValue = parseInt(style.zIndex, 10);
-      if (!isNaN(zIndexValue) && zIndexValue > 999) {
-        if (style.position === "fixed" || style.position === "sticky") return true;
-      }
-      if (!isNaN(zIndexValue) && zIndexValue > 100 && style.position === "absolute") {
-        const rect = el.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) return true;
-      }
-    } catch (e) {
-    }
-    const className = el.getAttribute ? el.getAttribute("class") || "" : "";
-    if (/[Cc]ookie|[Cc]onsent|[Bb]anner|[Oo]verlay|[Mm]odal|[Pp]opup|[Dd]ropdown|[Mm]enu-[A-z]|Flyout|[Ss]heet/.test(className)) {
-      return true;
-    }
-    return false;
-  }
-  function findElementsByType(type = "element", parent = null) {
-    if (type === null || type === void 0) {
-      type = "element";
-    }
+  function findElementsByType(options = {}) {
+    const { type = "element", parent = null } = options;
     if (typeof type !== "string") {
       throw new TypeError(`type must be a string, got ${typeof type}`);
     }
@@ -816,10 +630,8 @@ var ElementFinder = (() => {
     });
     return { elements: qualified };
   }
-  function findElementsByAttribute(value, exact = false, parent = null) {
-    if (value === null || value === void 0) {
-      value = "";
-    }
+  function findElementsByAttribute(options = {}) {
+    const { value = "", exact = false, parent = null } = options;
     if (typeof value !== "string") {
       throw new TypeError(`value must be a string, got ${typeof value}`);
     }
@@ -900,71 +712,19 @@ var ElementFinder = (() => {
     if (exact ? directText === value : directText.includes(value)) {
       return true;
     }
+    const nearbyLabel = getNearbyLabelText(el);
+    if (nearbyLabel) {
+      if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
+        return true;
+      }
+    }
     return false;
   }
-  function getElementCounts(type = null, parent = null) {
-    const hasType = type !== null && type !== void 0;
-    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
-    if (hasType) {
-      if (typeof type !== "string") {
-        throw new TypeError(`type must be a string, got ${typeof type}`);
-      }
-      if (!ELEMENT_DEFINITIONS[type]) {
-        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
-        return { [type]: { visible: 0, hidden: 0, total: 0 } };
-      }
+  function findElements(options = {}) {
+    if (typeof options !== "object" || Array.isArray(options) || options === null) {
+      throw new TypeError("options must be an object");
     }
-    const counts = {};
-    for (let i = 0; i < targetTypes.length; i++) {
-      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
-    }
-    for (let i = 0; i < targetTypes.length; i++) {
-      const targetType = targetTypes[i];
-      const result = findElements(targetType, null, false, parent);
-      const typeCounts = counts[targetType];
-      for (let j = 0; j < result.elements.length; j++) {
-        const item = result.elements[j];
-        const bucket = item.isHidden ? "hidden" : "visible";
-        typeCounts[bucket] += 1;
-        typeCounts.total += 1;
-      }
-    }
-    return counts;
-  }
-  function getViewportElementCounts(type = null, parent = null) {
-    const hasType = type !== null && type !== void 0;
-    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
-    if (hasType) {
-      if (typeof type !== "string") {
-        throw new TypeError(`type must be a string, got ${typeof type}`);
-      }
-      if (!ELEMENT_DEFINITIONS[type]) {
-        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
-        return { [type]: { visible: 0, hidden: 0, total: 0 } };
-      }
-    }
-    const counts = {};
-    for (let i = 0; i < targetTypes.length; i++) {
-      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
-    }
-    for (let i = 0; i < targetTypes.length; i++) {
-      const targetType = targetTypes[i];
-      const result = findElements(targetType, null, false, parent);
-      const typeCounts = counts[targetType];
-      for (let j = 0; j < result.elements.length; j++) {
-        const item = result.elements[j];
-        if (!item.element || !inViewport(item.element, { threshold: 60 })) continue;
-        typeCounts.total += 1;
-        const bucket = item.isHidden ? "hidden" : "visible";
-        typeCounts[bucket] += 1;
-      }
-    }
-    return counts;
-  }
-  function findElements(type = null, text = null, exact = false, parent = null) {
-    if (text === null || text === void 0) {
-      text = "";
-    }
+    const { type = null, text = "", exact = false, parent = null } = options;
     if (type !== null && type !== void 0) {
       if (typeof type !== "string") {
         throw new TypeError(`type must be a string, got ${typeof type}`);
@@ -1101,14 +861,18 @@ var ElementFinder = (() => {
     }
     return null;
   }
-  function findProbableElements(elementType, attributeText, exact = false, parent = null) {
+  function findProbableElements(options = {}) {
+    if (typeof options !== "object" || Array.isArray(options) || options === null) {
+      throw new TypeError("options must be an object");
+    }
+    const { type: elementType = null, text: searchText = "", exact: isExact = false, parent: searchParent = null } = options;
     const hasType = elementType !== null && elementType !== void 0 && elementType !== "";
-    const hasText = attributeText !== null && attributeText !== void 0 && attributeText !== "";
+    const hasText = searchText !== "";
     if (hasType && !hasText) {
-      return findElements(elementType, null, false, parent);
+      return findElements({ type: elementType, parent: searchParent });
     }
     if (!hasType && hasText) {
-      return findElementsByAttribute(attributeText, exact, parent);
+      return findElementsByAttribute(searchText, isExact, searchParent);
     }
     if (hasType) {
       if (typeof elementType !== "string") {
@@ -1120,20 +884,20 @@ var ElementFinder = (() => {
       }
     }
     if (hasText) {
-      if (typeof attributeText !== "string") {
-        throw new TypeError(`attributeText must be a string, got ${typeof attributeText}`);
+      if (typeof searchText !== "string") {
+        throw new TypeError(`attributeText must be a string, got ${typeof searchText}`);
       }
     }
     const matches = [];
     const seenElements = /* @__PURE__ */ new Set();
     const frames = getAllFrames(window);
     for (const frame of frames) {
-      const allElements = getAllElements(parent || frame.document);
+      const allElements = getAllElements(searchParent || frame.document);
       for (let i = 0; i < allElements.length; i++) {
         const el = allElements[i];
         if (seenElements.has(el)) continue;
         if (hasType && !matchesType(el, elementType)) continue;
-        if (hasText && !matchesAttribute(el, attributeText, exact)) continue;
+        if (hasText && !matchesAttribute(el, searchText, isExact)) continue;
         seenElements.add(el);
         matches.push({ element: el, frame });
       }
@@ -1141,11 +905,11 @@ var ElementFinder = (() => {
     if (matches.length === 0 && hasType && hasText) {
       const attributeMatches = [];
       for (const frame of frames) {
-        const allElements = getAllElements(parent || frame.document);
+        const allElements = getAllElements(searchParent || frame.document);
         for (let i = 0; i < allElements.length; i++) {
           const el = allElements[i];
-          if (!matchesAttribute(el, attributeText, exact)) continue;
-          if (hasOwnMatch(el, attributeText, exact)) {
+          if (!matchesAttribute(el, searchText, isExact)) continue;
+          if (hasOwnMatch(el, searchText, isExact)) {
             attributeMatches.push({ element: el, frame });
           }
         }
@@ -1161,7 +925,7 @@ var ElementFinder = (() => {
     }
     const filteredMatches = hasText ? matches.filter((item) => {
       const el = item.element;
-      const hasDirectMatch = hasOwnMatch(el, attributeText, exact);
+      const hasDirectMatch = hasOwnMatch(el, searchText, isExact);
       if (hasDirectMatch) return true;
       for (const other of matches) {
         if (other.element !== el && el.contains(other.element)) {
@@ -1227,66 +991,6 @@ var ElementFinder = (() => {
         el.classList.remove("elementfinder-highlighted");
       }
     }
-  }
-  function findOverlayElements(x = null, y = null) {
-    const hasPoint = x !== null && x !== void 0 || y !== null && y !== void 0;
-    if (hasPoint) {
-      if (x === null || x === void 0 || y === null || y === void 0) {
-        throw new TypeError("Both x and y coordinates must be provided together");
-      }
-      if (!Number.isFinite(x) || !Number.isFinite(y)) {
-        throw new TypeError("x and y must be finite numbers");
-      }
-    }
-    const matches = [];
-    const seenElements = /* @__PURE__ */ new Set();
-    if (hasPoint) {
-      const pointStack = document.elementsFromPoint(x, y);
-      const mainFrame = { window, document, isMainFrame: true, frameIndex: -1 };
-      for (let i = 0; i < pointStack.length; i++) {
-        const el = pointStack[i];
-        if (seenElements.has(el)) continue;
-        if (!isOverlayElement(el)) continue;
-        seenElements.add(el);
-        matches.push({ element: el, frame: mainFrame });
-      }
-    } else {
-      const frames = getAllFrames(window);
-      for (const frame of frames) {
-        const allElements = getAllElements(frame.document);
-        for (let i = 0; i < allElements.length; i++) {
-          const el = allElements[i];
-          if (seenElements.has(el)) continue;
-          if (!isOverlayElement(el)) continue;
-          seenElements.add(el);
-          matches.push({ element: el, frame });
-        }
-      }
-    }
-    const qualified = matches.map((item) => {
-      const boundingBox = getBoundingBox(item.element);
-      const tagName = item.element.tagName.toLowerCase();
-      const hidden = isHidden(item.element);
-      const viewportValue = inViewport(item.element);
-      if (!item.frame.isMainFrame) {
-        return {
-          boundingBox,
-          tagName,
-          frameIndex: item.frame.frameIndex,
-          isHidden: hidden,
-          inViewport: viewportValue
-        };
-      }
-      return {
-        element: item.element,
-        boundingBox,
-        tagName,
-        frameIndex: item.frame.frameIndex,
-        isHidden: hidden,
-        inViewport: viewportValue
-      };
-    });
-    return { elements: qualified };
   }
   var animationPauseStack = [];
   function pauseAnimations() {
@@ -1363,8 +1067,28 @@ var ElementFinder = (() => {
   function getValidTypes() {
     return Object.keys(ELEMENT_DEFINITIONS);
   }
-  function getValidAttributes() {
-    return [...SEARCHABLE_ATTRIBUTES];
+  function normalizeDescriptorText(text) {
+    if (text == null) return "";
+    return String(text).replace(/\s+/g, " ").trim();
+  }
+  function getResolvedAriaLabelledByText(el) {
+    const labelledBy = el.getAttribute("aria-labelledby");
+    if (!labelledBy) return "";
+    const ids = labelledBy.split(/\s+/);
+    const ownerDocument = el.ownerDocument || document;
+    let text = "";
+    for (const id of ids) {
+      try {
+        const refEl = ownerDocument.getElementById(id);
+        if (!refEl) continue;
+        const refText = normalizeDescriptorText(refEl.textContent);
+        if (refText) {
+          text = text ? `${text} ${refText}` : refText;
+        }
+      } catch (e) {
+      }
+    }
+    return text;
   }
   return __toCommonJS(element_finder_exports);
 })();

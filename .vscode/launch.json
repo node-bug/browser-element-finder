@@ -7,7 +7,7 @@
       "request": "launch",
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
-      "args": ["run", "${workspaceFolder}/tests/integration/test-tables.js"],
+      "args": ["run", "${workspaceFolder}/tests/integration/tables.test.js"],
       "autoAttachChildProcesses": true
     },
     {
@@ -18,18 +18,10 @@
       "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
       "args": [
         "run",
-        "${workspaceFolder}/tests/integration/test-switches.js",
+        "${workspaceFolder}/tests/integration/switches.test.js",
         "-t",
         "should return bounding box info for main frame switches"
       ],
-      "autoAttachChildProcesses": true
-    },
-    {
-      "name": "demo",
-      "type": "node",
-      "request": "launch",
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/demo.js",
       "autoAttachChildProcesses": true
     }
   ]

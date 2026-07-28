@@ -28,6 +28,31 @@ async function safeQuit(driver) {
 }
 
 /**
+ * Attempt to create a Chrome driver with retries on transient failures.
+ * "session not created / unable to connect to renderer" errors are common
+ * when multiple headless Chrome instances launch concurrently under resource
+ * pressure. Retry up to `maxRetries` times with a brief back-off.
+ */
+async function buildDriverWithRetry(chromeOptions, maxRetries = 2) {
+  let lastError;
+  for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+    try {
+      return await new Builder()
+        .forBrowser('chrome')
+        .setChromeOptions(chromeOptions)
+        .build();
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxRetries + 1) {
+        console.warn(`Driver creation attempt ${attempt} failed (${err.message}), retrying in 2s...`);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+    }
+  }
+  throw lastError;
+}
+
+/**
  * Create a beforeAll/afterAll pair that guarantees driver cleanup
  * Usage:
  *   const { driver, setup } = createDriverFixture();
@@ -52,13 +77,19 @@ function createDriverFixture(options = {}) {
         '--disable-notifications',
         '--no-sandbox',
         '--disable-dev-shm-usage',
+        // Reduce resource footprint per instance for better parallelism:
+        '--disable-gpu',               // Skip GPU compositing (not needed for headless)
+        '--disable-software-rasterizer', // Avoid extra rasterization thread
+        '--disable-extensions',        // No extension overhead
+        '--disable-background-networking', // No background sync
+        '--disable-sync',             // No Chrome sync
+        '--metrics-recording-only',   // Disable metrics upload
+        '--disable-default-apps',     // No default apps
+        '--no-first-run',            // Skip first-run UI
       );
       chromeOptions.excludeSwitches(['enable-automation']);
 
-      driver = await new Builder()
-        .forBrowser('chrome')
-        .setChromeOptions(chromeOptions)
-        .build();
+      driver = await buildDriverWithRetry(chromeOptions);
       console.log('Driver created:', !!driver);
 
       if (options.url) {
@@ -79,6 +110,19 @@ function createDriverFixture(options = {}) {
         console.log('Finder injected');
       }
 
+      if (options.injectFinder) {
+        // Wait until the injected finder is actually available instead of
+        // idling for a fixed duration. This removes dead time from every
+        // integration test (the fixture is a synchronous data: URL, so the
+        // finder is normally ready immediately).
+        await driver.wait(
+          () => driver.executeScript('return typeof window.ElementFinder !== "undefined"'),
+          10000,
+          'ElementFinder was not injected into the page',
+        );
+      }
+
+      // Optional extra idle buffer after the finder is ready (rarely needed).
       if (options.sleep) {
         await driver.sleep(options.sleep);
       }
@@ -88,12 +132,39 @@ function createDriverFixture(options = {}) {
       }
     },
 
+    /**
+     * Navigate to a URL and re-inject the finder (if configured).
+     * Useful when reusing a single driver across multiple pages — executeScript
+     * injections do not survive page navigation, so the finder must be
+     * re-injected after each driver.get().
+     */
+    async navigateAndInject(url) {
+      await driver.get(url);
+      if (options.injectFinder) {
+        const finderPath = join(__dirname, '..', '..', '..', 'index.js');
+        const finderCode = readFileSync(finderPath, 'utf8');
+        await driver.executeScript(`
+          ${finderCode}
+          window.ElementFinder = ElementFinder;
+        `);
+        await driver.wait(
+          () => driver.executeScript('return typeof window.ElementFinder !== "undefined"'),
+          10000,
+          'ElementFinder was not injected into the page',
+        );
+      }
+    },
+
     async teardown() {
       return safeQuit(driver);
     },
 
     get driver() {
       return driver;
+    },
+
+    get url() {
+      return options.url;
     },
   };
 

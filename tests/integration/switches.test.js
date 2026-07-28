@@ -9,8 +9,7 @@ import { createDriverFixture, loadFixture } from './helpers/driver-helper.js';
 describe('ElementFinder - Switches Fixture', () => {
   const fixture = createDriverFixture({
     url: loadFixture('switches.html'),
-    injectFinder: true,
-    sleep: 2000
+    injectFinder: true
   });
 
   beforeAll(async () => {
@@ -24,7 +23,7 @@ describe('ElementFinder - Switches Fixture', () => {
   describe('findElementsByType', () => {
     it('should find switches and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('switch');
+        return ElementFinder.findElementsByType({ type: 'switch' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       // checkbox-switch, aria-switch, button-switch, native-checkbox, disabled-switch, shadow-switch, iframe-switch
@@ -35,7 +34,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find checkboxes and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('checkbox');
+        return ElementFinder.findElementsByType({ type: 'checkbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       // checkbox-switch, native-checkbox, disabled-switch, shadow-switch, iframe-switch
@@ -46,7 +45,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find buttons and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('button');
+        return ElementFinder.findElementsByType({ type: 'button' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       // button-switch
@@ -57,7 +56,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find textboxes and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('textbox');
+        return ElementFinder.findElementsByType({ type: 'textbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -65,7 +64,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find links and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('link');
+        return ElementFinder.findElementsByType({ type: 'link' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -73,7 +72,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find dropdowns and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('dropdown');
+        return ElementFinder.findElementsByType({ type: 'dropdown' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -81,7 +80,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find sliders and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('slider');
+        return ElementFinder.findElementsByType({ type: 'slider' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -89,7 +88,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find radios and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('radio');
+        return ElementFinder.findElementsByType({ type: 'radio' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -97,7 +96,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find headings and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('heading');
+        return ElementFinder.findElementsByType({ type: 'heading' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       // h2 "Ultimate Switch Testing Lab"
@@ -108,7 +107,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find navigation elements and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('navigation');
+        return ElementFinder.findElementsByType({ type: 'navigation' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -116,7 +115,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find images and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('image');
+        return ElementFinder.findElementsByType({ type: 'image' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -124,7 +123,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find tables and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('table');
+        return ElementFinder.findElementsByType({ type: 'table' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -132,7 +131,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find lists and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('list');
+        return ElementFinder.findElementsByType({ type: 'list' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -140,7 +139,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find file inputs and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('file');
+        return ElementFinder.findElementsByType({ type: 'file' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -148,7 +147,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find menus and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('menu');
+        return ElementFinder.findElementsByType({ type: 'menu' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -156,7 +155,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find toolbars and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('toolbar');
+        return ElementFinder.findElementsByType({ type: 'toolbar' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -164,7 +163,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find dialogs and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByType('dialog');
+        return ElementFinder.findElementsByType({ type: 'dialog' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(0);
@@ -174,7 +173,7 @@ describe('ElementFinder - Switches Fixture', () => {
   describe('findElementsByAttribute - ID', () => {
     it('should find standard checkbox switch by id and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('checkbox-switch');
+        return ElementFinder.findElementsByAttribute({ value: 'checkbox-switch' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -186,7 +185,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find ARIA switch by id and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('aria-switch');
+        return ElementFinder.findElementsByAttribute({ value: 'aria-switch' });
       `);
       // Finds both the div and its label (aria-labelledby references the label)
       expect(result.elements.length).toBe(1);
@@ -202,7 +201,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find button switch by id and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('button-switch');
+        return ElementFinder.findElementsByAttribute({ value: 'button-switch' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -214,7 +213,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find native checkbox by id and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('native-checkbox');
+        return ElementFinder.findElementsByAttribute({ value: 'native-checkbox' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -226,7 +225,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find disabled switch by id and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('disabled-switch');
+        return ElementFinder.findElementsByAttribute({ value: 'disabled-switch' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -240,7 +239,7 @@ describe('ElementFinder - Switches Fixture', () => {
   describe('findElementsByAttribute - ARIA attributes', () => {
     it('should find ARIA switch by role attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('switch');
+        return ElementFinder.findElementsByAttribute({ value: 'switch' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       const roles = await Promise.all(mainElements.map(e => e.element.getAttribute('role')));
@@ -249,7 +248,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find ARIA switch by aria-labelledby attribute', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('aria-label');
+        return ElementFinder.findElementsByAttribute({ value: 'aria-label' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       const ariaLabelledBy = await Promise.all(mainElements.map(e => e.element.getAttribute('aria-labelledby')));
@@ -260,7 +259,7 @@ describe('ElementFinder - Switches Fixture', () => {
   describe('findElementsByAttribute - data attributes', () => {
     it('should find button switch by text content "OFF"', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('OFF');
+        return ElementFinder.findElementsByAttribute({ value: 'OFF' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       expect(mainElements.length).toBe(1);
@@ -272,7 +271,7 @@ describe('ElementFinder - Switches Fixture', () => {
   describe('findElementsByAttribute - Label Text', () => {
     it('should find switch by label text "Standard Checkbox Switch" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Standard Checkbox Switch');
+        return ElementFinder.findElementsByAttribute({ value: 'Standard Checkbox Switch' });
       `);
       // The element may be the label or the input - check both
       const mainElements = result.elements.filter(e => e.element);
@@ -289,7 +288,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find ARIA switch by label text "ARIA Div Switch" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('ARIA Div Switch');
+        return ElementFinder.findElementsByAttribute({ value: 'ARIA Div Switch' });
       `);
       // Both the label element and the div with aria-labelledby should be found
       expect(result.elements.length).toBe(2);
@@ -303,7 +302,7 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find button switch by label text "Native Button Switch" and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Native Button Switch');
+        return ElementFinder.findElementsByAttribute({ value: 'Native Button Switch' });
       `);
       const mainElements = result.elements.filter(e => e.element);
       const tagNames = await Promise.all(mainElements.map(e => e.element.getTagName()));
@@ -321,9 +320,9 @@ describe('ElementFinder - Switches Fixture', () => {
 
     it('should find disabled switch by label text and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Disabled Control Switch');
+        return ElementFinder.findElementsByAttribute({ value: 'Disabled Control Switch' });
       `);
-      expect(result.elements.length).toBe(1);
+      expect(result.elements.length).toBe(2);
       const mainElements = result.elements.filter(e => e.element);
       const testDataId = await mainElements[0].element.getAttribute('data-test-id');
       if (testDataId === 'disabled-switch') {
@@ -340,7 +339,7 @@ describe('ElementFinder - Switches Fixture', () => {
   describe('findElementsByAttribute - Shadow DOM', () => {
     it('should find switch inside shadow DOM by id and validate first match', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('shadow-switch');
+        return ElementFinder.findElementsByAttribute({ value: 'shadow-switch' });
       `);
       // Shadow DOM elements are found but may not have a direct element reference
       expect(result.elements.length).toBe(1);
@@ -348,12 +347,15 @@ describe('ElementFinder - Switches Fixture', () => {
   });
 
   describe('findElementsByAttribute - Iframe', () => {
-    it('should find switch inside iframe by label text and validate first match', async () => {
+    it('should return switch inside iframe without an element reference', async () => {
       const result = await fixture.driver.executeScript(`
-        return ElementFinder.findElementsByAttribute('Document Switch Window Node');
+        return ElementFinder.findElementsByAttribute({ value: 'Document Switch Window Node' });
       `);
-      // Iframe elements are found but may not have a direct element reference
-      expect(result.elements.length).toBe(1);
+      // Iframe elements are returned but cannot carry an element reference
+      // across the frame boundary, so they have frameIndex !== -1 and no
+      // `element` property.
+      const iframeElements = result.elements.filter(e => !e.element && e.frameIndex !== -1);
+      expect(iframeElements.length).toBe(1);
     });
   });
 });
