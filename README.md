@@ -2,7 +2,7 @@
 
 **Version**: 1.3.5
 
-**A robust, agent-friendly JavaScript library for identifying DOM elements by type and/or text content, with full support for shadow DOM and automation workflows. Search results traverse all same-origin frames; elements inside iframes are returned with their `frameIndex` but without an `element` reference, because a DOM node cannot be serialized across the frame boundary.**
+**A robust, agent-friendly JavaScript library for identifying DOM elements by semantic type and/or text content, with full support for shadow DOM and browser automation workflows (Selenium, Playwright, Puppeteer). Search results traverse all same-origin frames; however, because DOM nodes cannot be serialized across frame boundaries, elements inside iframes are returned with their `frameIndex` but without a direct `element` reference.**
 
 ---
 
@@ -18,17 +18,16 @@ const results = ElementFinder.findElements({ type: 'button' })
 const results = ElementFinder.findElements({ type: 'button', text: 'Submit' })
 
 // Find by text only (any type)
-const results = ElementFinder.findElements({ text: 'seleniumbase' })
+const results = ElementFinder.findElements({ text: 'Search Term' })
 
 // Find in all same-origin frames (iframe elements are returned without an `element` reference)
 const results = ElementFinder.findElements({ type: 'button' })
 
-// Find with fallback to nearby elements
+// Find with fallback to nearby elements (e.g., label next to input)
 const results = ElementFinder.findProbableElements({
   type: 'button',
   text: 'Click Me',
 })
-// Returns button even if "Click Me" is in a nearby label
 
 // Highlight found elements
 ElementFinder.highlight(results.elements.map((e) => e.element))
@@ -44,10 +43,9 @@ results.elements.forEach((e) => {
 
 **Agent/Automation Best Practices**:
 
-- Results traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary
-- To get interactable `element` references for iframe contents, switch into the iframe context first, then run the finder inside that frame
-- Use `getValidTypes()` to enumerate all supported semantic types
-- Use `getSearchableAttributes()` to see which attributes are searched for text
+- **Iframe Handling**: Results traverse all same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference due to serialization limits.
+- **Interacting with Iframes**: To get interactable `element` references for iframe contents, switch the driver context into the iframe first, then run the finder inside that frame.
+- **Discovery**: Use `getValidTypes()` to enumerate all supported semantic types and `getSearchableAttributes()` to see which attributes are searched for text.
 
 ---
 
@@ -56,7 +54,7 @@ results.elements.forEach((e) => {
 - **Type-based element finding**: Find elements by semantic type (button, textbox, link, dropdown, etc.)
 - **Text content search**: Search within element text, attributes, and placeholders
 - **Shadow DOM support**: Automatically traverses shadow roots to find nested elements
-- **Iframe support**: Traverses all same-origin frames; elements inside iframes are returned with their `frameIndex` but without an `element` reference, because a DOM node cannot be serialized across the frame boundary
+- **Iframe support**: Traverses all same-origin frames; elements inside iframes are returned with their `frameIndex` but without an `element` reference (due to cross-frame serialization limits).
 - **Visibility detection**: All elements returned with `isHidden` property (`true`/`false`)
 - **Bounding box data**: Returns position and dimensions for each found element
 - **XPath-like type definitions**: Extensible element type matching using XPath-like expressions
@@ -106,7 +104,7 @@ const results = ElementFinder.findElements({ type: 'button' })
 // Find by type and text
 const results = ElementFinder.findElements({ type: 'button', text: 'Submit' })
 // Find by text only
-const results = ElementFinder.findElements({ text: 'seleniumbase' })
+const results = ElementFinder.findElements({ text: 'Search Term' })
 // Check visibility of found elements
 results.elements.forEach((e) => {
   console.log('Hidden:', e.isHidden)

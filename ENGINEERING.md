@@ -12,7 +12,7 @@
 2. [Architecture & Design Patterns](#2-architecture--design-patterns)
 3. [Element Type System](#3-element-type-system)
 4. [Attribute Matching Strategy](#4-attribute-matching-strategy)
-5. [The Five Search Functions](#5-the-five-search-functions)
+5. [The Four Search Functions](#5-the-four-search-functions)
 6. [Element Counting Functions](#6-element-counting-functions)
 7. [Return Format & Metadata](#7-return-format--metadata)
 8. [Error Handling & Validation](#8-error-handling--validation)
