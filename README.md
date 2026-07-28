@@ -1,6 +1,6 @@
 # @nodebug/browser-element-finder
 
-**Version**: 1.3.5
+**Version**: 1.3.6
 
 **A robust, agent-friendly JavaScript library for identifying DOM elements by semantic type and/or text content, with full support for shadow DOM and browser automation workflows (Selenium, Playwright, Puppeteer). Search results traverse all same-origin frames; however, because DOM nodes cannot be serialized across frame boundaries, elements inside iframes are returned with their `frameIndex` but without a direct `element` reference.**
 
@@ -223,7 +223,9 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `getAllElements(root)`                | Get all elements (with shadow DOM)                                                                        |
 | `getAllFrames(root)`                  | Get all frames (main + iframes)                                                                           |
 | `parseXPath(expr, el, depth)`         | Parse XPath-like type expressions                                                                         |
+| `parseCondition(expr, el, depth)`     | Parse XPath condition expressions (e.g., `@type='checkbox'`)                                              |
 | `splitByOperator(expr, op)`           | Split XPath by operator                                                                                   |
+| `ELEMENT_DEFINITIONS`                 | Frozen object of all element type → XPath expression mappings                                             |
 | `inViewport(el, options)`             | Check if element intersects the visual viewport (sync)                                                    |
 | `isHidden(el)`                        | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions) |
 
@@ -503,6 +505,7 @@ const iframeResults = await driver.executeScript(`
 | `cell`        | `<td>`, `[role="cell"]`, `[role="gridcell"]` (data cells only, no expansion)                         |
 | `image`       | `<img>`, `[role="img"]`, `[alt]`                                                                     |
 | `file`        | `<input type="file">`                                                                                |
+| `iframe`      | `<iframe>`                                                                                           |
 | `element`     | Matches all elements                                                                                 |
 
 ---
@@ -546,11 +549,28 @@ const headerCell = ElementFinder.findElements('cell', 'City')
 
 ## Searchable Attributes
 
-By default, the library searches these attributes (in priority order):
+By default, the library searches these attributes **in strict priority order** (first match wins). The order determines which attribute value is used when multiple attributes on the same element contain the search text:
 
-- `name`, `aria-label`, `aria-labelledby`, `aria-placeholder`, `aria-valuetext`, `aria-description`
-- `placeholder`, `hint`, `title`, `tooltip`, `alt`, `data-value`, `data-test-id`, `data-testid`
-- `id`, `resource-id`, `src`, `value`
+1. `name`
+2. `aria-label`
+3. `aria-labelledby`
+4. `aria-placeholder`
+5. `aria-valuetext`
+6. `aria-description`
+7. `placeholder`
+8. `hint`
+9. `title`
+10. `tooltip`
+11. `alt`
+12. `data-value`
+13. `data-test-id`
+14. `data-testid`
+15. `id`
+16. `resource-id`
+17. `src`
+18. `value`
+
+If no attribute matches, the library falls back to direct text nodes, then full `textContent`.
 
 ---
 
