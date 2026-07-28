@@ -661,22 +661,14 @@ console.log(ElementFinder.getSearchableAttributes())
 
 ### 4.6 Inspecting Attribute Values
 
-Use `getSearchableAttributeValues(el)` to inspect the current non-empty searchable attribute values on a specific element.
+Use `getSearchableAttributes()` to see which attributes are searched for text.
 
 ```javascript
-const input = document.querySelector('input')
-const values = ElementFinder.getSearchableAttributeValues(input)
+const attrs = ElementFinder.getSearchableAttributes()
 
-console.log(values)
-// { placeholder: 'Email Address', 'data-testid': 'email-input', id: 'email' }
+console.log(attrs)
+// ['placeholder', 'value', 'data-value', 'data-test-id', ...]
 ```
-
-Behavior:
-
-1. Returns `{}` for `null`, `undefined`, or non-element nodes.
-2. Only includes attributes currently configured in `SEARCHABLE_ATTRIBUTES`.
-3. Omits missing attributes and attributes whose value is `''`.
-4. Preserves the current searchable-attribute order in the returned object keys.
 
 **Use Cases**:
 
@@ -1701,7 +1693,6 @@ export { splitByOperator }
 export { ELEMENT_DEFINITIONS }
 export { setSearchableAttributes }
 export { getSearchableAttributes }
-export { getSearchableAttributeValues }
 export { setIgnoredTags }
 export { getIgnoredTags }
 export { addIgnoredTags }
@@ -1709,7 +1700,6 @@ export { removeIgnoredTags }
 
 // Inspection
 export { getValidTypes }
-export { getValidAttributes }
 
 // Animation control
 export { pauseAnimations }
@@ -1772,7 +1762,7 @@ import attributes from '@nodebug/browser-element-finder/searchable-attributes.js
 
 **Recent Changes**:
 
-- v1.3.x: Added ignored-tag configuration (`setIgnoredTags`/`addIgnoredTags`/`removeIgnoredTags`/`getIgnoredTags`), and `getSearchableAttributeValues`
+- v1.3.x: Added ignored-tag configuration (`setIgnoredTags`/`addIgnoredTags`/`removeIgnoredTags`/`getIgnoredTags`)
 - v1.1.0: Added `findProbableElements` function
 - v1.0.0: Initial release
 
@@ -1895,15 +1885,6 @@ Priority order for attribute searching. Attributes are checked in this order unt
    const attrs = ElementFinder.getSearchableAttributes()
    console.log('Searching attributes in order:', attrs)
    // ['data-testid', 'id', 'aria-label', ...]
-   ```
-
-4. **Inspect current values on an element**:
-   ```javascript
-   const values = ElementFinder.getSearchableAttributeValues(
-     document.querySelector('input'),
-   )
-   console.log(values)
-   // { placeholder: 'Email', 'data-testid': 'email-input' }
    ```
 
 ### 11.3 vitest.config.js
@@ -2284,7 +2265,7 @@ console.log(counts)
 
 ```javascript
 function listSearchableAttributes() {
-  const attrs = ElementFinder.getValidAttributes()
+  const attrs = ElementFinder.getSearchableAttributes()
   console.log('Searchable attributes:', attrs)
   return attrs
 }
@@ -2806,27 +2787,25 @@ allResults.length = 0
 
 ### Quick Reference
 
-| Function                                | Purpose                                 | Example                                                    |
-| --------------------------------------- | --------------------------------------- | ---------------------------------------------------------- |
-| `findElementsByType(options)`           | Find by semantic type                   | `findElementsByType({ type: 'button' })`                   |
-| `findElementsByAttribute(options)`      | Find by text/attributes                 | `findElementsByAttribute('Submit')`                        |
-| `findElements(options)`                 | Strict combined search                  | `findElements({ type: 'button', text: 'Submit' })`         |
-| `findProbableElements(options)`         | Flexible combined search                | `findProbableElements({ type: 'button', text: 'Click' })`  |
-| `matchesType(el, type)`                 | Check if element matches type           | `matchesType(button, 'button')` → true                     |
-| `matchesAttribute(el, value, exact)`    | Check if element matches attribute/text | `matchesAttribute(button, 'OK')` → true                    |
-| `getBoundingBox(element)`               | Get element position and size           | `getBoundingBox(button)` → { x: 10, y: 20, ... }           |
-| `getAllElements(root)`                  | Get all elements (flat list)            | `getAllElements(document.body)` → [...]                    |
-| `getAllFrames(root)`                    | Get all frames recursively              | `getAllFrames()` → [{ window, document, frameIndex }, ...] |
-| `parseXPath(expr, el)`                  | Parse XPath-like expression             | `parseXPath('self::button', el)` → true                    |
-| `highlight(elements)`                   | Highlight elements red                  | `highlight([button1, button2])`                            |
-| `unhighlight(elements)`                 | Remove highlight                        | `unhighlight([button1, button2])`                          |
-| `getValidTypes()`                       | List all element types                  | `getValidTypes()` → ['button', 'textbox', ...]             |
-| `getValidAttributes()`                  | List all valid searchable attributes    | `getValidAttributes()` → ['placeholder', 'value', ...]     |
-| `getSearchableAttributes()`             | List attribute search order             | `getSearchableAttributes()` → ['data-testid', ...]         |
-| `setSearchableAttributes(array)`        | Set attribute search order              | `setSearchableAttributes(['data-qa', ...])`                |
-| `getSearchableAttributeValues(element)` | Inspect non-empty searchable attributes | `getSearchableAttributeValues(input)` → { id: 'email' }    |
-| `inViewport(el, options)`               | Check if element is in viewport (sync)  | `inViewport(el)` → true/false                              |
-| `isHidden(el)`                          | Check if element is hidden              | `isHidden(el)` → true/false                                |
+| Function                             | Purpose                                 | Example                                                    |
+| ------------------------------------ | --------------------------------------- | ---------------------------------------------------------- |
+| `findElementsByType(options)`        | Find by semantic type                   | `findElementsByType({ type: 'button' })`                   |
+| `findElementsByAttribute(options)`   | Find by text/attributes                 | `findElementsByAttribute('Submit')`                        |
+| `findElements(options)`              | Strict combined search                  | `findElements({ type: 'button', text: 'Submit' })`         |
+| `findProbableElements(options)`      | Flexible combined search                | `findProbableElements({ type: 'button', text: 'Click' })`  |
+| `matchesType(el, type)`              | Check if element matches type           | `matchesType(button, 'button')` → true                     |
+| `matchesAttribute(el, value, exact)` | Check if element matches attribute/text | `matchesAttribute(button, 'OK')` → true                    |
+| `getBoundingBox(element)`            | Get element position and size           | `getBoundingBox(button)` → { x: 10, y: 20, ... }           |
+| `getAllElements(root)`               | Get all elements (flat list)            | `getAllElements(document.body)` → [...]                    |
+| `getAllFrames(root)`                 | Get all frames recursively              | `getAllFrames()` → [{ window, document, frameIndex }, ...] |
+| `parseXPath(expr, el)`               | Parse XPath-like expression             | `parseXPath('self::button', el)` → true                    |
+| `highlight(elements)`                | Highlight elements red                  | `highlight([button1, button2])`                            |
+| `unhighlight(elements)`              | Remove highlight                        | `unhighlight([button1, button2])`                          |
+| `getValidTypes()`                    | List all element types                  | `getValidTypes()` → ['button', 'textbox', ...]             |
+| `getSearchableAttributes()`          | List attribute search order             | `getSearchableAttributes()` → ['data-testid', ...]         |
+| `setSearchableAttributes(array)`     | Set attribute search order              | `setSearchableAttributes(['data-qa', ...])`                |
+| `inViewport(el, options)`            | Check if element is in viewport (sync)  | `inViewport(el)` → true/false                              |
+| `isHidden(el)`                       | Check if element is hidden              | `isHidden(el)` → true/false                                |
 
 ---
 
@@ -2884,12 +2863,11 @@ UNIVERSAL
 
 ## Document History
 
-| Date      | Version | Changes                                                                                                           |
-| --------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
-| June 2026 | 1.3.5   | Added ignored-tag config, and `getSearchableAttributeValues` documentation; removed deprecated counting functions |
-| June 2026 | 1.1.7   | Added `getValidAttributes()` documentation                                                                        |
-| May 2026  | 1.1.1   | Added `findProbableElements` documentation                                                                        |
-| May 2026  | 1.1.0   | Initial engineering documentation                                                                                 |
+| Date      | Version | Changes                                                         |
+| --------- | ------- | --------------------------------------------------------------- |
+| June 2026 | 1.3.5   | Added ignored-tag config; removed deprecated counting functions |
+| May 2026  | 1.1.1   | Added `findProbableElements` documentation                      |
+| May 2026  | 1.1.0   | Initial engineering documentation                               |
 
 ---
 

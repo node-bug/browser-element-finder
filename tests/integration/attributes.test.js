@@ -109,59 +109,6 @@ describe('ElementFinder Attribute Tests', () => {
     });
   });
 
-  describe('getSearchableAttributeValues', () => {
-    it('should return current values for searchable attributes on an element', async () => {
-      const values = await fixture.driver.executeScript(`
-        const input = document.getElementById('txt2');
-        return ElementFinder.getSearchableAttributeValues(input);
-      `);
-      expect(values).toEqual({
-        placeholder: 'Enter email',
-        'data-testid': 'email-input',
-        id: 'txt2'
-      });
-    });
-
-    it('should exclude missing, empty, and non-searchable attributes', async () => {
-      const values = await fixture.driver.executeScript(`
-        const input = document.createElement('input');
-        input.setAttribute('placeholder', '');
-        input.setAttribute('data-testid', '');
-        input.setAttribute('custom-attr', 'ignored');
-        input.setAttribute('aria-label', 'Email Address');
-        return ElementFinder.getSearchableAttributeValues(input);
-      `);
-      expect(values).toEqual({
-        'aria-label': 'Email Address'
-      });
-    });
-
-    it('should respect custom searchable attributes', async () => {
-      const values = await fixture.driver.executeScript(`
-        ElementFinder.setSearchableAttributes(['data-qa', 'id']);
-        const el = document.createElement('button');
-        el.setAttribute('id', 'save');
-        el.setAttribute('data-qa', 'save-button');
-        el.setAttribute('aria-label', 'Save changes');
-        return ElementFinder.getSearchableAttributeValues(el);
-      `);
-      expect(values).toEqual({
-        'data-qa': 'save-button',
-        id: 'save'
-      });
-    });
-
-    it('should return an empty object for null or non-element nodes', async () => {
-      const result = await fixture.driver.executeScript(`
-        return [
-          ElementFinder.getSearchableAttributeValues(null),
-          ElementFinder.getSearchableAttributeValues(document.createTextNode('not an element'))
-        ];
-      `);
-      expect(result).toEqual([{}, {}]);
-    });
-  });
-
   describe('matchesAttribute', () => {
     beforeEach(async () => {
       await fixture.driver.get(fixture.url);
@@ -481,20 +428,6 @@ describe('ElementFinder Attribute Tests', () => {
       expect(result.elements[0].boundingBox).toBeDefined();
       expect(result.elements[0].tagName).toBe('button');
       expect(result.elements[0].frameIndex).toBe(-1);
-    });
-  });
-
-  describe('getValidAttributes', () => {
-    it('should return array of valid attribute names', async () => {
-      const attrs = await fixture.driver.executeScript(`
-        return ElementFinder.getValidAttributes();
-      `);
-      expect(Array.isArray(attrs)).toBe(true);
-      expect(attrs).toContain('placeholder');
-      expect(attrs).toContain('value');
-      expect(attrs).toContain('data-test-id');
-      expect(attrs).toContain('id');
-      expect(attrs).toContain('aria-label');
     });
   });
 

@@ -30,9 +30,7 @@ var ElementFinder = (() => {
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
     getIgnoredTags: () => getIgnoredTags,
-    getSearchableAttributeValues: () => getSearchableAttributeValues,
     getSearchableAttributes: () => getSearchableAttributes,
-    getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
     highlight: () => highlight,
     inViewport: () => inViewport,
@@ -197,24 +195,6 @@ var ElementFinder = (() => {
       }
     }
     return text;
-  }
-  function getSearchableAttributeValues(el) {
-    if (el == null || el.nodeType !== Node.ELEMENT_NODE) return {};
-    const values = {};
-    const attrs = SEARCHABLE_ATTRIBUTES;
-    for (let i = 0; i < attrs.length; i++) {
-      const attr = attrs[i];
-      let attrValue;
-      try {
-        attrValue = el.getAttribute(attr);
-      } catch (e) {
-        continue;
-      }
-      if (attrValue !== null && attrValue !== void 0 && attrValue !== "") {
-        values[attr] = attrValue;
-      }
-    }
-    return values;
   }
   function shortenDescriptorText(text) {
     if (text == null) return "";
@@ -1086,9 +1066,6 @@ var ElementFinder = (() => {
   }
   function getValidTypes() {
     return Object.keys(ELEMENT_DEFINITIONS);
-  }
-  function getValidAttributes() {
-    return [...SEARCHABLE_ATTRIBUTES];
   }
   function normalizeDescriptorText(text) {
     if (text == null) return "";

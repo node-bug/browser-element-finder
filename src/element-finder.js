@@ -191,35 +191,6 @@ function getSearchableTextContent(el) {
 }
 
 /**
- * Gets the current values of searchable attributes on an element.
- * Only returns attributes that exist on the element and have non-empty values.
- * @param {Element|null|undefined} el - The DOM element to inspect
- * @returns {Object.<string, string>} Attribute name to value map
- */
-export function getSearchableAttributeValues(el) {
-  if (el == null || el.nodeType !== Node.ELEMENT_NODE) return {};
-
-  const values = {};
-  const attrs = SEARCHABLE_ATTRIBUTES;
-
-  for (let i = 0; i < attrs.length; i++) {
-    const attr = attrs[i];
-    let attrValue;
-    try {
-      attrValue = el.getAttribute(attr);
-    } catch {
-      continue;
-    }
-
-    if (attrValue !== null && attrValue !== undefined && attrValue !== '') {
-      values[attr] = attrValue;
-    }
-  }
-
-  return values;
-}
-
-/**
  * Shortens text fallback descriptors without cutting words.
  * Uses only the first non-empty line so text after new lines is ignored.
  * @param {string|null|undefined} text - Text to shorten
@@ -1602,13 +1573,6 @@ export function resumeAnimations(pauseState) {
  */
 export function getValidTypes() {
   return Object.keys(ELEMENT_DEFINITIONS);
-}
-
-/**
- * Returns an array of all valid searchable attribute names.
- */
-export function getValidAttributes() {
-  return [...SEARCHABLE_ATTRIBUTES];
 }
 
 /**
