@@ -56,9 +56,7 @@ browser-element-finder/
 │   │   ├── animations.test.js        # pauseAnimations/resumeAnimations
 │   │   ├── attributes.test.js        # Attribute matching logic
 │   │   ├── edge-cases.test.js        # Null input, cross-frame, etc.
-│   │   ├── element-inventory.test.js # getElementInventory tests
 │   │   ├── find-elements.test.js     # Combined type + attribute search
-│   │   ├── form-state.test.js        # getFormState tests
 │   │   ├── overlay-elements.test.js  # findOverlayElements tests
 │   │   ├── types.test.js             # Type matching & XPath parsing
 │   │   ├── viewport.test.js          # inViewport tests
@@ -156,12 +154,9 @@ If no attribute matches, falls back to direct text nodes, then full `textContent
 ### Shadow DOM & Iframe Support
 
 - **Shadow DOM**: `getAllElements()` uses iterative stack-based traversal with shadow root penetration
-- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) and `getElementCounts`/`getViewportElementCounts` traverse **all** same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference. `getElementInventory()` also traverses all same-origin frames and returns a separate `{ frame, elements }` group per frame (main frame `frame: -1`, iframes `0, 1, …`), where each element is an object `{ type, description, inViewport, isHidden, formState, index }` (identified elements use a `(type, text)` occurrence `index`; text-less elements use the positional `#N`).
+- **Iframes**: `getAllFrames()` collects all same-origin iframes. Search results (`findElements`, `findElementsByType`, `findElementsByAttribute`, `findProbableElements`, `findOverlayElements` full scan) traverse **all** same-origin frames. Elements inside iframes are returned with their `frameIndex` (`0, 1, …`) but without an `element` reference, because a DOM node cannot be serialized across the frame boundary. Main-frame elements have `frameIndex: -1` and include the `element` reference.
 - **Cross-origin iframes**: Gracefully skipped with `SecurityError` handling
 - **Searching iframe contents**: Switch into the iframe context, then run the finder inside that frame to get interactable `element` references.
-- **`getElementInventory()` index field**: Each inventory element carries an `index`. For **identified** elements (those with text), `index` is the 1-based occurrence within their `(type, text)` group — the first "Submit" button is `1`, the second "Submit" button is `2`, and a uniquely-named element resets to `1`. This matches the `index` returned by `getElementDescriptor()`. For **text-less** elements, `index` is the positional `#N` (see below). The `overlay` entry (the visible overlay with the most inventory descendants, or `null`) carries the same shape as a regular entry — `{ type, description, inViewport, isHidden, formState, index }` — and its `index` mirrors that element's own inventory-entry `index` (occurrence within its `(type, text)` group).
-- **`getElementInventory()` text-less `#N` fallback**: Text-less elements of any real semantic type (all types except `element` and `iframe`, per `TEXTLESS_TYPES`) are included with a positional `#N` index (N = 1-based position among same-type elements in the frame, matching `findElements()` order) and a `null` description. Generic `element`/`iframe` typed nodes with no text are excluded. This makes icon-only buttons, unlabeled checkboxes, images, etc. actionable in the inventory.
-- **`getElementInventory(parent)` scoping**: An optional `parent` (an `Element`) scopes the inventory to that element's descendants only (the parent itself is excluded), returned as a single `{ frame, elements }` group for the frame the parent lives in. The `#N` index is computed relative to the subtree (reset per call), matching `findElements()` ordering within the scope. When called with no argument, the full page across all same-origin frames is returned.
 
 ### Return Format
 
@@ -281,7 +276,7 @@ throw new Error('fail')
 if (parent === null || parent === undefined) {
   parent = document
 }
-return { descriptor: null, unique: false } // null for "no descriptor" sentinel
+return { found: false, count: 0 } // sentinel values for "not found"
 
 // BAD
 const result = null
@@ -441,7 +436,6 @@ See `TODO.md` for the feature roadmap:
 
 ### Planned Features
 
-- `getElementCounts()` — Return counts by semantic element type and visibility
 - `waitForElement()` — Poll until found or timeout
 - `getElementState()` — Get visibility/enabled/selected state
 - `generateSelector()` — Generate unique CSS selector

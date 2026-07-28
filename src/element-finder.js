@@ -26,17 +26,7 @@ const MAX_RECURSION_DEPTH = 100;
 // Maximum length for text/textContent fallback descriptors
 const MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
 
-// Semantic types eligible for the element inventory's text-less fallback and
-// nearby-label rescue. This is every defined type EXCEPT the generic `element`
-// (which would otherwise promote every bare container) and `iframe` (which is a
-// frame container, not a leaf control). In other words: all real element types
-// — form controls and content/structure elements alike.
-const TEXTLESS_TYPES = new Set(
-  Object.keys(elementDefinitionsData).filter(
-    (type) => type !== 'element' && type !== 'iframe',
-  ),
-);
-
+// Semantic types eligible for nearby-label rescue. This is every defined type
 const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT', 'HEAD'];
 
 let IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
@@ -230,16 +220,6 @@ export function getSearchableAttributeValues(el) {
 }
 
 /**
- * Normalizes descriptor text for consistent matching.
- * @param {string|null|undefined} text - Text to normalize
- * @returns {string} Normalized text
- */
-function normalizeDescriptorText(text) {
-  if (text == null) return '';
-  return String(text).replace(/\s+/g, ' ').trim();
-}
-
-/**
  * Shortens text fallback descriptors without cutting words.
  * Uses only the first non-empty line so text after new lines is ignored.
  * @param {string|null|undefined} text - Text to shorten
@@ -267,60 +247,6 @@ function shortenDescriptorText(text) {
   const lastSpaceIndex = shortened.lastIndexOf(' ');
 
   return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : resultText;
-}
-
-/**
- * Gets the filename portion of an image src without path or extension.
- * @param {string|null|undefined} src - Image src value
- * @returns {string} Filename without path or extension
- */
-function getImageFilenameWithoutExtension(src) {
-  const normalizedSrc = normalizeDescriptorText(src);
-  if (!normalizedSrc) return '';
-
-  const withoutQueryOrFragment = normalizedSrc.split(/[?#]/)[0];
-  const lastSlashIndex = Math.max(
-    withoutQueryOrFragment.lastIndexOf('/'),
-    withoutQueryOrFragment.lastIndexOf('\\')
-  );
-  const filenameWithExtension = lastSlashIndex >= 0
-    ? withoutQueryOrFragment.slice(lastSlashIndex + 1)
-    : withoutQueryOrFragment;
-
-  const lastDotIndex = filenameWithExtension.lastIndexOf('.');
-  return lastDotIndex > 0
-    ? filenameWithExtension.slice(0, lastDotIndex)
-    : filenameWithExtension;
-}
-
-/**
- * Gets the text content from elements referenced by aria-labelledby.
- * @param {Element} el - The DOM element to check
- * @returns {string} Concatenated resolved text from referenced elements, or empty string
- */
-function getResolvedAriaLabelledByText(el) {
-  const labelledBy = el.getAttribute('aria-labelledby');
-  if (!labelledBy) return '';
-
-  const ids = labelledBy.split(/\s+/);
-  const ownerDocument = el.ownerDocument || document;
-  let text = '';
-
-  for (const id of ids) {
-    try {
-      const refEl = ownerDocument.getElementById(id);
-      if (!refEl) continue;
-
-      const refText = normalizeDescriptorText(refEl.textContent);
-      if (refText) {
-        text = text ? `${text} ${refText}` : refText;
-      }
-    } catch {
-      // Skip if element not found or access denied
-    }
-  }
-
-  return text;
 }
 
 /**
@@ -391,385 +317,6 @@ function getNearbyLabelText(el) {
  * @param {Element} el - The DOM element to describe
  * @returns {{attributeName: string|null, identifiableText: string}|null} Descriptor source and identifiable text
  */
-function getElementDescriptorText(el) {
-  // Text-first: prefer direct text nodes over any searchable attribute.
-  const directText = shortenDescriptorText(getDirectText(el));
-  if (directText && !isIgnoredElement(el)) {
-    return { attributeName: 'text', identifiableText: directText };
-  }
-
-  const values = getSearchableAttributeValues(el);
-  const attrs = SEARCHABLE_ATTRIBUTES;
-
-  // Nearby-label resolution for eligible element types. A nearby <label> should
-  // win over machine-generated attributes (value/id/name/src) but still yield to
-  // explicit a11y/semantic text (aria-label/labelledby, placeholder, data-*).
-  // Computed once up front so the loop can skip machine attributes in its favor.
-  let nearbyLabel = '';
-  const type = getElementDescriptorType(el);
-  if (TEXTLESS_TYPES.has(type)) {
-    nearbyLabel = getNearbyLabelText(el);
-  }
-
-  // Machine attributes a nearby <label> should override (they are not
-  // human-meaningful identifiers for a control). Test-id attributes are also
-  // machine-generated and must not outrank a real user-facing <label>.
-  const MACHINE_ATTRS = new Set([
-    'value', 'id', 'resource-id', 'name', 'src',
-    'data-test-id', 'data-testid', 'data-value'
-  ]);
-
-  for (let i = 0; i < attrs.length; i++) {
-    const attr = attrs[i];
-    if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
-
-    // Prefer a nearby label over machine-generated attributes.
-    if (nearbyLabel && MACHINE_ATTRS.has(attr)) continue;
-
-    const rawText = attr === 'aria-labelledby'
-      ? getResolvedAriaLabelledByText(el)
-      : attr === 'src'
-        ? getImageFilenameWithoutExtension(values[attr])
-        : values[attr];
-
-    if (rawText) {
-      return { attributeName: attr, identifiableText: rawText };
-    }
-  }
-
-  if (nearbyLabel) {
-    return { attributeName: 'label', identifiableText: nearbyLabel };
-  }
-
-  // Fallback: if direct text is empty (text is nested in child elements like
-  // <span> inside <button>), use the element's full textContent (shortened).
-  // This handles frameworks that wrap visible text in child nodes. We check
-  // this AFTER searchable attributes and nearby labels so that explicit
-  // a11y/semantic text and <label> associations take priority. For form
-  // controls, the nearby label (if found) would have already returned above;
-  // if no label was found, textContent is a reasonable last resort (e.g. a
-  // <select> with visible option text but no <label>).
-  // For generic `element`-type containers, only apply this fallback when the
-  // element is not a root-level structural node — <html>, <body>, and their
-  // immediate children produce descriptors containing all descendant text,
-  // causing false matches during findProbableElements searches.
-  if (!isIgnoredElement(el)) {
-    // Guard: skip textContent fallback for generic `element` types — these
-    // containers accumulate all descendant text, producing descriptors that
-    // match any search term (e.g. "American Airlines" matching <html>).
-    // Elements with a meaningful semantic type (button, link, heading, etc.)
-    // still get the textContent fallback for cases where text is nested in
-    // child nodes (e.g. <span> inside <button>).
-    if (type !== 'element') {
-      // Only use the textContent fallback when the element has no
-      // child elements with their own semantic type (TEXTLESS_TYPES).
-      // If a child element has a meaningful semantic type (button,
-      // link, heading, etc.), the parent should not inherit that
-      // child's text — the child will get its own descriptor.
-      // Generic `element`-type children (plain containers) are
-      // allowed because they don't have their own semantic identity.
-      if (!hasSemanticChildElements(el)) {
-        const fullText = shortenDescriptorText(getSearchableTextContent(el));
-        if (fullText) {
-          return { attributeName: 'text', identifiableText: fullText };
-        }
-      }
-    }
-  }
-
-  return null;
-}
-
-/**
- * Gets occurrence index for descriptor text within the element's frame.
- * Counts elements whose getElementDescriptorText returns the same identifiableText
- * and type, applying the same deduplication and parent-filtering as findElements.
- * @param {Element} el - The element to describe
- * @param {string} text - Descriptor text to count
- * @param {string} type - Semantic type to match
- * @param {boolean} [includeHidden=true] - Whether to include hidden elements in the count
- * @returns {{index: number}} 1-based occurrence index
- */
-function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
-  const root = el.ownerDocument;
-  if (!root) {
-    return { index: 1 };
-  }
-
-  const elements = getAllElements(root);
-  const seenElements = new Set();
-  const descriptorCache = new WeakMap();
-  const typeCache = new WeakMap();
-  const matchingDescriptors = [];
-
-  for (let i = 0; i < elements.length; i++) {
-    const candidate = elements[i];
-
-    // Skip duplicates
-    if (seenElements.has(candidate)) continue;
-    seenElements.add(candidate);
-
-    // Skip ignored elements
-    if (isIgnoredElement(candidate)) continue;
-
-    // Skip hidden elements when includeHidden is false
-    if (!includeHidden && isHidden(candidate)) continue;
-
-    // Get descriptor text (cached)
-    let candidateDescriptor = descriptorCache.get(candidate);
-    if (candidateDescriptor === undefined) {
-      candidateDescriptor = getElementDescriptorText(candidate);
-      descriptorCache.set(candidate, candidateDescriptor);
-    }
-
-    // Skip if descriptor doesn't match target text
-    if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
-
-    // Get type (cached)
-    let candidateType = typeCache.get(candidate);
-    if (candidateType === undefined) {
-      candidateType = getElementDescriptorType(candidate);
-      typeCache.set(candidate, candidateType);
-    }
-
-    // Skip if type doesn't match
-    if (candidateType !== type) continue;
-
-    matchingDescriptors.push(candidate);
-  }
-
-  // Filter out parent elements that only match because a descendant matches
-  const filtered = matchingDescriptors.filter((item) => {
-    for (const other of matchingDescriptors) {
-      if (other !== item && item.contains(other)) {
-        return false;
-      }
-    }
-    return true;
-  });
-
-  for (let i = 0; i < filtered.length; i++) {
-    if (filtered[i] === el) {
-      return { index: i + 1 };
-    }
-  }
-
-  return { index: 1 };
-}
-
-/**
- * Gets the 1-based position of an element among elements of the same type in its frame.
- * Used as a fallback index when an element has no identifiable text.
- * @param {Element} el - The element to locate
- * @param {string} type - The semantic type to count against
- * @param {boolean} [includeHidden=true] - Whether to include hidden elements in the position count
- * @returns {number} 1-based position, or 1 if the frame cannot be resolved
- */
-function getElementPositionAmongType(el, type, includeHidden = true) {
-  const root = el.ownerDocument;
-  if (!root) return 1;
-
-  const elements = getAllElements(root);
-  const typeCache = new WeakMap();
-  let position = 1;
-
-  for (let i = 0; i < elements.length; i++) {
-    const candidate = elements[i];
-    if (candidate === el) break;
-
-    if (isIgnoredElement(candidate)) continue;
-
-    // Skip hidden elements when includeHidden is false
-    if (!includeHidden && isHidden(candidate)) continue;
-
-    let candidateType = typeCache.get(candidate);
-    if (candidateType === undefined) {
-      candidateType = getElementDescriptorType(candidate);
-      typeCache.set(candidate, candidateType);
-    }
-    if (candidateType === type) position++;
-  }
-
-  return position;
-}
-
-/**
- * Gets the first matching semantic type for an element.
- * @param {Element} el - The DOM element to classify
- * @returns {string|null} Matching type name, or null for non-elements
- */
-function getElementDescriptorType(el) {
-  if (el == null || el.nodeType !== Node.ELEMENT_NODE) return null;
-
-  const types = Object.keys(ELEMENT_DEFINITIONS);
-  for (let i = 0; i < types.length; i++) {
-    const type = types[i];
-    if (type === 'element') continue;
-    if (matchesType(el, type)) return type;
-  }
-
-  return 'element';
-}
-
-/**
- * Gets a plain-text identifier for a DOM element.
- * Prefers an element's direct text over searchable attributes, falling back to the
- * first non-empty searchable attribute value when no direct text exists, then reports
- * the occurrence index within the current frame and includes the semantic element type.
- * @param {Element|null|undefined} el - The DOM element to describe
- * @param {boolean} [includeHidden=true] - Whether to include hidden elements in the index count. Default true.
- * @returns {{identifiableText: string|null, attributeName: string|null, index: number, type: string|null, tagName: string|null}} Element descriptor
- */
-export function getElementDescriptor(el, includeHidden = true) {
-
-  if (el == null || el.nodeType !== Node.ELEMENT_NODE) {
-    return {
-      identifiableText: null,
-      attributeName: null,
-      index: 1,
-      type: null,
-      tagName: null
-    };
-  }
-
-  const type = getElementDescriptorType(el);
-  const descriptorSource = getElementDescriptorText(el);
-
-  if (!descriptorSource || !descriptorSource.identifiableText) {
-    return {
-      identifiableText: null,
-      attributeName: null,
-      index: getElementPositionAmongType(el, type, includeHidden),
-      type,
-      tagName: el.tagName.toLowerCase(),
-      formState: getFormState(el, type)
-    };
-  }
-
-  const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type, includeHidden);
-
-  return {
-    identifiableText: descriptorSource.identifiableText,
-    attributeName: descriptorSource.attributeName,
-    index: uniqueness.index,
-    type,
-    tagName: el.tagName.toLowerCase(),
-    formState: getFormState(el, type)
-  };
-}
-
-/**
- * Captures the current interactive state of a form control so that form
- * actions (typing, selecting, toggling) can be replayed faithfully and the
- * dashboard can display what was entered/selected. Only form semantic types
- * produce a `formState`; for all other types this returns `undefined`.
- *
- * The shape is keyed by semantic type:
- * - `textbox` / `colorpicker` / `datepicker`: `{ value: string }`
- * - `checkbox`: `{ checked: boolean }`
- * - `radio`: `{ set: boolean }`
- * - `switch`: `{ on: boolean }`
- * - `dropdown`: `{ selected: string|null, options: string[] }`
- * - `slider`: `{ value: number }`
- * - `file`: `{ fileName: string|null }`
- *
- * Reads are defensive: a control without a usable value (e.g. a detached
- * element) yields an empty/neutral state rather than throwing.
- *
- * @param {Element} el - The DOM element to inspect
- * @param {string|null} type - The semantic element type from `getElementDescriptorType`
- * @returns {Object|undefined} The form state object, or `undefined` for non-form types
- */
-export function getFormState(el, type) {
-  if (el == null || type == null) return undefined;
-
-  switch (type) {
-    case 'textbox':
-    case 'colorpicker':
-    case 'datepicker': {
-      const read = () => (el.value != null ? String(el.value) : '');
-      return { value: safeRead(read, '') };
-    }
-
-    case 'checkbox': {
-      const read = () => Boolean(el.checked);
-      return { checked: safeRead(read, false) };
-    }
-
-    case 'radio': {
-      const read = () => Boolean(el.checked);
-      return { set: safeRead(read, false) };
-    }
-
-    case 'switch': {
-      // Switches may be a native checkbox (role=switch) or a custom control
-      // whose on/off state is reflected via aria-checked.
-      const read = () => {
-        if (typeof el.checked === 'boolean') {
-          return el.checked;
-        }
-        const ariaChecked = el.getAttribute('aria-checked');
-        return ariaChecked === 'true';
-      };
-      return { on: safeRead(read, false) };
-    }
-
-    case 'dropdown': {
-      const read = () => {
-        const optionEls = Array.from(el.options || el.querySelectorAll('option'));
-        const options = optionEls
-          .map((o) => (o.textContent || o.getAttribute('value') || '').trim())
-          .filter((t) => t !== '');
-        const selectedEl = el.selectedOptions && el.selectedOptions.length > 0
-          ? el.selectedOptions[0]
-          : (el.options ? el.options[el.selectedIndex] : undefined);
-        const selected = selectedEl
-          ? (selectedEl.textContent || selectedEl.getAttribute('value') || '').trim() || null
-          : null;
-        return { selected, options };
-      };
-      const fallback = { selected: null, options: [] };
-      return safeRead(read, fallback);
-    }
-
-    case 'slider': {
-      const read = () => {
-        const raw = el.value != null && el.value !== '' ? Number(el.value) : 0;
-        return Number.isNaN(raw) ? 0 : raw;
-      };
-      return { value: safeRead(read, 0) };
-    }
-
-    case 'file': {
-      const read = () => {
-        if (el.files && el.files.length > 0) {
-          return el.files[0].name || null;
-        }
-        return null;
-      };
-      return { fileName: safeRead(read, null) };
-    }
-
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Reads a form-control value defensively, returning `fallback` when the read
- * throws (e.g. the element is detached or the property access is blocked).
- * @param {Function} read - Zero-arg function that returns the resolved value.
- * @param {*} fallback - Value returned when `read` throws.
- * @returns {*}
- */
-function safeRead(read, fallback) {
-  try {
-    return read();
-  } catch {
-    return fallback;
-  }
-}
-
 /**
  * Parses an XPath-like expression for element type matching.
  * Supports conditions like self::tag, @attr='value', contains(), descendant::, ancestor::*
@@ -948,38 +495,6 @@ function getDirectText(el) {
 }
 
 /**
- * Checks whether an element has any descendant ELEMENT nodes whose
- * semantic type is in TEXTLESS_TYPES (i.e., they have their own
- * meaningful semantic identity). Generic `element`-type descendants
- * are ignored because they are plain containers without their own
- * semantic meaning. Used by getElementDescriptorText to decide
- * whether the textContent fallback is safe (the element should
- * not inherit text from descendants that have their own descriptors).
- * Walks all descendants iteratively (not just direct children) so
- * that deeply-nested semantic elements behind generic wrappers
- * (<span>, <i>, <div>, etc.) are still detected.
- * @param {Element} el - The DOM element to check
- * @returns {boolean} True if the element has at least one descendant
- *   element with a semantic type (not `element` or `iframe`)
- */
-function hasSemanticChildElements(el) {
-  const stack = Array.from(el.children);
-  while (stack.length > 0) {
-    const node = stack.pop();
-    if (isIgnoredElement(node)) continue;
-    const childType = getElementDescriptorType(node);
-    if (childType !== null && childType !== 'element' && childType !== 'iframe') {
-      return true;
-    }
-    // Push children of this node for deeper traversal
-    for (let i = node.children.length - 1; i >= 0; i--) {
-      stack.push(node.children[i]);
-    }
-  }
-  return false;
-}
-
-/**
  * Checks if an element matches the specified attribute value.
  * Searches through all searchable attributes in priority order, then text content.
  * Text matching is case-sensitive. Ignores elements whose tag is configured as ignored.
@@ -1038,9 +553,8 @@ export function matchesAttribute(el, value, exact = false) {
     return true;
   }
 
-  // Check nearby <label> text — mirrors the fallback used by
-  // getElementDescriptorText during inventory capture, so elements identified
-  // via a wrapping or for-associated label remain discoverable at find time.
+  // Check nearby <label> text — so elements identified via a wrapping or
+  // for-associated label remain discoverable at find time.
   const nearbyLabel = getNearbyLabelText(el);
   if (nearbyLabel) {
     if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
@@ -1616,9 +1130,8 @@ function hasOwnMatch(el, value, exact = false) {
     return true;
   }
 
-  // Check nearby <label> text — mirrors the fallback used by
-  // getElementDescriptorText during inventory capture, so elements identified
-  // via a wrapping or for-associated label are not filtered out.
+  // Check nearby <label> text — so elements identified via a wrapping or
+  // for-associated label are not filtered out.
   const nearbyLabel = getNearbyLabelText(el);
   if (nearbyLabel) {
     if (exact ? nearbyLabel === value : nearbyLabel.includes(value)) {
@@ -1627,395 +1140,6 @@ function hasOwnMatch(el, value, exact = false) {
   }
 
   return false;
-}
-
-/**
- * Gets counts of elements by semantic type and visibility on the current screen.
- * Includes the generic `element` type by default.
- * If no type is provided, returns counts for all defined types.
- * Searches all frames (main document + iframes) by default.
- * @param {Object} [options] - Options object
- * @param {string|null} [options.type=null] - Element type to count. If null/undefined, count all defined types.
- * @param {Element|null} [options.parent=null] - Parent element to count within
- * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
- */
-export function getElementCounts(options = {}) {
-  const { type = null, parent = null } = options;
-  const hasType = type !== null && type !== undefined;
-  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
-
-  if (hasType) {
-    if (typeof type !== 'string') {
-      throw new TypeError(`type must be a string, got ${typeof type}`);
-    }
-    if (!ELEMENT_DEFINITIONS[type]) {
-      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
-      return { [type]: { visible: 0, hidden: 0, total: 0 } };
-    }
-  }
-
-  const counts = {};
-  for (let i = 0; i < targetTypes.length; i++) {
-    counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
-  }
-
-  // Use findElements() as the source of truth so counts match its returned
-  // element set, including its filtering behavior for each semantic type.
-  for (let i = 0; i < targetTypes.length; i++) {
-    const targetType = targetTypes[i];
-    const result = findElements({ type: targetType, parent });
-    const typeCounts = counts[targetType];
-
-    for (let j = 0; j < result.elements.length; j++) {
-      const item = result.elements[j];
-      const bucket = item.isHidden ? 'hidden' : 'visible';
-
-      typeCounts[bucket] += 1;
-      typeCounts.total += 1;
-    }
-  }
-
-  return counts;
-}
-
-/**
- * Gets counts of elements that are currently within the browser viewport, grouped by semantic type.
- * Unlike `getElementCounts` which counts all rendered elements regardless of position, this only
- * counts elements whose bounding box intersects with the current viewport.
- * @param {Object} [options] - Options object
- * @param {string|null} [options.type=null] - Element type to count. If null/undefined, count all defined types.
- * @param {Element|null} [options.parent=null] - Parent element to search within
- * @returns {Object.<string, {visible: number, hidden: number, total: number}>} Counts keyed by semantic element type
- */
-export function getViewportElementCounts(options = {}) {
-  const { type = null, parent = null } = options;
-  const hasType = type !== null && type !== undefined;
-  const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
-
-  if (hasType) {
-    if (typeof type !== 'string') {
-      throw new TypeError(`type must be a string, got ${typeof type}`);
-    }
-    if (!ELEMENT_DEFINITIONS[type]) {
-      console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(', ')}`);
-      return { [type]: { visible: 0, hidden: 0, total: 0 } };
-    }
-  }
-
-  const counts = {};
-  for (let i = 0; i < targetTypes.length; i++) {
-    counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
-  }
-
-  for (let i = 0; i < targetTypes.length; i++) {
-    const targetType = targetTypes[i];
-    const result = findElements({ type: targetType, parent });
-    const typeCounts = counts[targetType];
-
-    for (let j = 0; j < result.elements.length; j++) {
-      const item = result.elements[j];
-
-      // Only count elements that are in the viewport
-      if (!item.element || !inViewport(item.element, { threshold: 60 })) continue;
-
-      typeCounts.total += 1;
-      const bucket = item.isHidden ? 'hidden' : 'visible';
-      typeCounts[bucket] += 1;
-    }
-  }
-
-  return counts;
-}
-
-/**
- * Formats a form-control state object into a compact, parseable suffix string
- * for the element inventory. Mirrors the shape produced by `getFormState`.
- * @param {Object} formState - The form state object from `getFormState`
- * @returns {string} A `{...}`-wrapped string, or '' when formState is empty
- */
-/**
- * Collects all identifiable elements across all same-origin frames and returns
- * them grouped by frame number. Each element is represented as an object with
- * its semantic `type`, an identifiable `description` (or a positional `#N` for
- * text-less elements), an `inViewport` flag, and its `formState` (or `null`).
- *
- * The complete page is returned (no viewport filtering) — every element carries
- * an `inViewport` boolean so callers can filter if they wish. Hidden elements
- * are included (no visibility filtering), matching the Fluens state-capture
- * behavior. Cross-origin iframes are silently skipped by `getAllFrames()` (it
- * throws on access and is caught internally).
- *
- * Two enrichments are always on, because the tree is meant to drive guided
- * interaction with behavior-rich elements that frequently lack their own text:
- *   - Text-less elements (any type except `element`/`iframe`) are included
- *     using a positional `#N` identifier (N = 1-based position among same-type
- *     elements in the frame, matching findElements() order).
- *   - Form-control state is exposed as a `formState` object (e.g.
- *     `{checked:true}`, `{value:"abc"}`) for every element that has one, and
- *     `null` otherwise.
- *   - Nearby-label rescue: text from a nearby <label> (wrapping or
- *     for-associated) is used for eligible element types, overriding machine
- *     attributes (value/id/name/src) while still yielding to explicit a11y/
- *     semantic text (aria-label/labelledby, placeholder, data-*).
- *
- * When a `parent` element is provided, only that parent's descendants (its
- * subtree, excluding the parent itself) are returned, grouped into a single
- * frame group for the frame the parent lives in. This mirrors how
- * `findElements(options)` treats `options.parent` as a search root.
- * The `#N` positional index is computed relative to that subtree (reset per
- * call), matching `findElements()` ordering within the scope.
- *
- * @param {Element|null} [parent=null] - Parent element to scope the inventory to. When null/undefined, the full page across all same-origin frames is returned.
- * @returns {Array<{frame: number, elements: Array<{type: string, description: string|null, index: number, inViewport: boolean, isHidden: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, index: number, inViewport: boolean, isHidden: boolean, formState: Object|null}|null}>} Element inventory grouped by frame
- */
-export function getElementInventory(parent = null) {
-  // Scoped mode: only the parent's descendants, in a single frame group.
-  if (parent != null) {
-    const frameIndex = findFrameIndexForElement(parent);
-    const allInParent = getAllElements(parent);
-    // Exclude the parent itself — callers asked for its children.
-    const descendants = allInParent.filter((el) => el !== parent);
-    const { entries, overlay } = collectInventoryEntries(descendants);
-    return [{ frame: frameIndex, elements: entries, overlay }];
-  }
-
-  // Full-page mode (default): every same-origin frame, each as its own group.
-  const frames = getAllFrames(window);
-  const tree = [];
-
-  for (let fi = 0; fi < frames.length; fi++) {
-    const frameDoc = frames[fi].document;
-    const elements = getAllElements(frameDoc);
-    const { entries, overlay } = collectInventoryEntries(elements);
-    tree.push({ frame: frames[fi].frameIndex, elements: entries, overlay });
-  }
-
-  return tree;
-}
-
-/**
- * Resolves the frame index that an element belongs to, by matching its owner
- * document against the documents of all same-origin frames. Falls back to -1
- * (main frame) when the element's frame is not among the collected frames
- * (e.g. a cross-origin iframe, which `getAllFrames` silently skips).
- * @param {Element} el - The element to locate
- * @returns {number} The frame index of the element's frame, or -1
- */
-function findFrameIndexForElement(el) {
-  try {
-    const ownerDoc = el.ownerDocument;
-    const frames = getAllFrames(window);
-    for (let i = 0; i < frames.length; i++) {
-      if (frames[i].document === ownerDoc) {
-        return frames[i].frameIndex;
-      }
-    }
-    // Fallback: walk up the ancestor chain (including shadow-DOM hosts)
-    // to find an element whose owner document is in the collected frames.
-    // This handles nested iframes where getAllFrames only collects immediate
-    // children of the main document.
-    let node = el;
-    while (node) {
-      const parentDoc = node.ownerDocument;
-      for (let i = 0; i < frames.length; i++) {
-        if (frames[i].document === parentDoc) {
-          return frames[i].frameIndex;
-        }
-      }
-      // Walk up through light-DOM parent or shadow-DOM host.
-      node = node.parentElement || (node.getRootNode && node.getRootNode().host);
-    }
-  } catch {
-    // Restricted access — fall through to the default below.
-  }
-  return -1;
-}
-
-/**
- * Single pass over a list of elements, building the inventory entry objects.
- * Previously `getElementInventory()` called `getElementDescriptor()` for every
- * element, which internally re-walked the entire DOM (via
- * getElementDescriptorUniqueness / getElementPositionAmongType) — O(N^2) on
- * large pages. The output only needs each element's type, its identifiable text
- * (or a positional #N for text-less elements), its viewport membership, and its
- * form state, so we compute those once here and track the running 1-based
- * position per type.
- *
- * @param {Element[]} elements - Elements to inventory (already filtered to the desired scope)
- * @returns {{entries: Array<{type: string, description: string|null, index: number, inViewport: boolean, isHidden: boolean, formState: Object|null}>, overlay: {type: string, description: string|null, inViewport: boolean, isHidden: boolean, formState: Object|null, index: number}|null}} Inventory entries plus the dominant visible overlay
- */
-function collectInventoryEntries(elements) {
-  const entries = [];
-  const typePos = new Map(); // type -> running count (positional #N for all elements)
-  // Visible overlays that are themselves inventory entries (so they carry a
-  // type + index we can report). Keyed by element for O(1) ancestor lookup.
-  const overlayCandidates = [];
-  const overlayCount = new Map(); // overlay element -> descendant inventory count
-  // Set of elements already added as overlay candidates to avoid duplicates.
-  const overlayCandidateSet = new Set();
-
-  for (let i = 0; i < elements.length; i++) {
-    const el = elements[i];
-
-    const type = getElementDescriptorType(el) || 'element';
-
-    // Running position among same-type elements (matches
-    // getElementPositionAmongType order). getAllElements already excludes
-    // ignored-tag descendants, so no extra ignored check is needed here.
-    const pos = (typePos.get(type) || 0) + 1;
-    typePos.set(type, pos);
-
-    const textSource = getElementDescriptorText(el);
-    const identifiableText = textSource ? textSource.identifiableText : null;
-
-    let text;
-    let index;
-    if (!identifiableText) {
-      // Text-less elements: only real element types (not `element`/`iframe`)
-      // are included, using a null description and the positional #N index.
-      if (!TEXTLESS_TYPES.has(type)) {
-        // Even though this element won't be an inventory entry, it can still
-        // be a visible overlay container (e.g., <div class="modal"> with no
-        // id/aria-label). Check for overlay candidacy before skipping.
-        const vp = inViewport(el);
-        const hidden = isHidden(el);
-        if (vp && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
-          const rect = el.getBoundingClientRect();
-          overlayCandidates.push({
-            el,
-            type,
-            description: null,
-            boundingBox: {
-              x: rect.x,
-              y: rect.y,
-              width: rect.width,
-              height: rect.height,
-              top: rect.top,
-              bottom: rect.bottom,
-              left: rect.left,
-              right: rect.right,
-              midx: rect.x + rect.width / 2,
-              midy: rect.y + rect.height / 2,
-            },
-            inViewport: vp,
-            isHidden: hidden,
-            formState: null,
-            index: pos,
-          });
-          overlayCount.set(el, 0);
-          overlayCandidateSet.add(el);
-        }
-        continue;
-      }
-      text = null;
-      index = pos;
-    } else {
-      text = identifiableText;
-      // All elements (identified or text-less) use the same positional #N
-      // index — a running count per type. The first button is index 1,
-      // the second button is index 2, regardless of their text content.
-      index = pos;
-    }
-
-    const formState = getFormState(el, type);
-    const vp = inViewport(el);
-    const hidden = isHidden(el);
-    const rect = el.getBoundingClientRect();
-    const round = (v) => Math.round(v * 100) / 100;
-    entries.push({
-      type,
-      description: text,
-      boundingBox: {
-        x: round(rect.x),
-        y: round(rect.y),
-        width: round(rect.width),
-        height: round(rect.height),
-        top: round(rect.top),
-        bottom: round(rect.bottom),
-        left: round(rect.left),
-        right: round(rect.right),
-        midx: round(rect.x + rect.width / 2),
-        midy: round(rect.y + rect.height / 2),
-      },
-      index,
-      inViewport: vp,
-      isHidden: hidden,
-      formState: formState || null,
-    });
-
-    // Track visible overlays (reusing the viewport result already computed
-    // above) for the dominant-overlay computation below. Capture the same
-    // fields a regular inventory entry carries so the reported overlay object
-    // is structurally identical to an entry (its `index` mirrors this element's
-    // own entry index, not the raw type-position `pos`).
-    if (vp && isOverlayElement(el)) {
-      const round = (v) => Math.round(v * 100) / 100;
-      overlayCandidates.push({
-        el,
-        type,
-        description: text,
-        boundingBox: {
-          x: round(rect.x),
-          y: round(rect.y),
-          width: round(rect.width),
-          height: round(rect.height),
-          top: round(rect.top),
-          bottom: round(rect.bottom),
-          left: round(rect.left),
-          right: round(rect.right),
-          midx: round(rect.x + rect.width / 2),
-          midy: round(rect.y + rect.height / 2),
-        },
-        inViewport: vp,
-        isHidden: hidden,
-        formState: formState || null,
-        index,
-      });
-      overlayCount.set(el, 0);
-      overlayCandidateSet.add(el);
-    }
-  }
-
-  // Determine the visible overlay containing the most inventory descendants.
-  // For each inventory element we walk up its ancestors once; any overlay
-  // candidate encountered is credited with one descendant. O(n * depth) with
-  // O(1) Map lookups — depth is tiny in practice. The outermost overlay
-  // naturally accumulates the highest count when overlays are nested.
-  let overlay = null;
-  if (overlayCandidates.length > 0) {
-    for (let i = 0; i < elements.length; i++) {
-      let anc = elements[i].parentElement;
-      while (anc) {
-        const c = overlayCount.get(anc);
-        if (c !== undefined) overlayCount.set(anc, c + 1);
-        anc = anc.parentElement;
-      }
-    }
-
-    let best = null;
-    let bestCount = 0;
-    for (let i = 0; i < overlayCandidates.length; i++) {
-      const cand = overlayCandidates[i];
-      const cnt = overlayCount.get(cand.el);
-      if (cnt > bestCount) {
-        bestCount = cnt;
-        best = cand;
-      }
-    }
-    if (best) {
-      overlay = {
-        type: best.type,
-        description: best.description,
-        boundingBox: best.boundingBox,
-        inViewport: best.inViewport,
-        isHidden: best.isHidden,
-        formState: best.formState,
-        index: best.index,
-      };
-    }
-  }
-
-  return { entries, overlay };
 }
 
 /**
@@ -2664,4 +1788,44 @@ export function getValidTypes() {
  */
 export function getValidAttributes() {
   return [...SEARCHABLE_ATTRIBUTES];
+}
+
+/**
+ * Normalizes descriptor text for consistent matching.
+ * @param {string|null|undefined} text - Text to normalize
+ * @returns {string} Normalized text
+ */
+function normalizeDescriptorText(text) {
+  if (text == null) return '';
+  return String(text).replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Gets the text content from elements referenced by aria-labelledby.
+ * @param {Element} el - The DOM element to check
+ * @returns {string} Concatenated resolved text from referenced elements, or empty string
+ */
+function getResolvedAriaLabelledByText(el) {
+  const labelledBy = el.getAttribute('aria-labelledby');
+  if (!labelledBy) return '';
+
+  const ids = labelledBy.split(/\s+/);
+  const ownerDocument = el.ownerDocument || document;
+  let text = '';
+
+  for (const id of ids) {
+    try {
+      const refEl = ownerDocument.getElementById(id);
+      if (!refEl) continue;
+
+      const refText = normalizeDescriptorText(refEl.textContent);
+      if (refText) {
+        text = text ? `${text} ${refText}` : refText;
+      }
+    } catch {
+      // Skip if element not found or access denied
+    }
+  }
+
+  return text;
 }

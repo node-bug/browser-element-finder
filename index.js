@@ -30,16 +30,11 @@ var ElementFinder = (() => {
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
-    getElementCounts: () => getElementCounts,
-    getElementDescriptor: () => getElementDescriptor,
-    getElementInventory: () => getElementInventory,
-    getFormState: () => getFormState,
     getIgnoredTags: () => getIgnoredTags,
     getSearchableAttributeValues: () => getSearchableAttributeValues,
     getSearchableAttributes: () => getSearchableAttributes,
     getValidAttributes: () => getValidAttributes,
     getValidTypes: () => getValidTypes,
-    getViewportElementCounts: () => getViewportElementCounts,
     highlight: () => highlight,
     inViewport: () => inViewport,
     isHidden: () => isHidden,
@@ -121,11 +116,6 @@ var ElementFinder = (() => {
   };
   var MAX_RECURSION_DEPTH = 100;
   var MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
-  var TEXTLESS_TYPES = new Set(
-    Object.keys(element_definitions_default).filter(
-      (type) => type !== "element" && type !== "iframe"
-    )
-  );
   var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT", "HEAD"];
   var IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
@@ -227,10 +217,6 @@ var ElementFinder = (() => {
     }
     return values;
   }
-  function normalizeDescriptorText(text) {
-    if (text == null) return "";
-    return String(text).replace(/\s+/g, " ").trim();
-  }
   function shortenDescriptorText(text) {
     if (text == null) return "";
     const lines = String(text).split(/\r\n|\r|\n/);
@@ -248,37 +234,6 @@ var ElementFinder = (() => {
     const shortened = resultText.slice(0, MAX_IDENTIFIABLE_TEXT_LENGTH);
     const lastSpaceIndex = shortened.lastIndexOf(" ");
     return lastSpaceIndex > 0 ? shortened.slice(0, lastSpaceIndex) : resultText;
-  }
-  function getImageFilenameWithoutExtension(src) {
-    const normalizedSrc = normalizeDescriptorText(src);
-    if (!normalizedSrc) return "";
-    const withoutQueryOrFragment = normalizedSrc.split(/[?#]/)[0];
-    const lastSlashIndex = Math.max(
-      withoutQueryOrFragment.lastIndexOf("/"),
-      withoutQueryOrFragment.lastIndexOf("\\")
-    );
-    const filenameWithExtension = lastSlashIndex >= 0 ? withoutQueryOrFragment.slice(lastSlashIndex + 1) : withoutQueryOrFragment;
-    const lastDotIndex = filenameWithExtension.lastIndexOf(".");
-    return lastDotIndex > 0 ? filenameWithExtension.slice(0, lastDotIndex) : filenameWithExtension;
-  }
-  function getResolvedAriaLabelledByText(el) {
-    const labelledBy = el.getAttribute("aria-labelledby");
-    if (!labelledBy) return "";
-    const ids = labelledBy.split(/\s+/);
-    const ownerDocument = el.ownerDocument || document;
-    let text = "";
-    for (const id of ids) {
-      try {
-        const refEl = ownerDocument.getElementById(id);
-        if (!refEl) continue;
-        const refText = normalizeDescriptorText(refEl.textContent);
-        if (refText) {
-          text = text ? `${text} ${refText}` : refText;
-        }
-      } catch (e) {
-      }
-    }
-    return text;
   }
   function cssEscapeId(id) {
     if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
@@ -308,224 +263,6 @@ var ElementFinder = (() => {
       }
     }
     return "";
-  }
-  function getElementDescriptorText(el) {
-    const directText = shortenDescriptorText(getDirectText(el));
-    if (directText && !isIgnoredElement(el)) {
-      return { attributeName: "text", identifiableText: directText };
-    }
-    const values = getSearchableAttributeValues(el);
-    const attrs = SEARCHABLE_ATTRIBUTES;
-    let nearbyLabel = "";
-    const type = getElementDescriptorType(el);
-    if (TEXTLESS_TYPES.has(type)) {
-      nearbyLabel = getNearbyLabelText(el);
-    }
-    const MACHINE_ATTRS = /* @__PURE__ */ new Set([
-      "value",
-      "id",
-      "resource-id",
-      "name",
-      "src",
-      "data-test-id",
-      "data-testid",
-      "data-value"
-    ]);
-    for (let i = 0; i < attrs.length; i++) {
-      const attr = attrs[i];
-      if (!Object.prototype.hasOwnProperty.call(values, attr)) continue;
-      if (nearbyLabel && MACHINE_ATTRS.has(attr)) continue;
-      const rawText = attr === "aria-labelledby" ? getResolvedAriaLabelledByText(el) : attr === "src" ? getImageFilenameWithoutExtension(values[attr]) : values[attr];
-      if (rawText) {
-        return { attributeName: attr, identifiableText: rawText };
-      }
-    }
-    if (nearbyLabel) {
-      return { attributeName: "label", identifiableText: nearbyLabel };
-    }
-    if (!isIgnoredElement(el)) {
-      if (type !== "element") {
-        if (!hasSemanticChildElements(el)) {
-          const fullText = shortenDescriptorText(getSearchableTextContent(el));
-          if (fullText) {
-            return { attributeName: "text", identifiableText: fullText };
-          }
-        }
-      }
-    }
-    return null;
-  }
-  function getElementDescriptorUniqueness(el, text, type, includeHidden = true) {
-    const root = el.ownerDocument;
-    if (!root) {
-      return { index: 1 };
-    }
-    const elements = getAllElements(root);
-    const seenElements = /* @__PURE__ */ new Set();
-    const descriptorCache = /* @__PURE__ */ new WeakMap();
-    const typeCache = /* @__PURE__ */ new WeakMap();
-    const matchingDescriptors = [];
-    for (let i = 0; i < elements.length; i++) {
-      const candidate = elements[i];
-      if (seenElements.has(candidate)) continue;
-      seenElements.add(candidate);
-      if (isIgnoredElement(candidate)) continue;
-      if (!includeHidden && isHidden(candidate)) continue;
-      let candidateDescriptor = descriptorCache.get(candidate);
-      if (candidateDescriptor === void 0) {
-        candidateDescriptor = getElementDescriptorText(candidate);
-        descriptorCache.set(candidate, candidateDescriptor);
-      }
-      if (!candidateDescriptor || candidateDescriptor.identifiableText !== text) continue;
-      let candidateType = typeCache.get(candidate);
-      if (candidateType === void 0) {
-        candidateType = getElementDescriptorType(candidate);
-        typeCache.set(candidate, candidateType);
-      }
-      if (candidateType !== type) continue;
-      matchingDescriptors.push(candidate);
-    }
-    const filtered = matchingDescriptors.filter((item) => {
-      for (const other of matchingDescriptors) {
-        if (other !== item && item.contains(other)) {
-          return false;
-        }
-      }
-      return true;
-    });
-    for (let i = 0; i < filtered.length; i++) {
-      if (filtered[i] === el) {
-        return { index: i + 1 };
-      }
-    }
-    return { index: 1 };
-  }
-  function getElementPositionAmongType(el, type, includeHidden = true) {
-    const root = el.ownerDocument;
-    if (!root) return 1;
-    const elements = getAllElements(root);
-    const typeCache = /* @__PURE__ */ new WeakMap();
-    let position = 1;
-    for (let i = 0; i < elements.length; i++) {
-      const candidate = elements[i];
-      if (candidate === el) break;
-      if (isIgnoredElement(candidate)) continue;
-      if (!includeHidden && isHidden(candidate)) continue;
-      let candidateType = typeCache.get(candidate);
-      if (candidateType === void 0) {
-        candidateType = getElementDescriptorType(candidate);
-        typeCache.set(candidate, candidateType);
-      }
-      if (candidateType === type) position++;
-    }
-    return position;
-  }
-  function getElementDescriptorType(el) {
-    if (el == null || el.nodeType !== Node.ELEMENT_NODE) return null;
-    const types = Object.keys(ELEMENT_DEFINITIONS);
-    for (let i = 0; i < types.length; i++) {
-      const type = types[i];
-      if (type === "element") continue;
-      if (matchesType(el, type)) return type;
-    }
-    return "element";
-  }
-  function getElementDescriptor(el, includeHidden = true) {
-    if (el == null || el.nodeType !== Node.ELEMENT_NODE) {
-      return {
-        identifiableText: null,
-        attributeName: null,
-        index: 1,
-        type: null,
-        tagName: null
-      };
-    }
-    const type = getElementDescriptorType(el);
-    const descriptorSource = getElementDescriptorText(el);
-    if (!descriptorSource || !descriptorSource.identifiableText) {
-      return {
-        identifiableText: null,
-        attributeName: null,
-        index: getElementPositionAmongType(el, type, includeHidden),
-        type,
-        tagName: el.tagName.toLowerCase(),
-        formState: getFormState(el, type)
-      };
-    }
-    const uniqueness = getElementDescriptorUniqueness(el, descriptorSource.identifiableText, type, includeHidden);
-    return {
-      identifiableText: descriptorSource.identifiableText,
-      attributeName: descriptorSource.attributeName,
-      index: uniqueness.index,
-      type,
-      tagName: el.tagName.toLowerCase(),
-      formState: getFormState(el, type)
-    };
-  }
-  function getFormState(el, type) {
-    if (el == null || type == null) return void 0;
-    switch (type) {
-      case "textbox":
-      case "colorpicker":
-      case "datepicker": {
-        const read = () => el.value != null ? String(el.value) : "";
-        return { value: safeRead(read, "") };
-      }
-      case "checkbox": {
-        const read = () => Boolean(el.checked);
-        return { checked: safeRead(read, false) };
-      }
-      case "radio": {
-        const read = () => Boolean(el.checked);
-        return { set: safeRead(read, false) };
-      }
-      case "switch": {
-        const read = () => {
-          if (typeof el.checked === "boolean") {
-            return el.checked;
-          }
-          const ariaChecked = el.getAttribute("aria-checked");
-          return ariaChecked === "true";
-        };
-        return { on: safeRead(read, false) };
-      }
-      case "dropdown": {
-        const read = () => {
-          const optionEls = Array.from(el.options || el.querySelectorAll("option"));
-          const options = optionEls.map((o) => (o.textContent || o.getAttribute("value") || "").trim()).filter((t) => t !== "");
-          const selectedEl = el.selectedOptions && el.selectedOptions.length > 0 ? el.selectedOptions[0] : el.options ? el.options[el.selectedIndex] : void 0;
-          const selected = selectedEl ? (selectedEl.textContent || selectedEl.getAttribute("value") || "").trim() || null : null;
-          return { selected, options };
-        };
-        const fallback = { selected: null, options: [] };
-        return safeRead(read, fallback);
-      }
-      case "slider": {
-        const read = () => {
-          const raw = el.value != null && el.value !== "" ? Number(el.value) : 0;
-          return Number.isNaN(raw) ? 0 : raw;
-        };
-        return { value: safeRead(read, 0) };
-      }
-      case "file": {
-        const read = () => {
-          if (el.files && el.files.length > 0) {
-            return el.files[0].name || null;
-          }
-          return null;
-        };
-        return { fileName: safeRead(read, null) };
-      }
-      default:
-        return void 0;
-    }
-  }
-  function safeRead(read, fallback) {
-    try {
-      return read();
-    } catch (e) {
-      return fallback;
-    }
   }
   function parseXPath(expr, el, depth = 0) {
     if (expr == null || el == null) return false;
@@ -646,21 +383,6 @@ var ElementFinder = (() => {
       }
     }
     return text.trim();
-  }
-  function hasSemanticChildElements(el) {
-    const stack = Array.from(el.children);
-    while (stack.length > 0) {
-      const node = stack.pop();
-      if (isIgnoredElement(node)) continue;
-      const childType = getElementDescriptorType(node);
-      if (childType !== null && childType !== "element" && childType !== "iframe") {
-        return true;
-      }
-      for (let i = node.children.length - 1; i >= 0; i--) {
-        stack.push(node.children[i]);
-      }
-    }
-    return false;
   }
   function matchesAttribute(el, value, exact = false) {
     if (el == null) return false;
@@ -1058,247 +780,6 @@ var ElementFinder = (() => {
       }
     }
     return false;
-  }
-  function getElementCounts(options = {}) {
-    const { type = null, parent = null } = options;
-    const hasType = type !== null && type !== void 0;
-    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
-    if (hasType) {
-      if (typeof type !== "string") {
-        throw new TypeError(`type must be a string, got ${typeof type}`);
-      }
-      if (!ELEMENT_DEFINITIONS[type]) {
-        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
-        return { [type]: { visible: 0, hidden: 0, total: 0 } };
-      }
-    }
-    const counts = {};
-    for (let i = 0; i < targetTypes.length; i++) {
-      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
-    }
-    for (let i = 0; i < targetTypes.length; i++) {
-      const targetType = targetTypes[i];
-      const result = findElements({ type: targetType, parent });
-      const typeCounts = counts[targetType];
-      for (let j = 0; j < result.elements.length; j++) {
-        const item = result.elements[j];
-        const bucket = item.isHidden ? "hidden" : "visible";
-        typeCounts[bucket] += 1;
-        typeCounts.total += 1;
-      }
-    }
-    return counts;
-  }
-  function getViewportElementCounts(options = {}) {
-    const { type = null, parent = null } = options;
-    const hasType = type !== null && type !== void 0;
-    const targetTypes = hasType ? [type] : Object.keys(ELEMENT_DEFINITIONS);
-    if (hasType) {
-      if (typeof type !== "string") {
-        throw new TypeError(`type must be a string, got ${typeof type}`);
-      }
-      if (!ELEMENT_DEFINITIONS[type]) {
-        console.warn(`Unknown element type: ${type}. Valid types: ${Object.keys(ELEMENT_DEFINITIONS).join(", ")}`);
-        return { [type]: { visible: 0, hidden: 0, total: 0 } };
-      }
-    }
-    const counts = {};
-    for (let i = 0; i < targetTypes.length; i++) {
-      counts[targetTypes[i]] = { visible: 0, hidden: 0, total: 0 };
-    }
-    for (let i = 0; i < targetTypes.length; i++) {
-      const targetType = targetTypes[i];
-      const result = findElements({ type: targetType, parent });
-      const typeCounts = counts[targetType];
-      for (let j = 0; j < result.elements.length; j++) {
-        const item = result.elements[j];
-        if (!item.element || !inViewport(item.element, { threshold: 60 })) continue;
-        typeCounts.total += 1;
-        const bucket = item.isHidden ? "hidden" : "visible";
-        typeCounts[bucket] += 1;
-      }
-    }
-    return counts;
-  }
-  function getElementInventory(parent = null) {
-    if (parent != null) {
-      const frameIndex = findFrameIndexForElement(parent);
-      const allInParent = getAllElements(parent);
-      const descendants = allInParent.filter((el) => el !== parent);
-      const { entries, overlay } = collectInventoryEntries(descendants);
-      return [{ frame: frameIndex, elements: entries, overlay }];
-    }
-    const frames = getAllFrames(window);
-    const tree = [];
-    for (let fi = 0; fi < frames.length; fi++) {
-      const frameDoc = frames[fi].document;
-      const elements = getAllElements(frameDoc);
-      const { entries, overlay } = collectInventoryEntries(elements);
-      tree.push({ frame: frames[fi].frameIndex, elements: entries, overlay });
-    }
-    return tree;
-  }
-  function findFrameIndexForElement(el) {
-    try {
-      const ownerDoc = el.ownerDocument;
-      const frames = getAllFrames(window);
-      for (let i = 0; i < frames.length; i++) {
-        if (frames[i].document === ownerDoc) {
-          return frames[i].frameIndex;
-        }
-      }
-      let node = el;
-      while (node) {
-        const parentDoc = node.ownerDocument;
-        for (let i = 0; i < frames.length; i++) {
-          if (frames[i].document === parentDoc) {
-            return frames[i].frameIndex;
-          }
-        }
-        node = node.parentElement || node.getRootNode && node.getRootNode().host;
-      }
-    } catch (e) {
-    }
-    return -1;
-  }
-  function collectInventoryEntries(elements) {
-    const entries = [];
-    const typePos = /* @__PURE__ */ new Map();
-    const overlayCandidates = [];
-    const overlayCount = /* @__PURE__ */ new Map();
-    const overlayCandidateSet = /* @__PURE__ */ new Set();
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i];
-      const type = getElementDescriptorType(el) || "element";
-      const pos = (typePos.get(type) || 0) + 1;
-      typePos.set(type, pos);
-      const textSource = getElementDescriptorText(el);
-      const identifiableText = textSource ? textSource.identifiableText : null;
-      let text;
-      let index;
-      if (!identifiableText) {
-        if (!TEXTLESS_TYPES.has(type)) {
-          const vp2 = inViewport(el);
-          const hidden2 = isHidden(el);
-          if (vp2 && isOverlayElement(el) && !overlayCandidateSet.has(el)) {
-            const rect2 = el.getBoundingClientRect();
-            overlayCandidates.push({
-              el,
-              type,
-              description: null,
-              boundingBox: {
-                x: rect2.x,
-                y: rect2.y,
-                width: rect2.width,
-                height: rect2.height,
-                top: rect2.top,
-                bottom: rect2.bottom,
-                left: rect2.left,
-                right: rect2.right,
-                midx: rect2.x + rect2.width / 2,
-                midy: rect2.y + rect2.height / 2
-              },
-              inViewport: vp2,
-              isHidden: hidden2,
-              formState: null,
-              index: pos
-            });
-            overlayCount.set(el, 0);
-            overlayCandidateSet.add(el);
-          }
-          continue;
-        }
-        text = null;
-        index = pos;
-      } else {
-        text = identifiableText;
-        index = pos;
-      }
-      const formState = getFormState(el, type);
-      const vp = inViewport(el);
-      const hidden = isHidden(el);
-      const rect = el.getBoundingClientRect();
-      const round = (v) => Math.round(v * 100) / 100;
-      entries.push({
-        type,
-        description: text,
-        boundingBox: {
-          x: round(rect.x),
-          y: round(rect.y),
-          width: round(rect.width),
-          height: round(rect.height),
-          top: round(rect.top),
-          bottom: round(rect.bottom),
-          left: round(rect.left),
-          right: round(rect.right),
-          midx: round(rect.x + rect.width / 2),
-          midy: round(rect.y + rect.height / 2)
-        },
-        index,
-        inViewport: vp,
-        isHidden: hidden,
-        formState: formState || null
-      });
-      if (vp && isOverlayElement(el)) {
-        const round2 = (v) => Math.round(v * 100) / 100;
-        overlayCandidates.push({
-          el,
-          type,
-          description: text,
-          boundingBox: {
-            x: round2(rect.x),
-            y: round2(rect.y),
-            width: round2(rect.width),
-            height: round2(rect.height),
-            top: round2(rect.top),
-            bottom: round2(rect.bottom),
-            left: round2(rect.left),
-            right: round2(rect.right),
-            midx: round2(rect.x + rect.width / 2),
-            midy: round2(rect.y + rect.height / 2)
-          },
-          inViewport: vp,
-          isHidden: hidden,
-          formState: formState || null,
-          index
-        });
-        overlayCount.set(el, 0);
-        overlayCandidateSet.add(el);
-      }
-    }
-    let overlay = null;
-    if (overlayCandidates.length > 0) {
-      for (let i = 0; i < elements.length; i++) {
-        let anc = elements[i].parentElement;
-        while (anc) {
-          const c = overlayCount.get(anc);
-          if (c !== void 0) overlayCount.set(anc, c + 1);
-          anc = anc.parentElement;
-        }
-      }
-      let best = null;
-      let bestCount = 0;
-      for (let i = 0; i < overlayCandidates.length; i++) {
-        const cand = overlayCandidates[i];
-        const cnt = overlayCount.get(cand.el);
-        if (cnt > bestCount) {
-          bestCount = cnt;
-          best = cand;
-        }
-      }
-      if (best) {
-        overlay = {
-          type: best.type,
-          description: best.description,
-          boundingBox: best.boundingBox,
-          inViewport: best.inViewport,
-          isHidden: best.isHidden,
-          formState: best.formState,
-          index: best.index
-        };
-      }
-    }
-    return { entries, overlay };
   }
   function findElements(options = {}) {
     if (typeof options !== "object" || Array.isArray(options) || options === null) {
@@ -1709,6 +1190,29 @@ var ElementFinder = (() => {
   }
   function getValidAttributes() {
     return [...SEARCHABLE_ATTRIBUTES];
+  }
+  function normalizeDescriptorText(text) {
+    if (text == null) return "";
+    return String(text).replace(/\s+/g, " ").trim();
+  }
+  function getResolvedAriaLabelledByText(el) {
+    const labelledBy = el.getAttribute("aria-labelledby");
+    if (!labelledBy) return "";
+    const ids = labelledBy.split(/\s+/);
+    const ownerDocument = el.ownerDocument || document;
+    let text = "";
+    for (const id of ids) {
+      try {
+        const refEl = ownerDocument.getElementById(id);
+        if (!refEl) continue;
+        const refText = normalizeDescriptorText(refEl.textContent);
+        if (refText) {
+          text = text ? `${text} ${refText}` : refText;
+        }
+      } catch (e) {
+      }
+    }
+    return text;
   }
   return __toCommonJS(element_finder_exports);
 })();
