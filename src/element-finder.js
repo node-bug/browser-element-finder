@@ -27,7 +27,7 @@ const MAX_RECURSION_DEPTH = 100;
 const MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
 
 // Semantic types eligible for nearby-label rescue. This is every defined type
-const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT', 'HEAD'];
+const DEFAULT_IGNORED_TAGS = ['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT', 'HEAD', 'LINK'];
 
 let IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
 

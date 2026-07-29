@@ -182,4 +182,69 @@ describe('ElementFinder Edge Cases', () => {
       expect(result).toBe('XPath expression exceeds maximum recursion depth');
     });
   });
+
+  describe('Ignored tag descendant pruning', () => {
+    it('should NOT return <head> children (link, meta, title, etc.) in results', async () => {
+      const result = await fixture.driver.executeScript(`
+        // Find all elements using the "element" type (matches everything)
+        const result = ElementFinder.findElementsByType({ type: 'element' });
+        const tagNames = result.elements.map(e => e.tagName);
+        
+        // These are typical <head> children that should never appear
+        const headChildren = ['link', 'meta', 'title', 'base', 'noscript'];
+        const leaked = tagNames.filter(t => headChildren.includes(t));
+        
+        return {
+          totalElements: result.elements.length,
+          tagNames: tagNames,
+          leaked: leaked,
+          leakCount: leaked.length
+        };
+      `);
+      
+      expect(result.leakCount).toBe(0, 
+        `Expected no <head> children to leak through, but found: ${result.leaked.join(', ')}`);
+    });
+
+    it('should NOT return <script> or <style> descendants in results', async () => {
+      const result = await fixture.driver.executeScript(`
+        const result = ElementFinder.findElementsByType({ type: 'element' });
+        const tagNames = result.elements.map(e => e.tagName);
+        
+        // Script/style content shouldn't appear either
+        const ignored = tagNames.filter(t => ['script', 'style'].includes(t));
+        
+        return {
+          totalElements: result.elements.length,
+          ignoredCount: ignored.length,
+          ignored: ignored
+        };
+      `);
+      
+      expect(result.ignoredCount).toBe(0, 
+        `Expected no <script>/<style> elements, but found: ${result.ignored.join(', ')}`);
+    });
+
+    it('should prune descendants of ignored tags even when they reach the traversal stack', async () => {
+      // This tests the isIgnoredElement parent-chain walk specifically
+      const result = await fixture.driver.executeScript(`
+        // Verify that getAllElements properly prunes head descendants
+        const allEls = ElementFinder.getAllElements();
+        const tagNames = allEls.map(el => el.tagName.toLowerCase());
+        
+        // Check for any <head> children
+        const headChildren = ['link', 'meta', 'title', 'base', 'noscript'];
+        const leaked = tagNames.filter(t => headChildren.includes(t));
+        
+        return {
+          totalElements: allEls.length,
+          leaked: leaked,
+          leakCount: leaked.length
+        };
+      `);
+      
+      expect(result.leakCount).toBe(0, 
+        `getAllElements leaked <head> descendants: ${result.leaked.join(', ')}`);
+    });
+  });
 });
