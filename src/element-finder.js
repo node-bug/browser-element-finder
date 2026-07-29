@@ -145,7 +145,7 @@ function isIgnoredTag(tagName) {
  * @param {Element} el - The DOM element to check
  * @returns {boolean} True if the element or one of its ancestors is ignored
  */
-function isIgnoredElement(el) {
+export function isIgnoredElement(el) {
   let current = el;
   while (current) {
     if (isIgnoredTag(current.tagName)) {
@@ -196,7 +196,7 @@ function getSearchableTextContent(el) {
  * @param {string|null|undefined} text - Text to shorten
  * @returns {string} Shortened text
  */
-function shortenDescriptorText(text) {
+export function shortenDescriptorText(text) {
   if (text == null) return '';
 
   const lines = String(text).split(/\r\n|\r|\n/);
@@ -245,7 +245,7 @@ function cssEscapeId(id) {
  * @param {Element} el - The form control to inspect
  * @returns {string} Nearby label text, or '' if none
  */
-function getNearbyLabelText(el) {
+export function getNearbyLabelText(el) {
   if (el == null || typeof el.closest !== 'function') return '';
 
   // 1. Wrapping <label>: use the label's own direct text nodes, which excludes
@@ -454,7 +454,7 @@ export const ELEMENT_DEFINITIONS = Object.freeze(elementDefinitionsData);
  * @param {Element} el - The DOM element
  * @returns {string} Concatenated text from direct text nodes
  */
-function getDirectText(el) {
+export function getDirectText(el) {
   let text = '';
   for (let i = 0; i < el.childNodes.length; i++) {
     const node = el.childNodes[i];
@@ -1590,7 +1590,7 @@ function normalizeDescriptorText(text) {
  * @param {Element} el - The DOM element to check
  * @returns {string} Concatenated resolved text from referenced elements, or empty string
  */
-function getResolvedAriaLabelledByText(el) {
+export function getResolvedAriaLabelledByText(el) {
   const labelledBy = el.getAttribute('aria-labelledby');
   if (!labelledBy) return '';
 
