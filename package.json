@@ -1,6 +1,6 @@
 {
   "name": "@nodebug/browser-element-finder",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "Robust, agent-friendly JavaScript library for identifying DOM elements by semantic type and/or text content, with full support for shadow DOM, iframes, and browser automation workflows (Selenium, Playwright, Puppeteer).",
   "exports": {
     ".": {
