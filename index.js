@@ -29,12 +29,16 @@ var ElementFinder = (() => {
     getAllElements: () => getAllElements,
     getAllFrames: () => getAllFrames,
     getBoundingBox: () => getBoundingBox,
+    getDirectText: () => getDirectText,
     getIgnoredTags: () => getIgnoredTags,
+    getNearbyLabelText: () => getNearbyLabelText,
+    getResolvedAriaLabelledByText: () => getResolvedAriaLabelledByText,
     getSearchableAttributes: () => getSearchableAttributes,
     getValidTypes: () => getValidTypes,
     highlight: () => highlight,
     inViewport: () => inViewport,
     isHidden: () => isHidden,
+    isIgnoredElement: () => isIgnoredElement,
     matchesAttribute: () => matchesAttribute,
     matchesType: () => matchesType,
     parseCondition: () => parseCondition,
@@ -44,6 +48,7 @@ var ElementFinder = (() => {
     resumeAnimations: () => resumeAnimations,
     setIgnoredTags: () => setIgnoredTags,
     setSearchableAttributes: () => setSearchableAttributes,
+    shortenDescriptorText: () => shortenDescriptorText,
     splitByOperator: () => splitByOperator,
     unhighlight: () => unhighlight
   });
@@ -423,7 +428,7 @@ var ElementFinder = (() => {
     while (stack.length > 0) {
       const node = stack.pop();
       if (node.nodeType !== Node.ELEMENT_NODE) continue;
-      if (IGNORED_TAGS.has(node.tagName)) continue;
+      if (isIgnoredElement(node)) continue;
       elements.push(node);
       const children = node.children;
       for (let i = children.length - 1; i >= 0; i--) {
