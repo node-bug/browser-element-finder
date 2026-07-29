@@ -118,7 +118,7 @@ var ElementFinder = (() => {
   };
   var MAX_RECURSION_DEPTH = 100;
   var MAX_IDENTIFIABLE_TEXT_LENGTH = 25;
-  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT", "HEAD"];
+  var DEFAULT_IGNORED_TAGS = ["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT", "HEAD", "LINK"];
   var IGNORED_TAGS = new Set(DEFAULT_IGNORED_TAGS);
   var TYPE_MATCHERS = /* @__PURE__ */ new Map();
   for (const [type, expr] of Object.entries(element_definitions_default)) {
