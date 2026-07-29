@@ -565,7 +565,7 @@ export function getAllElements(root = document) {
   while (stack.length > 0) {
     const node = stack.pop();
     if (node.nodeType !== Node.ELEMENT_NODE) continue;
-    if (IGNORED_TAGS.has(node.tagName)) continue;
+    if (isIgnoredElement(node)) continue;
 
     elements.push(node);
 
