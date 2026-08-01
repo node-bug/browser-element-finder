@@ -4,7 +4,7 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['dist/', 'node_modules/', 'coverage/', '*.min.js', 'index.js'],
+    ignores: ['dist/', 'node_modules/', 'coverage/', '*.min.js', 'index.js', 'inventory.js'],
   },
 
   // 1. Standard JS rules

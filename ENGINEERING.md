@@ -1,7 +1,7 @@
 # Engineering Documentation: Browser Element Finder
 
-**Version**: 1.3.5  
-**Last Updated**: June 2026  
+**Version**: 1.4.0  
+**Last Updated**: July 2025  
 **Purpose**: Complete technical reference for developing, maintaining, and extending the browser-element-finder library.
 
 ---
@@ -63,7 +63,8 @@ ElementFinder.findProbableElements({ type: 'button', text: 'Submit' })
 ```
 browser-element-finder/
 ├── src/
-│   ├── element-finder.js              # Main canonical implementation
+│   ├── element-finder.js              # Main canonical finder implementation
+│   ├── element-inventory.js           # DOM inventory generator (Inventory module)
 │   ├── element-definitions.json       # Type → XPath mapping
 │   └── searchable-attributes.json     # Attribute search priority
 ├── tests/
@@ -72,6 +73,8 @@ browser-element-finder/
 │   │   ├── attributes.test.js
 │   │   ├── edge-cases.test.js
 │   │   ├── find-elements.test.js
+│   │   ├── inventory.test.js          # Inventory integration tests
+│   │   ├── inventory-unit.test.js     # Inventory unit-style tests
 │   │   ├── types.test.js
 │   │   ├── viewport.test.js
 │   │   ├── element-types.test.js
@@ -86,12 +89,14 @@ browser-element-finder/
 │   │   └── fixtures/
 │   └── fixtures/                      # Shared HTML test pages
 ├── scripts/
-│   └── build.js                       # esbuild IIFE bundler
+│   └── build.js                       # esbuild IIFE bundler (4 bundles)
 ├── package.json
 ├── vitest.config.js
 ├── eslint.config.js
-├── index.js                           # Built entry point
-├── index.min.js                       # Minified version
+├── index.js                           # Built Finder IIFE bundle
+├── index.min.js                       # Minified Finder IIFE bundle
+├── inventory.js                       # Built Inventory IIFE bundle
+├── inventory.min.js                   # Minified Inventory IIFE bundle
 └── ENGINEERING.md                     # This document
 ```
 
@@ -101,15 +106,25 @@ browser-element-finder/
 
 ### 2.1 Module Organization Philosophy
 
-**Why a Single Module?**
+**Dual-Module Design**: The package ships two source modules with four IIFE bundles:
 
-1. **element-finder.js** - Combined canonical module incorporating all search logic
+| Module        | Source                     | Global (browser)   | Purpose                                    |
+| ------------- | -------------------------- | ------------------ | ------------------------------------------ |
+| **Finder**    | `src/element-finder.js`    | `ElementFinder`    | Find elements by type, text, or both       |
+| **Inventory** | `src/element-inventory.js` | `ElementInventory` | Generate a full serializable DOM inventory |
+
+**Key relationships**:
+
+- The Inventory module imports shared helpers (`getAllFrames`, `getAllElements`, `matchesType`, `getBoundingBox`, `isHidden`, `inViewport`, `ELEMENT_DEFINITIONS`) from the Finder module via local ESM import (`./element-finder.js`).
+- Both modules get their own IIFE build step, producing 4 bundles total: `index.js`, `index.min.js`, `inventory.js`, `inventory.min.js`.
+- When injecting into a browser, the Inventory bundle requires the Finder bundle to be loaded first (it provides the shared helpers as globals).
 
 **Rationale**:
 
-- Simpler API surface with no redundant standalone modules
-- All search strategies (type, attribute, combined, probable) share the same codebase
-- Easier to maintain and test with a single source of truth
+- Finder remains completely self-contained and untouched — all existing search strategies share the same codebase
+- Inventory adds a new capability (full DOM snapshot) without modifying finder logic
+- Shared helpers are imported via local path, avoiding cross-package dependencies
+- Easier to maintain and test with clear separation of concerns
 
 ### 2.2 Pre-compiled Type Matchers
 
@@ -1625,46 +1640,76 @@ Multi-frame search            10-50ms    (depends on iframe count)
 
 ### 10.1 Build Process
 
-The library is built into two IIFE bundles (a global `ElementFinder` is exposed for browser injection):
+The library is built into four IIFE bundles (globals `ElementFinder` and `ElementInventory` are exposed for browser injection):
 
 ```bash
 npm run build
 # Creates:
-# - index.js      (IIFE bundle, unminified)
-# - index.min.js  (IIFE bundle, minified)
+# - index.js          (Finder IIFE bundle, unminified)
+# - index.min.js      (Finder IIFE bundle, minified)
+# - inventory.js      (Inventory IIFE bundle, unminified)
+# - inventory.min.js  (Inventory IIFE bundle, minified)
 ```
 
 **Build Tool**: esbuild
 
-**Configuration** (build.js):
+**Configuration** (`scripts/build.js`):
 
 ```javascript
 import esbuild from 'esbuild'
 
+// Finder bundles
 esbuild.build({
   entryPoints: ['src/element-finder.js'],
   bundle: true,
-  format: 'esm',
+  format: 'iife',
+  globalName: 'ElementFinder',
   outfile: 'index.js',
-  sourcemap: false,
-  logLevel: 'info',
+  platform: 'browser',
+  target: 'es2015',
 })
 
-// Also create minified version
 esbuild.build({
   entryPoints: ['src/element-finder.js'],
   bundle: true,
-  format: 'esm',
+  format: 'iife',
+  globalName: 'ElementFinder',
   outfile: 'index.min.js',
   minify: true,
-  logLevel: 'info',
+  platform: 'browser',
+  target: 'es2015',
+})
+
+// Inventory bundles
+esbuild.build({
+  entryPoints: ['src/element-inventory.js'],
+  bundle: true,
+  format: 'iife',
+  globalName: 'ElementInventory',
+  outfile: 'inventory.js',
+  platform: 'browser',
+  target: 'es2015',
+})
+
+esbuild.build({
+  entryPoints: ['src/element-inventory.js'],
+  bundle: true,
+  format: 'iife',
+  globalName: 'ElementInventory',
+  outfile: 'inventory.min.js',
+  minify: true,
+  platform: 'browser',
+  target: 'es2015',
 })
 ```
 
-**Why Both Versions**:
+**Why Four Bundles**:
 
-- `index.js`: Better for debugging (readable code)
-- `index.min.js`: Better for production (smaller size)
+- `index.js`: Finder bundle for debugging (readable code)
+- `index.min.js`: Finder bundle for production (smaller size)
+- `inventory.js`: Inventory bundle for debugging
+- `inventory.min.js`: Inventory bundle for production
+- Inventory bundles depend on the Finder global being loaded first in the browser
 
 ### 10.2 Module Exports
 
@@ -1723,6 +1768,12 @@ The library is distributed as an NPM package with multiple export formats:
     },
     "./browser": "./index.js",
     "./min": "./index.min.js",
+    "./inventory": {
+      "import": "./src/element-inventory.js",
+      "default": "./src/element-inventory.js"
+    },
+    "./inventory-browser": "./inventory.js",
+    "./inventory-min": "./inventory.min.js",
     "./element-definitions.json": {
       "default": "./src/element-definitions.json"
     },
