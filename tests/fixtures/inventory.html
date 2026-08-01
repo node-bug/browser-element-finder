@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Element Inventory Test Fixture</title>
+  <style>
+    .hidden-element { display: none; }
+    .zero-size { width: 0; height: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <!-- Button with visible text -->
+  <button id="btn-visible" type="button">Click Me</button>
+
+  <!-- Input with placeholder and aria-label -->
+  <input id="input-aria" type="text" placeholder="Type here" aria-label="Username field" />
+
+  <!-- Checkbox with wrapping label -->
+  <label><input id="chk-label" type="checkbox" /> Accept terms</label>
+
+  <!-- Element with only data attributes -->
+  <div id="div-data" data-testid="test-div" data-value="important">Fallback text</div>
+
+  <!-- Hidden element -->
+  <span id="span-hidden" class="hidden-element" aria-label="Hidden span">Should not be visible</span>
+
+  <!-- Zero-size element -->
+  <div id="div-zero" class="zero-size">Zero size</div>
+
+  <!-- Image with alt text -->
+  <img id="img-alt" src="/placeholder.png" alt="Test image" width="100" height="50" />
+
+  <!-- Link with title -->
+  <a id="link-title" href="#" title="Go to homepage">Home</a>
+
+  <!-- Select dropdown -->
+  <select id="sel-dropdown" aria-label="Choose option">
+    <option value="1">Option 1</option>
+    <option value="2">Option 2</option>
+  </select>
+
+  <!-- Textarea with aria-description -->
+  <textarea id="ta-desc" aria-description="Enter your comments here"></textarea>
+
+  <!-- Element inside iframe (same-origin) -->
+  <iframe id="test-iframe" srcdoc="
+    <!DOCTYPE html>
+    <html>
+    <body>
+      <button id='iframe-btn' type='button'>Iframe Button</button>
+      <input id='iframe-input' type='text' aria-label='Iframe input' />
+    </body>
+    </html>
+  " width="400" height="200"></iframe>
+
+  <!-- Shadow DOM container -->
+  <div id="shadow-host"></div>
+
+  <script>
+    // Setup shadow DOM
+    const shadowHost = document.getElementById('shadow-host');
+    const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+    shadowRoot.innerHTML = `
+      <button id="shadow-btn" type="button">Shadow Button</button>
+      <input id="shadow-input" type="text" placeholder="Shadow input" />
+      <span id="shadow-text">Shadow text content</span>
+    `;
+  </script>
+</body>
+</html>

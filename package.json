@@ -1,6 +1,6 @@
 {
   "name": "@nodebug/browser-element-finder",
-  "version": "1.3.9",
+  "version": "1.4.0",
   "description": "Robust, agent-friendly JavaScript library for identifying DOM elements by semantic type and/or text content, with full support for shadow DOM, iframes, and browser automation workflows (Selenium, Playwright, Puppeteer).",
   "exports": {
     ".": {
@@ -12,6 +12,16 @@
     },
     "./min": {
       "default": "./index.min.js"
+    },
+    "./inventory": {
+      "import": "./src/element-inventory.js",
+      "default": "./src/element-inventory.js"
+    },
+    "./inventory-browser": {
+      "default": "./inventory.js"
+    },
+    "./inventory-min": {
+      "default": "./inventory.min.js"
     },
     "./element-definitions.json": {
       "import": "./src/element-definitions.json",
@@ -25,7 +35,10 @@
   "files": [
     "index.js",
     "index.min.js",
+    "inventory.js",
+    "inventory.min.js",
     "src/element-finder.js",
+    "src/element-inventory.js",
     "src/element-definitions.json",
     "src/searchable-attributes.json"
   ],

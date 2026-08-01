@@ -5,21 +5,22 @@
 A robust, agent-friendly JavaScript library for identifying DOM elements by semantic type and/or text content, with full support for shadow DOM, iframes, and browser automation workflows (Selenium, Playwright, Puppeteer).
 
 **Repository**: `@nodebug/browser-element-finder` on npm
-**Version**: 1.3.5
+**Version**: 1.4.0
 **Node**: >= 24
 **Module System**: ESM-only (`"type": "module"`)
 
 ## Architecture
 
-Single-module source design with a unified build output:
+Dual-module source design with four IIFE build outputs:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│              Browser Runtime (IIFE Bundle)           │
-│  (index.js, index.min.js)                          │
-│  • Built by esbuild from src/element-finder.js     │
-│  • Injected via executeScript in Selenium/CDP      │
-│  • Exports ElementFinder global                    │
+│              Browser Runtime (IIFE Bundles)          │
+│  index.js, index.min.js → ElementFinder global      │
+│  inventory.js, inventory.min.js → ElementInventory   │
+│  • Built by esbuild from src/ modules               │
+│  • Injected via executeScript in Selenium/CDP       │
+│  • Inventory requires Finder to be loaded first     │
 └────────────────────┬────────────────────────────────┘
                      │
 ┌────────────────────▼────────────────────────────────┐
@@ -30,14 +31,24 @@ Single-module source design with a unified build output:
 │  • Shadow DOM & iframe traversal                    │
 │  • Probable element fallback logic                  │
 └─────────────────────────────────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────────────┐
+│       Inventory Module (src/element-inventory.js)    │
+│  • Imports shared helpers from finder module        │
+│  • Generates flat JSON-serializable DOM inventory   │
+│  • 6-tier identifiable text hierarchy               │
+│  • Semantic type, bounding box, visibility per elem │
+└─────────────────────────────────────────────────────┘
 ```
 
 ## Directory Structure
 
 ```
 browser-element-finder/
-├── index.js                      # Built IIFE bundle (browser entry point)
-├── index.min.js                  # Minified IIFE bundle
+├── index.js                      # Built Finder IIFE bundle (browser entry point)
+├── index.min.js                  # Minified Finder IIFE bundle
+├── inventory.js                  # Built Inventory IIFE bundle
+├── inventory.min.js              # Minified Inventory IIFE bundle
 ├── build.js                      # esbuild configuration script
 ├── demo.js                       # Interactive Selenium demo script
 ├── package.json                  # ESM, Node >= 24, Vitest + ESLint tooling
@@ -47,7 +58,8 @@ browser-element-finder/
 ├── TODO.md                       # Feature roadmap & completed optimizations
 │
 ├── src/                          # Source modules
-│   ├── element-finder.js         # Main canonical implementation (combined)
+│   ├── element-finder.js         # Main canonical finder implementation (combined)
+│   ├── element-inventory.js      # DOM inventory generator
 │   ├── element-definitions.json  # XPath-like type → expression mapping
 │   └── searchable-attributes.json # Attribute search priority list
 │
@@ -57,6 +69,8 @@ browser-element-finder/
 │   │   ├── attributes.test.js        # Attribute matching logic
 │   │   ├── edge-cases.test.js        # Null input, cross-frame, etc.
 │   │   ├── find-elements.test.js     # Combined type + attribute search
+│   │   ├── inventory.test.js         # Inventory integration tests
+│   │   ├── inventory-unit.test.js    # Inventory unit-style tests
 │   │   ├── types.test.js             # Type matching & XPath parsing
 │   │   ├── viewport.test.js          # inViewport tests
 │   │   ├── dropdowns.test.js         # Dropdown search tests
@@ -73,6 +87,7 @@ browser-element-finder/
 │   │   │   ├── dropdowns.html
 │   │   │   ├── forms.html
 │   │   │   ├── iframes.html
+│   │   │   ├── inventory.html
 │   │   │   ├── shadow-dom.html
 │   │   │   ├── tables.html
 │   │   │   └── ...
@@ -437,17 +452,17 @@ See `TODO.md` for the feature roadmap:
 
 ## Key Files for AI Agents
 
-| File                                | Purpose                       | When to Reference                       |
-| ----------------------------------- | ----------------------------- | --------------------------------------- |
-| `src/element-finder.js`             | Main canonical implementation | Modifying search logic, adding features |
-| `src/element-definitions.json`      | Type → XPath mapping          | Adding new element types                |
-| `src/searchable-attributes.json`    | Attribute priority list       | Changing attribute search order         |
-| `build.js`                          | esbuild configuration         | Changing build output format            |
-| `tests/unit/*.test.js`              | Unit test suite               | Adding unit tests for new logic         |
-| `tests/integration/types/*.test.js` | Integration type tests        | Testing in real browser                 |
-| `tests/integration/fixtures/`       | HTML test pages               | Creating test scenarios                 |
-| `ENGINEERING.md`                    | Technical reference           | Understanding architecture              |
-| `TODO.md`                           | Feature roadmap               | Planning new features                   |
+| File                             | Purpose                    | When to Reference                        |
+| -------------------------------- | -------------------------- | ---------------------------------------- |
+| `src/element-finder.js`          | Main canonical finder impl | Modifying search logic, adding features  |
+| `src/element-inventory.js`       | DOM inventory generator    | Modifying inventory logic, adding fields |
+| `src/element-definitions.json`   | Type → XPath mapping       | Adding new element types                 |
+| `src/searchable-attributes.json` | Attribute priority list    | Changing attribute search order          |
+| `scripts/build.js`               | esbuild configuration      | Changing build output format             |
+| `tests/integration/*.test.js`    | Integration test suite     | Adding tests for finder or inventory     |
+| `tests/fixtures/`                | HTML test pages            | Creating test scenarios                  |
+| `ENGINEERING.md`                 | Technical reference        | Understanding architecture               |
+| `TODO.md`                        | Feature roadmap            | Planning new features                    |
 
 ## Rules for AI Agents
 

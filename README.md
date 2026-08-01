@@ -1,8 +1,15 @@
 # @nodebug/browser-element-finder
 
-**Version**: 1.3.6
+**Version**: 1.4.0
 
 **A robust, agent-friendly JavaScript library for identifying DOM elements by semantic type and/or text content, with full support for shadow DOM and browser automation workflows (Selenium, Playwright, Puppeteer). Search results traverse all same-origin frames; however, because DOM nodes cannot be serialized across frame boundaries, elements inside iframes are returned with their `frameIndex` but without a direct `element` reference.**
+
+This package provides two modules:
+
+| Module        | Export Path                            | Global (browser)   | Purpose                                    |
+| ------------- | -------------------------------------- | ------------------ | ------------------------------------------ |
+| **Finder**    | `.` or `./browser`                     | `ElementFinder`    | Find elements by type, text, or both       |
+| **Inventory** | `./inventory` or `./inventory-browser` | `ElementInventory` | Generate a full serializable DOM inventory |
 
 ---
 
@@ -81,7 +88,8 @@ npm install @nodebug/browser-element-finder
 ```
 browser-element-finder/
 ├── src/
-│   ├── element-finder.js          # Main canonical implementation (combined)
+│   ├── element-finder.js          # Main canonical finder implementation
+│   ├── element-inventory.js       # DOM inventory generator
 │   ├── element-definitions.json   # XPath-like type definitions
 │   └── searchable-attributes.json # Attributes searched for text matching
 ├── scripts/
@@ -89,8 +97,10 @@ browser-element-finder/
 ├── tests/
 │   ├── integration/               # Integration tests (Selenium + Chrome)
 │   └── fixtures/                  # HTML test pages
-├── index.js                       # Built IIFE bundle (browser entry point)
-├── index.min.js                   # Minified IIFE bundle
+├── index.js                       # Built Finder IIFE bundle (browser entry point)
+├── index.min.js                   # Minified Finder IIFE bundle
+├── inventory.js                   # Built Inventory IIFE bundle
+├── inventory.min.js               # Minified Inventory IIFE bundle
 └── coverage/                      # Test coverage reports
 ```
 
@@ -198,6 +208,86 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 
 ---
 
+## Element Inventory
+
+The **Inventory** module generates a flat, JSON-serializable list of every DOM element with its semantic type, bounding box, visibility state, and user-facing text. It is designed for AI agents that need a complete snapshot of the page before deciding which elements to interact with.
+
+### Installation
+
+```bash
+npm install @nodebug/browser-element-finder
+```
+
+### Usage
+
+```javascript
+// Node / ESM
+import { getElementInventory } from '@nodebug/browser-element-finder/inventory'
+const inventory = getElementInventory()
+console.log(JSON.stringify(inventory, null, 2))
+
+// Browser (inject both bundles — inventory depends on the finder bundle)
+await driver.executeScript(fs.readFileSync('./index.min.js', 'utf8'))
+await driver.executeScript(fs.readFileSync('./inventory.min.js', 'utf8'))
+const inventory = await driver.executeScript(
+  'return ElementInventory.getElementInventory()',
+)
+```
+
+### Identifiable Text Hierarchy
+
+Each element gets a short `identifiableText` string, chosen from a 6-tier priority:
+
+| Priority | Source                                                                   | Example              |
+| -------- | ------------------------------------------------------------------------ | -------------------- |
+| 1        | **Visible text** (direct text nodes)                                     | `"Submit"`           |
+| 2        | **Associated `<label>`** (`for` attribute or wrapping)                   | `"Username"`         |
+| 3        | **ARIA `aria-labelledby`**                                               | `"Search field"`     |
+| 4        | **User-facing attributes** (`aria-label`, `placeholder`, `title`, `alt`) | `"Enter email"`      |
+| 5        | **Data attributes** (`data-testid`, `data-test-id`, `id`, `name`)        | `"login-submit-btn"` |
+| 6        | **Machine identifiers** (`class`, `src`, `type`)                         | `"btn btn-primary"`  |
+
+Text is truncated to **50 characters** maximum. Elements inside `<script>` or `<style>` are always skipped.
+
+### Return Format
+
+```javascript
+{
+  elements: [
+    {
+      type: 'button', // semantic type from element-definitions.json
+      tagName: 'BUTTON', // element.tagName.toUpperCase()
+      boundingBox: {
+        // from ElementFinder.getBoundingBox()
+        x,
+        y,
+        width,
+        height,
+        top,
+        bottom,
+        left,
+        right,
+        midx,
+        midy,
+        tagName,
+      },
+      inViewport: true, // intersects visual viewport
+      isHidden: false, // display:none, visibility:hidden, hidden attr, inert, or zero size
+      frameIndex: -1, // -1 = main frame, >= 0 = iframe index
+      identifiableText: 'Submit', // user-facing text (6-tier hierarchy, max 50 chars)
+    },
+  ]
+}
+```
+
+### Options
+
+| Option   | Type              | Default                 | Description                  |
+| -------- | ----------------- | ----------------------- | ---------------------------- |
+| `parent` | `Element \| null` | `null` (whole document) | Scope inventory to a subtree |
+
+---
+
 ## API Summary
 
 | Function                              | Description                                                                                               |
@@ -206,6 +296,7 @@ The package is ESM-only (`"type": "module"`), so CommonJS `require()` examples a
 | `findElementsByType(options)`         | Find elements by type only across all same-origin frames, returns `{ elements: [...] }`                   |
 | `findElementsByAttribute(options)`    | Find elements by text/attribute across all same-origin frames, returns `{ elements: [...] }`              |
 | `findProbableElements(options)`       | Find elements with fallback to nearby elements, returns `{ elements: [...] }`                             |
+| `getElementInventory(options)`        | Generate a flat JSON-serializable inventory of all DOM elements (Inventory module)                        |
 | `highlight(elements, color, width)`   | Highlight elements with outline                                                                           |
 | `unhighlight(elements)`               | Remove highlight                                                                                          |
 | `pauseAnimations()`                   | Pause all CSS animations and transitions, returns state object                                            |
