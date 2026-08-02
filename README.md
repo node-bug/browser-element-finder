@@ -282,9 +282,10 @@ Text is truncated to **50 characters** maximum. Elements inside `<script>` or `<
 
 ### Options
 
-| Option   | Type              | Default                 | Description                  |
-| -------- | ----------------- | ----------------------- | ---------------------------- |
-| `parent` | `Element \| null` | `null` (whole document) | Scope inventory to a subtree |
+| Option       | Type              | Default                 | Description                                                             |
+| ------------ | ----------------- | ----------------------- | ----------------------------------------------------------------------- |
+| `parent`     | `Element \| null` | `null` (whole document) | Scope inventory to a subtree                                            |
+| `inViewport` | `boolean`         | `false`                 | When `true`, filter to viewport-only elements and add per-type indexing |
 
 ---
 
@@ -317,7 +318,7 @@ Text is truncated to **50 characters** maximum. Elements inside `<script>` or `<
 | `parseCondition(expr, el, depth)`     | Parse XPath condition expressions (e.g., `@type='checkbox'`)                                              |
 | `splitByOperator(expr, op)`           | Split XPath by operator                                                                                   |
 | `ELEMENT_DEFINITIONS`                 | Frozen object of all element type → XPath expression mappings                                             |
-| `inViewport(el, options)`             | Check if element intersects the visual viewport (sync)                                                    |
+| `inViewport(options)`                 | Check if element intersects the visual viewport (sync)                                                    |
 | `isHidden(el)`                        | Check if element is hidden (display:none, visibility:hidden, hidden attribute, inert, or zero dimensions) |
 
 ---
@@ -490,28 +491,19 @@ Gets all elements including shadow DOM contents.
 
 Gets all frames (main document + iframes) in the window. Returns array with `frameIndex` (-1 for main, 0+ for iframes). Cross-origin iframes (SecurityError) are automatically skipped with a specific warning message, while other errors are logged separately.
 
-### `inViewport(el, options)`
+### `inViewport(element)`
 
 Checks if an element intersects the visual viewport. Uses synchronous geometry checks via `getBoundingClientRect()` against window dimensions.
 
-| Parameter              | Type      | Default | Description                                                                           |
-| ---------------------- | --------- | ------- | ------------------------------------------------------------------------------------- |
-| `el`                   | `Element` | -       | The DOM element to check                                                              |
-| `options`              | `Object`  | `null`  | Optional configuration object                                                         |
-| `options.fullyVisible` | `boolean` | `false` | If true, requires the element to be fully contained within the viewport (no clipping) |
-| `options.threshold`    | `number`  | `0`     | Minimum intersection ratio (0-1) required to count as in viewport                     |
+| Parameter | Type      | Description              |
+| --------- | --------- | ------------------------ |
+| `element` | `Element` | The DOM element to check |
 
 **Returns**: `boolean` - `true` if the element intersects the viewport.
 
 ```javascript
-// Check if element is in viewport (partial overlap OK)
+// Check if element is in viewport (at least 60% visible)
 const isInViewport = ElementFinder.inViewport(element)
-
-// Check if element is fully visible (no clipping)
-const isFullyVisible = ElementFinder.inViewport(element, { fullyVisible: true })
-
-// Check if at least 50% of element is visible
-const isHalfVisible = ElementFinder.inViewport(element, { threshold: 0.5 })
 ```
 
 ### `parseXPath(expr, el, depth)`

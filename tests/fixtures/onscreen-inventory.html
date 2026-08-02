@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On-Screen Inventory Test Page</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        .spacer {
+            height: 800px;
+            background: linear-gradient(to bottom, #e0e0e0, #f5f5f5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #999;
+            margin: 20px 0;
+            border: 1px dashed #ccc;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="page-title">On-Screen Inventory Test Page</h1>
+
+    <!-- Section 1: Buttons above the fold (should be on-screen) -->
+    <div class="section" id="buttons-top">
+        <h2>Buttons - Top</h2>
+        <button id="btn-top-1">Top Button 1</button>
+        <button id="btn-top-2">Top Button 2</button>
+        <button id="btn-top-3">Top Button 3</button>
+    </div>
+
+    <!-- Section 2: Checkboxes above the fold -->
+    <div class="section" id="checkboxes-top">
+        <h2>Checkboxes - Top</h2>
+        <label><input type="checkbox" id="cb-top-1"> Checkbox A</label>
+        <label><input type="checkbox" id="cb-top-2"> Checkbox B</label>
+    </div>
+
+    <!-- Section 3: Textboxes above the fold -->
+    <div class="section" id="textboxes-top">
+        <h2>Textboxes - Top</h2>
+        <input type="text" id="tb-top-1" placeholder="Top text input 1">
+        <input type="text" id="tb-top-2" placeholder="Top text input 2">
+    </div>
+
+    <!-- Large spacer to push content below the fold -->
+    <div class="spacer">--- Scroll Down ---</div>
+
+    <!-- Section 4: Buttons below the fold (should be off-screen initially) -->
+    <div class="section" id="buttons-bottom">
+        <h2>Buttons - Bottom</h2>
+        <button id="btn-bottom-1">Bottom Button 1</button>
+        <button id="btn-bottom-2">Bottom Button 2</button>
+        <button id="btn-bottom-3">Bottom Button 3</button>
+    </div>
+
+    <!-- Section 5: Checkboxes below the fold -->
+    <div class="section" id="checkboxes-bottom">
+        <h2>Checkboxes - Bottom</h2>
+        <label><input type="checkbox" id="cb-bottom-1"> Checkbox C</label>
+        <label><input type="checkbox" id="cb-bottom-2"> Checkbox D</label>
+    </div>
+
+    <!-- Section 6: Textboxes below the fold -->
+    <div class="section" id="textboxes-bottom">
+        <h2>Textboxes - Bottom</h2>
+        <input type="text" id="tb-bottom-1" placeholder="Bottom text input 1">
+        <input type="text" id="tb-bottom-2" placeholder="Bottom text input 2">
+    </div>
+
+    <!-- Another spacer to ensure bottom content is well off-screen -->
+    <div class="spacer">--- End of Page ---</div>
+
+    <!-- Hidden element (should never appear in on-screen inventory) -->
+    <button id="hidden-btn" style="display: none;">Hidden Button</button>
+
+    <!-- Element with zero size (should not appear in on-screen inventory) -->
+    <div style="width: 0; height: 0;"></div>
+</body>
+</html>

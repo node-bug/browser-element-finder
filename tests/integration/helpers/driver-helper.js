@@ -92,6 +92,9 @@ function createDriverFixture(options = {}) {
       driver = await buildDriverWithRetry(chromeOptions);
       console.log('Driver created:', !!driver);
 
+      // Set a reasonable viewport size so elements are fully visible for threshold: 0.6 checks
+      await driver.manage().window().setRect({ width: 1280, height: 720 });
+
       if (options.url) {
         console.log('Navigating to URL...');
         await driver.get(options.url);

@@ -502,19 +502,18 @@ var ElementFinder = (() => {
     }
     return false;
   }
-  function inViewport(el, options = null) {
-    if (el == null) return false;
-    if (typeof el.getBoundingClientRect !== "function") return false;
-    if (isHidden(el)) return false;
+  function inViewport(element) {
+    if (element == null) return false;
+    if (typeof element.getBoundingClientRect !== "function") return false;
+    if (isHidden(element)) return false;
     let rect;
     try {
-      rect = el.getBoundingClientRect();
+      rect = element.getBoundingClientRect();
     } catch (e) {
       return false;
     }
     if (rect.width === 0 || rect.height === 0) return false;
-    const fullyVisible = options != null && options.fullyVisible === true;
-    const threshold = options != null && typeof options.threshold === "number" ? Math.max(0, Math.min(1, options.threshold)) : 0;
+    const threshold = 0.6;
     let viewportWidth;
     let viewportHeight;
     try {
@@ -527,9 +526,6 @@ var ElementFinder = (() => {
       }
     } catch (e) {
       return false;
-    }
-    if (fullyVisible) {
-      return rect.left >= 0 && rect.top >= 0 && rect.right <= viewportWidth && rect.bottom <= viewportHeight;
     }
     const intersectionWidth = Math.max(
       0,

@@ -10,7 +10,7 @@ import {
   matchesType,
   getBoundingBox,
   isHidden,
-  inViewport,
+  inViewport as checkInViewport,
   ELEMENT_DEFINITIONS
 } from './element-finder.js';
 
@@ -189,8 +189,11 @@ function getIdentifiableText(el) {
 
 /**
  * Generate a flat, JSON-serializable array of DOM element metadata.
+ * Iterates frames/elements and collects metadata including semantic type,
+ * bounding box, visibility, viewport status, and identifiable text.
  * @param {Object} [options={}]
  * @param {Element|ShadowRoot|null} [options.parent=null] - Scope traversal to a subtree
+ * @param {boolean} [options.inViewport=false] - When true, filter to viewport-only elements and add per-type indexing
  * @returns {{elements: Array<{
  *   type: string,
  *   tagName: string,
@@ -198,46 +201,36 @@ function getIdentifiableText(el) {
  *   inViewport: boolean,
  *   isHidden: boolean,
  *   frameIndex: number,
- *   identifiableText: {attributeName: string, identifiableText: string}|null
+ *   identifiableText: {attributeName: string, identifiableText: string}|null,
+ *   index?: number
  * }>}}
  */
-export function getElementInventory(options = {}) {
-  const { parent = null } = options;
-
-  // Get all frames (main frame + same-origin iframes)
+export function getElementInventory({ parent = null, inViewport = false } = {}) {
   const frames = getAllFrames();
   const inventory = [];
 
   for (const frame of frames) {
-    // Determine root for element collection: parent if provided, otherwise frame.document
     const root = parent && frame.isMainFrame ? parent : frame.document;
-
-    // Get all elements in this frame's document (or subtree)
     const elements = getAllElements(root);
 
     for (const el of elements) {
-      // Determine semantic type by checking against ELEMENT_DEFINITIONS
-      // Skip the 'element' type as it matches everything
-      let type = 'element'; // default fallback
+      // Determine semantic type
+      let type = 'element';
       for (const [typeKey] of Object.entries(ELEMENT_DEFINITIONS)) {
         if (typeKey === 'element') continue;
         if (matchesType(el, typeKey)) {
           type = typeKey;
-          break; // First match wins
+          break;
         }
       }
 
-      // Get bounding box
       const box = getBoundingBox(el);
-
-      // Get visibility states
       const hidden = isHidden(el);
-      const viewport = inViewport(el, null);
+      const viewport = checkInViewport(el);
 
-      // Get identifiable text
-      const identifiableText = getIdentifiableText(el);
+      // Filter: on-screen mode skips non-viewport elements
+      if (inViewport && !viewport) continue;
 
-      // Add to inventory
       inventory.push({
         type,
         tagName: el.tagName,
@@ -245,10 +238,39 @@ export function getElementInventory(options = {}) {
         inViewport: viewport,
         isHidden: hidden,
         frameIndex: frame.frameIndex,
-        identifiableText
+        identifiableText: getIdentifiableText(el)
       });
     }
   }
 
+  // On-screen mode: group by type, sort by vertical position, assign 0-based index
+  if (inViewport) {
+    const typeGroups = new Map();
+    for (const el of inventory) {
+      if (!typeGroups.has(el.type)) {
+        typeGroups.set(el.type, []);
+      }
+      typeGroups.get(el.type).push(el);
+    }
+
+    for (const [, elements] of typeGroups) {
+      elements.sort((a, b) => a.boundingBox.y - b.boundingBox.y);
+      for (let i = 0; i < elements.length; i++) {
+        elements[i].index = i;
+      }
+    }
+
+    const result = [];
+    for (const [, elements] of typeGroups) {
+      result.push(...elements);
+    }
+
+    return { elements: result };
+  }
+
   return { elements: inventory };
 }
+
+
+
+

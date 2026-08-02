@@ -82,20 +82,6 @@ describe('ElementFinder Viewport Helpers', () => {
       `);
       expect(result).toEqual([false, false]);
     });
-
-    it('honors fullyVisible option (strict containment)', async () => {
-      const result = await fixture.driver.executeScript(`
-        return [
-          ElementFinder.inViewport(document.getElementById('partial-btn'), { fullyVisible: false }),
-          ElementFinder.inViewport(document.getElementById('partial-btn'), { fullyVisible: true }),
-          ElementFinder.inViewport(document.getElementById('inside-btn'), { fullyVisible: true })
-        ];
-      `);
-      // partial-btn has no explicit positioning so it renders in normal flow
-      // and is likely fully visible. Verify the inside-btn is always visible.
-      expect(result[0]).toBe(true);
-      expect(result[2]).toBe(true);
-    });
   });
 
   describe('inViewport flag on result objects', () => {

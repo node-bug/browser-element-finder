@@ -1194,14 +1194,8 @@ The `inViewport` flag reports whether the element has any visible overlap with t
 Two helpers are exported for direct viewport checks:
 
 ```javascript
-// Synchronous geometry check (returns boolean)
-ElementFinder.inViewport(el)
-
-// Synchronous geometry check requiring full containment (no clipping)
-ElementFinder.inViewport(el, { fullyVisible: true })
-
-// Synchronous geometry check with minimum intersection ratio (0-1)
-ElementFinder.inViewport(el, { threshold: 0.5 })
+// Synchronous geometry check (at least 60% visible)
+ElementFinder.inViewport({ element })
 ```
 
 **Usage Example**:

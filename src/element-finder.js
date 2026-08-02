@@ -674,22 +674,20 @@ export function isHidden(el) {
  * Uses synchronous geometry (getBoundingClientRect vs window dimensions).
  * For elements with detached layout, scrollable overflow ancestors, or when async
  * accuracy is required, use IntersectionObserver-based checks.
- * @param {Element} el - The DOM element to check
- * @param {Object} [options=null] - Optional configuration
- * @param {boolean} [options.fullyVisible=false] - If true, requires the element to be fully contained within the viewport (no clipping). Default false allows partial overlap.
- * @param {number} [options.threshold=0] - Minimum intersection ratio (0-1) required to count as in viewport. Ignored when fullyVisible is true.
+ * @param {Object} options - Options object
+ * @param {Element} options.element - The DOM element to check
  * @returns {boolean} True if the element is in the viewport
  */
-export function inViewport(el, options = null) {
-  if (el == null) return false;
+export function inViewport(element) {
+  if (element == null) return false;
 
   // If the element is detached or hidden it cannot be in the viewport
-  if (typeof el.getBoundingClientRect !== 'function') return false;
-  if (isHidden(el)) return false;
+  if (typeof element.getBoundingClientRect !== 'function') return false;
+  if (isHidden(element)) return false;
 
   let rect;
   try {
-    rect = el.getBoundingClientRect();
+    rect = element.getBoundingClientRect();
   } catch {
     // Cross-frame / detached element — cannot determine viewport membership
     return false;
@@ -698,10 +696,7 @@ export function inViewport(el, options = null) {
   // Elements with no rendered size cannot be visually in the viewport
   if (rect.width === 0 || rect.height === 0) return false;
 
-  const fullyVisible = options != null && options.fullyVisible === true;
-  const threshold = options != null && typeof options.threshold === 'number'
-    ? Math.max(0, Math.min(1, options.threshold))
-    : 0;
+  const threshold = 0.6;
 
   let viewportWidth;
   let viewportHeight;
@@ -716,15 +711,6 @@ export function inViewport(el, options = null) {
     }
   } catch {
     return false;
-  }
-
-  if (fullyVisible) {
-    return (
-      rect.left >= 0 &&
-      rect.top >= 0 &&
-      rect.right <= viewportWidth &&
-      rect.bottom <= viewportHeight
-    );
   }
 
   // Compute intersection ratio relative to element area
